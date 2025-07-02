@@ -1,6 +1,6 @@
 public class PlayerIdleState : PlayerState
 {
-    public PlayerIdleState(Player _player, PlayerStateMachine _stateMachine, string _animName)
+    public PlayerIdleState(CwPlayer _player, PlayerStateMachine _stateMachine, string _animName)
         : base(_player, _stateMachine, _animName)
     {
     }

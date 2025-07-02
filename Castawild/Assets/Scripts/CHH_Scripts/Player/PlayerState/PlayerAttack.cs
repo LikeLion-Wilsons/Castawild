@@ -1,6 +1,6 @@
 public class PlayerAttackState : PlayerState
 {
-    public PlayerAttackState(Player _player, PlayerStateMachine _stateMachine, string _animName)
+    public PlayerAttackState(CwPlayer _player, PlayerStateMachine _stateMachine, string _animName)
         : base(_player, _stateMachine, _animName)
     {
     }

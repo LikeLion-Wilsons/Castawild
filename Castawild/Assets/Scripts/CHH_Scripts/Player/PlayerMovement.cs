@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private Player player;
+    private CwPlayer player;
     private PlayerInputController inputController;
 
     [Header("Move")]
@@ -29,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void InitializeComponents()
     {
-        player = GetComponent<Player>();
+        player = GetComponent<CwPlayer>();
         inputController = GetComponent<PlayerInputController>();
     }
 

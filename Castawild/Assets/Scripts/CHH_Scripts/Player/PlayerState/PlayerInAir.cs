@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerInAir : PlayerState
 {
-    public PlayerInAir(Player _player, PlayerStateMachine _stateMachine, string _animName)
+    public PlayerInAir(CwPlayer _player, PlayerStateMachine _stateMachine, string _animName)
         : base(_player, _stateMachine, _animName)
     {
     }

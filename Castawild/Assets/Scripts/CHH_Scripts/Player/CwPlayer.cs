@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public enum WeaponType
 {
@@ -11,7 +13,7 @@ public enum WeaponType
 
 public enum MoveState { Walk, Run }
 
-public class Player : MonoBehaviour
+public class CwPlayer : CwCharacter
 {
     [HideInInspector] public Animator anim;
     [HideInInspector] public Rigidbody rigid;
@@ -37,7 +39,9 @@ public class Player : MonoBehaviour
     private Dictionary<WeaponType, IWeapon> weaponDict;
     public IWeapon currentWeapon { get; private set; }
 
-    static public Player instance;
+    PlayerData playerData;
+
+    static public CwPlayer instance;
 
     private void Awake()
     {
@@ -132,5 +136,20 @@ public class Player : MonoBehaviour
             stateMachine.ChangeState(moveState);
         else
             stateMachine.ChangeState(idleState);
+    }
+
+    public override void TakeDamage(float _damage)
+    {
+        base.TakeDamage(_damage);
+    }
+
+    protected override void Die()
+    {
+
+    }
+
+    protected override void StatusEffect()
+    {
+
     }
 }

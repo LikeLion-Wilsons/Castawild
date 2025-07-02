@@ -1746,8 +1746,8 @@ GameObject:
   - component: {fileID: 6349725117758676291}
   - component: {fileID: 7044581562831883365}
   - component: {fileID: 2730967348697645615}
-  - component: {fileID: 7090116099579310154}
   - component: {fileID: 2017653974376336652}
+  - component: {fileID: 7090116099579310154}
   - component: {fileID: 5570143358273755036}
   - component: {fileID: 5906685721557164538}
   m_Layer: 0
@@ -1825,6 +1825,35 @@ CapsuleCollider:
   m_Height: 3.6881104
   m_Direction: 1
   m_Center: {x: 0, y: 1.8436432, z: 0}
+--- !u!114 &2017653974376336652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6571148216867312770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b1a665cf87e9a44a9fe686d4e8892d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterName: Player
+  maxHp: 100
+  currentHp: 100
+  armor: 10
+  attack: 10
+  moveSpeed: 0
+  anim: {fileID: 0}
+  rigid: {fileID: 0}
+  inputController: {fileID: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  rayDistance: 1
+  groundCheck: {fileID: 5493910409974555812}
+  isGrounded: 1
+  isJumping: 0
+  isFalling: 0
 --- !u!114 &7090116099579310154
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1843,29 +1872,6 @@ MonoBehaviour:
   jumpForce: 7
   airMoveSpeed: 3
   isSprintToggle: 1
---- !u!114 &2017653974376336652
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6571148216867312770}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8b1a665cf87e9a44a9fe686d4e8892d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  anim: {fileID: 0}
-  rigid: {fileID: 0}
-  inputController: {fileID: 0}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  rayDistance: 1
-  groundCheck: {fileID: 5493910409974555812}
-  isGrounded: 1
-  isJumping: 0
-  isFalling: 0
 --- !u!114 &5570143358273755036
 MonoBehaviour:
   m_ObjectHideFlags: 0

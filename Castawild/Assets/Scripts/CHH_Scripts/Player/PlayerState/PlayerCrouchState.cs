@@ -1,6 +1,6 @@
 public class PlayerCrouchState : PlayerState
 {
-    public PlayerCrouchState(Player _player, PlayerStateMachine _stateMachine, string _animName)
+    public PlayerCrouchState(CwPlayer _player, PlayerStateMachine _stateMachine, string _animName)
         : base(_player, _stateMachine, _animName)
     {
     }

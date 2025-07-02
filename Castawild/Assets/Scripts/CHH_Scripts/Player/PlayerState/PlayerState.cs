@@ -1,10 +1,10 @@
 public class PlayerState
 {
-    protected Player player;
+    protected CwPlayer player;
     protected PlayerStateMachine stateMachine;
     protected string animName;
 
-    public PlayerState(Player _player, PlayerStateMachine _stateMachinel, string _animName)
+    public PlayerState(CwPlayer _player, PlayerStateMachine _stateMachinel, string _animName)
     {
         player = _player;
         stateMachine = _stateMachinel;
