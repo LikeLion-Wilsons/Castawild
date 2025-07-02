@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public enum WeaponType
 {
@@ -72,7 +71,7 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// ¹«±â ¹Ù²Ü ¶§ È£Ãâ
+    /// ë¬´ê¸° ë°”ê¿€ ë•Œ í˜¸ì¶œ
     /// </summary>
     public void SetWeapon(WeaponType weaponType)
     {
@@ -82,7 +81,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"Weapon type {weaponType} ¾øÀ½");
+            Debug.LogError($"Weapon type {weaponType} ì—†ìŒ");
         }
     }
 }
