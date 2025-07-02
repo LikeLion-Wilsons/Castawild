@@ -6,7 +6,6 @@ public class PlayerMovement : MonoBehaviour
 {
     private Player player;
     private Rigidbody rigid;
-    private NavMeshAgent agent;
 
     [SerializeField] private InputActionAsset inputActions;
 
@@ -29,7 +28,6 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 lookInput;
     private float pitch;
 
-    private bool isJumping;
     private bool isCursorLocked = false;
 
     private void OnEnable()
@@ -61,7 +59,6 @@ public class PlayerMovement : MonoBehaviour
     {
         player = GetComponent<Player>();
         rigid = GetComponent<Rigidbody>();
-        agent = GetComponent<NavMeshAgent>();
 
         Camera cam = Camera.main;
         if (cam.transform.parent != cameraRoot)
@@ -82,16 +79,22 @@ public class PlayerMovement : MonoBehaviour
         if (!isCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame)
             LockCursor();
 
-        // 커서 잠겨 있을 때만 회전 처리
-        if (isCursorLocked)
-        {
-            RotateCamera();
-            MovePlayer();
-        }
-
         // ESC 눌렀을 때 해제
         if (isCursorLocked && Keyboard.current.escapeKey.wasPressedThisFrame)
             UnlockCursor();
+
+        // 커서 잠겨 있을 때만 회전 처리
+        if (isCursorLocked)
+            RotateCamera();
+
+        moveInput = moveAction.ReadValue<Vector2>();
+        if (jumpAction.WasPressedThisFrame())
+            Jump();
+    }
+
+    private void FixedUpdate()
+    {
+        Move();
     }
 
     private void LockCursor()
@@ -122,76 +125,13 @@ public class PlayerMovement : MonoBehaviour
         transform.Rotate(Vector3.up * mouseX);
     }
 
-    private void MovePlayer()
+    private void Move()
     {
-        moveInput = moveAction.ReadValue<Vector2>();
-
-        if (!isJumping)
-        {
-            Move(moveInput);
-
-            if (jumpAction.WasPressedThisFrame())
-                StartJump();
-        }
-    }
-
-    private void Move(Vector2 input)
-    {
-        Vector3 direction = GetCameraRelativeDirection(input);
-        Vector3 target = transform.position + direction * 0.5f;
-
-        agent.SetDestination(target);
-    }
-
-    private void StartJump()
-    {
-        isJumping = true;
-
-        agent.enabled = false;
-        rigid.isKinematic = false;
-        rigid.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-    }
-
-    private void FixedUpdate()
-    {
-        Jump();
+        rigid.MovePosition(rigid.position + transform.forward * moveInput.y * walkSpeed * Time.fixedDeltaTime);
     }
 
     private void Jump()
     {
-        if (isJumping)
-        {
-            Vector3 moveDir = GetCameraRelativeDirection(moveInput);
-            Vector3 velocity = rigid.linearVelocity;
-
-            velocity.x = moveDir.x * airMoveSpeed;
-            velocity.z = moveDir.z * airMoveSpeed;
-
-            rigid.linearVelocity = velocity;
-        }
-    }
-
-    private Vector3 GetCameraRelativeDirection(Vector2 input)
-    {
-        Vector3 camForward = cameraRoot.forward;
-        Vector3 camRight = cameraRoot.right;
-
-        camForward.y = 0;
-        camRight.y = 0;
-
-        return (camRight * input.x + camForward * input.y).normalized;
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (isJumping && collision.gameObject.CompareTag("Ground"))
-        {
-            isJumping = false;
-
-            rigid.isKinematic = true;
-            agent.enabled = true;
-
-            agent.Warp(transform.position);
-        }
+        rigid.AddForceAtPosition(new Vector3(0f, jumpForce, 0f), Vector3.up, ForceMode.Impulse);
     }
 }
