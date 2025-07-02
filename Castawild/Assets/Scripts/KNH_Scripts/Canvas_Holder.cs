@@ -43,6 +43,7 @@ public class Canvas_Holder : MonoBehaviour
         {
             uiParts.Add(part.name, part);
         }
+
     }
 
     void Update()

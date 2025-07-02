@@ -7,6 +7,7 @@ public class UI_Test : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.B))
         {
+            Debug.Log("나뭇가지 획득");
             InventoryManager.GetItem(itemData, 1);
         }
     }
