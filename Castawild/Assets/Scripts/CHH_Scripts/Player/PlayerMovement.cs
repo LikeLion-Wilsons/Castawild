@@ -1,10 +1,8 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
     private Player player;
-    private Rigidbody rigid;
     private PlayerInputController inputController;
 
     [Header("Move")]
@@ -16,11 +14,6 @@ public class PlayerMovement : MonoBehaviour
     public bool isSprintToggle = true;
 
     private float moveSpeed;
-
-    [SerializeField] private Transform groundCheck;
-    int groundLayer = LayerMask.GetMask("Ground");
-    private bool isGround;
-    private bool isJumping;
 
     private void OnDisable()
     {
@@ -37,11 +30,38 @@ public class PlayerMovement : MonoBehaviour
     private void InitializeComponents()
     {
         player = GetComponent<Player>();
-        rigid = GetComponent<Rigidbody>();
         inputController = GetComponent<PlayerInputController>();
     }
 
     private void Update()
+    {
+        SetMoveState();
+
+        if (inputController.jumpAction.WasPressedThisFrame())
+            Jump();
+
+        // 떨어질 때
+        if (player.rigid.linearVelocity.y < 0f && !player.isGrounded)
+        {
+            player.isFalling = true;
+            player.anim.SetBool("isFalling", player.isFalling);
+
+            // 땅에서 떨어질 때
+            if (player.stateMachine.currentState != player.inAirState)
+                player.ChangeStateMachine(player.inAirState);
+        }
+    }
+
+    private void Jump()
+    {
+        if (player.stateMachine.currentState == player.inAirState)
+            return;
+
+        player.isJumping = true;
+        player.ChangeStateMachine(player.inAirState);
+    }
+
+    private void SetMoveState()
     {
         if (inputController.sprintAction.WasPressedThisFrame() && isSprintToggle)
         {
@@ -60,23 +80,6 @@ public class PlayerMovement : MonoBehaviour
             player.ChangePlayerMoveState(MoveState.Walk);
             moveSpeed = walkSpeed;
         }
-
-        if (inputController.jumpAction.WasPressedThisFrame())
-            Jump();
-        isGround = IsGround();
-    }
-
-
-    bool IsGround()
-    {
-        float rayDistance = 1.1f;
-        bool _isGround = Physics.Raycast(groundCheck.position, Vector3.down, rayDistance, groundLayer);
-
-        // 땅에서 떨어짐
-        if (!isJumping && isGround && !_isGround)
-            player.ChangeStateMachine(player.inAirState);
-
-        return _isGround;
     }
 
     private void FixedUpdate()
@@ -88,22 +91,16 @@ public class PlayerMovement : MonoBehaviour
     {
         if (inputController.moveInput.magnitude > 0f)
         {
-            player.ChangeStateMachine(player.moveState);
-            rigid.MovePosition(rigid.position + transform.forward * inputController.moveInput.y * moveSpeed * Time.fixedDeltaTime);
+            if (player.stateMachine.currentState == player.idleState)
+                player.ChangeStateMachine(player.moveState);
+
+            Vector3 forwardMove = transform.forward * inputController.moveInput.y;
+            Vector3 rightMove = transform.right * inputController.moveInput.x;
+
+            Vector3 moveDir = (forwardMove + rightMove).normalized;
+            player.rigid.MovePosition(player.rigid.position + moveDir * moveSpeed * Time.fixedDeltaTime);
         }
-        else if (inputController.moveInput.magnitude == 0f)
-            player.ChangeStateMachine(player.idleState);
     }
 
-    private void Jump()
-    {
-        if (!isGround)
-            return;
-
-        isJumping = true;
-        rigid.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-
-        player.anim.SetBool("isJumping", true);
-        player.ChangeStateMachine(player.inAirState);
-    }
+    private void JumpAnimationTrigger() => player.rigid.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
 }

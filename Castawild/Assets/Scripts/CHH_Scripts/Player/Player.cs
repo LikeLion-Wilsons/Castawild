@@ -14,7 +14,8 @@ public enum MoveState { Walk, Run }
 public class Player : MonoBehaviour
 {
     [HideInInspector] public Animator anim;
-    private PlayerInputController inputController;
+    [HideInInspector] public Rigidbody rigid;
+    [HideInInspector] public PlayerInputController inputController;
 
     #region State
     public PlayerIdleState idleState;
@@ -22,13 +23,19 @@ public class Player : MonoBehaviour
     public PlayerCrouchState crouchState;
     public PlayerInAir inAirState;
 
-    private PlayerStateMachine stateMachine;
+    public PlayerStateMachine stateMachine;
     #endregion
 
+    [Header("Ground")]
+    public LayerMask groundLayer;
+    public float rayDistance = 1.1f;
+    public Transform groundCheck;
+    [HideInInspector] public bool isGrounded = true;
+    [HideInInspector] public bool isJumping = false;
+    [HideInInspector] public bool isFalling = false;
 
     private Dictionary<WeaponType, IWeapon> weaponDict;
     public IWeapon currentWeapon { get; private set; }
-
 
     static public Player instance;
 
@@ -46,6 +53,7 @@ public class Player : MonoBehaviour
     private void InitializeComponents()
     {
         anim = GetComponent<Animator>();
+        rigid = GetComponent<Rigidbody>();
         inputController = GetComponent<PlayerInputController>();
     }
 
@@ -82,6 +90,7 @@ public class Player : MonoBehaviour
     private void Update()
     {
         stateMachine.currentState.UpdateState();
+        isGrounded = Physics.Raycast(groundCheck.position, Vector3.down, rayDistance, groundLayer);
     }
 
     /// <summary>
@@ -109,5 +118,19 @@ public class Player : MonoBehaviour
             anim.SetBool("isRunning", false);
         else
             anim.SetBool("isRunning", true);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(groundCheck.position, Vector3.down * rayDistance);
+    }
+
+    private void LandAnimationFinishTrigger()
+    {
+        if (inputController.moveInput.magnitude > 0f)
+            stateMachine.ChangeState(moveState);
+        else
+            stateMachine.ChangeState(idleState);
     }
 }

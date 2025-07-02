@@ -7,14 +7,17 @@ public class PlayerMoveState : PlayerState
 
     public override void EnterState()
     {
+        player.anim.SetBool(animName, true);
     }
 
     public override void UpdateState()
     {
+        if (player.inputController.moveInput.magnitude == 0f)
+            player.ChangeStateMachine(player.idleState);
     }
 
     public override void ExitState()
     {
+        player.anim.SetBool(animName, false);
     }
-
 }
