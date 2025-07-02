@@ -1,7 +1,7 @@
 public class PlayerIdleState : PlayerState
 {
-    public PlayerIdleState(Player player, PlayerStateMachine stateMachine, string animBoolName)
-        : base(player, stateMachine, animBoolName)
+    public PlayerIdleState(Player _player, PlayerStateMachine _stateMachine, string _animName)
+        : base(_player, _stateMachine, _animName)
     {
     }
 
@@ -16,5 +16,4 @@ public class PlayerIdleState : PlayerState
     public override void ExitState()
     {
     }
-
 }

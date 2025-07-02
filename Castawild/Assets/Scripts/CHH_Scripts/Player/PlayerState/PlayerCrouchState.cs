@@ -1,12 +1,13 @@
 public class PlayerCrouchState : PlayerState
 {
-    public PlayerCrouchState(Player player, PlayerStateMachine stateMachine, string animBoolName)
-        : base(player, stateMachine, animBoolName)
+    public PlayerCrouchState(Player _player, PlayerStateMachine _stateMachine, string _animName)
+        : base(_player, _stateMachine, _animName)
     {
     }
 
     public override void EnterState()
     {
+        player.anim.SetBool(animName, true);
     }
 
     public override void UpdateState()
@@ -15,5 +16,6 @@ public class PlayerCrouchState : PlayerState
 
     public override void ExitState()
     {
+        player.anim.SetBool(animName, false);
     }
 }

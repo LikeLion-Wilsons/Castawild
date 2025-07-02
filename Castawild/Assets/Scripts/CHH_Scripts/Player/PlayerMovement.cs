@@ -1,17 +1,11 @@
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
     private Player player;
     private Rigidbody rigid;
-
-    [SerializeField] private InputActionAsset inputActions;
-
-    [Header("Camera")]
-    [SerializeField] private float mouseSensitivity = 2f;
-    [SerializeField] private Transform cameraRoot;
+    private PlayerInputController inputController;
 
     [Header("Move")]
     [SerializeField] private float walkSpeed = 2f;
@@ -19,25 +13,17 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float crouchSpeed = 1f;
     [SerializeField] private float jumpForce = 5f;
     [SerializeField] private float airMoveSpeed = 3f;
+    public bool isSprintToggle = true;
 
-    private InputAction moveAction;
-    private InputAction jumpAction;
-    private InputAction lookAction;
+    private float moveSpeed;
 
-    private Vector2 moveInput;
-    private Vector2 lookInput;
-    private float pitch;
-
-    private bool isCursorLocked = false;
-
-    private void OnEnable()
-    {
-        inputActions.FindActionMap("Player").Enable();
-    }
+    [SerializeField] private Transform groundCheck;
+    int groundLayer = LayerMask.GetMask("Ground");
+    private bool isGround;
+    private bool isJumping;
 
     private void OnDisable()
     {
-        inputActions.FindActionMap("Player").Disable();
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -45,51 +31,52 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         InitializeComponents();
-        InitializeInputActions();
-    }
-
-    private void InitializeInputActions()
-    {
-        moveAction = InputSystem.actions.FindAction("Move");
-        jumpAction = InputSystem.actions.FindAction("Jump");
-        lookAction = InputSystem.actions.FindAction("Look");
+        moveSpeed = walkSpeed;
     }
 
     private void InitializeComponents()
     {
         player = GetComponent<Player>();
         rigid = GetComponent<Rigidbody>();
-
-        Camera cam = Camera.main;
-        if (cam.transform.parent != cameraRoot)
-        {
-            cam.transform.SetParent(cameraRoot);
-            cam.transform.localPosition = Vector3.zero;
-            cam.transform.localRotation = Quaternion.identity;
-        }
+        inputController = GetComponent<PlayerInputController>();
     }
 
     private void Update()
     {
-        // 게임 포커스가 사라지면 커서 해제
-        if (!Application.isFocused && isCursorLocked)
-            UnlockCursor();
+        if (inputController.sprintAction.WasPressedThisFrame() && isSprintToggle)
+        {
+            player.ChangePlayerMoveState(MoveState.Run);
+            moveSpeed = runSpeed;
+        }
 
-        // Game 창이 포커스된 상태에서 클릭 시 커서 잠금
-        if (!isCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame)
-            LockCursor();
+        else if (inputController.sprintAction.IsPressed() && !isSprintToggle)
+        {
+            player.ChangePlayerMoveState(MoveState.Run);
+            moveSpeed = walkSpeed;
+        }
 
-        // ESC 눌렀을 때 해제
-        if (isCursorLocked && Keyboard.current.escapeKey.wasPressedThisFrame)
-            UnlockCursor();
+        else if (inputController.sprintAction.WasReleasedThisFrame())
+        {
+            player.ChangePlayerMoveState(MoveState.Walk);
+            moveSpeed = walkSpeed;
+        }
 
-        // 커서 잠겨 있을 때만 회전 처리
-        if (isCursorLocked)
-            RotateCamera();
-
-        moveInput = moveAction.ReadValue<Vector2>();
-        if (jumpAction.WasPressedThisFrame())
+        if (inputController.jumpAction.WasPressedThisFrame())
             Jump();
+        isGround = IsGround();
+    }
+
+
+    bool IsGround()
+    {
+        float rayDistance = 1.1f;
+        bool _isGround = Physics.Raycast(groundCheck.position, Vector3.down, rayDistance, groundLayer);
+
+        // 땅에서 떨어짐
+        if (!isJumping && isGround && !_isGround)
+            player.ChangeStateMachine(player.inAirState);
+
+        return _isGround;
     }
 
     private void FixedUpdate()
@@ -97,41 +84,26 @@ public class PlayerMovement : MonoBehaviour
         Move();
     }
 
-    private void LockCursor()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        isCursorLocked = true;
-    }
-
-    private void UnlockCursor()
-    {
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        isCursorLocked = false;
-    }
-
-    private void RotateCamera()
-    {
-        lookInput = lookAction.ReadValue<Vector2>();
-
-        float mouseX = lookInput.x * mouseSensitivity;
-        float mouseY = lookInput.y * mouseSensitivity;
-
-        pitch -= mouseY;
-        pitch = Mathf.Clamp(pitch, -90f, 90f);
-
-        cameraRoot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
-        transform.Rotate(Vector3.up * mouseX);
-    }
-
     private void Move()
     {
-        rigid.MovePosition(rigid.position + transform.forward * moveInput.y * walkSpeed * Time.fixedDeltaTime);
+        if (inputController.moveInput.magnitude > 0f)
+        {
+            player.ChangeStateMachine(player.moveState);
+            rigid.MovePosition(rigid.position + transform.forward * inputController.moveInput.y * moveSpeed * Time.fixedDeltaTime);
+        }
+        else if (inputController.moveInput.magnitude == 0f)
+            player.ChangeStateMachine(player.idleState);
     }
 
     private void Jump()
     {
-        rigid.AddForceAtPosition(new Vector3(0f, jumpForce, 0f), Vector3.up, ForceMode.Impulse);
+        if (!isGround)
+            return;
+
+        isJumping = true;
+        rigid.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+
+        player.anim.SetBool("isJumping", true);
+        player.ChangeStateMachine(player.inAirState);
     }
 }

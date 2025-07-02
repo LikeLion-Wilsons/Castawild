@@ -9,19 +9,26 @@ public enum WeaponType
     Bow
 }
 
+public enum MoveState { Walk, Run }
+
 public class Player : MonoBehaviour
 {
+    [HideInInspector] public Animator anim;
+    private PlayerInputController inputController;
+
     #region State
-    private PlayerIdleState playerIdleState;
-    private PlayerWalkState playerMoveState;
-    private PlayerRunState playerRunState;
-    private PlayerCrouchState playerCrouchState;
-    private PlayerJumpState playerJumpState;
-    private PlayerStateMachine playerStateMachine;
+    public PlayerIdleState idleState;
+    public PlayerMoveState moveState;
+    public PlayerCrouchState crouchState;
+    public PlayerInAir inAirState;
+
+    private PlayerStateMachine stateMachine;
     #endregion
+
 
     private Dictionary<WeaponType, IWeapon> weaponDict;
     public IWeapon currentWeapon { get; private set; }
+
 
     static public Player instance;
 
@@ -29,15 +36,17 @@ public class Player : MonoBehaviour
     {
         Singleton();
 
-        InitializeState();
+        InitializeComponents();
+        InitializeStates();
         InitializeWeapon();
 
         SetWeapon(WeaponType.Fist);
     }
 
-    private void Update()
+    private void InitializeComponents()
     {
-        playerStateMachine.currentState.UpdateState();
+        anim = GetComponent<Animator>();
+        inputController = GetComponent<PlayerInputController>();
     }
 
     private void Singleton()
@@ -48,15 +57,15 @@ public class Player : MonoBehaviour
             Destroy(gameObject);
     }
 
-    private void InitializeState()
+    private void InitializeStates()
     {
-        playerStateMachine = new PlayerStateMachine();
+        idleState = new PlayerIdleState(this, stateMachine, "Idle");
+        moveState = new PlayerMoveState(this, stateMachine, "Move");
+        crouchState = new PlayerCrouchState(this, stateMachine, "Crouch");
+        inAirState = new PlayerInAir(this, stateMachine, "InAir");
 
-        playerIdleState = new PlayerIdleState(this, playerStateMachine, "Idle");
-        playerMoveState = new PlayerWalkState(this, playerStateMachine, "Move");
-        playerRunState = new PlayerRunState(this, playerStateMachine, "Run");
-        playerCrouchState = new PlayerCrouchState(this, playerStateMachine, "Crouch");
-        playerJumpState = new PlayerJumpState(this, playerStateMachine, "Jump");
+        stateMachine = new PlayerStateMachine();
+        stateMachine.currentState = idleState;
     }
 
     private void InitializeWeapon()
@@ -70,18 +79,35 @@ public class Player : MonoBehaviour
         };
     }
 
+    private void Update()
+    {
+        stateMachine.currentState.UpdateState();
+    }
+
     /// <summary>
     /// 무기 바꿀 때 호출
     /// </summary>
     public void SetWeapon(WeaponType weaponType)
     {
         if (weaponDict.TryGetValue(weaponType, out var weapon))
-        {
             currentWeapon = weapon;
-        }
         else
-        {
             Debug.LogError($"Weapon type {weaponType} 없음");
-        }
+    }
+
+    /// <summary>
+    /// 플레이어 상태 바꿀 때 호출
+    /// </summary>
+    public void ChangeStateMachine(PlayerState playerstate) => stateMachine.ChangeState(playerstate);
+
+    /// <summary>
+    /// 플레이어 이속 바꿀 때 호출
+    /// </summary>
+    public void ChangePlayerMoveState(MoveState _moveState)
+    {
+        if (_moveState == MoveState.Walk)
+            anim.SetBool("isRunning", false);
+        else
+            anim.SetBool("isRunning", true);
     }
 }
