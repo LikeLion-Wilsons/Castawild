@@ -5,11 +5,8 @@ public class TreeHealth : MonoBehaviour
 {
     [Header("체력 설정")]
     [SerializeField] private float maxHealth = 100f;
-    public float CurrentHealth { get; private set; } // 현재 체력을 외부에서 읽을 수 있도록 public 속성으로 변경
-
-    // 체력 변경 시 호출될 이벤트 (현재 체력, 최대 체력)
+    public float CurrentHealth { get; private set; } 
     public event Action<float, float> OnHealthChanged;
-    // 나무 사망 시 호출될 이벤트
     public event Action OnTreeDied;
 
     private string spawnPointId;
