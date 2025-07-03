@@ -152,4 +152,14 @@ public class CwPlayer : CwCharacter
     {
 
     }
+
+    public void InitializeData(PlayerData data)
+    {
+        CharacterName = data.characterName;
+        MaxHp = data.maxHp;
+        Armor = data.armor;
+        Attack = data.attack;
+        playerData = data;
+        //CharacterInitialize(data);
+    }
 }
