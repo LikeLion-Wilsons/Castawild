@@ -15,10 +15,17 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: 97fca944b54a4ca4280c5552abb3e27e
   m_SerializeEntries:
-  - m_GUID: 1c8950e890f8de640b645d9ccc90ffa4
-    m_Address: Assets/Prefabs/CHH_Prefabs/Player.prefab
+  - m_GUID: c064942bee3fbdf4a93cd81e71554927
+    m_Address: Assets/Scripts/LSM_Scripts/Default Character Data.asset
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d186013f062fd8648a7b8a0c0c07aff4
+    m_Address: Assets/Scripts/LSM_Scripts/Default Animal Data.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: b4ac3e4228df9544f927583c15ed8e13, type: 2}
