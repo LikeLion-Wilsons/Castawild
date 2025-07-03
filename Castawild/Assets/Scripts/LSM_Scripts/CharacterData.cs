@@ -3,10 +3,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "CharacterData", menuName = "ScriptableObjects/CharacterData", order = 1)]
 public class CharacterData : ScriptableObject
 {    
-    public string characterName; //¿£Æ¼Æ¼ ÀÌ¸§
-    public float maxHp; //ÃÖ´ëÃ¼·Â 
-    public float armor; //¹æ¾î·Â
-    public float attack; //°ø°İ·Â 
-    public float moveSpeed; //ÀÌµ¿¼Óµµ 
+    public string characterName; //ì—”í‹°í‹° ì´ë¦„
+    public float maxHp; //ìµœëŒ€ì²´ë ¥ 
+    public float armor; //ë°©ì–´ë ¥
+    public float attack; //ê³µê²©ë ¥ 
+    public float moveSpeed; //ì´ë™ì†ë„ 
 }
 
