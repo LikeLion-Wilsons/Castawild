@@ -8,6 +8,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 /// </summary>
 public abstract class CwCharacter : MonoBehaviour
 {
+
     #region Character Info  
     [Header("Character Info")]
     [SerializeField] private string characterName; //캐릭터 식별자
@@ -16,6 +17,7 @@ public abstract class CwCharacter : MonoBehaviour
     [SerializeField] private float armor; //방어력
     [SerializeField] private float attack; //공격력 
     [SerializeField] private float moveSpeed; //이동속도 
+    [SerializeField] protected string AddrPath;
     #endregion
 
     #region Setters and Getters
@@ -100,10 +102,16 @@ public abstract class CwCharacter : MonoBehaviour
         // var derivedData = data as TDerived;
         // if (derivedData != null) { ... }
     }
+
+    protected virtual void Awake()
+    { 
+        AddrPath = "Assets/Scriptable Objects/Default Character Data.asset";
+    }   
+
     protected virtual async void Start()
     {
         // Addressables를 통해 캐릭터 데이터를 비동기적으로 로드
-        AsyncOperationHandle<CharacterData> handle = Addressables.LoadAssetAsync<CharacterData>(CharacterName);
+        AsyncOperationHandle<CharacterData> handle = Addressables.LoadAssetAsync<CharacterData>(AddrPath);
 
         await handle.Task;
 
@@ -113,11 +121,7 @@ public abstract class CwCharacter : MonoBehaviour
 
             // 로딩 후 Addressables 해제
             Addressables.Release(handle);
-        }
-        else
-        {
-            Debug.LogError($"[Addressables] Failed to load CharacterData for: {CharacterName}");
-        }
+        } 
     }
 
     /// <summary>    
