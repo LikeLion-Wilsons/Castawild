@@ -4,39 +4,44 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using static AnimalData;
 
 /// <summary>
-/// ³íÇÃ·¹ÀÌ¾îºí Ä³¸¯ÅÍ Å¬·¡½º
+/// ë…¼í”Œë ˆì´ì–´ë¸” ìºë¦­í„° í´ë˜ìŠ¤
 /// </summary>
 public class CwAnimal : CwCharacter
 {
 
-    // Animal Àü¿ë ÇÊµå Ãß°¡
-    // ÃßÈÄ ¼±°ø¸÷ ºñ¼±°ø¸÷À¸·Î ´Ù½Ã ³ª´­ ¿¹Á¤
+    // Animal ì „ìš© í•„ë“œ ì¶”ê°€
+    // ì¶”í›„ ì„ ê³µëª¹ ë¹„ì„ ê³µëª¹ìœ¼ë¡œ ë‹¤ì‹œ ë‚˜ëˆŒ ì˜ˆì •
     #region Animal Info  
     [Header("Animal Info")]
-    [SerializeField] private float age;               // ³ªÀÌ (ÃßÈÄ °¡Ãà ½Ã½ºÅÛ »ı±â¸é È°¿ë°¡´É¼º ÀÖÀ½
-    [SerializeField] private float size;              // Å©±â (ºÎ»ê¹° »ı¼º ½Ã È°¿ë °¡´É¼º ÀÖÀ½)
-    [SerializeField] private float weight;            // ¹«°Ô (ºÎ»ê¹° »ı¼º ½Ã È°¿ë °¡´É¼º ÀÖÀ½)
-    [SerializeField] public float detectionRadius;    // °¨Áö °Å¸®
-    [SerializeField] public float fleeThreshold;      // Ã¼·ÂÀÌ ¸î % ÀÌÇÏÀÏ ¶§ µµ¸Á?
-    [SerializeField] public float wanderInterval;     // À¯ÈŞ »óÅÂ ÀÌµ¿ ÁÖ±â 
-    [SerializeField] public float attackRange;        // °ø°İ ¹üÀ§
-    [SerializeField] public float attackCooldown;     // °ø°İ ÄğÅ¸ÀÓ 
-    [SerializeField] public SpawnType spawnType;      // ½ºÆù Å¸ÀÔ (ºñÄ¡, ½£, °­, »ê µî)
-    [SerializeField] public bool isAggressive;        // ¼±°ø ¿©ºÎ
-    [SerializeField] public bool isFleeing;           // µµ¸Á ¿©ºÎ
-    [SerializeField] public bool canBeHarvested;     // Á×Àº ÈÄ ÇØÃ¼ °¡´É ¿©ºÎ 
+    [SerializeField] private float age;               // ë‚˜ì´ (ì¶”í›„ ê°€ì¶• ì‹œìŠ¤í…œ ìƒê¸°ë©´ í™œìš©ê°€ëŠ¥ì„± ìˆìŒ
+    [SerializeField] private float size;              // í¬ê¸° (ë¶€ì‚°ë¬¼ ìƒì„± ì‹œ í™œìš© ê°€ëŠ¥ì„± ìˆìŒ)
+    [SerializeField] private float weight;            // ë¬´ê²Œ (ë¶€ì‚°ë¬¼ ìƒì„± ì‹œ í™œìš© ê°€ëŠ¥ì„± ìˆìŒ)
+    [SerializeField] public float detectionRadius;    // ê°ì§€ ê±°ë¦¬
+    [SerializeField] public float fleeThreshold;      // ì²´ë ¥ì´ ëª‡ % ì´í•˜ì¼ ë•Œ ë„ë§?
+    [SerializeField] public float wanderInterval;     // ìœ íœ´ ìƒíƒœ ì´ë™ ì£¼ê¸° 
+    [SerializeField] public float attackRange;        // ê³µê²© ë²”ìœ„
+    [SerializeField] public float attackCooldown;     // ê³µê²© ì¿¨íƒ€ì„ 
+    [SerializeField] public SpawnType spawnType;      // ìŠ¤í° íƒ€ì… (ë¹„ì¹˜, ìˆ², ê°•, ì‚° ë“±)
+    [SerializeField] public bool isAggressive;        // ì„ ê³µ ì—¬ë¶€
+    [SerializeField] public bool isFleeing;           // ë„ë§ ì—¬ë¶€
+    [SerializeField] public bool canBeHarvested;     // ì£½ì€ í›„ í•´ì²´ ê°€ëŠ¥ ì—¬ë¶€ 
     #endregion 
 
     protected override void CharacterInitialize<T>(T data)  
     {
         base.CharacterInitialize<T>(data);
-        //Animal Àü¿ë ÇÊµå Ãß°¡ 
+        //Animal ì „ìš© í•„ë“œ ì¶”ê°€ 
+    }
+
+    protected override void Awake()
+    {
+        AddrPath = "Assets/Scriptable Objects/Default Animal Data.asset";
     }
 
     protected override async void Start()
     {
-        // Addressables¸¦ ÅëÇØ Ä³¸¯ÅÍ µ¥ÀÌÅÍ¸¦ ºñµ¿±âÀûÀ¸·Î ·Îµå
-        AsyncOperationHandle<AnimalData> handle = Addressables.LoadAssetAsync < AnimalData>(CharacterName);
+        // Addressablesë¥¼ í†µí•´ ìºë¦­í„° ë°ì´í„°ë¥¼ ë¹„ë™ê¸°ì ìœ¼ë¡œ ë¡œë“œ
+        AsyncOperationHandle<AnimalData> handle = Addressables.LoadAssetAsync<AnimalData>(AddrPath);
 
         await handle.Task;
 
