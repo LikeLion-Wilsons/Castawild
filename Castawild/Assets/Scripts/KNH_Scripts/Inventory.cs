@@ -1,8 +1,5 @@
-using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 
 public class Inventory : UIPart
 {
@@ -12,7 +9,7 @@ public class Inventory : UIPart
     List<Item_Panel> items = new List<Item_Panel>();
     Dictionary<int, Item> inventory_items = new Dictionary<int, Item>();
 
-    int itemMaximumValue = 24;
+    int itemMaximumValue = 20;
 
     public GameObject itemClick;
 
@@ -30,9 +27,7 @@ public class Inventory : UIPart
 
         for (int i = 0; i < itemMaximumValue; i++)
         {
-            var go = Instantiate(item_panel, content);
-            go.gameObject.SetActive(true);
-            items.Add(go);
+            items.Add(content.GetChild(i).GetComponent<Item_Panel>());
         }
 
         int value = 0;
