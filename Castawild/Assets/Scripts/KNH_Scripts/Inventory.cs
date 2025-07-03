@@ -10,13 +10,18 @@ public class Inventory : UIPart
     public Transform content;
 
     List<Item_Panel> items = new List<Item_Panel>();
+    Dictionary<int, Item> inventory_items = new Dictionary<int, Item>();
 
     int itemMaximumValue = 24;
 
-    private void OnEnable()
+    public GameObject itemClick;
+
+
+    private void Start()
     {
         Init();
-        SetInventory();
+        InventoryManager.onItemGet += SetItemList;
+        InventoryManager.onItemGet += SetInventory;
     }
     public void Init()
     {
@@ -34,11 +39,26 @@ public class Inventory : UIPart
 
         foreach (var item in InventoryManager.item_List)
         {
-            items[value].Init(item.Value);
+            items[value].Init(item.Value, this);
             value++;
         }
-
+        SetItemList();
         SetInventory();
+    }
+
+    public void SetItemList()
+    {
+        int value = 0;
+        foreach (var item in InventoryManager.item_List)
+        {
+            if ((inventory_items.ContainsKey(item.Value.item_Data.itemID) == false)
+                && items[value].parentPanel == null)
+            {
+                items[value].Init(item.Value, this);
+                inventory_items.Add(item.Value.item_Data.itemID, item.Value);
+            }
+            value++;
+        }
     }
     public void SetInventory()
     {
@@ -46,5 +66,12 @@ public class Inventory : UIPart
         {
             items[i].SetItem();//아이콘, 개수 설정
         }
+    }
+
+    public void SetItemClickAnimation(Item_Panel panel)
+    {
+        itemClick.gameObject.SetActive(true);
+        itemClick.transform.SetParent(panel.transform);
+        itemClick.transform.localPosition = Vector2.zero;
     }
 }

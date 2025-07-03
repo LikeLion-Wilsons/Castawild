@@ -1,8 +1,9 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Item_Panel : MonoBehaviour
+public class Item_Panel : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
 {
     public Item item;
     public GameObject itemPanel;
@@ -10,10 +11,25 @@ public class Item_Panel : MonoBehaviour
     public TextMeshProUGUI itemCountText;
     public float durability;//내구도
     [SerializeField] Sprite[] icons;
+    public Inventory parentPanel;
 
-    public void Init(Item _item)
+    public void Init(Item _item, Inventory inventory)
     {
         item = _item;
+        parentPanel = inventory;
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (parentPanel == null) return;
+        parentPanel.SetItemClickAnimation(this);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (parentPanel == null) return;
+        if (parentPanel.itemClick.activeSelf == true)
+            parentPanel.itemClick.SetActive(false);
     }
 
     public void SetItem()
@@ -30,3 +46,4 @@ public class Item_Panel : MonoBehaviour
         }
     }
 }
+
