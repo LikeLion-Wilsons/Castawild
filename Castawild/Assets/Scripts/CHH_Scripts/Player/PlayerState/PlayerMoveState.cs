@@ -12,7 +12,7 @@ public class PlayerMoveState : PlayerState
 
     public override void UpdateState()
     {
-        if (player.inputController.moveInput.magnitude == 0f)
+        if (player.inputManager.moveInput.magnitude == 0f)
             player.ChangeStateMachine(player.idleState);
     }
 

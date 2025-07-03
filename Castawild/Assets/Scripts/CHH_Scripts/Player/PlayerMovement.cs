@@ -2,17 +2,12 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    private Transform thirdPersonCamera;
     private CwPlayer player;
-    private PlayerInputController inputController;
+    private PlayerInputManager inputManager;
 
-    [Header("Move")]
-    [SerializeField] private float walkSpeed = 2f;
-    [SerializeField] private float runSpeed = 4f;
-    [SerializeField] private float crouchSpeed = 1f;
-    [SerializeField] private float jumpForce = 5f;
-    [SerializeField] private float airMoveSpeed = 3f;
+    private Vector3 moveDirection;
     public bool isSprintToggle = true;
-
     private float moveSpeed;
 
     private void OnDisable()
@@ -24,24 +19,25 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         InitializeComponents();
-        moveSpeed = walkSpeed;
+        moveSpeed = player.walkSpeed;
     }
 
     private void InitializeComponents()
     {
+        thirdPersonCamera = Camera.main.transform;
         player = GetComponent<CwPlayer>();
-        inputController = GetComponent<PlayerInputController>();
+        inputManager = GetComponent<PlayerInputManager>();
     }
 
     private void Update()
     {
         SetMoveState();
 
-        if (inputController.jumpAction.WasPressedThisFrame())
+        if (inputManager.jumpAction.WasPressedThisFrame())
             Jump();
 
         // 떨어질 때
-        if (player.rigid.linearVelocity.y < 0f && !player.isGrounded)
+        if (player.rigid.linearVelocity.y < 0f && !player.isGround)
         {
             player.isFalling = true;
             player.anim.SetBool("isFalling", player.isFalling);
@@ -54,53 +50,81 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
-        if (player.stateMachine.currentState == player.inAirState)
+        if (!player.canJump)
             return;
 
-        player.isJumping = true;
+        player.canJump = false;
         player.ChangeStateMachine(player.inAirState);
     }
 
     private void SetMoveState()
     {
-        if (inputController.sprintAction.WasPressedThisFrame() && isSprintToggle)
+        if (inputManager.sprintAction.WasPressedThisFrame() && isSprintToggle)
         {
-            player.ChangePlayerMoveState(MoveState.Run);
-            moveSpeed = runSpeed;
+            if (player.moveSpeedState == MoveSpeedState.Run)
+                ChangeMoveSpeed(MoveSpeedState.Walk);
+            else
+                ChangeMoveSpeed(MoveSpeedState.Run);
         }
 
-        else if (inputController.sprintAction.IsPressed() && !isSprintToggle)
+        else if (inputManager.sprintAction.IsPressed() && !isSprintToggle)
         {
-            player.ChangePlayerMoveState(MoveState.Run);
-            moveSpeed = walkSpeed;
+            ChangeMoveSpeed(MoveSpeedState.Run);
         }
 
-        else if (inputController.sprintAction.WasReleasedThisFrame())
+        else if (inputManager.sprintAction.WasReleasedThisFrame() && !isSprintToggle)
         {
-            player.ChangePlayerMoveState(MoveState.Walk);
-            moveSpeed = walkSpeed;
+            ChangeMoveSpeed(MoveSpeedState.Walk);
         }
     }
 
-    private void FixedUpdate()
+    private void ChangeMoveSpeed(MoveSpeedState _moveState)
     {
-        Move();
-    }
-
-    private void Move()
-    {
-        if (inputController.moveInput.magnitude > 0f)
+        player.ChangePlayerMoveState(_moveState);
+        switch (_moveState)
         {
-            if (player.stateMachine.currentState == player.idleState)
-                player.ChangeStateMachine(player.moveState);
-
-            Vector3 forwardMove = transform.forward * inputController.moveInput.y;
-            Vector3 rightMove = transform.right * inputController.moveInput.x;
-
-            Vector3 moveDir = (forwardMove + rightMove).normalized;
-            player.rigid.MovePosition(player.rigid.position + moveDir * moveSpeed * Time.fixedDeltaTime);
+            case MoveSpeedState.Run:
+                moveSpeed = player.runSpeed;
+                break;
+            case MoveSpeedState.Walk:
+                moveSpeed = player.walkSpeed;
+                break;
         }
     }
 
-    private void JumpAnimationTrigger() => player.rigid.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+    public void HandleAllMovement()
+    {
+        HandleMovement();
+        HandleRotation();
+    }
+
+    private void HandleMovement()
+    {
+        moveDirection = thirdPersonCamera.forward * inputManager.verticalInput;
+        moveDirection = moveDirection + thirdPersonCamera.right * inputManager.horizontalInput;
+        moveDirection.Normalize();
+        moveDirection.y = 0;
+        moveDirection = moveDirection * moveSpeed;
+
+        Vector3 movementVelocity = moveDirection;
+        player.rigid.linearVelocity = movementVelocity;
+    }
+
+    private void HandleRotation()
+    {
+        Vector3 targetDirection = Vector3.zero;
+
+        targetDirection = thirdPersonCamera.transform.forward * inputManager.verticalInput;
+        targetDirection = targetDirection + thirdPersonCamera.transform.right * inputManager.horizontalInput;
+        targetDirection = targetDirection.normalized;
+        targetDirection.y = 0f;
+
+        if (targetDirection == Vector3.zero)
+            targetDirection = transform.forward;
+
+        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+        Quaternion playerRotation = Quaternion.Slerp(transform.rotation, targetRotation, player.rotationSpeed * Time.fixedDeltaTime);
+
+        transform.rotation = playerRotation;
+    }
 }

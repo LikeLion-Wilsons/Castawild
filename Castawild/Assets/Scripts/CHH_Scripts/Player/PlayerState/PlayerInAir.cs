@@ -14,14 +14,14 @@ public class PlayerInAir : PlayerState
 
     public override void UpdateState()
     {
-        if (player.isGrounded && player.rigid.linearVelocity.y < 0f)
+        if (player.isGround && player.rigid.linearVelocity.y < 0f && !player.anim.GetBool("Land"))
             player.anim.SetBool("Land", true);
     }
 
     public override void ExitState()
     {
         player.anim.SetBool(animName, false);
-        player.isJumping = false;
+        player.canJump = true;
         player.isFalling = false;
         player.anim.SetBool("isFalling", player.isFalling);
         player.anim.SetBool("Land", false);

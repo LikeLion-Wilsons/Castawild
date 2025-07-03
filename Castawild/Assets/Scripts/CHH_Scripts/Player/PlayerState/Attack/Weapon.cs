@@ -1,30 +1,30 @@
-public interface IWeapon
+public interface Weapon
 {
     void Attack();
 }
 
-public class Bow : IWeapon
+public class Bow : Weapon
 {
     public void Attack()
     {
     }
 }
 
-public class Throw : IWeapon
+public class Throw : Weapon
 {
     public void Attack()
     {
     }
 }
 
-public class Melee : IWeapon
+public class Melee : Weapon
 {
     public void Attack()
     {
     }
 }
 
-public class Sword : IWeapon
+public class Sword : Weapon
 {
     public void Attack()
     {

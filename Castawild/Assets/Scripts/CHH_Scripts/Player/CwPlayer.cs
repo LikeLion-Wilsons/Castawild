@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-
 public enum WeaponType
 {
     Fist,
@@ -11,13 +8,14 @@ public enum WeaponType
     Bow
 }
 
-public enum MoveState { Walk, Run }
+public enum MoveSpeedState { Walk, Run }
 
 public class CwPlayer : CwCharacter
 {
     [HideInInspector] public Animator anim;
     [HideInInspector] public Rigidbody rigid;
-    [HideInInspector] public PlayerInputController inputController;
+    [HideInInspector] public PlayerInputManager inputManager;
+    [HideInInspector] public PlayerMovement playerMovement;
 
     #region State
     public PlayerIdleState idleState;
@@ -28,18 +26,27 @@ public class CwPlayer : CwCharacter
     public PlayerStateMachine stateMachine;
     #endregion
 
+    [Header("Move")]
+    [SerializeField] public float walkSpeed = 2f;
+    [SerializeField] public float runSpeed = 4f;
+    [SerializeField] public float crouchSpeed = 1f;
+    [SerializeField] public float jumpForce = 5f;
+    [SerializeField] public float airMoveSpeed = 3f;
+    [SerializeField] public float rotationSpeed = 15f;
+
     [Header("Ground")]
     public LayerMask groundLayer;
     public float rayDistance = 1.1f;
     public Transform groundCheck;
-    [HideInInspector] public bool isGrounded = true;
-    [HideInInspector] public bool isJumping = false;
+    [HideInInspector] public bool canJump = true;
+    [HideInInspector] public bool isGround = true;
     [HideInInspector] public bool isFalling = false;
 
-    private Dictionary<WeaponType, IWeapon> weaponDict;
-    public IWeapon currentWeapon { get; private set; }
+    private Dictionary<WeaponType, Weapon> weaponDict;
+    public Weapon currentWeapon { get; private set; }
+    public MoveSpeedState moveSpeedState;
 
-    public PlayerData playerData;
+    [HideInInspector] public PlayerData playerData;
 
     static public CwPlayer instance;
 
@@ -56,9 +63,9 @@ public class CwPlayer : CwCharacter
 
     private void InitializeComponents()
     {
-        anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody>();
-        inputController = GetComponent<PlayerInputController>();
+        inputManager = GetComponent<PlayerInputManager>();
+        playerMovement = GetComponent<PlayerMovement>();
     }
 
     private void Singleton()
@@ -75,14 +82,11 @@ public class CwPlayer : CwCharacter
         moveState = new PlayerMoveState(this, stateMachine, "Move");
         crouchState = new PlayerCrouchState(this, stateMachine, "Crouch");
         inAirState = new PlayerInAir(this, stateMachine, "InAir");
-
-        stateMachine = new PlayerStateMachine();
-        stateMachine.currentState = idleState;
     }
 
     private void InitializeWeapon()
     {
-        weaponDict = new Dictionary<WeaponType, IWeapon>
+        weaponDict = new Dictionary<WeaponType, Weapon>
         {
             { WeaponType.Fist, new Melee() },
             { WeaponType.Throw, new Throw() },
@@ -93,8 +97,14 @@ public class CwPlayer : CwCharacter
 
     private void Update()
     {
-        stateMachine.currentState.UpdateState();
-        isGrounded = Physics.Raycast(groundCheck.position, Vector3.down, rayDistance, groundLayer);
+        inputManager.HandleAllInputs();
+        stateMachine?.currentState.UpdateState();
+        isGround = Physics.Raycast(groundCheck.position, Vector3.down, rayDistance, groundLayer);
+    }
+
+    private void FixedUpdate()
+    {
+        playerMovement.HandleAllMovement();
     }
 
     /// <summary>
@@ -116,26 +126,24 @@ public class CwPlayer : CwCharacter
     /// <summary>
     /// 플레이어 이속 바꿀 때 호출
     /// </summary>
-    public void ChangePlayerMoveState(MoveState _moveState)
+    public void ChangePlayerMoveState(MoveSpeedState _moveState)
     {
-        if (_moveState == MoveState.Walk)
+        if (_moveState == MoveSpeedState.Walk)
+        {
+            moveSpeedState = MoveSpeedState.Walk;
             anim.SetBool("isRunning", false);
+        }
         else
+        {
+            moveSpeedState = MoveSpeedState.Run;
             anim.SetBool("isRunning", true);
+        }
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawRay(groundCheck.position, Vector3.down * rayDistance);
-    }
-
-    private void LandAnimationFinishTrigger()
-    {
-        if (inputController.moveInput.magnitude > 0f)
-            stateMachine.ChangeState(moveState);
-        else
-            stateMachine.ChangeState(idleState);
     }
 
     public override void TakeDamage(float _damage)
@@ -157,9 +165,35 @@ public class CwPlayer : CwCharacter
     {
         CharacterName = data.characterName;
         MaxHp = data.maxHp;
+        CurrentHp = MaxHp;
         Armor = data.armor;
         Attack = data.attack;
         playerData = data;
-        //CharacterInitialize(data);
+
+        anim = GetComponentInChildren<Animator>();
+        stateMachine = new PlayerStateMachine();
+        stateMachine.currentState = idleState;
     }
+
+    /// <summary>
+    /// 음식같은걸로 속도 바꿀 때 호출
+    /// </summary>
+    public void ChangeMoveSpeedValues(float value, bool isIncreasing)
+    {
+        if (isIncreasing)
+        {
+            walkSpeed += value;
+            runSpeed += value;
+            crouchSpeed += value;
+            airMoveSpeed += value;
+        }
+        else
+        {
+            walkSpeed -= value;
+            runSpeed -= value;
+            crouchSpeed -= value;
+            airMoveSpeed -= value;
+        }
+    }
+
 }

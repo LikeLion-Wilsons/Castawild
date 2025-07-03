@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Player
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2fe02ec49835ec043be1e5da55da5f5a
+    m_Address: Assets/Prefabs/CHH_Prefabs/PlayerArmature.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Player
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 643df4f9e15c3f445a30530c009e87cf
     m_Address: Assets/Prefabs/CHH_Prefabs/PlayerData.asset
     m_ReadOnly: 0

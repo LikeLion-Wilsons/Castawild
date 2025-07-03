@@ -1,15 +1,13 @@
 using UnityEngine;
-using UnityEngine.Animations.Rigging;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XInput;
 
-public class PlayerInputController : MonoBehaviour
+public class PlayerInputManager : MonoBehaviour
 {
-    public InputActionAsset inputActions;
+    [SerializeField] private InputActionAsset inputActions;
+    private PlayerAnimatorManager animatorManager;
 
     [Header("Camera")]
     [SerializeField] private float mouseSensitivity = 2f;
-    [SerializeField] private Transform cameraRoot;
 
     [HideInInspector] public InputAction moveAction;
     [HideInInspector] public InputAction jumpAction;
@@ -17,8 +15,10 @@ public class PlayerInputController : MonoBehaviour
     [HideInInspector] public InputAction sprintAction;
     [HideInInspector] public InputAction attackAction;
 
-    private float pitch;
     public Vector2 moveInput { get; private set; }
+    private float moveAmount;
+    public float verticalInput;
+    public float horizontalInput;
     public Vector2 lookInput { get; private set; }
 
     private bool isCursorLocked = false;
@@ -36,7 +36,6 @@ public class PlayerInputController : MonoBehaviour
     private void Awake()
     {
         InitializeInputActions();
-        InitializeComponents();
     }
 
     private void InitializeInputActions()
@@ -48,21 +47,8 @@ public class PlayerInputController : MonoBehaviour
         attackAction = InputSystem.actions.FindAction("Attack");
     }
 
-    private void InitializeComponents()
-    {
-        Camera cam = Camera.main;
-        if (cam.transform.parent != cameraRoot)
-        {
-            cam.transform.SetParent(cameraRoot);
-            cam.transform.localPosition = Vector3.zero;
-            cam.transform.localRotation = Quaternion.identity;
-        }
-    }
-
     private void Update()
     {
-        moveInput = moveAction.ReadValue<Vector2>();
-
         // 게임 포커스가 사라지면 커서 해제
         if (!Application.isFocused && isCursorLocked)
             UnlockCursor();
@@ -76,8 +62,30 @@ public class PlayerInputController : MonoBehaviour
             UnlockCursor();
 
         // 커서 잠겨 있을 때만 회전 처리
-        if (isCursorLocked)
-            RotateCamera();
+        //if (isCursorLocked)
+        //    Rotate();
+    }
+
+    /// <summary>
+    /// 입력 처리
+    /// </summary>
+    public void HandleAllInputs()
+    {
+        HandleMovementInput();
+
+        // TODO 
+        //HandleJumpingInput();
+        //HandleActionInput();
+    }
+
+    private void HandleMovementInput()
+    {
+        moveInput = moveAction.ReadValue<Vector2>();
+        verticalInput = moveInput.y;
+        horizontalInput = moveInput.x;
+
+        moveAmount = Mathf.Clamp01(Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput));
+        animatorManager?.UpdateAnimatorValues(0, moveAmount);
     }
 
     private void LockCursor()
@@ -94,17 +102,5 @@ public class PlayerInputController : MonoBehaviour
         isCursorLocked = false;
     }
 
-    private void RotateCamera()
-    {
-        lookInput = lookAction.ReadValue<Vector2>();
-
-        float mouseX = lookInput.x * mouseSensitivity;
-        float mouseY = lookInput.y * mouseSensitivity;
-
-        pitch -= mouseY;
-        pitch = Mathf.Clamp(pitch, -90f, 90f);
-
-        cameraRoot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
-        transform.Rotate(Vector3.up * mouseX);
-    }
+    public void RegisterAnimatorManger(PlayerAnimatorManager _animManager) => animatorManager = _animManager;
 }
