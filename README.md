@@ -10,7 +10,7 @@
   
 - **팀원 소개 및 기여(역할)**
 <a href="https://github.com/Lesin928/Castawild/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=Lesin928/Castawild" style="zoom: 100%;"/></a>
+<img src="https://contrib.rocks/image?repo=Lesin928/Castawild" style="zoom: 100%;"/></a>
 
 |    팀원    |                      기여                       |
 | :--------: | :---------------------------------------------: |
@@ -19,5 +19,6 @@
 | **유승배** |    none  |
 | **이승민** | none |
 | **최환희** |    none  |
+
 
 </p>
