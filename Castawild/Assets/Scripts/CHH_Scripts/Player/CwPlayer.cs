@@ -39,7 +39,7 @@ public class CwPlayer : CwCharacter
     private Dictionary<WeaponType, IWeapon> weaponDict;
     public IWeapon currentWeapon { get; private set; }
 
-    PlayerData playerData;
+    public PlayerData playerData;
 
     static public CwPlayer instance;
 

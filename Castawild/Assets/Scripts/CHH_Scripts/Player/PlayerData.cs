@@ -1,10 +1,7 @@
 using UnityEngine;
 
-public class PlayerData
+[CreateAssetMenu(fileName = "PlayerData", menuName = "ScriptableObjects/PlayerData", order = 2)]
+public class PlayerData : CharacterData
 {
-    [SerializeField] private string characterName;
-    [SerializeField] private float maxHp;
-    [SerializeField] private float currentHp;
-    [SerializeField] private float armor;
-    [SerializeField] private float attack;
+    public GameObject playerPrefab;
 }
