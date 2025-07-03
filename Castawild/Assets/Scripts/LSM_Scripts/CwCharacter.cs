@@ -105,7 +105,7 @@ public abstract class CwCharacter : MonoBehaviour
 
     protected virtual void Awake()
     { 
-        AddrPath = "Assets/Scripts/LSM_Scripts/Default Character Data.asset";
+        AddrPath = "Assets/Scriptable Objects/Default Character Data.asset";
     }   
 
     protected virtual async void Start()

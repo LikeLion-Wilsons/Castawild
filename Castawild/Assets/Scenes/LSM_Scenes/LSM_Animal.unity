@@ -154,6 +154,7 @@ MonoBehaviour:
   armor: 0
   attack: 0
   moveSpeed: 0
+  AddrPath: 
   age: 0
   size: 0
   weight: 0

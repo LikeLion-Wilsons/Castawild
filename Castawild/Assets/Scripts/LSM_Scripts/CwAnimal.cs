@@ -35,7 +35,7 @@ public class CwAnimal : CwCharacter
 
     protected override void Awake()
     {
-        AddrPath = "Assets/Scripts/LSM_Scripts/Default Animal Data.asset";
+        AddrPath = "Assets/Scriptable Objects/Default Animal Data.asset";
     }
 
     protected override async void Start()
