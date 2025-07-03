@@ -3,21 +3,21 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 /// <summary>
-/// Ä³¸¯ÅÍ Ãß»ó Å¬·¡½º,
-/// ¸ğµç Ä³¸¯ÅÍ´Â ÀÌ Å¬·¡½º¸¦ »ó¼Ó¹Ş¾Æ¾ß ÇÔ 
+/// ìºë¦­í„° ì¶”ìƒ í´ë˜ìŠ¤,
+/// ëª¨ë“  ìºë¦­í„°ëŠ” ì´ í´ë˜ìŠ¤ë¥¼ ìƒì†ë°›ì•„ì•¼ í•¨ 
 /// </summary>
 public abstract class CwCharacter : MonoBehaviour
 {
     #region Character Info  
     [Header("Character Info")]
-    [SerializeField] private string characterName; //Ä³¸¯ÅÍ ½Äº°ÀÚ
-    [SerializeField] private float maxHp; //ÃÖ´ëÃ¼·Â
-    [SerializeField] private float currentHp; //ÇöÀç Ã¼·Â
-    [SerializeField] private float armor; //¹æ¾î·Â
-    [SerializeField] private float attack; //°ø°İ·Â 
-    [SerializeField] private float moveSpeed; //ÀÌµ¿¼Óµµ 
+    [SerializeField] private string characterName; //ìºë¦­í„° ì‹ë³„ì
+    [SerializeField] private float maxHp; //ìµœëŒ€ì²´ë ¥
+    [SerializeField] private float currentHp; //í˜„ì¬ ì²´ë ¥
+    [SerializeField] private float armor; //ë°©ì–´ë ¥
+    [SerializeField] private float attack; //ê³µê²©ë ¥ 
+    [SerializeField] private float moveSpeed; //ì´ë™ì†ë„ 
     #endregion
-      
+
     #region Setters and Getters
 
     protected virtual string CharacterName
@@ -26,7 +26,7 @@ public abstract class CwCharacter : MonoBehaviour
         set => characterName = value;
     }
     ///<summary>
-    ///ÃÖ´ëÃ¼·Â ¼³Á¤ ¹× ¹İÈ¯ ÇÔ¼ö
+    ///ìµœëŒ€ì²´ë ¥ ì„¤ì • ë° ë°˜í™˜ í•¨ìˆ˜
     ///</summary>
     protected virtual float MaxHp
     {
@@ -40,7 +40,7 @@ public abstract class CwCharacter : MonoBehaviour
     }
 
     ///<summary>
-    ///ÇöÀçÃ¼·Â ¹İÈ¯ ÇÔ¼ö
+    ///í˜„ì¬ì²´ë ¥ ë°˜í™˜ í•¨ìˆ˜
     ///</summary>
     public virtual float CurrentHp
     {
@@ -49,7 +49,7 @@ public abstract class CwCharacter : MonoBehaviour
     }
 
     ///<summary>
-    ///¹æ¾î·Â ¼³Á¤ ¹× ¹İÈ¯ ÇÔ¼ö
+    ///ë°©ì–´ë ¥ ì„¤ì • ë° ë°˜í™˜ í•¨ìˆ˜
     ///</summary>
     protected virtual float Armor
     {
@@ -58,15 +58,15 @@ public abstract class CwCharacter : MonoBehaviour
     }
 
     ///<summary>
-    ///°ø°İ·Â ¼³Á¤ ¹× ¹İÈ¯ ÇÔ¼ö
+    ///ê³µê²©ë ¥ ì„¤ì • ë° ë°˜í™˜ í•¨ìˆ˜
     ///</summary>
     protected virtual float Attack
     {
         get => attack;
         set => attack = value;
-    } 
+    }
     ///<summary>
-    ///ÀÌµ¿¼Óµµ ¼³Á¤ ¹× ¹İÈ¯ ÇÔ¼ö
+    ///ì´ë™ì†ë„ ì„¤ì • ë° ë°˜í™˜ í•¨ìˆ˜
     ///</summary>
     public virtual float MoveSpeed
     {
@@ -76,10 +76,10 @@ public abstract class CwCharacter : MonoBehaviour
     #endregion
 
     /// <summary>    
-    /// ÃÖÃÊ »ı¼º½Ã µ¥ÀÌÅÍ µ¿±âÈ­ ÇÔ¼ö 
+    /// ìµœì´ˆ ìƒì„±ì‹œ ë°ì´í„° ë™ê¸°í™” í•¨ìˆ˜ 
     /// </summary>
-    /// <typeparam name="T">½ºÅ©¸³ÅÍºí ¿ÀºêÁ§Æ® Å¸ÀÔ</typeparam>
-    /// <param name="data"> ÂüÁ¶¹ŞÀ» ½ºÅ©¸³ÅÍºí ¿ÀºêÁ§Æ® </param>    
+    /// <typeparam name="T">ìŠ¤í¬ë¦½í„°ë¸” ì˜¤ë¸Œì íŠ¸ íƒ€ì…</typeparam>
+    /// <param name="data"> ì°¸ì¡°ë°›ì„ ìŠ¤í¬ë¦½í„°ë¸” ì˜¤ë¸Œì íŠ¸ </param>    
     protected virtual void CharacterInitialize<T>(T data) where T : CharacterData
     {
         CharacterName = data.characterName;
@@ -89,20 +89,20 @@ public abstract class CwCharacter : MonoBehaviour
         MoveSpeed = data.moveSpeed;
     }
 
-    // ¿À¹ö·Îµå: ÀÚ½Ä ScriptableObject Å¸ÀÔµµ Áö¿ø
+    // ì˜¤ë²„ë¡œë“œ: ìì‹ ScriptableObject íƒ€ì…ë„ ì§€ì›
     protected virtual void CharacterInitialize<TBase, TDerived>(TDerived data)
         where TBase : CharacterData
         where TDerived : TBase
     {
-        CharacterInitialize<TBase>(data); // ±âº» CharacterData ÇÊµå ÃÊ±âÈ­
+        CharacterInitialize<TBase>(data); // ê¸°ë³¸ CharacterData í•„ë“œ ì´ˆê¸°í™”
 
-        // ÀÚ½Ä µ¥ÀÌÅÍÀÇ Ãß°¡ ÇÊµå°¡ ÀÖ´Ù¸é ¿©±â¼­ Ã³¸® (¿¹½Ã)
+        // ìì‹ ë°ì´í„°ì˜ ì¶”ê°€ í•„ë“œê°€ ìˆë‹¤ë©´ ì—¬ê¸°ì„œ ì²˜ë¦¬ (ì˜ˆì‹œ)
         // var derivedData = data as TDerived;
         // if (derivedData != null) { ... }
-    } 
+    }
     protected virtual async void Start()
     {
-        // Addressables¸¦ ÅëÇØ Ä³¸¯ÅÍ µ¥ÀÌÅÍ¸¦ ºñµ¿±âÀûÀ¸·Î ·Îµå
+        // Addressablesë¥¼ í†µí•´ ìºë¦­í„° ë°ì´í„°ë¥¼ ë¹„ë™ê¸°ì ìœ¼ë¡œ ë¡œë“œ
         AsyncOperationHandle<CharacterData> handle = Addressables.LoadAssetAsync<CharacterData>(CharacterName);
 
         await handle.Task;
@@ -110,6 +110,9 @@ public abstract class CwCharacter : MonoBehaviour
         if (handle.Status == AsyncOperationStatus.Succeeded)
         {
             CharacterInitialize(handle.Result);
+
+            // ë¡œë”© í›„ Addressables í•´ì œ
+            Addressables.Release(handle);
         }
         else
         {
@@ -118,14 +121,14 @@ public abstract class CwCharacter : MonoBehaviour
     }
 
     /// <summary>    
-    /// ÇÇ°İ ÇÔ¼ö
+    /// í”¼ê²© í•¨ìˆ˜
     /// </summary>
-    /// <param name="_damage"> °ø°İ ÁÖÃ¼°¡ ÁÖ´Â ÃÖÁ¾ µ¥¹ÌÁö </param>   
+    /// <param name="_damage"> ê³µê²© ì£¼ì²´ê°€ ì£¼ëŠ” ìµœì¢… ë°ë¯¸ì§€ </param>   
     public virtual void TakeDamage(float _damage)
-    { 
+    {
         CurrentHp -= (float)((Mathf.Pow(_damage, 2f) / ((double)Armor + (double)_damage)));
 
-        //Ã¼·ÂÀÌ 0 ÀÌÇÏ¸é Die() È£Ãâ
+        //ì²´ë ¥ì´ 0 ì´í•˜ë©´ Die() í˜¸ì¶œ
         if (CurrentHp <= 0)
         {
             CurrentHp = 0;
@@ -134,13 +137,13 @@ public abstract class CwCharacter : MonoBehaviour
     }
 
     /// <summary>    
-    /// ÇØ´ç Ä³¸¯ÅÍ°¡ Á×¾úÀ» ¶§ È£ÃâµÇ´Â ¸Ş¼­µå
+    /// í•´ë‹¹ ìºë¦­í„°ê°€ ì£½ì—ˆì„ ë•Œ í˜¸ì¶œë˜ëŠ” ë©”ì„œë“œ
     /// </summary>
     protected abstract void Die();
 
 
     /// <summary>    
-    /// »óÅÂÀÌ»ó È¿°ú ¸Ş¼­µå
+    /// ìƒíƒœì´ìƒ íš¨ê³¼ ë©”ì„œë“œ
     /// </summary>
     protected abstract void StatusEffect();
 }
