@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using static UnityEngine.Rendering.DebugUI;
 
 public class Inventory : UIPart
 {
@@ -12,7 +13,7 @@ public class Inventory : UIPart
     int itemMaximumValue = 20;
 
     public GameObject itemClick;
-
+    Item_Panel panel;
 
     private void Start()
     {
@@ -20,6 +21,7 @@ public class Inventory : UIPart
         InventoryManager.onItemGet += SetItemList;
         InventoryManager.onItemGet += SetInventory;
     }
+  
     public void Init()
     {
         if (InventoryManager.item_List.Count >= itemMaximumValue)
