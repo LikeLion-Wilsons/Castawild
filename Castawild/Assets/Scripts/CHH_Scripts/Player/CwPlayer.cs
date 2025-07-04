@@ -10,7 +10,7 @@ public enum WeaponType
 
 public enum MoveSpeedState { Walk, Run }
 
-public class CwPlayer : CwCharacter
+public class CwPlayer : MonoBehaviour
 {
     [HideInInspector] public Animator anim;
     [HideInInspector] public Rigidbody rigid;
@@ -46,7 +46,7 @@ public class CwPlayer : CwCharacter
     public Weapon currentWeapon { get; private set; }
     public MoveSpeedState moveSpeedState;
 
-    [HideInInspector] public PlayerData playerData;
+    public PlayerData playerData;
 
     static public CwPlayer instance;
 
@@ -146,30 +146,8 @@ public class CwPlayer : CwCharacter
         Gizmos.DrawRay(groundCheck.position, Vector3.down * rayDistance);
     }
 
-    public override void TakeDamage(float _damage)
-    {
-        base.TakeDamage(_damage);
-    }
-
-    protected override void Die()
-    {
-
-    }
-
-    protected override void StatusEffect()
-    {
-
-    }
-
     public void InitializeData(PlayerData data)
     {
-        CharacterName = data.characterName;
-        MaxHp = data.maxHp;
-        CurrentHp = MaxHp;
-        Armor = data.armor;
-        Attack = data.attack;
-        playerData = data;
-
         anim = GetComponentInChildren<Animator>();
         stateMachine = new PlayerStateMachine();
         stateMachine.currentState = idleState;

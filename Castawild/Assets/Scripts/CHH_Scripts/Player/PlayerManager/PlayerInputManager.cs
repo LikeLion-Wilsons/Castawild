@@ -12,6 +12,7 @@ public class PlayerInputManager : MonoBehaviour
     [HideInInspector] public InputAction moveAction;
     [HideInInspector] public InputAction jumpAction;
     [HideInInspector] public InputAction lookAction;
+    [HideInInspector] public InputAction zoomAction;
     [HideInInspector] public InputAction sprintAction;
     [HideInInspector] public InputAction attackAction;
 
@@ -19,7 +20,9 @@ public class PlayerInputManager : MonoBehaviour
     private float moveAmount;
     public float verticalInput;
     public float horizontalInput;
+
     public Vector2 lookInput { get; private set; }
+    public Vector2 zoomInput;
 
     private bool isCursorLocked = false;
 
@@ -43,6 +46,7 @@ public class PlayerInputManager : MonoBehaviour
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
         lookAction = InputSystem.actions.FindAction("Look");
+        zoomAction = InputSystem.actions.FindAction("Zoom");
         sprintAction = InputSystem.actions.FindAction("Sprint");
         attackAction = InputSystem.actions.FindAction("Attack");
     }
@@ -86,6 +90,12 @@ public class PlayerInputManager : MonoBehaviour
 
         moveAmount = Mathf.Clamp01(Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput));
         animatorManager?.UpdateAnimatorValues(0, moveAmount);
+    }
+
+    public void HandleCameraInput()
+    {
+        lookInput = lookAction.ReadValue<Vector2>();
+        zoomInput = zoomAction.ReadValue<Vector2>();
     }
 
     private void LockCursor()

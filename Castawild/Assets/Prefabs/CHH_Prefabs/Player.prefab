@@ -131,18 +131,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1277ab93a85dd346a69ffb365ccdf89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterName: Player
-  maxHp: 0
-  currentHp: 0
-  armor: 0
-  attack: 0
-  moveSpeed: 0
   anim: {fileID: 0}
   rigid: {fileID: 0}
   inputManager: {fileID: 0}
   playerMovement: {fileID: 0}
-  walkSpeed: 4
-  runSpeed: 8
+  walkSpeed: 8
+  runSpeed: 14
   crouchSpeed: 1
   jumpForce: 5
   airMoveSpeed: 3
@@ -169,6 +163,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 732b8265cc0fec344a54e5a7b08045bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thirdPersonCameraTransform: {fileID: 0}
+  shouldFaceMoveDirection: 0
   isSprintToggle: 0
 --- !u!114 &5850559302053159817
 MonoBehaviour:
@@ -211,6 +207,15 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
+  zoomAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 0343ea30-68d6-4944-b580-586107998d1c
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
   sprintAction:
     m_Name: 
     m_Type: 0
@@ -231,6 +236,7 @@ MonoBehaviour:
     m_Flags: 0
   verticalInput: 0
   horizontalInput: 0
+  zoomInput: {x: 0, y: 0}
 --- !u!1 &8499513175673538424
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,7 +6,6 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 public class PlayeAddressableManager : MonoBehaviour
 {
     [SerializeField] private AssetReference playerArmature;
-    [SerializeField] private AssetReferenceT<PlayerData> playerData;
 
     private void Start()
     {
@@ -23,12 +22,6 @@ public class PlayeAddressableManager : MonoBehaviour
             armature.transform.localRotation = Quaternion.identity;
 
             CwPlayer.instance.inputManager.RegisterAnimatorManger(armature.GetComponent<PlayerAnimatorManager>());
-        };
-
-        playerData.LoadAssetAsync().Completed += (_playerData) =>
-        {
-            PlayerData data = _playerData.Result;
-            CwPlayer.instance.InitializeData(data);
         };
     }
 }

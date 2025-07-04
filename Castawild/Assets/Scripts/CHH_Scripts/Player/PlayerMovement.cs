@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField] private Transform thirdPersonCameraTransform;
     private Transform thirdPersonCamera;
     private CwPlayer player;
     private PlayerInputManager inputManager;
+    [SerializeField] private bool shouldFaceMoveDirection = false;
 
     private Vector3 moveDirection;
     public bool isSprintToggle = true;
