@@ -37,15 +37,15 @@ public class Item_Panel :
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (item.item_Data != null) return;
-        parentPanel.SetItemClickAnimation(this);
+        if (item.item_Data == null) return;
+        inventory.GetComponent<Inventory>().SetItemClickAnimation(this);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (parentPanel == null) return;
-        if (parentPanel.itemClick.activeSelf == true)
-            parentPanel.itemClick.SetActive(false);
+        if (item.item_Data == null) return;
+        if (inventory.GetComponent<Inventory>().itemClick.activeSelf == true)
+            inventory.GetComponent<Inventory>().itemClick.SetActive(false);
     }
 
     public void SetItem()
@@ -56,9 +56,6 @@ public class Item_Panel :
             //임시
             item_icon.sprite = icons[item.item_Data.itemID];
             itemCountText.text = item.count.ToString();
-        }
-        else
-        {
         }
     }
 
@@ -80,6 +77,7 @@ public class Item_Panel :
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (item.item_Data == null) return;
         // 드롭 성공 못했으면 원래 위치로 복귀
         if (transform.parent == onDragParent)
         {
