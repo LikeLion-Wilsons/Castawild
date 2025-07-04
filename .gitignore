@@ -90,3 +90,4 @@ crashlytics-build.properties
 # Unity 사용자 설정
 /Castawild/UserSettings/
 
+/Castawild/Assets/AssetPackages/
