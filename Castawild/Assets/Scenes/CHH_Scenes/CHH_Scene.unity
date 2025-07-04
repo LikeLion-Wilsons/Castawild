@@ -322,7 +322,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   anim: {fileID: 3546610504790914709}
   cameraTransform: {fileID: 163545988}
-  shouldFaceMoveDir: 0
   currentMoveSpeed: 3
   walkSpeed: 3
   runSpeed: 7
@@ -1971,7 +1970,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: d8f62fbb2d92826418a9affb9d65db3f, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
