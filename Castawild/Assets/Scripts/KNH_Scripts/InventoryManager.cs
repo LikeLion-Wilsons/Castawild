@@ -2,37 +2,47 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public delegate void OnItemGet();
+
 public class InventoryManager : MonoBehaviour
 {
     public static event OnItemGet onItemGet;
-    public static Dictionary<int, Item> item_List = new Dictionary<int, Item>();
 
-    //아이템 획득
-    public static void GetItem(Item_Scriptable scriptableData, int value)
+    public static List<Item> slot_List = new List<Item>();
+
+    // 아이템 획득
+    public static void GetItem(Item_Scriptable scriptableData, int amount)
     {
-        Item item = new Item();
-        item.item_Data = scriptableData;
-        item.count = value;
+        int id = scriptableData.itemID;
 
-        int id = item.item_Data.itemID;
-        //아이템을 이미 가지고 있다면 개수만 증가
-        if (HaveItem(id))
+        // 이미 존재하는 아이템이면 개수만 증가
+        for (int i = 0; i < slot_List.Count; i++)
         {
-            item_List[id].count += value;
+            if (slot_List[i].item_Data.itemID == id)
+            {
+                slot_List[i].count += amount;
+                onItemGet?.Invoke();
+                return;
+            }
         }
-        //아이템 새로 추가
-        else
+
+        // 없으면 새로 추가
+        Item newItem = new Item
         {
-            item_List.Add(id, item);
-        }
+            item_Data = scriptableData,
+            count = amount
+        };
+
+        slot_List.Add(newItem);
         onItemGet?.Invoke();
     }
-    //아이템 소지 확인
-    public static bool HaveItem(int value)
+
+    // 아이템 소지 여부 확인
+    public static bool HaveItem(int id)
     {
-        if (item_List.ContainsKey(value))
+        foreach (var item in slot_List)
         {
-            return true;
+            if (item.item_Data.itemID == id)
+                return true;
         }
         return false;
     }
