@@ -4,6 +4,8 @@ public class MovementStateManager : MonoBehaviour
 {
     [HideInInspector] public Animator anim;
 
+    [SerializeField] private Transform cameraTransform;
+
     #region Movement
     public float currentMoveSpeed;
     public float walkSpeed = 3;
@@ -55,13 +57,50 @@ public class MovementStateManager : MonoBehaviour
     private void GetDirectionAndMove()
     {
         inputManager.HandleAllInputs();
+        UpdateMoveAnimation();
+        HandleMovement();
+    }
+
+    private void HandleMovement()
+    {
+        Vector3 forward = cameraTransform.forward;
+        Vector3 right = cameraTransform.right;
+
+        forward.y = 0f;
+        right.y = 0f;
+
+        forward.Normalize();
+        right.Normalize();
+
+        dir = forward * inputManager.moveInput.y + right * inputManager.moveInput.x;
+        controller.Move(dir * currentMoveSpeed * Time.deltaTime);
+
+        if (dir.sqrMagnitude > 0.001f)
+        {
+            Vector3 lookDirection = cameraTransform.forward;
+            lookDirection.y = 0f;
+
+            if (lookDirection.sqrMagnitude > 0.001f)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+            }
+        }
+
+        //if ( dir.sqrMagnitude > 0.001f)
+        //{
+        //    Quaternion targetRotation = Quaternion.LookRotation(dir, Vector3.up);
+        //    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        //}
+    }
+
+    private void UpdateMoveAnimation()
+    {
         currentHorizontal = Mathf.Lerp(currentHorizontal, inputManager.horizontalInput, Time.deltaTime * animationLerpSpeed);
         currentVertical = Mathf.Lerp(currentVertical, inputManager.verticalInput, Time.deltaTime * animationLerpSpeed);
 
         anim.SetFloat("Horizontal", currentHorizontal);
         anim.SetFloat("Vertical", currentVertical);
-        dir = transform.forward * inputManager.verticalInput + transform.right * inputManager.horizontalInput;
-        controller.Move(dir * currentMoveSpeed * Time.deltaTime);
     }
 
     void Gravity()
@@ -94,4 +133,3 @@ public class MovementStateManager : MonoBehaviour
         Gizmos.DrawWireSphere(spherePos, controller.radius - 0.05f);
     }
 }
-

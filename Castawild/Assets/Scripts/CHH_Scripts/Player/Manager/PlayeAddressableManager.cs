@@ -20,8 +20,6 @@ public class PlayeAddressableManager : MonoBehaviour
             armature.transform.SetParent(CwPlayer.instance.transform);
             armature.transform.localPosition = Vector3.zero;
             armature.transform.localRotation = Quaternion.identity;
-
-            CwPlayer.instance.InitializeAnim();
         };
     }
 }

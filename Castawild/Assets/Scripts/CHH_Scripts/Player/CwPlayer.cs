@@ -24,12 +24,6 @@ public class CwPlayer : MonoBehaviour
     [SerializeField] public float airMoveSpeed = 3f;
     [SerializeField] public float rotationSpeed = 15f;
 
-    [Header("Ground")]
-    public LayerMask groundLayer;
-    public float rayDistance = 1.1f;
-    public Transform groundCheck;
-    [HideInInspector] public bool isGround = true;
-
     private Dictionary<WeaponType, Weapon> weaponDict;
     public Weapon currentWeapon { get; private set; }
     public MoveSpeedState moveSpeedState;
@@ -75,11 +69,6 @@ public class CwPlayer : MonoBehaviour
 
     private void Update()
     {
-        if (anim == null)
-            return;
-
-        inputManager.HandleAllInputs();
-        isGround = Physics.Raycast(groundCheck.position, Vector3.down, rayDistance, groundLayer);
     }
 
     /// <summary>
@@ -108,17 +97,6 @@ public class CwPlayer : MonoBehaviour
             moveSpeedState = MoveSpeedState.Run;
             anim.SetBool("isRunning", true);
         }
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawRay(groundCheck.position, Vector3.down * rayDistance);
-    }
-
-    public void InitializeAnim()
-    {
-        anim = GetComponentInChildren<Animator>();
     }
 
     /// <summary>
