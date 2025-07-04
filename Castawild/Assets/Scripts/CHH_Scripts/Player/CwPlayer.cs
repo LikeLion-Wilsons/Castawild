@@ -15,16 +15,6 @@ public class CwPlayer : MonoBehaviour
     [HideInInspector] public Animator anim;
     [HideInInspector] public Rigidbody rigid;
     [HideInInspector] public PlayerInputManager inputManager;
-    [HideInInspector] public PlayerMovement playerMovement;
-
-    #region State
-    public PlayerIdleState idleState;
-    public PlayerMoveState moveState;
-    public PlayerCrouchState crouchState;
-    public PlayerInAir inAirState;
-
-    public PlayerStateMachine stateMachine;
-    #endregion
 
     [Header("Move")]
     [SerializeField] public float walkSpeed = 2f;
@@ -38,9 +28,7 @@ public class CwPlayer : MonoBehaviour
     public LayerMask groundLayer;
     public float rayDistance = 1.1f;
     public Transform groundCheck;
-    [HideInInspector] public bool canJump = true;
     [HideInInspector] public bool isGround = true;
-    [HideInInspector] public bool isFalling = false;
 
     private Dictionary<WeaponType, Weapon> weaponDict;
     public Weapon currentWeapon { get; private set; }
@@ -55,7 +43,6 @@ public class CwPlayer : MonoBehaviour
         Singleton();
 
         InitializeComponents();
-        InitializeStates();
         InitializeWeapon();
 
         SetWeapon(WeaponType.Fist);
@@ -65,7 +52,6 @@ public class CwPlayer : MonoBehaviour
     {
         rigid = GetComponent<Rigidbody>();
         inputManager = GetComponent<PlayerInputManager>();
-        playerMovement = GetComponent<PlayerMovement>();
     }
 
     private void Singleton()
@@ -74,14 +60,6 @@ public class CwPlayer : MonoBehaviour
             instance = this;
         else
             Destroy(gameObject);
-    }
-
-    private void InitializeStates()
-    {
-        idleState = new PlayerIdleState(this, stateMachine, "Idle");
-        moveState = new PlayerMoveState(this, stateMachine, "Move");
-        crouchState = new PlayerCrouchState(this, stateMachine, "Crouch");
-        inAirState = new PlayerInAir(this, stateMachine, "InAir");
     }
 
     private void InitializeWeapon()
@@ -97,14 +75,11 @@ public class CwPlayer : MonoBehaviour
 
     private void Update()
     {
-        inputManager.HandleAllInputs();
-        stateMachine?.currentState.UpdateState();
-        isGround = Physics.Raycast(groundCheck.position, Vector3.down, rayDistance, groundLayer);
-    }
+        if (anim == null)
+            return;
 
-    private void FixedUpdate()
-    {
-        playerMovement.HandleAllMovement();
+        inputManager.HandleAllInputs();
+        isGround = Physics.Raycast(groundCheck.position, Vector3.down, rayDistance, groundLayer);
     }
 
     /// <summary>
@@ -117,11 +92,6 @@ public class CwPlayer : MonoBehaviour
         else
             Debug.LogError($"Weapon type {weaponType} 없음");
     }
-
-    /// <summary>
-    /// 플레이어 상태 바꿀 때 호출
-    /// </summary>
-    public void ChangeStateMachine(PlayerState playerstate) => stateMachine.ChangeState(playerstate);
 
     /// <summary>
     /// 플레이어 이속 바꿀 때 호출
@@ -146,11 +116,9 @@ public class CwPlayer : MonoBehaviour
         Gizmos.DrawRay(groundCheck.position, Vector3.down * rayDistance);
     }
 
-    public void InitializeData(PlayerData data)
+    public void InitializeAnim()
     {
         anim = GetComponentInChildren<Animator>();
-        stateMachine = new PlayerStateMachine();
-        stateMachine.currentState = idleState;
     }
 
     /// <summary>
@@ -173,5 +141,4 @@ public class CwPlayer : MonoBehaviour
             airMoveSpeed -= value;
         }
     }
-
 }
