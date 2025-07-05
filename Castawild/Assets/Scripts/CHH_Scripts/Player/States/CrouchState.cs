@@ -1,26 +1,31 @@
 
 public class CrouchState : MovementBaseState
 {
-    public override void EnterState(MovementStateManager movement)
+    public CrouchState(MovementStateManager _movement, PlayerInputManager _inputManager)
+        : base(_movement, _inputManager)
+    {
+    }
+
+    public override void EnterState()
     {
         movement.anim.SetBool("Crouching", true);
         movement.currentMoveSpeed = movement.crouchSpeed;
     }
 
-    public override void UpdateState(MovementStateManager movement)
+    public override void UpdateState()
     {
         if (movement.inputManager.sprintAction.IsPressed())
-            ExitState(movement, movement.runState);
+            ExitState(movement.runState);
         else if (movement.inputManager.crouchAction.WasPressedThisFrame())
         {
             if (movement.dir.magnitude < 0.1f)
-                ExitState(movement, movement.idleState);
+                ExitState(movement.idleState);
             else
-                ExitState(movement, movement.walkState);
+                ExitState(movement.walkState);
         }
     }
 
-    void ExitState(MovementStateManager movement, MovementBaseState state)
+    void ExitState(MovementBaseState state)
     {
         movement.anim.SetBool("Crouching", false);
         movement.SwitchState(state);

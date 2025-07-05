@@ -96,9 +96,6 @@ public class PlayerInputManager : MonoBehaviour
     {
         HandleMovementInput();
         HandleJumpingInput();
-
-        // TODO
-        //HandleActionInput();
     }
 
     private void HandleMovementInput()
@@ -113,6 +110,9 @@ public class PlayerInputManager : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// 카메라 입력 Update
+    /// </summary>
     public void HandleCameraInput()
     {
         lookInput = lookAction.ReadValue<Vector2>();

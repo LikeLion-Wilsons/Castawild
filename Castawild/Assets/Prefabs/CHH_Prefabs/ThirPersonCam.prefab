@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 4265325667874386635}
   - component: {fileID: 6399343295268721515}
   - component: {fileID: 6240947849828022642}
-  - component: {fileID: 4761910572206078221}
   - component: {fileID: 4090836160144066707}
+  - component: {fileID: 4761910572206078221}
   m_Layer: 0
   m_Name: ThirPersonCam
   m_TagString: Untagged
@@ -171,23 +171,6 @@ MonoBehaviour:
     Time: 0
     Smoothing: 0
     IgnoreY: 0
---- !u!114 &4761910572206078221
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 812152230260196294}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a259483ff64fac74cbbb982d9d2fb0b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inputManager: {fileID: 0}
-  zoomSpeed: 2
-  zoomLerpSpeed: 10
-  minDistance: 3
-  maxDistance: 15
 --- !u!114 &4090836160144066707
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246,3 +229,20 @@ MonoBehaviour:
         DecelTime: 0
   PlayerIndex: -1
   AutoEnableInputs: 1
+--- !u!114 &4761910572206078221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 812152230260196294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a259483ff64fac74cbbb982d9d2fb0b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputManager: {fileID: 0}
+  zoomSpeed: 2
+  zoomLerpSpeed: 10
+  minDistance: 3
+  maxDistance: 15

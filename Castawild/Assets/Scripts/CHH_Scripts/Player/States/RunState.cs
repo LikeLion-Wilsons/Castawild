@@ -1,20 +1,25 @@
 public class RunState : MovementBaseState
 {
-    public override void EnterState(MovementStateManager movement)
+    public RunState(MovementStateManager _movement, PlayerInputManager _inputManager)
+        : base(_movement, _inputManager)
+    {
+    }
+
+    public override void EnterState()
     {
         movement.anim.SetBool("Running", true);
         movement.currentMoveSpeed = movement.runSpeed;
     }
 
-    public override void UpdateState(MovementStateManager movement)
+    public override void UpdateState()
     {
         if (movement.inputManager.sprintAction.WasReleasedThisFrame())
-            ExitState(movement, movement.walkState);
+            ExitState(movement.walkState);
         else if (movement.dir.magnitude < 0.1f)
-            ExitState(movement, movement.idleState);
+            ExitState(movement.idleState);
     }
 
-    void ExitState(MovementStateManager movement, MovementBaseState state)
+    void ExitState(MovementBaseState state)
     {
         movement.anim.SetBool("Running", false);
         movement.SwitchState(state);

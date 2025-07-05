@@ -1,10 +1,15 @@
 public class IdleState : MovementBaseState
 {
-    public override void EnterState(MovementStateManager movement)
+    public IdleState(MovementStateManager _movement, PlayerInputManager _inputManager)
+        : base(_movement, _inputManager)
     {
     }
 
-    public override void UpdateState(MovementStateManager movement)
+    public override void EnterState()
+    {
+    }
+
+    public override void UpdateState()
     {
         if (movement.inputManager.moveInput.magnitude > 0.1f)
         {

@@ -1,22 +1,27 @@
 public class WalkState : MovementBaseState
 {
-    public override void EnterState(MovementStateManager movement)
+    public WalkState(MovementStateManager _movement, PlayerInputManager _inputManager)
+        : base(_movement, _inputManager)
+    {
+    }
+
+    public override void EnterState()
     {
         movement.anim.SetBool("Walking", true);
         movement.currentMoveSpeed = movement.walkSpeed;
     }
 
-    public override void UpdateState(MovementStateManager movement)
+    public override void UpdateState()
     {
         if (movement.inputManager.sprintAction.IsPressed())
-            ExitState(movement, movement.runState);
+            ExitState(movement.runState);
         else if (movement.inputManager.crouchAction.WasPressedThisFrame())
-            ExitState(movement, movement.crouchState);
+            ExitState(movement.crouchState);
         else if (movement.dir.magnitude < 0.1f)
-            ExitState(movement, movement.idleState);
+            ExitState(movement.idleState);
     }
 
-    void ExitState(MovementStateManager movement, MovementBaseState state)
+    void ExitState(MovementBaseState state)
     {
         movement.anim.SetBool("Walking", false);
         movement.SwitchState(state);

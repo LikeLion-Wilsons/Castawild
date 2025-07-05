@@ -1,11 +1,20 @@
-using Fusion;
 using UnityEngine;
 
 public class MovementStateManager : MonoBehaviour
 {
+    #region Components
+    private PlayerInputManager inputManger;
     [HideInInspector] public Animator anim;
-
     [SerializeField] private Transform cameraTransform;
+    #endregion
+
+    #region States
+    public MovementBaseState currentState;
+    public IdleState idleState;
+    public WalkState walkState;
+    public RunState runState;
+    public CrouchState crouchState;
+    #endregion
 
     #region Movement
     public float currentMoveSpeed;
@@ -29,37 +38,59 @@ public class MovementStateManager : MonoBehaviour
     Vector3 velocity;
     #endregion
 
-    MovementBaseState currentState;
-    public IdleState idleState = new IdleState();
-    public WalkState walkState = new WalkState();
-    public RunState runState = new RunState();
-    public CrouchState crouchState = new CrouchState();
-
+    #region Animation
     [SerializeField] private float animationLerpSpeed = 10f;
-    float currentHorizontal;
-    float currentVertical;
+    private float currentHorizontal;
+    private float currentVertical;
+    #endregion
 
-    private void Start()
+    private void Awake()
+    {
+        InitializeComponents();
+        InitializeStates();
+        SwitchState(idleState);
+    }
+
+    private void InitializeComponents()
     {
         controller = GetComponent<CharacterController>();
         inputManager = GetComponent<PlayerInputManager>();
         anim = GetComponentInChildren<Animator>();
-        SwitchState(idleState);
+    }
+
+    private void InitializeStates()
+    {
+        idleState = new IdleState(this, inputManger);
+        walkState = new WalkState(this, inputManager);
+        runState = new RunState(this, inputManager);
+        crouchState = new CrouchState(this, inputManager);
+
+        currentState = idleState;
     }
 
     private void Update()
     {
+        inputManager.HandleAllInputs();
+
         GetDirectionAndMove();
         Gravity();
 
-        currentState.UpdateState(this);
+        currentState.UpdateState();
     }
 
     private void GetDirectionAndMove()
     {
-        inputManager.HandleAllInputs();
         UpdateMoveAnimation();
         HandleMovement();
+    }
+
+    private void UpdateMoveAnimation()
+    {
+        currentHorizontal = Mathf.Lerp(currentHorizontal, inputManager.horizontalInput, Time.deltaTime * animationLerpSpeed);
+        currentVertical = Mathf.Lerp(currentVertical, inputManager.verticalInput, Time.deltaTime * animationLerpSpeed);
+
+        anim.SetFloat("Horizontal", currentHorizontal);
+        anim.SetFloat("Vertical", currentVertical);
     }
 
     private void HandleMovement()
@@ -89,16 +120,7 @@ public class MovementStateManager : MonoBehaviour
         }
     }
 
-    private void UpdateMoveAnimation()
-    {
-        currentHorizontal = Mathf.Lerp(currentHorizontal, inputManager.horizontalInput, Time.deltaTime * animationLerpSpeed);
-        currentVertical = Mathf.Lerp(currentVertical, inputManager.verticalInput, Time.deltaTime * animationLerpSpeed);
-
-        anim.SetFloat("Horizontal", currentHorizontal);
-        anim.SetFloat("Vertical", currentVertical);
-    }
-
-    void Gravity()
+    private void Gravity()
     {
         if (IsGrounded())
             velocity.y += gravity * Time.deltaTime;
@@ -108,7 +130,7 @@ public class MovementStateManager : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
     }
 
-    bool IsGrounded()
+    private bool IsGrounded()
     {
         spherePos = new Vector3(transform.position.x, transform.position.y - groundYOffset, transform.position.z);
         if (Physics.CheckSphere(spherePos, controller.radius - 0.05f, groundMask))
@@ -119,7 +141,7 @@ public class MovementStateManager : MonoBehaviour
     public void SwitchState(MovementBaseState newState)
     {
         currentState = newState;
-        currentState.EnterState(this);
+        currentState.EnterState();
     }
 
     private void OnDrawGizmos()
