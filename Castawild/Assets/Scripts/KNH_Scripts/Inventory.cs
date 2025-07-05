@@ -19,6 +19,7 @@ public class Inventory : UIPart
         InventoryManager.onItemGet += Init;
         InventoryManager.onItemGet += SetItemList;
         InventoryManager.onItemGet += SetInventory;
+        Init();
     }
     public void RefreshUI()
     {
@@ -30,8 +31,9 @@ public class Inventory : UIPart
 
     public void SwapItems(int indexA, int indexB)
     {
+        Debug.Log(items[indexB]);
         // 아이템 데이터 교환
-        if (items[indexB].item_Data == null)
+        if (items[indexB] == null)
         {
             items[indexB] = items[indexA];
             items[indexA] = null;

@@ -95,7 +95,7 @@ public class Item_Panel :
         if (droppedObj == null) return;
 
         var droppedPanel = droppedObj.GetComponent<Item_Panel>();
-        if (droppedPanel.item == null || droppedPanel == this) return;
+        if (droppedPanel == null || droppedPanel == this) return;
 
         int indexA = transform.GetSiblingIndex();
         int indexB = droppedPanel.transform.GetSiblingIndex();
