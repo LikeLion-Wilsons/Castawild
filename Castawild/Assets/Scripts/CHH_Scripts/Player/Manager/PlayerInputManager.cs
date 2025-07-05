@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -22,7 +23,10 @@ public class PlayerInputManager : MonoBehaviour
     public Vector2 lookInput { get; private set; }
     public Vector2 zoomInput;
 
-    private bool isCursorLocked = false;
+    public bool isCursorLocked = false;
+
+    public Action cursorLocked;
+    public Action cursorUnLocked;
 
     private void OnEnable()
     {
@@ -65,10 +69,24 @@ public class PlayerInputManager : MonoBehaviour
         // ESC 눌렀을 때 해제
         if (isCursorLocked && Keyboard.current.escapeKey.wasPressedThisFrame)
             UnlockCursor();
+    }
 
-        // 커서 잠겨 있을 때만 회전 처리
-        //if (isCursorLocked)
-        //    Rotate();
+    private void LockCursor()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        isCursorLocked = true;
+
+        cursorLocked?.Invoke();
+    }
+
+    private void UnlockCursor()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        isCursorLocked = false;
+
+        cursorUnLocked?.Invoke();
     }
 
     /// <summary>
@@ -99,19 +117,5 @@ public class PlayerInputManager : MonoBehaviour
     {
         lookInput = lookAction.ReadValue<Vector2>();
         zoomInput = zoomAction.ReadValue<Vector2>();
-    }
-
-    private void LockCursor()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        isCursorLocked = true;
-    }
-
-    private void UnlockCursor()
-    {
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        isCursorLocked = false;
     }
 }

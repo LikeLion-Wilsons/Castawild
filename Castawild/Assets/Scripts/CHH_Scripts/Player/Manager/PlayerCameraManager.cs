@@ -1,11 +1,13 @@
 using Unity.Cinemachine;
 using UnityEngine;
 
+
 public class PlayerCameraManager : MonoBehaviour
 {
     [SerializeField] private PlayerInputManager inputManager;
     private CinemachineCamera cam;
     private CinemachineOrbitalFollow orbital;
+    private CinemachineInputAxisController inputAxisController;
 
     [SerializeField] private float zoomSpeed = 2f;
     [SerializeField] private float zoomLerpSpeed = 10f;
@@ -19,14 +21,25 @@ public class PlayerCameraManager : MonoBehaviour
     {
         cam = GetComponent<CinemachineCamera>();
         orbital = cam.GetComponent<CinemachineOrbitalFollow>();
+        inputAxisController = cam.GetComponent<CinemachineInputAxisController>();
+
+        inputManager.cursorLocked += LockRotate;
+        inputManager.cursorUnLocked = UnLockRotate;
 
         targetZoom = currentZoom = orbital.Radius;
     }
 
+    private void LockRotate() => inputAxisController.enabled = true;
+    private void UnLockRotate() => inputAxisController.enabled = false;
+
     private void Update()
     {
         inputManager.HandleCameraInput();
+        ZoomCamera();
+    }
 
+    private void ZoomCamera()
+    {
         if (inputManager.zoomInput.y != 0)
         {
             if (orbital != null)

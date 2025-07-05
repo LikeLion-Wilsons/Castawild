@@ -432,6 +432,7 @@ MonoBehaviour:
   verticalInput: 0
   horizontalInput: 0
   zoomInput: {x: 0, y: 0}
+  isCursorLocked: 0
 --- !u!1 &2079880166
 GameObject:
   m_ObjectHideFlags: 0
