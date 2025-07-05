@@ -20,7 +20,7 @@ public class PlayerInputManager : MonoBehaviour
     public float verticalInput;
     public float horizontalInput;
 
-    public Vector2 lookInput { get; private set; }
+    public Vector2 lookInput;
     public Vector2 zoomInput;
 
     public bool isCursorLocked = false;

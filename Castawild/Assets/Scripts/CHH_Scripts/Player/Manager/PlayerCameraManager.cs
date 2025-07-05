@@ -40,7 +40,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void ZoomCamera()
     {
-        if (inputManager.zoomInput.y != 0)
+        if (inputManager.zoomInput.y != 0 && inputAxisController.enabled)
         {
             if (orbital != null)
             {

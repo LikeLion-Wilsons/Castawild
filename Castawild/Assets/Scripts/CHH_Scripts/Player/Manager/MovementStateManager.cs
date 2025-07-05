@@ -1,3 +1,4 @@
+using Fusion;
 using UnityEngine;
 
 public class MovementStateManager : MonoBehaviour
@@ -86,12 +87,6 @@ public class MovementStateManager : MonoBehaviour
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
             }
         }
-
-        //if ( dir.sqrMagnitude > 0.001f)
-        //{
-        //    Quaternion targetRotation = Quaternion.LookRotation(dir, Vector3.up);
-        //    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-        //}
     }
 
     private void UpdateMoveAnimation()
