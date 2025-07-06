@@ -241,7 +241,7 @@ BlendTree:
   m_Name: Crouching
   m_Childs:
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 2085a52de71ff804b9f7ac98379235d1, type: 2}
+    m_Motion: {fileID: 7400000, guid: 51b786f13573a0049927fac7daff37c8, type: 2}
     m_Threshold: 0
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
