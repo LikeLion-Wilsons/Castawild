@@ -18,14 +18,14 @@ public class PlayerInputManager : MonoBehaviour
 
     public Vector2 moveInput { get; private set; }
     public Vector2 lookInput { get; private set; }
-    public Vector2 zoomInput;
+    [HideInInspector] public Vector2 zoomInput;
     public bool aimInput { get; private set; }
     public bool attackInput { get; private set; }
 
-    public float verticalInput;
-    public float horizontalInput;
+    [HideInInspector] public float verticalInput;
+    [HideInInspector] public float horizontalInput;
 
-    public bool isCursorLocked = false;
+    [HideInInspector] public bool isCursorLocked = false;
     public Action cursorLocked;
     public Action cursorUnLocked;
 

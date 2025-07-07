@@ -9,7 +9,7 @@ public class AimState : AttackBaseState
 
     public override void EnterState()
     {
-        attackManager.cameraManager.LockCameraInput();
+        attackManager.cameraManager.MoveCamera(true);
 
         if (attackManager.movementManager.currentState == attackManager.movementManager.idleState)
             attackManager.anim.SetBool("FullAiming", true);
@@ -18,9 +18,17 @@ public class AimState : AttackBaseState
 
     public override void UpdateState()
     {
-        attackManager.xAxis += inputManager.lookInput.y * attackManager.mouseSense;
-        attackManager.yAxis += inputManager.lookInput.x * attackManager.mouseSense;
-        attackManager.yAxis = Mathf.Clamp(attackManager.yAxis, -80f, 80f);
+        Vector3 lookDirection = attackManager.cineCam.transform.forward;
+        lookDirection.y = 0f;
+
+        if (lookDirection.sqrMagnitude > 0.001f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+            attackManager.transform.rotation = Quaternion.Slerp(attackManager.transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
+
+        if (attackManager.movementManager.currentState != attackManager.movementManager.idleState)
+            attackManager.anim.SetBool("FullAiming", false);
 
         if (inputManager.attackAction.WasReleasedThisFrame())
             attackManager.ChangeState(attackManager.attackState);
@@ -30,8 +38,8 @@ public class AimState : AttackBaseState
 
     public override void ExitState()
     {
-        attackManager.cameraManager.UnlockCameraInput();
         attackManager.anim.SetBool("FullAiming", false);
         attackManager.anim.SetBool("Aiming", false);
+        attackManager.cameraManager.MoveCamera(false);
     }
 }

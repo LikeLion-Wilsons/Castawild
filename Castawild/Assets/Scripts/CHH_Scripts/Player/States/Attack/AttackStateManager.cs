@@ -9,6 +9,7 @@ public class AttackStateManager : MonoBehaviour
     [HideInInspector] public AnimationTrigger animTrigger;
     [SerializeField] private Transform camFollowPos;
     [HideInInspector] public Animator anim;
+    [HideInInspector] public CinemachineCamera cineCam;
 
     #region States
     public AttackBaseState currentState;
@@ -17,16 +18,11 @@ public class AttackStateManager : MonoBehaviour
     public AimState aimState;
     #endregion
 
-    public float mouseSense = 1f;
-    public float xAxis;
-    public float yAxis;
+    public float aimFov = 40f;
+    public float mouseSense = 0.5f;
 
-    [HideInInspector] public CinemachineCamera virtualCam;
-    public float adsFov = 40f;
     [HideInInspector] public float throwFov;
     [HideInInspector] public float currentFov;
-    public float fovSmoothSpeed;
-
 
     private void Awake()
     {
@@ -39,9 +35,9 @@ public class AttackStateManager : MonoBehaviour
         inputManager = GetComponent<PlayerInputManager>();
         movementManager = GetComponent<MovementStateManager>();
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
-        virtualCam = GetComponentInChildren<CinemachineCamera>();
         anim = GetComponentInChildren<Animator>();
         animTrigger = GetComponentInChildren<AnimationTrigger>();
+        cineCam = GetComponentInChildren<CinemachineCamera>();
     }
 
     private void InitializeStates()
@@ -61,8 +57,7 @@ public class AttackStateManager : MonoBehaviour
 
     private void LateUpdate()
     {
-        camFollowPos.localEulerAngles = new Vector3(yAxis, camFollowPos.localEulerAngles.y, camFollowPos.localEulerAngles.z);
-        transform.eulerAngles = new Vector3(transform.eulerAngles.x, xAxis, transform.eulerAngles.z);
+        //transform.eulerAngles = new Vector3(transform.eulerAngles.x, xAxis, transform.eulerAngles.z);
     }
 
     public void ChangeState(AttackBaseState newState)
