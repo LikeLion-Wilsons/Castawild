@@ -1,10 +1,11 @@
 public abstract class MovementBaseState
 {
-    protected MovementStateManager movement;
+    protected MovementStateManager movementManager;
     protected PlayerInputManager inputManager;
-    public MovementBaseState(MovementStateManager _movement, PlayerInputManager _inputManager)
+
+    public MovementBaseState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
     {
-        movement = _movement;
+        movementManager = _movementManager;
         inputManager = _inputManager;
     }
 

@@ -15,14 +15,8 @@ public class CwPlayer : MonoBehaviour
     [HideInInspector] public Animator anim;
     [HideInInspector] public Rigidbody rigid;
     [HideInInspector] public PlayerInputManager inputManager;
-
-    [Header("Move")]
-    [SerializeField] public float walkSpeed = 2f;
-    [SerializeField] public float runSpeed = 4f;
-    [SerializeField] public float crouchSpeed = 1f;
-    [SerializeField] public float jumpForce = 5f;
-    [SerializeField] public float airMoveSpeed = 3f;
-    [SerializeField] public float rotationSpeed = 15f;
+    [HideInInspector] public MovementStateManager movementManager;
+    [HideInInspector] public AimStateManger aimStateManager;
 
     private Dictionary<WeaponType, Weapon> weaponDict;
     public Weapon currentWeapon { get; private set; }
@@ -82,41 +76,5 @@ public class CwPlayer : MonoBehaviour
             Debug.LogError($"Weapon type {weaponType} 없음");
     }
 
-    /// <summary>
-    /// 플레이어 이속 바꿀 때 호출
-    /// </summary>
-    public void ChangePlayerMoveState(MoveSpeedState _moveState)
-    {
-        if (_moveState == MoveSpeedState.Walk)
-        {
-            moveSpeedState = MoveSpeedState.Walk;
-            anim.SetBool("isRunning", false);
-        }
-        else
-        {
-            moveSpeedState = MoveSpeedState.Run;
-            anim.SetBool("isRunning", true);
-        }
-    }
 
-    /// <summary>
-    /// 음식같은걸로 속도 바꿀 때 호출
-    /// </summary>
-    public void ChangeMoveSpeedValues(float value, bool isIncreasing)
-    {
-        if (isIncreasing)
-        {
-            walkSpeed += value;
-            runSpeed += value;
-            crouchSpeed += value;
-            airMoveSpeed += value;
-        }
-        else
-        {
-            walkSpeed -= value;
-            runSpeed -= value;
-            crouchSpeed -= value;
-            airMoveSpeed -= value;
-        }
-    }
 }

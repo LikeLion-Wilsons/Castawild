@@ -3,7 +3,6 @@ using UnityEngine;
 public class MovementStateManager : MonoBehaviour
 {
     #region Components
-    private PlayerInputManager inputManger;
     [HideInInspector] public Animator anim;
     [SerializeField] private Transform cameraTransform;
     #endregion
@@ -60,7 +59,7 @@ public class MovementStateManager : MonoBehaviour
 
     private void InitializeStates()
     {
-        idleState = new IdleState(this, inputManger);
+        idleState = new IdleState(this, inputManager);
         walkState = new WalkState(this, inputManager);
         runState = new RunState(this, inputManager);
         crouchState = new CrouchState(this, inputManager);
@@ -70,7 +69,7 @@ public class MovementStateManager : MonoBehaviour
 
     private void Update()
     {
-        inputManager.HandleAllInputs();
+        inputManager.HandleMovementInput();
 
         GetDirectionAndMove();
         Gravity();
@@ -148,5 +147,23 @@ public class MovementStateManager : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(spherePos, controller.radius - 0.05f);
+    }
+
+    /// <summary>
+    /// 음식같은걸로 속도 바꿀 때 호출
+    /// </summary>
+    public void ChangeMoveSpeedValues(float value, bool isIncreasing)
+    {
+        if (isIncreasing)
+        {
+            walkSpeed += value;
+            runSpeed += value;
+            crouchSpeed += value;
+        }
+        else
+        {
+            walkSpeed -= value;
+            runSpeed -= value;
+        }
     }
 }

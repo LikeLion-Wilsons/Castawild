@@ -12,19 +12,20 @@ public class PlayerInputManager : MonoBehaviour
     [HideInInspector] public InputAction crouchAction;
     [HideInInspector] public InputAction lookAction;
     [HideInInspector] public InputAction zoomAction;
+    [HideInInspector] public InputAction aimAction;
     [HideInInspector] public InputAction sprintAction;
     [HideInInspector] public InputAction attackAction;
 
     public Vector2 moveInput { get; private set; }
-    public float moveAmount;
+    public Vector2 lookInput { get; private set; }
+    public Vector2 zoomInput;
+    public bool aimInput { get; private set; }
+    public bool attackInput { get; private set; }
+
     public float verticalInput;
     public float horizontalInput;
 
-    public Vector2 lookInput;
-    public Vector2 zoomInput;
-
     public bool isCursorLocked = false;
-
     public Action cursorLocked;
     public Action cursorUnLocked;
 
@@ -53,6 +54,7 @@ public class PlayerInputManager : MonoBehaviour
         lookAction = InputSystem.actions.FindAction("Look");
         zoomAction = InputSystem.actions.FindAction("Zoom");
         sprintAction = InputSystem.actions.FindAction("Sprint");
+        aimAction = InputSystem.actions.FindAction("Aim");
         attackAction = InputSystem.actions.FindAction("Attack");
     }
 
@@ -89,16 +91,7 @@ public class PlayerInputManager : MonoBehaviour
         cursorUnLocked?.Invoke();
     }
 
-    /// <summary>
-    /// 입력 처리
-    /// </summary>
-    public void HandleAllInputs()
-    {
-        HandleMovementInput();
-        HandleJumpingInput();
-    }
-
-    private void HandleMovementInput()
+    public void HandleMovementInput()
     {
         moveInput = moveAction.ReadValue<Vector2>();
         verticalInput = moveInput.y;
@@ -117,5 +110,11 @@ public class PlayerInputManager : MonoBehaviour
     {
         lookInput = lookAction.ReadValue<Vector2>();
         zoomInput = zoomAction.ReadValue<Vector2>();
+    }
+
+    public void HandleAttackInput()
+    {
+        aimInput = aimAction.ReadValue<bool>();
+        attackInput = attackAction.ReadValue<bool>();
     }
 }
