@@ -36,6 +36,14 @@ public class InventoryManager : MonoBehaviour
         onItemGet?.Invoke();
     }
 
+    public static void ThrowItem(int index)
+    {
+        if (index >= 0 && index < slot_List.Count)
+        {
+            slot_List[index].count = 0;   
+        }
+    }
+
     // 아이템 소지 여부 확인
     public static bool HaveItem(int id)
     {
@@ -46,4 +54,5 @@ public class InventoryManager : MonoBehaviour
         }
         return false;
     }
+
 }

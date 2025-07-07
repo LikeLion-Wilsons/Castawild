@@ -36,7 +36,7 @@ public class Item_Panel :
     }
     public void SetItemSlot()
     {
-        if (item != null && item.item_Data != null)
+        if (item != null && item.item_Data != null && item.count != 0)
         {
             itemData.gameObject.SetActive(item.item_Data);
             //임시
@@ -46,6 +46,8 @@ public class Item_Panel :
         else
         {
             itemData.gameObject.SetActive(false);
+            item_icon.sprite = null;
+            itemCountText.text = "";
         }
     }
 

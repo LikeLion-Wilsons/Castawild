@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using static UnityEngine.Rendering.DebugUI;
 
 public class Inventory : UIPart
 {
@@ -31,7 +30,6 @@ public class Inventory : UIPart
 
     public void SwapItems(int indexA, int indexB)
     {
-        Debug.Log(items[indexB]);
         // 아이템 데이터 교환
         if (items[indexB] == null)
         {
@@ -103,4 +101,6 @@ public class Inventory : UIPart
         itemClick.transform.SetParent(panel.transform);
         itemClick.transform.localPosition = Vector2.zero;
     }
+
+
 }
