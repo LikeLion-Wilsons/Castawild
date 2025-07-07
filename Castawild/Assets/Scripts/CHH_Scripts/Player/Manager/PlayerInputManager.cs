@@ -4,8 +4,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputManager : MonoBehaviour
 {
+    #region Input Action
     [SerializeField] private InputActionAsset inputActions;
-    private CwPlayer player;
 
     [HideInInspector] public InputAction moveAction;
     [HideInInspector] public InputAction jumpAction;
@@ -24,10 +24,13 @@ public class PlayerInputManager : MonoBehaviour
 
     [HideInInspector] public float verticalInput;
     [HideInInspector] public float horizontalInput;
+    #endregion
 
+    #region Cursor
     [HideInInspector] public bool isCursorLocked = false;
     public Action cursorLocked;
     public Action cursorUnLocked;
+    #endregion 
 
     private void OnEnable()
     {
@@ -41,12 +44,10 @@ public class PlayerInputManager : MonoBehaviour
 
     private void Awake()
     {
-        InitializeInputActions();
-
-        player = GetComponent<CwPlayer>();
+        InitInputActions();
     }
 
-    private void InitializeInputActions()
+    private void InitInputActions()
     {
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
@@ -110,11 +111,5 @@ public class PlayerInputManager : MonoBehaviour
     {
         lookInput = lookAction.ReadValue<Vector2>();
         zoomInput = zoomAction.ReadValue<Vector2>();
-    }
-
-    public void HandleAttackInput()
-    {
-        aimInput = aimAction.ReadValue<bool>();
-        attackInput = attackAction.ReadValue<bool>();
     }
 }

@@ -18,14 +18,7 @@ public class AimState : AttackBaseState
 
     public override void UpdateState()
     {
-        Vector3 lookDirection = attackManager.cineCam.transform.forward;
-        lookDirection.y = 0f;
-
-        if (lookDirection.sqrMagnitude > 0.001f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-            attackManager.transform.rotation = Quaternion.Slerp(attackManager.transform.rotation, targetRotation, Time.deltaTime * 10f);
-        }
+        RotatePlayer();
 
         if (attackManager.movementManager.currentState != attackManager.movementManager.idleState)
             attackManager.anim.SetBool("FullAiming", false);
@@ -34,6 +27,18 @@ public class AimState : AttackBaseState
             attackManager.ChangeState(attackManager.attackState);
         else if (inputManager.aimAction.WasReleasedThisFrame())
             attackManager.ChangeState(attackManager.idleState);
+    }
+
+    private void RotatePlayer()
+    {
+        Vector3 lookDirection = attackManager.cineCam.transform.forward;
+        lookDirection.y = 0f;
+
+        if (lookDirection.sqrMagnitude > 0.001f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+            attackManager.transform.rotation = Quaternion.Slerp(attackManager.transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
     }
 
     public override void ExitState()

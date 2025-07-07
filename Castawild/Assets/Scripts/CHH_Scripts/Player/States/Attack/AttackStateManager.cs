@@ -1,15 +1,13 @@
 using Unity.Cinemachine;
 using UnityEngine;
 
-public class AttackStateManager : MonoBehaviour
+public class AttackStateManager : BaseStateManager
 {
-    private PlayerInputManager inputManager;
+    #region Components
     [HideInInspector] public MovementStateManager movementManager;
     [HideInInspector] public PlayerCameraManager cameraManager;
     [HideInInspector] public AnimationTrigger animTrigger;
-    [SerializeField] private Transform camFollowPos;
-    [HideInInspector] public Animator anim;
-    [HideInInspector] public CinemachineCamera cineCam;
+    #endregion
 
     #region States
     public AttackBaseState currentState;
@@ -18,29 +16,22 @@ public class AttackStateManager : MonoBehaviour
     public AimState aimState;
     #endregion
 
-    public float aimFov = 40f;
-    public float mouseSense = 0.5f;
-
-    [HideInInspector] public float throwFov;
-    [HideInInspector] public float currentFov;
-
-    private void Awake()
+    protected override void Awake()
     {
-        InitializeComponents();
-        InitializeStates();
+        base.Awake();
+
+        InitComponents();
+        InitStates();
     }
 
-    private void InitializeComponents()
+    private void InitComponents()
     {
-        inputManager = GetComponent<PlayerInputManager>();
         movementManager = GetComponent<MovementStateManager>();
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
-        anim = GetComponentInChildren<Animator>();
         animTrigger = GetComponentInChildren<AnimationTrigger>();
-        cineCam = GetComponentInChildren<CinemachineCamera>();
     }
 
-    private void InitializeStates()
+    private void InitStates()
     {
         idleState = new AttackIdleState(this, inputManager);
         attackState = new AttackState(this, inputManager);
@@ -53,11 +44,6 @@ public class AttackStateManager : MonoBehaviour
     {
         inputManager.HandleMovementInput();
         currentState?.UpdateState();
-    }
-
-    private void LateUpdate()
-    {
-        //transform.eulerAngles = new Vector3(transform.eulerAngles.x, xAxis, transform.eulerAngles.z);
     }
 
     public void ChangeState(AttackBaseState newState)

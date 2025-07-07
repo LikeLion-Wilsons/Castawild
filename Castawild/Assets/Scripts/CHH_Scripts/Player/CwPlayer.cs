@@ -8,8 +8,6 @@ public enum WeaponType
     Bow
 }
 
-public enum MoveSpeedState { Walk, Run }
-
 public class CwPlayer : MonoBehaviour
 {
     [HideInInspector] public Animator anim;
@@ -20,7 +18,6 @@ public class CwPlayer : MonoBehaviour
 
     private Dictionary<WeaponType, Weapon> weaponDict;
     public Weapon currentWeapon { get; private set; }
-    public MoveSpeedState moveSpeedState;
 
     public PlayerData playerData;
 
@@ -75,6 +72,4 @@ public class CwPlayer : MonoBehaviour
         else
             Debug.LogError($"Weapon type {weaponType} 없음");
     }
-
-
 }

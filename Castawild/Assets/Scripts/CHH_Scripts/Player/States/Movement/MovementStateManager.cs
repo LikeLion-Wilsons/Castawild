@@ -1,10 +1,9 @@
 using UnityEngine;
 
-public class MovementStateManager : MonoBehaviour
+public class MovementStateManager : BaseStateManager
 {
-    #region Components
-    [HideInInspector] public Animator anim;
-    [SerializeField] private Transform cameraTransform;
+    #region Conponent
+    [SerializeField] private CharacterController controller;
     #endregion
 
     #region States
@@ -21,9 +20,6 @@ public class MovementStateManager : MonoBehaviour
     public float runSpeed = 7;
     public float crouchSpeed = 2;
     [HideInInspector] public Vector3 dir;
-
-    [HideInInspector] public PlayerInputManager inputManager;
-    [SerializeField] private CharacterController controller;
     #endregion
 
     #region GoundCheck
@@ -43,21 +39,21 @@ public class MovementStateManager : MonoBehaviour
     private float currentVertical;
     #endregion
 
-    private void Awake()
+    protected override void Awake()
     {
-        InitializeComponents();
-        InitializeStates();
+        base.Awake();
+
+        InitComponents();
+        InitStates();
         SwitchState(idleState);
     }
 
-    private void InitializeComponents()
+    private void InitComponents()
     {
         controller = GetComponent<CharacterController>();
-        inputManager = GetComponent<PlayerInputManager>();
-        anim = GetComponentInChildren<Animator>();
     }
 
-    private void InitializeStates()
+    private void InitStates()
     {
         idleState = new IdleState(this, inputManager);
         walkState = new WalkState(this, inputManager);
@@ -94,8 +90,8 @@ public class MovementStateManager : MonoBehaviour
 
     private void HandleMovement()
     {
-        Vector3 forward = cameraTransform.forward;
-        Vector3 right = cameraTransform.right;
+        Vector3 forward = cineCam.transform.forward;
+        Vector3 right = cineCam.transform.right;
 
         forward.y = 0f;
         right.y = 0f;
@@ -108,7 +104,7 @@ public class MovementStateManager : MonoBehaviour
 
         if (dir.sqrMagnitude > 0.001f)
         {
-            Vector3 lookDirection = cameraTransform.forward;
+            Vector3 lookDirection = cineCam.transform.forward;
             lookDirection.y = 0f;
 
             if (lookDirection.sqrMagnitude > 0.001f)

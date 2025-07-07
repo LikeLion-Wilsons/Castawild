@@ -1,17 +1,18 @@
 using System.Collections;
-using TMPro;
 using Unity.Cinemachine;
-using Unity.VisualScripting;
 using UnityEngine;
-
 
 public class PlayerCameraManager : MonoBehaviour
 {
+    #region Components
     [SerializeField] private PlayerInputManager inputManager;
     private CinemachineCamera cam;
     private CinemachineOrbitalFollow orbital;
     private CinemachineInputAxisController inputAxisController;
+    #endregion
 
+    #region Third Person Aim
+    [Header("3인칭 Aim")]
     [SerializeField] private Transform thirdPersonTarget;
     [SerializeField] private Transform thirdPerson_AimTargetPos;
     [SerializeField] private float thirdPerson_AimFov;
@@ -21,6 +22,10 @@ public class PlayerCameraManager : MonoBehaviour
     private Coroutine moveCameraCoroutine;
 
     [SerializeField] private float thirdPerson_aimZoomDuration = 0.3f;
+    #endregion
+
+    #region Third Person Camera Zoom
+    [Header("3인칭 Zoom")]
     [SerializeField] private float zoomSpeed = 2f;
     [SerializeField] private float zoomLerpSpeed = 10f;
     [SerializeField] private float minDistance = 3f;
@@ -28,18 +33,32 @@ public class PlayerCameraManager : MonoBehaviour
 
     private float targetZoom;
     private float currentZoom;
+    #endregion
 
     private void Awake()
+    {
+        InitComponents();
+        InitVariables();
+        SubscribeEvents();
+    }
+
+    private void InitComponents()
     {
         cam = GetComponent<CinemachineCamera>();
         orbital = cam.GetComponent<CinemachineOrbitalFollow>();
         inputAxisController = cam.GetComponent<CinemachineInputAxisController>();
-        thirdPerson_DefaultTargetPos = thirdPersonTarget.localPosition;
-        thirdPerson_DefaultFov = cam.Lens.FieldOfView;
+    }
 
+    private void SubscribeEvents()
+    {
         inputManager.cursorLocked += ActivateCameraInput;
         inputManager.cursorUnLocked = InactivateCameraInput;
+    }
 
+    private void InitVariables()
+    {
+        thirdPerson_DefaultTargetPos = thirdPersonTarget.localPosition;
+        thirdPerson_DefaultFov = cam.Lens.FieldOfView;
         targetZoom = currentZoom = orbital.Radius;
     }
 
@@ -67,6 +86,10 @@ public class PlayerCameraManager : MonoBehaviour
         orbital.Radius = currentZoom;
     }
 
+    /// <summary>
+    /// 3인칭 조준할 때 카메라 움직이는 함수
+    /// </summary>
+    /// <param name="isAiming"></param>
     public void MoveCamera(bool isAiming)
     {
         if (moveCameraCoroutine != null)
