@@ -3,7 +3,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-public class PlayeAddressableManager : MonoBehaviour
+public class PlayerAddressableManager : MonoBehaviour
 {
     [SerializeField] private AssetReference playerArmature;
 

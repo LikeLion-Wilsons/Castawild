@@ -16,7 +16,7 @@ public class CwPlayer : MonoBehaviour
     [HideInInspector] public Rigidbody rigid;
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public MovementStateManager movementManager;
-    [HideInInspector] public AimStateManger aimStateManager;
+    [HideInInspector] public AttackStateManager attackStateManager;
 
     private Dictionary<WeaponType, Weapon> weaponDict;
     public Weapon currentWeapon { get; private set; }

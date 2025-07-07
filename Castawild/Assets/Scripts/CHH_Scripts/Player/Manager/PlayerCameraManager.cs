@@ -23,14 +23,14 @@ public class PlayerCameraManager : MonoBehaviour
         orbital = cam.GetComponent<CinemachineOrbitalFollow>();
         inputAxisController = cam.GetComponent<CinemachineInputAxisController>();
 
-        inputManager.cursorLocked += LockRotate;
-        inputManager.cursorUnLocked = UnLockRotate;
+        inputManager.cursorLocked += LockCameraInput;
+        inputManager.cursorUnLocked = UnlockCameraInput;
 
         targetZoom = currentZoom = orbital.Radius;
     }
 
-    private void LockRotate() => inputAxisController.enabled = true;
-    private void UnLockRotate() => inputAxisController.enabled = false;
+    public void LockCameraInput() => inputAxisController.enabled = true;
+    public void UnlockCameraInput() => inputAxisController.enabled = false;
 
     private void Update()
     {
