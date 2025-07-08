@@ -13,7 +13,7 @@ public class Item_Panel :
 
     public Image item_icon;
     public TextMeshProUGUI itemCountText;
-    public float durability;//내구도
+    [SerializeField] Image durabilityBar;//내구도 UI
     [SerializeField] Sprite[] icons;
 
     [Header("Drag&Drop")]
@@ -40,6 +40,7 @@ public class Item_Panel :
             //임시
             item_icon.sprite = icons[item.item_Data.itemID];
             itemCountText.text = item.count.ToString();
+            durabilityBar.fillAmount = item.durability;
         }
         else
         {

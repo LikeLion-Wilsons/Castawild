@@ -7,7 +7,7 @@ public delegate void OnItemGet();
 public class InventoryDataManager : MonoBehaviour
 {
     public static InventoryDataManager Instance { get; private set; }
-
+    [SerializeField] int maxStackCount;//아이템 최대 스택 개수
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -34,7 +34,9 @@ public class InventoryDataManager : MonoBehaviour
         for (int i = 0; i < itemList.Count; i++)
         {
             if (itemList[i].item_Data == null) continue;
-            if (itemList[i].item_Data.itemID == id)
+            if (itemList[i].item_Data.type == Item_Type.Equipment) maxStackCount = 1;
+            else maxStackCount = 20;
+            if (itemList[i].item_Data.itemID == id && itemList[i].count < maxStackCount)
             {
                 itemList[i].count += amount;
                 onInventoryUpdated?.Invoke();
