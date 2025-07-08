@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum WeaponType { None, Fist, Throw, Sword, Bow }
-public enum MoveType { Idle, Walk, Run, Crouch }
+public enum MoveType { Idle, Walk, Run, Crouch, Jump }
 public enum AttackType { None, Aim, Attack }
 
 public class CwPlayer : MonoBehaviour

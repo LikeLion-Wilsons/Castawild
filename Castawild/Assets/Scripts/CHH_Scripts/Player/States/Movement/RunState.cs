@@ -14,10 +14,20 @@ public class RunState : MovementBaseState
 
     public override void UpdateState()
     {
+        // Walk
         if (movementManager.inputManager.sprintAction.WasReleasedThisFrame())
             ExitState(movementManager.walkState);
+
+        // Idle
         else if (movementManager.dir.magnitude < 0.1f)
             ExitState(movementManager.idleState);
+
+        // Jump
+        if (inputManager.jumpAction.WasPressedThisFrame())
+        {
+            movementManager.previousState = this;
+            ExitState(movementManager.jumpState);
+        }
     }
 
     void ExitState(MovementBaseState state)

@@ -12,6 +12,7 @@ public class IdleState : MovementBaseState
 
     public override void UpdateState()
     {
+        // Move
         if (movementManager.inputManager.moveInput.magnitude > 0.1f)
         {
             if (movementManager.inputManager.sprintAction.IsPressed() && movementManager.player.currentAttackType != AttackType.Aim)
@@ -19,7 +20,16 @@ public class IdleState : MovementBaseState
             else
                 movementManager.ChangeState(movementManager.walkState);
         }
+
+        // Crouch
         if (movementManager.inputManager.crouchAction.WasPressedThisFrame())
             movementManager.ChangeState(movementManager.crouchState);
+
+        // Jump
+        if (inputManager.jumpAction.WasPressedThisFrame())
+        {
+            movementManager.previousState = this;
+            movementManager.ChangeState(movementManager.jumpState);
+        }
     }
 }

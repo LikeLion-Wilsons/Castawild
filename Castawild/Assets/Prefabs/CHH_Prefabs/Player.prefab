@@ -558,7 +558,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3174188459650930656}
   m_Layer: 0
-  m_Name: ThirdPersonCamPos
+  m_Name: ThirdPersonTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1809,6 +1809,7 @@ GameObject:
   - component: {fileID: 2660774277226879753}
   - component: {fileID: 5464433208732490659}
   - component: {fileID: 1159495505722438167}
+  - component: {fileID: 6180852379802345285}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1848,19 +1849,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   anim: {fileID: 7857028766390958448}
-  cameraTransform: {fileID: 3220394449219885876}
+  inputManager: {fileID: 5464433208732490659}
+  cineCam: {fileID: 0}
+  player: {fileID: 0}
+  controller: {fileID: 2660774277226879753}
   currentMoveSpeed: 3
   walkSpeed: 7
   runSpeed: 15
   crouchSpeed: 2
   dir: {x: 0, y: 0, z: 0}
-  inputManager: {fileID: 5464433208732490659}
-  controller: {fileID: 2660774277226879753}
   groundYOffset: 0
   groundMask:
     serializedVersion: 2
     m_Bits: 8
   gravity: -9.81
+  jumpForce: 5
+  jumped: 0
+  velocity: {x: 0, y: 0, z: 0}
   animationLerpSpeed: 10
 --- !u!143 &2660774277226879753
 CharacterController:
@@ -1880,7 +1885,7 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 3.7
+  m_Height: 3.54
   m_Radius: 0.5
   m_SlopeLimit: 45
   m_StepOffset: 0.3
@@ -1988,19 +1993,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f418d32ec44dd8840bcbc043673823be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  anim: {fileID: 0}
+  inputManager: {fileID: 0}
+  cineCam: {fileID: 0}
+  player: {fileID: 0}
   movementManager: {fileID: 0}
   cameraManager: {fileID: 0}
   animTrigger: {fileID: 0}
-  camFollowPos: {fileID: 3174188459650930656}
-  anim: {fileID: 0}
-  cineCam: {fileID: 0}
-  aimFov: 40
-  mouseSense: 0.5
-  xAxis: 0
-  yAxis: 0
-  virtualCam: {fileID: 0}
-  throwFov: 0
-  currentFov: 0
+--- !u!114 &6180852379802345285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7051484618498464286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1277ab93a85dd346a69ffb365ccdf89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anim: {fileID: 7857028766390958448}
+  rigid: {fileID: 0}
+  inputManager: {fileID: 0}
+  movementManager: {fileID: 0}
+  attackStateManager: {fileID: 0}
+  currentWeaponType: 0
+  currentMoveType: 0
+  currentAttackType: 0
+  playerData: {fileID: 11400000, guid: 643df4f9e15c3f445a30530c009e87cf, type: 2}
 --- !u!1 &7243106032446813350
 GameObject:
   m_ObjectHideFlags: 0
@@ -2885,6 +2905,10 @@ PrefabInstance:
       objectReference: {fileID: 5464433208732490659}
     - target: {fileID: 4761910572206078221, guid: 934c7037127db0b4c9fcd6f924a09853, type: 3}
       propertyPath: defaultTargetPos
+      value: 
+      objectReference: {fileID: 3174188459650930656}
+    - target: {fileID: 4761910572206078221, guid: 934c7037127db0b4c9fcd6f924a09853, type: 3}
+      propertyPath: thirdPersonTarget
       value: 
       objectReference: {fileID: 3174188459650930656}
     - target: {fileID: 4761910572206078221, guid: 934c7037127db0b4c9fcd6f924a09853, type: 3}

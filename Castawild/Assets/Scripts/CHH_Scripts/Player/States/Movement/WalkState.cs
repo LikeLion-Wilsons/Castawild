@@ -14,12 +14,24 @@ public class WalkState : MovementBaseState
 
     public override void UpdateState()
     {
+        // Run
         if (movementManager.inputManager.sprintAction.IsPressed() && movementManager.player.currentAttackType != AttackType.Aim)
             ExitState(movementManager.runState);
+
+        // Crouch
         else if (movementManager.inputManager.crouchAction.WasPressedThisFrame())
             ExitState(movementManager.crouchState);
+
+        // Idle
         else if (movementManager.dir.magnitude < 0.1f)
             ExitState(movementManager.idleState);
+
+        // Jump
+        if (inputManager.jumpAction.WasPressedThisFrame())
+        {
+            movementManager.previousState = this;
+            ExitState(movementManager.jumpState);
+        }
     }
 
     void ExitState(MovementBaseState state)

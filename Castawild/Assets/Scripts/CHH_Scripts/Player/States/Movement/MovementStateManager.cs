@@ -7,30 +7,35 @@ public class MovementStateManager : BaseStateManager
     #endregion
 
     #region States
+    public MovementBaseState previousState;
     public MovementBaseState currentState;
     public IdleState idleState;
     public WalkState walkState;
     public RunState runState;
+    public JumpState jumpState;
     public CrouchState crouchState;
     #endregion
 
     #region Movement
     public float currentMoveSpeed;
-    public float walkSpeed = 3;
-    public float runSpeed = 7;
-    public float crouchSpeed = 2;
+    public float walkSpeed = 3f;
+    public float runSpeed = 7f;
+    public float crouchSpeed = 2f;
     [HideInInspector] public Vector3 dir;
     #endregion
 
     #region GoundCheck
-    [SerializeField] float groundYOffset;
-    [SerializeField] LayerMask groundMask;
+    [SerializeField] private float groundYOffset;
+    [SerializeField] private float groundCheckRadius = 0.3f;
+    [SerializeField] private LayerMask groundMask;
     private Vector3 spherePos;
     #endregion
 
     #region Gravity
-    [SerializeField] float gravity = -9.81f;
-    Vector3 velocity;
+    public float gravity = -9.81f;
+    public float jumpForce = 10f;
+    [HideInInspector] public bool jumped;
+    [HideInInspector] public Vector3 velocity;
     #endregion
 
     #region Animation
@@ -59,6 +64,7 @@ public class MovementStateManager : BaseStateManager
         walkState = new WalkState(this, inputManager);
         runState = new RunState(this, inputManager);
         crouchState = new CrouchState(this, inputManager);
+        jumpState = new JumpState(this, inputManager);
 
         currentState = idleState;
     }
@@ -69,6 +75,7 @@ public class MovementStateManager : BaseStateManager
 
         GetDirectionAndMove();
         Gravity();
+        Falling();
 
         currentState.UpdateState();
     }
@@ -117,21 +124,26 @@ public class MovementStateManager : BaseStateManager
 
     private void Gravity()
     {
-        if (IsGrounded())
+        if (IsGrounded() && velocity.y < 0)
+            velocity.y = -1f;
+        else
             velocity.y += gravity * Time.deltaTime;
-        else if (velocity.y < 0)
-            velocity.y = -2f;
 
         controller.Move(velocity * Time.deltaTime);
     }
 
-    private bool IsGrounded()
+    /// <summary>
+    /// 땅 체크
+    /// </summary>
+    public bool IsGrounded()
     {
         spherePos = new Vector3(transform.position.x, transform.position.y - groundYOffset, transform.position.z);
-        if (Physics.CheckSphere(spherePos, controller.radius - 0.05f, groundMask))
+        if (Physics.CheckSphere(spherePos, groundCheckRadius, groundMask))
             return true;
         return false;
     }
+
+    void Falling() => anim.SetBool("Falling", !IsGrounded());
 
     public void ChangeState(MovementBaseState newState)
     {
@@ -142,7 +154,7 @@ public class MovementStateManager : BaseStateManager
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(spherePos, controller.radius - 0.05f);
+        Gizmos.DrawWireSphere(spherePos, groundCheckRadius);
     }
 
     /// <summary>
