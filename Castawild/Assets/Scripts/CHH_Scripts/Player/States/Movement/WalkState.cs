@@ -16,27 +16,26 @@ public class WalkState : MovementBaseState
     {
         // Run
         if (movementManager.inputManager.sprintAction.IsPressed() && movementManager.player.currentAttackType != AttackType.Aim)
-            ExitState(movementManager.runState);
+            movementManager.ChangeState(movementManager.runState);
 
         // Crouch
         else if (movementManager.inputManager.crouchAction.WasPressedThisFrame())
-            ExitState(movementManager.crouchState);
+            movementManager.ChangeState(movementManager.crouchState);
 
         // Idle
         else if (movementManager.dir.magnitude < 0.1f)
-            ExitState(movementManager.idleState);
+            movementManager.ChangeState(movementManager.idleState);
 
         // Jump
         if (inputManager.jumpAction.WasPressedThisFrame())
         {
             movementManager.previousState = this;
-            ExitState(movementManager.jumpState);
+            movementManager.ChangeState(movementManager.jumpState);
         }
     }
 
-    void ExitState(MovementBaseState state)
+    public override void ExitState()
     {
         movementManager.anim.SetBool("Walking", false);
-        movementManager.ChangeState(state);
     }
 }

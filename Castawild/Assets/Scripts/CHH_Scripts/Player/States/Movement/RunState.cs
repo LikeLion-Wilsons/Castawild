@@ -16,23 +16,22 @@ public class RunState : MovementBaseState
     {
         // Walk
         if (movementManager.inputManager.sprintAction.WasReleasedThisFrame())
-            ExitState(movementManager.walkState);
+            movementManager.ChangeState(movementManager.walkState);
 
         // Idle
         else if (movementManager.dir.magnitude < 0.1f)
-            ExitState(movementManager.idleState);
+            movementManager.ChangeState(movementManager.idleState);
 
         // Jump
         if (inputManager.jumpAction.WasPressedThisFrame())
         {
             movementManager.previousState = this;
-            ExitState(movementManager.jumpState);
+            movementManager.ChangeState(movementManager.jumpState);
         }
     }
 
-    void ExitState(MovementBaseState state)
+    public override void ExitState()
     {
         movementManager.anim.SetBool("Running", false);
-        movementManager.ChangeState(state);
     }
 }

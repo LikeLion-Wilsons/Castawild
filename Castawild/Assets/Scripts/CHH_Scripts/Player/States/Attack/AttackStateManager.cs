@@ -9,7 +9,6 @@ public class AttackStateManager : BaseStateManager
     #endregion
 
     #region States
-    public AttackBaseState currentState;
     public AttackIdleState idleState;
     public AttackState attackState;
     public AimState aimState;
@@ -36,19 +35,12 @@ public class AttackStateManager : BaseStateManager
         attackState = new AttackState(this, inputManager);
         aimState = new AimState(this, inputManager);
 
-        currentState = idleState;
+        ChangeState(idleState);
     }
 
     private void Update()
     {
         inputManager.HandleMovementInput();
         currentState?.UpdateState();
-    }
-
-    public void ChangeState(AttackBaseState newState)
-    {
-        currentState.ExitState();
-        currentState = newState;
-        currentState.EnterState();
     }
 }

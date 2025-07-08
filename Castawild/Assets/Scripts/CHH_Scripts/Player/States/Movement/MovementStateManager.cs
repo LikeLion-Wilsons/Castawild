@@ -1,15 +1,14 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class MovementStateManager : BaseStateManager
 {
     #region Conponent
+    [HideInInspector] public AttackStateManager attackManager;
     [SerializeField] private CharacterController controller;
     #endregion
 
     #region States
     public MovementBaseState previousState;
-    public MovementBaseState currentState;
     public IdleState idleState;
     public WalkState walkState;
     public RunState runState;
@@ -52,12 +51,12 @@ public class MovementStateManager : BaseStateManager
 
         InitComponents();
         InitStates();
-        ChangeState(idleState);
     }
 
     private void InitComponents()
     {
         controller = GetComponent<CharacterController>();
+        attackManager = GetComponent<AttackStateManager>();
     }
 
     private void InitStates()
@@ -68,7 +67,7 @@ public class MovementStateManager : BaseStateManager
         crouchState = new CrouchState(this, inputManager);
         jumpState = new JumpState(this, inputManager);
 
-        currentState = idleState;
+        ChangeState(idleState);
     }
 
     private void Update()
@@ -113,21 +112,15 @@ public class MovementStateManager : BaseStateManager
 
         if (dir.sqrMagnitude > 0.001f)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(dir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+            // 조준중일 때는 회전 X
+            if (attackManager.currentState != attackManager.aimState)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(dir);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+            }
 
             dir *= currentMoveSpeed;
             controller.Move(dir * Time.deltaTime);
-
-
-            //Vector3 lookDirection = cam.transform.forward;
-            //lookDirection.y = 0f;
-
-            //if (lookDirection.sqrMagnitude > 0.001f)
-            //{
-            //    Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-            //    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-            //}
         }
     }
 
@@ -152,13 +145,7 @@ public class MovementStateManager : BaseStateManager
         return false;
     }
 
-    void Falling() => anim.SetBool("Falling", !IsGrounded());
-
-    public void ChangeState(MovementBaseState newState)
-    {
-        currentState = newState;
-        currentState.EnterState();
-    }
+    private void Falling() => anim.SetBool("Falling", !IsGrounded());
 
     private void OnDrawGizmos()
     {

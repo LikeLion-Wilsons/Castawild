@@ -89,7 +89,6 @@ public class PlayerCameraManager : MonoBehaviour
     /// <summary>
     /// 3인칭 조준할 때 카메라 움직이는 함수
     /// </summary>
-    /// <param name="isAiming"></param>
     public void MoveCamera(bool isAiming)
     {
         if (moveCameraCoroutine != null)

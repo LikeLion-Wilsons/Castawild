@@ -9,6 +9,8 @@ public class AimState : AttackBaseState
 
     public override void EnterState()
     {
+        LookForward();
+
         if (attackManager.movementManager.currentState == attackManager.movementManager.idleState)
             attackManager.anim.SetBool("FullAiming", true);
         attackManager.anim.SetBool("Aiming", true);

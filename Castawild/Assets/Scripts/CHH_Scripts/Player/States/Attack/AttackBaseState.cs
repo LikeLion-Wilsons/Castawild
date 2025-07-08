@@ -1,8 +1,9 @@
 
-public abstract class AttackBaseState
+using UnityEngine;
+
+public abstract class AttackBaseState : BaseState
 {
     protected AttackStateManager attackManager;
-    protected PlayerInputManager inputManager;
 
     public AttackBaseState(AttackStateManager attackManger, PlayerInputManager _inputManager)
     {
@@ -10,7 +11,10 @@ public abstract class AttackBaseState
         inputManager = _inputManager;
     }
 
-    public abstract void EnterState();
-    public abstract void UpdateState();
-    public abstract void ExitState();
+    protected void LookForward()
+    {
+        Vector3 lookDir = attackManager.cam.transform.forward;
+        lookDir.y = 0f;
+        attackManager.transform.rotation = Quaternion.LookRotation(lookDir);
+    }
 }

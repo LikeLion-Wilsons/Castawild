@@ -31,4 +31,9 @@ public class JumpState : MovementBaseState
                 movementManager.ChangeState(movementManager.walkState);
         }
     }
+
+    public override void ExitState()
+    {
+
+    }
 }

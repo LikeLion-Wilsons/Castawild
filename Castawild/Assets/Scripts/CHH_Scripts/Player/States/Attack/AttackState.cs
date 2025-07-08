@@ -7,6 +7,8 @@ public class AttackState : AttackBaseState
 
     public override void EnterState()
     {
+        LookForward();
+
         if (attackManager.movementManager.currentState == attackManager.movementManager.idleState)
             attackManager.anim.SetBool("FullAttack", true);
         attackManager.anim.SetBool("Attack", true);

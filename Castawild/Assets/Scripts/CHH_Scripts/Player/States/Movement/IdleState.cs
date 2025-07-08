@@ -32,4 +32,9 @@ public class IdleState : MovementBaseState
             movementManager.ChangeState(movementManager.jumpState);
         }
     }
+
+    public override void ExitState()
+    {
+
+    }
 }
