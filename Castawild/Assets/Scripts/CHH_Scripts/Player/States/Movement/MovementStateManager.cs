@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class MovementStateManager : BaseStateManager
 {
@@ -18,6 +19,7 @@ public class MovementStateManager : BaseStateManager
 
     #region Movement
     public float currentMoveSpeed;
+    public float rotationSpeed;
     public float walkSpeed = 3f;
     public float runSpeed = 7f;
     public float crouchSpeed = 2f;
@@ -97,8 +99,8 @@ public class MovementStateManager : BaseStateManager
 
     private void HandleMovement()
     {
-        Vector3 forward = cineCam.transform.forward;
-        Vector3 right = cineCam.transform.right;
+        Vector3 forward = cam.transform.forward;
+        Vector3 right = cam.transform.right;
 
         forward.y = 0f;
         right.y = 0f;
@@ -111,14 +113,21 @@ public class MovementStateManager : BaseStateManager
 
         if (dir.sqrMagnitude > 0.001f)
         {
-            Vector3 lookDirection = cineCam.transform.forward;
-            lookDirection.y = 0f;
+            Quaternion targetRotation = Quaternion.LookRotation(dir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
 
-            if (lookDirection.sqrMagnitude > 0.001f)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-            }
+            dir *= currentMoveSpeed;
+            controller.Move(dir * Time.deltaTime);
+
+
+            //Vector3 lookDirection = cam.transform.forward;
+            //lookDirection.y = 0f;
+
+            //if (lookDirection.sqrMagnitude > 0.001f)
+            //{
+            //    Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+            //    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+            //}
         }
     }
 

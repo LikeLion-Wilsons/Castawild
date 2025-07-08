@@ -32,7 +32,7 @@ public class AimState : AttackBaseState
 
     private void RotatePlayer()
     {
-        Vector3 lookDirection = attackManager.cineCam.transform.forward;
+        Vector3 lookDirection = attackManager.cam.transform.forward;
         lookDirection.y = 0f;
 
         if (lookDirection.sqrMagnitude > 0.001f)
