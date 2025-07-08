@@ -15,7 +15,7 @@ public class Item_Panel :
     public TextMeshProUGUI itemCountText;
     public float durability;//내구도
     [SerializeField] Sprite[] icons;
-    public Inventory parentPanel;
+    public UIInventory parentPanel;
     [Header("Drag&Drop")]
     [SerializeField] private Transform originalParent;
     [SerializeField] private Transform onDragParent;
@@ -29,7 +29,7 @@ public class Item_Panel :
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
     }
-    public void SlotInit(Item _item, Inventory inventory)
+    public void SlotInit(Item _item, UIInventory inventory)
     {
         item = _item;
         parentPanel = inventory;
@@ -54,14 +54,14 @@ public class Item_Panel :
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (item == null || item.item_Data == null) return;
-        inventory.GetComponent<Inventory>().SetItemClickAnimation(this);
+        inventory.GetComponent<UIInventory>().SetItemClickAnimation(this);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         if (item == null || item.item_Data == null) return;
-        if (inventory.GetComponent<Inventory>().itemClick.activeSelf == true)
-            inventory.GetComponent<Inventory>().itemClick.SetActive(false);
+        if (inventory.GetComponent<UIInventory>().itemClick.activeSelf == true)
+            inventory.GetComponent<UIInventory>().itemClick.SetActive(false);
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -102,7 +102,7 @@ public class Item_Panel :
         int indexA = transform.GetSiblingIndex();
         int indexB = droppedPanel.transform.GetSiblingIndex();
 
-        inventory.GetComponent<Inventory>().SwapItems(indexA, indexB);
+        inventory.GetComponent<UIInventory>().SwapItems(indexA, indexB);
     }
 }
 

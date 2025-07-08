@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class Inventory : UIPart
+public class UIInventory : UIPart
 {
     public Item_Panel item_panel;
     public Transform content;
@@ -15,11 +15,34 @@ public class Inventory : UIPart
 
     private void Start()
     {
-        InventoryManager.onItemGet += Init;
-        InventoryManager.onItemGet += SetItemList;
-        InventoryManager.onItemGet += SetInventory;
+        InventoryDataManager.onNewItemAdded += AddItemToFirstEmptySlot;
+        InventoryDataManager.onInventoryUpdated += RefreshUI;
         Init();
     }
+    public void Init()
+    {
+        items.Clear();
+        itemPanels.Clear();
+
+        itemMaximumValue = content.childCount;
+
+        //아이템 슬롯 할당
+        for (int i = 0; i < itemMaximumValue; i++)
+        {
+            itemPanels.Add(content.GetChild(i).GetComponent<Item_Panel>());
+        }
+        //갖고있는 아이템 추가
+        foreach (var item in InventoryDataManager.Instance.slot_List)
+        {
+            items.Add(item);
+        }
+        // 부족한 부분 null 채우기
+        while (items.Count < itemMaximumValue)
+        {
+            items.Add(null); // 빈 슬롯 의미
+        }
+    }
+
     public void RefreshUI()
     {
         for (int i = 0; i < itemPanels.Count; i++)
@@ -52,30 +75,6 @@ public class Inventory : UIPart
         itemPanels[indexB].SetItemSlot();
     }
 
-    public void Init()
-    {
-        items.Clear();
-        itemPanels.Clear();
-
-        itemMaximumValue = content.childCount;
-
-        //아이템 슬롯 할당
-        for (int i = 0; i < itemMaximumValue; i++)
-        {
-            itemPanels.Add(content.GetChild(i).GetComponent<Item_Panel>());
-        }
-        //갖고있는 아이템 추가
-        foreach (var item in InventoryManager.slot_List)
-        {
-            items.Add(item);
-        }
-        // 부족한 부분 null 채우기
-        while (items.Count < itemMaximumValue)
-        {
-            items.Add(null); // 빈 슬롯 의미
-        }
-    }
-
     //아이템을 얻을 때 실행
     public void SetItemList()
     {
@@ -85,12 +84,6 @@ public class Inventory : UIPart
                 itemPanels[i].SlotInit(items[i], this);
             else
                 itemPanels[i].SlotInit(null, this); // 빈 슬롯 처리
-        }
-    }
-    public void SetInventory()
-    {
-        for (int i = 0; i < itemPanels.Count; i++)
-        {
             itemPanels[i].SetItemSlot();//아이콘, 개수 설정
         }
     }
@@ -102,5 +95,19 @@ public class Inventory : UIPart
         itemClick.transform.localPosition = Vector2.zero;
     }
 
+    public void AddItemToFirstEmptySlot(Item newItem)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i] == null)
+            {
+                items[i] = newItem;
+                itemPanels[i].SlotInit(newItem, this);
+                itemPanels[i].SetItemSlot();
+                return;
+            }
+        }
 
+        Debug.LogWarning("인벤토리에 빈 공간이 없습니다!");
+    }
 }
