@@ -9,18 +9,19 @@ public class AimState : AttackBaseState
 
     public override void EnterState()
     {
-        attackManager.cameraManager.MoveCamera(true);
-
         if (attackManager.movementManager.currentState == attackManager.movementManager.idleState)
             attackManager.anim.SetBool("FullAiming", true);
         attackManager.anim.SetBool("Aiming", true);
+
+        attackManager.cameraManager.MoveCamera(true);
+        attackManager.player.currentAttackType = AttackType.Aim;
     }
 
     public override void UpdateState()
     {
         RotatePlayer();
 
-        if (attackManager.movementManager.currentState != attackManager.movementManager.idleState)
+        if (attackManager.player.currentMoveType != MoveType.Idle)
             attackManager.anim.SetBool("FullAiming", false);
 
         if (inputManager.attackAction.WasReleasedThisFrame())
@@ -45,6 +46,10 @@ public class AimState : AttackBaseState
     {
         attackManager.anim.SetBool("FullAiming", false);
         attackManager.anim.SetBool("Aiming", false);
+
+        attackManager.anim.speed = 1f;
+
         attackManager.cameraManager.MoveCamera(false);
+        attackManager.player.currentAttackType = AttackType.None;
     }
 }

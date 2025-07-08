@@ -45,7 +45,7 @@ public class MovementStateManager : BaseStateManager
 
         InitComponents();
         InitStates();
-        SwitchState(idleState);
+        ChangeState(idleState);
     }
 
     private void InitComponents()
@@ -133,7 +133,7 @@ public class MovementStateManager : BaseStateManager
         return false;
     }
 
-    public void SwitchState(MovementBaseState newState)
+    public void ChangeState(MovementBaseState newState)
     {
         currentState = newState;
         currentState.EnterState();

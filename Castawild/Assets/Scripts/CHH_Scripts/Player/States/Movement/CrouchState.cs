@@ -10,6 +10,7 @@ public class CrouchState : MovementBaseState
     {
         movementManager.anim.SetBool("Crouching", true);
         movementManager.currentMoveSpeed = movementManager.crouchSpeed;
+        movementManager.player.currentMoveType = MoveType.Crouch;
     }
 
     public override void UpdateState()
@@ -28,6 +29,6 @@ public class CrouchState : MovementBaseState
     void ExitState(MovementBaseState state)
     {
         movementManager.anim.SetBool("Crouching", false);
-        movementManager.SwitchState(state);
+        movementManager.ChangeState(state);
     }
 }

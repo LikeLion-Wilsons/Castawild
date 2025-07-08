@@ -11,7 +11,8 @@ public class AttackIdleState : AttackBaseState
 
     public override void UpdateState()
     {
-        if (inputManager.aimAction.WasPressedThisFrame())
+        if (inputManager.aimAction.WasPressedThisFrame() 
+            && attackManager.player.currentWeaponType != WeaponType.None && attackManager.player.currentWeaponType != WeaponType.Fist)
             attackManager.ChangeState(attackManager.aimState);
         else if (inputManager.attackAction.WasPressedThisFrame())
             attackManager.ChangeState(attackManager.attackState);

@@ -10,11 +10,14 @@ public class AttackState : AttackBaseState
         if (attackManager.movementManager.currentState == attackManager.movementManager.idleState)
             attackManager.anim.SetBool("FullAttack", true);
         attackManager.anim.SetBool("Attack", true);
+
+        attackManager.player.Attack();
+        attackManager.player.currentAttackType = AttackType.Attack;
     }
 
     public override void UpdateState()
     {
-        if (inputManager.moveInput.magnitude != 0f)
+        if (attackManager.player.currentMoveType != MoveType.Idle)
             attackManager.anim.SetBool("FullAttack", false);
 
         if (attackManager.animTrigger.isAnimationFinished)
@@ -28,5 +31,6 @@ public class AttackState : AttackBaseState
     {
         attackManager.anim.SetBool("FullAttack", false);
         attackManager.anim.SetBool("Attack", false);
+        attackManager.player.currentAttackType = AttackType.None;
     }
 }

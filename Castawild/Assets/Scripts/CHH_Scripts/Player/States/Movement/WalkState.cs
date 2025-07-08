@@ -9,11 +9,12 @@ public class WalkState : MovementBaseState
     {
         movementManager.anim.SetBool("Walking", true);
         movementManager.currentMoveSpeed = movementManager.walkSpeed;
+        movementManager.player.currentMoveType = MoveType.Walk;
     }
 
     public override void UpdateState()
     {
-        if (movementManager.inputManager.sprintAction.IsPressed())
+        if (movementManager.inputManager.sprintAction.IsPressed() && movementManager.player.currentAttackType != AttackType.Aim)
             ExitState(movementManager.runState);
         else if (movementManager.inputManager.crouchAction.WasPressedThisFrame())
             ExitState(movementManager.crouchState);
@@ -24,6 +25,6 @@ public class WalkState : MovementBaseState
     void ExitState(MovementBaseState state)
     {
         movementManager.anim.SetBool("Walking", false);
-        movementManager.SwitchState(state);
+        movementManager.ChangeState(state);
     }
 }
