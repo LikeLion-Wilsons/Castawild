@@ -14,55 +14,62 @@ public class InventoryDataManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
-    public static event Action<Item> onNewItemAdded;//새로운 아이템이 추가될 때
     public static event Action onInventoryUpdated;//기존에 있던 아이템이 추가될 때
 
-    public List<Item> slot_List = new List<Item>();
+    public List<Item> itemList = new List<Item>();
 
+    private void Start()
+    {
+        // 부족한 부분 null 채우기
+        while (itemList.Count < 20)
+        {
+            itemList.Add(null);
+        }
+    }
     // 아이템 획득
     public  void GetItem(Item_Scriptable scriptableData, int amount)
     {
         int id = scriptableData.itemID;
         // 이미 존재하는 아이템이면 개수만 증가
-        for (int i = 0; i < slot_List.Count; i++)
+        for (int i = 0; i < itemList.Count; i++)
         {
-            if (slot_List[i].item_Data.itemID == id)
+            if (itemList[i].item_Data == null) continue;
+            if (itemList[i].item_Data.itemID == id)
             {
-                slot_List[i].count += amount;
+                itemList[i].count += amount;
                 onInventoryUpdated?.Invoke();
                 return;
             }
         }
-
-        // 없으면 새로 추가
-        Item newItem = new Item
+        // 빈 슬롯 찾기
+        for (int i = 0; i < itemList.Count; i++)
         {
-            item_Data = scriptableData,
-            count = amount
-        };
-        slot_List.Add(newItem);
-        onNewItemAdded?.Invoke(newItem);
+            if (itemList[i].item_Data == null)
+            {
+                Item newItem = new Item { item_Data = scriptableData, count = amount };
+                itemList[i] = newItem;
+                onInventoryUpdated?.Invoke();
+                return;
+            }
+        }
     }
 
     //아이템 버리기
-    public void ThrowItem(int id)
+    public void ThrowItem(int index)
     {
-        for (int i = 0; i < slot_List.Count; i++)
+        if (index >= 0 && index < itemList.Count)
         {
-            if (slot_List[i].item_Data.itemID == id)
-            {
-                slot_List.RemoveAt(i);
-                return;
-            }
+            itemList[index] = null;
+            onInventoryUpdated?.Invoke();
         }
     }
 
     // 아이템 소지 여부 확인
     public bool HaveItem(int id)
     {
-        foreach (var item in slot_List)
+        foreach (var item in itemList)
         {
-            if (item.item_Data.itemID == id)
+            if (item != null && item.item_Data.itemID == id)
                 return true;
         }
         return false;
@@ -70,7 +77,7 @@ public class InventoryDataManager : MonoBehaviour
 
     public List<Item> GetItemList()
     {
-        return slot_List;
+        return itemList;
     }
 
 }

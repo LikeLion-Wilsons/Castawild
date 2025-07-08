@@ -15,13 +15,12 @@ public class Item_Panel :
     public TextMeshProUGUI itemCountText;
     public float durability;//내구도
     [SerializeField] Sprite[] icons;
-    public UIInventory parentPanel;
+
     [Header("Drag&Drop")]
     [SerializeField] private Transform originalParent;
     [SerializeField] private Transform onDragParent;
     [SerializeField] private RectTransform rectTransform;
     private Vector2 originalAnchoredPos;
-    [SerializeField] private Canvas canvas; // 부모 캔버스 (필요시 연결)
     private CanvasGroup canvasGroup;
 
     void Start()
@@ -29,10 +28,9 @@ public class Item_Panel :
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
     }
-    public void SlotInit(Item _item, UIInventory inventory)
+    public void SlotInit(Item _item)
     {
         item = _item;
-        parentPanel = inventory;
     }
     public void SetItemSlot()
     {
