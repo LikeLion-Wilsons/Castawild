@@ -29,6 +29,8 @@ public class UseToolState : ToolBaseState
 
     public override void ExitState()
     {
+        toolStateManager.player.isAimLocked = false;
+
         toolStateManager.anim.SetBool("FullUseTool", false);
         toolStateManager.anim.SetBool("UseTool", false);
         toolStateManager.player.currentAttackType = AttackType.None;

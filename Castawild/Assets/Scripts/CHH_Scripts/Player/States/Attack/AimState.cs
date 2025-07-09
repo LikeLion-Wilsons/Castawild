@@ -10,6 +10,7 @@ public class AimState : ToolBaseState
     public override void EnterState()
     {
         LookForward();
+        toolStateManager.player.isAimLocked = true;
 
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
             toolStateManager.anim.SetBool("FullAiming", true);
@@ -28,8 +29,12 @@ public class AimState : ToolBaseState
 
         if (inputManager.toolAction.WasReleasedThisFrame())
             toolStateManager.ChangeState(toolStateManager.useToolState);
+
         else if (inputManager.aimAction.WasReleasedThisFrame())
+        {
+            toolStateManager.player.isAimLocked = false;
             toolStateManager.ChangeState(toolStateManager.idleState);
+        }
     }
 
     private void RotatePlayer()
@@ -46,10 +51,8 @@ public class AimState : ToolBaseState
 
     public override void ExitState()
     {
-        toolStateManager.anim.SetBool("FullAiming", false);
         toolStateManager.anim.SetBool("Aiming", false);
-
-        toolStateManager.anim.speed = 1f;
+        toolStateManager.anim.SetBool("FullAiming", false);
 
         toolStateManager.cameraManager.MoveCamera(false);
         toolStateManager.player.currentAttackType = AttackType.None;

@@ -20,6 +20,8 @@ public class CwPlayer : MonoBehaviour
     public MoveType currentMoveType;
     public AttackType currentAttackType;
 
+    public bool isAimLocked = false;
+
     public PlayerData playerData;
 
     static public CwPlayer instance;

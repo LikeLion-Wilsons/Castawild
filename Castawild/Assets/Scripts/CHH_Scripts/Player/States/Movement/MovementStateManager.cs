@@ -114,8 +114,8 @@ public class MovementStateManager : BaseStateManager
 
         if (dir.sqrMagnitude > 0.001f)
         {
-            // 조준, 점프 중일 때는 회전 X
-            if (toolStateManager.currentState != toolStateManager.aimState && IsGrounded())
+            // 조준, 점프 중이 아닐 때만 회전
+            if (!player.isAimLocked && IsGrounded())
             {
                 Quaternion targetRotation = Quaternion.LookRotation(dir);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
