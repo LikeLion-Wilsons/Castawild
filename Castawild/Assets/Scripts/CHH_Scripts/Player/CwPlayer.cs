@@ -1,43 +1,24 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
-public enum WeaponType
+public enum WeaponType { None, Fist, Throw, Sword, Bow }
+public enum MoveType { Idle, Walk, Run, Crouch, Jump }
+public enum AttackType { None, Aim, Attack }
+
+public class CwPlayer : MonoBehaviour
 {
-    Fist,
-    Throw,
-    Sword,
-    Bow
-}
-
-public enum MoveState { Walk, Run }
-
-public class CwPlayer : CwCharacter
-{
-    [HideInInspector] public Animator anim;
+    // 나중에 HideInInspector로 바꾸기
+    /*[HideInInspector] */
+    public Animator anim;
     [HideInInspector] public Rigidbody rigid;
-    [HideInInspector] public PlayerInputController inputController;
+    [HideInInspector] public PlayerInputManager inputManager;
+    [HideInInspector] public MovementStateManager movementManager;
+    [HideInInspector] public AttackStateManager attackStateManager;
 
-    #region State
-    public PlayerIdleState idleState;
-    public PlayerMoveState moveState;
-    public PlayerCrouchState crouchState;
-    public PlayerInAir inAirState;
-
-    public PlayerStateMachine stateMachine;
-    #endregion
-
-    [Header("Ground")]
-    public LayerMask groundLayer;
-    public float rayDistance = 1.1f;
-    public Transform groundCheck;
-    [HideInInspector] public bool isGrounded = true;
-    [HideInInspector] public bool isJumping = false;
-    [HideInInspector] public bool isFalling = false;
-
-    private Dictionary<WeaponType, IWeapon> weaponDict;
-    public IWeapon currentWeapon { get; private set; }
+    private Dictionary<WeaponType, Weapon> weaponDict;
+    public WeaponType currentWeaponType;
+    public MoveType currentMoveType;
+    public AttackType currentAttackType;
 
     public PlayerData playerData;
 
@@ -48,7 +29,6 @@ public class CwPlayer : CwCharacter
         Singleton();
 
         InitializeComponents();
-        InitializeStates();
         InitializeWeapon();
 
         SetWeapon(WeaponType.Fist);
@@ -56,9 +36,9 @@ public class CwPlayer : CwCharacter
 
     private void InitializeComponents()
     {
-        anim = GetComponent<Animator>();
+        anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
-        inputController = GetComponent<PlayerInputController>();
+        inputManager = GetComponent<PlayerInputManager>();
     }
 
     private void Singleton()
@@ -69,20 +49,9 @@ public class CwPlayer : CwCharacter
             Destroy(gameObject);
     }
 
-    private void InitializeStates()
-    {
-        idleState = new PlayerIdleState(this, stateMachine, "Idle");
-        moveState = new PlayerMoveState(this, stateMachine, "Move");
-        crouchState = new PlayerCrouchState(this, stateMachine, "Crouch");
-        inAirState = new PlayerInAir(this, stateMachine, "InAir");
-
-        stateMachine = new PlayerStateMachine();
-        stateMachine.currentState = idleState;
-    }
-
     private void InitializeWeapon()
     {
-        weaponDict = new Dictionary<WeaponType, IWeapon>
+        weaponDict = new Dictionary<WeaponType, Weapon>
         {
             { WeaponType.Fist, new Melee() },
             { WeaponType.Throw, new Throw() },
@@ -91,65 +60,32 @@ public class CwPlayer : CwCharacter
         };
     }
 
-    private void Update()
-    {
-        stateMachine.currentState.UpdateState();
-        isGrounded = Physics.Raycast(groundCheck.position, Vector3.down, rayDistance, groundLayer);
-    }
-
     /// <summary>
     /// 무기 바꿀 때 호출
     /// </summary>
     public void SetWeapon(WeaponType weaponType)
     {
-        if (weaponDict.TryGetValue(weaponType, out var weapon))
-            currentWeapon = weapon;
-        else
-            Debug.LogError($"Weapon type {weaponType} 없음");
+        currentWeaponType = weaponType;
+        anim.SetInteger("WeaponType", (int)currentWeaponType);
     }
 
     /// <summary>
-    /// 플레이어 상태 바꿀 때 호출
+    /// 공격시 호출
     /// </summary>
-    public void ChangeStateMachine(PlayerState playerstate) => stateMachine.ChangeState(playerstate);
-
-    /// <summary>
-    /// 플레이어 이속 바꿀 때 호출
-    /// </summary>
-    public void ChangePlayerMoveState(MoveState _moveState)
+    public void Attack()
     {
-        if (_moveState == MoveState.Walk)
-            anim.SetBool("isRunning", false);
+        anim.SetInteger("WeaponType", (int)currentWeaponType);
+
+        if (weaponDict.TryGetValue(currentWeaponType, out Weapon weapon))
+            weapon.Attack();
+
         else
-            anim.SetBool("isRunning", true);
+            Debug.LogWarning("Weapon not found: " + currentWeaponType);
     }
 
-    private void OnDrawGizmos()
+    // 테스트용
+    private void OnValidate()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawRay(groundCheck.position, Vector3.down * rayDistance);
-    }
-
-    private void LandAnimationFinishTrigger()
-    {
-        if (inputController.moveInput.magnitude > 0f)
-            stateMachine.ChangeState(moveState);
-        else
-            stateMachine.ChangeState(idleState);
-    }
-
-    public override void TakeDamage(float _damage)
-    {
-        base.TakeDamage(_damage);
-    }
-
-    protected override void Die()
-    {
-
-    }
-
-    protected override void StatusEffect()
-    {
-
+        anim.SetInteger("WeaponType", (int)currentWeaponType);
     }
 }
