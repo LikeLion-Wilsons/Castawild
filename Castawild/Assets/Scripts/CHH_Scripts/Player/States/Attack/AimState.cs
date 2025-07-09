@@ -17,6 +17,7 @@ public class AimState : ToolBaseState
         toolStateManager.anim.SetBool("Aiming", true);
 
         toolStateManager.cameraManager.MoveCamera(true);
+
         toolStateManager.player.currentAttackType = AttackType.Aim;
     }
 
@@ -51,10 +52,6 @@ public class AimState : ToolBaseState
 
     public override void ExitState()
     {
-        toolStateManager.anim.SetBool("Aiming", false);
-        toolStateManager.anim.SetBool("FullAiming", false);
-
-        toolStateManager.cameraManager.MoveCamera(false);
         toolStateManager.player.currentAttackType = AttackType.None;
     }
 

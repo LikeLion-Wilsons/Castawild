@@ -107,4 +107,12 @@ public class PlayerInputManager : MonoBehaviour
         lookInput = lookAction.ReadValue<Vector2>();
         zoomInput = zoomAction.ReadValue<Vector2>();
     }
+
+    public bool MoveInputDectected()
+    {
+        if (moveAction.IsPressed())
+            return true;
+        else
+            return false;
+    }
 }

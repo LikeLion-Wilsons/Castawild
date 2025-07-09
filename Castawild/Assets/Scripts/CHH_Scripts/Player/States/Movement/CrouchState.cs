@@ -15,7 +15,7 @@ public class CrouchState : MovementBaseState
 
     public override void UpdateState()
     {
-        if (inputManager.moveAction.WasPressedThisFrame())
+        if (movementManager.inputManager.moveInput.magnitude > 0.1f)
             movementManager.anim.SetBool("Walking", true);
         else if (inputManager.moveAction.WasReleasedThisFrame())
             movementManager.anim.SetBool("Walking", false);

@@ -20,10 +20,17 @@ public class UseToolState : ToolBaseState
         if (toolStateManager.player.currentMoveType != MoveType.Idle)
             toolStateManager.anim.SetBool("FullUseTool", false);
 
+        if (ToolActionRelease())
+            return;
+
         if (toolStateManager.animTrigger.isAnimationFinished)
         {
             toolStateManager.animTrigger.isAnimationFinished = false;
-            toolStateManager.ChangeState(toolStateManager.idleState);
+
+            if (inputManager.aimAction.IsPressed() && toolStateManager.player.IsAimTool())
+                toolStateManager.ChangeState(toolStateManager.aimState);
+            else
+                toolStateManager.ChangeState(toolStateManager.idleState);
         }
     }
 
@@ -34,5 +41,16 @@ public class UseToolState : ToolBaseState
         toolStateManager.anim.SetBool("FullUseTool", false);
         toolStateManager.anim.SetBool("UseTool", false);
         toolStateManager.player.currentAttackType = AttackType.None;
+    }
+
+    private bool ToolActionRelease()
+    {
+        if (toolStateManager.player.IsTool())
+        {
+            if (!inputManager.toolAction.IsPressed() && toolStateManager.animTrigger.isAnimationFinished)
+                toolStateManager.ChangeState(toolStateManager.idleState);
+            return true;
+        }
+        return false;
     }
 }

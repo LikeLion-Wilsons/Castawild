@@ -42,5 +42,12 @@ public class ToolStateManager : BaseStateManager
     {
         inputManager.HandleMovementInput();
         currentState?.UpdateState();
+
+        if (inputManager.aimAction.WasReleasedThisFrame())
+        {
+            anim.SetBool("Aiming", false);
+            anim.SetBool("FullAiming", false);
+            cameraManager.MoveCamera(false);
+        }
     }
 }

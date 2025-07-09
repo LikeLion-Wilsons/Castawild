@@ -11,6 +11,7 @@ public class AnimationTrigger : MonoBehaviour
     }
 
     public void AnimationFinishTrigger() => isAnimationFinished = true;
+    public void AnimationStartTrigger() => isAnimationFinished = false;
     public void JumpForce() => movementManager.velocity.y += movementManager.jumpForce;
     public void Jumped() => movementManager.jumped = true;
 }

@@ -80,4 +80,9 @@ public class CwPlayer : MonoBehaviour
     {
         anim.SetInteger("WeaponType", (int)currentToolType);
     }
+
+    public bool IsAimTool() => currentToolType == ToolType.Bow || currentToolType == ToolType.Throw;
+    public bool IsTool() => currentToolType == ToolType.Axe || currentToolType == ToolType.Pickaxe;
 }
+
+
