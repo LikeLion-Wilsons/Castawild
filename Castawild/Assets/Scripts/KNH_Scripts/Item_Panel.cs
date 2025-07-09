@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -24,6 +25,7 @@ public class Item_Panel :
     private CanvasGroup canvasGroup;
     private int originalCount;
 
+    GameObject draggedClone;
 
     private bool isRightMouseDrag = false;    //우클릭 드래그 플래그
 
@@ -36,10 +38,7 @@ public class Item_Panel :
     {
         item = _item;
     }
-    public void SetItemSlot(int count)
-    {
-        itemCountText.text = count.ToString();
-    }
+
     public void SetItemSlot()
     {
         if (item != null && item.item_Data != null && item.count != 0)
@@ -73,7 +72,7 @@ public class Item_Panel :
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        
+
         if (item == null || item.item_Data == null) return;
 
         originalAnchoredPos = rectTransform.anchoredPosition;
@@ -81,60 +80,90 @@ public class Item_Panel :
         //우클릭 여부 저장
         isRightMouseDrag = Input.GetMouseButton(1);
 
-
-        var droppedObj = eventData.pointerDrag;
-        if (droppedObj == null) return;
-
-        var droppedPanel = droppedObj.GetComponent<Item_Panel>();
-        droppedPanel.originalCount = item.count;
-        if (droppedPanel.isRightMouseDrag)
+        if (isRightMouseDrag)
         {
+            int half = item.count / 2;
             originalCount = item.count;
-            int half = originalCount / 2;
-            if (half <= 0) return;
 
-            // 원래 슬롯에는 절반만 남기기
-            item.count = originalCount - half;
+            // 원래 슬롯에 절반 남기기
+            item.count -= half;
+            SetItemSlot();
 
-            // 복제 아이템 생성해서 드래그 시작
-            item = new Item
+            // 복제 오브젝트 생성
+            draggedClone = Instantiate(gameObject, onDragParent);
+            var clonePanel = draggedClone.GetComponent<Item_Panel>();
+
+            // 복제 아이템 설정
+            clonePanel.item = new Item
             {
                 item_Data = item.item_Data,
                 count = half,
                 durability = item.durability
             };
-            SetItemSlot();
-            droppedPanel.SetItemSlot(droppedPanel.originalCount / 2);
-        }
+            clonePanel.inventory = inventory;
+            clonePanel.SetItemSlot();
 
+            // 드래그 오브젝트는 마우스 따라다니게 설정
+            draggedClone.GetComponent<CanvasGroup>().blocksRaycasts = false;
+        }
+        else
+        {
+            transform.SetParent(onDragParent); // 좌클릭 드래그는 기존 오브젝트 이동
+        }
         canvasGroup.blocksRaycasts = false;
-        transform.SetParent(onDragParent);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (item == null || item.item_Data == null) return;
-        rectTransform.position = eventData.position;
+        if (isRightMouseDrag && draggedClone != null)
+        {
+            draggedClone.GetComponent<RectTransform>().position = eventData.position;
+        }
+        else
+        {
+            rectTransform.position = eventData.position;
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        var droppedObj = eventData.pointerDrag;
-        if (droppedObj == null) return;
+        // 드래그 종료 위치 기준으로 레이캐스트
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
 
-        var droppedPanel = droppedObj.GetComponent<Item_Panel>();
-        // 드롭 성공 못했으면 원래 위치로 복귀
-        if (transform.parent == onDragParent)
+        bool droppedOnSlot = false;
+        if (isRightMouseDrag)
         {
-            transform.SetParent(originalParent);
-            rectTransform.anchoredPosition = originalAnchoredPos;
-            if (droppedPanel.isRightMouseDrag)
-            { 
-                //droppedPanel.item.count = droppedPanel.originalCount;
+            foreach (var result in results)
+            {
+                //슬롯 위에 드랍
+                if (result.gameObject != gameObject && result.gameObject.GetComponent<Item_Panel>() != null)
+                {
+                    droppedOnSlot = true;
+                    break;
+
+                }
+                else break;
+            }
+            //이동 실패
+            if (!droppedOnSlot)
+            {
+                item.count = originalCount;
+                SetItemSlot();
+            }
+
+            Destroy(draggedClone);
+        }
+        else
+        {
+            if (transform.parent == onDragParent)
+            {
+                transform.SetParent(originalParent);
+                rectTransform.anchoredPosition = originalAnchoredPos;
             }
         }
         canvasGroup.blocksRaycasts = true;
-        droppedPanel.SetItemSlot();
+        SetItemSlot();
         inventory.GetComponent<UIInventory>().SetItemList();
     }
 
@@ -153,7 +182,6 @@ public class Item_Panel :
         var fromItem = items[indexB];
         var toItem = items[indexA];
 
-
         // 우클릭 드래그: 절반만 이동
         if (droppedPanel.isRightMouseDrag)
         {
@@ -169,16 +197,14 @@ public class Item_Panel :
                     count = half,
                     durability = fromItem.durability
                 };
+                // 원래 아이템에서 수량 차감
+                toItem.count -= droppedPanel.originalCount / 2;
             }
             else
             {
                 // 다른 아이템이면 무시
                 return;
             }
-
-            // 원래 아이템에서 수량 차감
-            //fromItem.count -= droppedPanel.originalCount / 2;
-
             droppedPanel.SetItemSlot();
             inventory.GetComponent<UIInventory>().SetItemList();
             SetItemSlot();
@@ -188,7 +214,7 @@ public class Item_Panel :
         {
             if (toItem.item_Data != null)//이동하려는 슬롯이 null이 아닌 경우
             {
-                if (toItem.item_Data.itemID == fromItem.item_Data.itemID && toItem.count + fromItem.count < 20 
+                if (toItem.item_Data.itemID == fromItem.item_Data.itemID && toItem.count + fromItem.count < 20
                     && fromItem.item_Data.type != Item_Type.Equipment)
                 {
                     // 같은 아이템이면 합치기
@@ -200,7 +226,6 @@ public class Item_Panel :
 
             }
             inventory.GetComponent<UIInventory>().SwapItems(indexA, indexB);
-
         }
     }
 }
