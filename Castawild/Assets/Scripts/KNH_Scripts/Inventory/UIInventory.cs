@@ -55,7 +55,6 @@ public class UIInventory : UIPart
         items[indexB] = temp;
 
         SetItemList();
-        RefreshUI();
     }
 
     //아이템을 얻을 때 실행

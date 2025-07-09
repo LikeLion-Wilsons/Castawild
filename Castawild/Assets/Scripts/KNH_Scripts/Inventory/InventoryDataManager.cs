@@ -8,23 +8,25 @@ public class InventoryDataManager : MonoBehaviour
 {
     public static InventoryDataManager Instance { get; private set; }
     [SerializeField] int maxStackCount;//아이템 최대 스택 개수
+    public List<Item> itemList = new List<Item>(20);
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+
+        for (int i = 0; i < 20; i++)
+        {
+            itemList.Add(null);
+        }
     }
 
     public static event Action onInventoryUpdated;//기존에 있던 아이템이 추가될 때
 
-    public List<Item> itemList = new List<Item>();
+
 
     private void Start()
     {
-        // 부족한 부분 null 채우기
-        while (itemList.Count < 20)
-        {
-            itemList.Add(null);
-        }
+
     }
     // 아이템 획득
     public  void GetItem(Item_Scriptable scriptableData, int amount)
@@ -33,15 +35,18 @@ public class InventoryDataManager : MonoBehaviour
         // 이미 존재하는 아이템이면 개수만 증가
         for (int i = 0; i < itemList.Count; i++)
         {
-            if (itemList[i].item_Data == null) continue;
-            if (itemList[i].item_Data.type == Item_Type.Equipment) maxStackCount = 1;
-            else maxStackCount = 20;
-            if (itemList[i].item_Data.itemID == id && itemList[i].count < maxStackCount)
+            if (itemList[i].item_Data != null)
             {
-                itemList[i].count += amount;
-                onInventoryUpdated?.Invoke();
-                return;
-            }
+                if (itemList[i].item_Data.type == Item_Type.Equipment) maxStackCount = 1;
+                else maxStackCount = 20;
+                if (itemList[i].item_Data.itemID == id && itemList[i].count < maxStackCount)
+                {
+                    itemList[i].count += amount;
+                    onInventoryUpdated?.Invoke();
+                    return;
+                }
+            } 
+            
         }
         // 빈 슬롯 찾기
         for (int i = 0; i < itemList.Count; i++)
