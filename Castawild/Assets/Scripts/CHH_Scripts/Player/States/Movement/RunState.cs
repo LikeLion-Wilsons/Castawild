@@ -23,8 +23,9 @@ public class RunState : MovementBaseState
             movementManager.ChangeState(movementManager.idleState);
 
         // Jump
-        if (inputManager.jumpAction.WasPressedThisFrame())
+        if (inputManager.jumpAction.WasPressedThisFrame() && movementManager.canJump)
         {
+            movementManager.canJump = false;
             movementManager.previousState = this;
             movementManager.ChangeState(movementManager.jumpState);
         }

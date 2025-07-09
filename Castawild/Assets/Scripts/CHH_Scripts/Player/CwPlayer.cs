@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum WeaponType { None, Fist, Throw, Sword, Bow }
+// 테스트용
+public enum ToolType { None, Fist, Throw, Sword, Bow, Axe, Pickaxe, Knife }
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
 public enum AttackType { None, Aim, Attack }
 
@@ -13,10 +14,9 @@ public class CwPlayer : MonoBehaviour
     [HideInInspector] public Rigidbody rigid;
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public MovementStateManager movementManager;
-    [HideInInspector] public AttackStateManager attackStateManager;
+    [HideInInspector] public ToolStateManager toolStateManager;
 
-    private Dictionary<WeaponType, Weapon> weaponDict;
-    public WeaponType currentWeaponType;
+    public ToolType currentToolType;
     public MoveType currentMoveType;
     public AttackType currentAttackType;
 
@@ -29,9 +29,8 @@ public class CwPlayer : MonoBehaviour
         Singleton();
 
         InitializeComponents();
-        InitializeWeapon();
 
-        SetWeapon(WeaponType.Fist);
+        SetWeapon(ToolType.Fist);
     }
 
     private void InitializeComponents()
@@ -49,24 +48,13 @@ public class CwPlayer : MonoBehaviour
             Destroy(gameObject);
     }
 
-    private void InitializeWeapon()
-    {
-        weaponDict = new Dictionary<WeaponType, Weapon>
-        {
-            { WeaponType.Fist, new Melee() },
-            { WeaponType.Throw, new Throw() },
-            { WeaponType.Bow, new Bow() },
-            { WeaponType.Sword, new Sword() }
-        };
-    }
-
     /// <summary>
     /// 무기 바꿀 때 호출
     /// </summary>
-    public void SetWeapon(WeaponType weaponType)
+    public void SetWeapon(ToolType weaponType)
     {
-        currentWeaponType = weaponType;
-        anim.SetInteger("WeaponType", (int)currentWeaponType);
+        currentToolType = weaponType;
+        anim.SetInteger("WeaponType", (int)currentToolType);
     }
 
     /// <summary>
@@ -74,18 +62,21 @@ public class CwPlayer : MonoBehaviour
     /// </summary>
     public void Attack()
     {
-        anim.SetInteger("WeaponType", (int)currentWeaponType);
+        anim.SetInteger("WeaponType", (int)currentToolType);
 
-        if (weaponDict.TryGetValue(currentWeaponType, out Weapon weapon))
-            weapon.Attack();
+        if (currentToolType == ToolType.Throw)
+        {
 
-        else
-            Debug.LogWarning("Weapon not found: " + currentWeaponType);
+        }
+        else if (currentToolType == ToolType.Bow)
+        {
+
+        }
     }
 
     // 테스트용
     private void OnValidate()
     {
-        anim.SetInteger("WeaponType", (int)currentWeaponType);
+        anim.SetInteger("WeaponType", (int)currentToolType);
     }
 }

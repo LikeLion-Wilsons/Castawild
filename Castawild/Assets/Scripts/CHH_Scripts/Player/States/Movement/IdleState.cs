@@ -26,8 +26,9 @@ public class IdleState : MovementBaseState
             movementManager.ChangeState(movementManager.crouchState);
 
         // Jump
-        if (inputManager.jumpAction.WasPressedThisFrame())
+        if (inputManager.jumpAction.WasPressedThisFrame() && movementManager.canJump)
         {
+            movementManager.canJump = false;
             movementManager.previousState = this;
             movementManager.ChangeState(movementManager.jumpState);
         }

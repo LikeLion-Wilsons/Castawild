@@ -14,7 +14,7 @@ public class PlayerInputManager : MonoBehaviour
     [HideInInspector] public InputAction zoomAction;
     [HideInInspector] public InputAction aimAction;
     [HideInInspector] public InputAction sprintAction;
-    [HideInInspector] public InputAction attackAction;
+    [HideInInspector] public InputAction toolAction;
 
     public Vector2 moveInput { get; private set; }
     public Vector2 lookInput { get; private set; }
@@ -56,7 +56,7 @@ public class PlayerInputManager : MonoBehaviour
         zoomAction = InputSystem.actions.FindAction("Zoom");
         sprintAction = InputSystem.actions.FindAction("Sprint");
         aimAction = InputSystem.actions.FindAction("Aim");
-        attackAction = InputSystem.actions.FindAction("Attack");
+        toolAction = InputSystem.actions.FindAction("Attack");
     }
 
     private void Update()
@@ -97,11 +97,6 @@ public class PlayerInputManager : MonoBehaviour
         moveInput = moveAction.ReadValue<Vector2>();
         verticalInput = moveInput.y;
         horizontalInput = moveInput.x;
-    }
-
-    private void HandleJumpingInput()
-    {
-
     }
 
     /// <summary>

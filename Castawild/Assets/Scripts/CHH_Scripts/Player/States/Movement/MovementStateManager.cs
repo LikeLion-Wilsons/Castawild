@@ -3,7 +3,7 @@ using UnityEngine;
 public class MovementStateManager : BaseStateManager
 {
     #region Conponent
-    [HideInInspector] public AttackStateManager attackManager;
+    [HideInInspector] public ToolStateManager toolStateManager;
     [SerializeField] private CharacterController controller;
     #endregion
 
@@ -18,17 +18,19 @@ public class MovementStateManager : BaseStateManager
 
     #region Movement
     public float currentMoveSpeed;
-    public float rotationSpeed;
+    public float airSpeedMuliplier = 0.7f;
     public float walkSpeed = 3f;
     public float runSpeed = 7f;
     public float crouchSpeed = 2f;
     [HideInInspector] public Vector3 dir;
+    [HideInInspector] public bool canJump = true;
     #endregion
 
     #region GoundCheck
     [SerializeField] private float groundYOffset;
     [SerializeField] private float groundCheckRadius = 0.3f;
     [SerializeField] private LayerMask groundMask;
+    [SerializeField] private float fallMultiplier = 1.5f;
     private Vector3 spherePos;
     #endregion
 
@@ -56,7 +58,7 @@ public class MovementStateManager : BaseStateManager
     private void InitComponents()
     {
         controller = GetComponent<CharacterController>();
-        attackManager = GetComponent<AttackStateManager>();
+        toolStateManager = GetComponent<ToolStateManager>();
     }
 
     private void InitStates()
@@ -112,15 +114,15 @@ public class MovementStateManager : BaseStateManager
 
         if (dir.sqrMagnitude > 0.001f)
         {
-            // 조준중일 때는 회전 X
-            if (attackManager.currentState != attackManager.aimState)
+            // 조준, 점프 중일 때는 회전 X
+            if (toolStateManager.currentState != toolStateManager.aimState && IsGrounded())
             {
                 Quaternion targetRotation = Quaternion.LookRotation(dir);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
             }
 
-            dir *= currentMoveSpeed;
-            controller.Move(dir * Time.deltaTime);
+            Vector3 speed = IsGrounded() ? dir * currentMoveSpeed : dir * currentMoveSpeed * airSpeedMuliplier;
+            controller.Move(speed * Time.deltaTime);
         }
     }
 
@@ -129,7 +131,7 @@ public class MovementStateManager : BaseStateManager
         if (IsGrounded() && velocity.y < 0)
             velocity.y = -1f;
         else
-            velocity.y += gravity * Time.deltaTime;
+            velocity.y += gravity * fallMultiplier * Time.deltaTime;
 
         controller.Move(velocity * Time.deltaTime);
     }

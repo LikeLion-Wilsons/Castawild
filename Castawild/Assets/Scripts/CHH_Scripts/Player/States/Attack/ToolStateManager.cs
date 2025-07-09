@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AttackStateManager : BaseStateManager
+public class ToolStateManager : BaseStateManager
 {
     #region Components
     [HideInInspector] public MovementStateManager movementManager;
@@ -9,8 +9,8 @@ public class AttackStateManager : BaseStateManager
     #endregion
 
     #region States
-    public AttackIdleState idleState;
-    public AttackState attackState;
+    public ToolIdleState idleState;
+    public UseToolState useToolState;
     public AimState aimState;
     #endregion
 
@@ -31,8 +31,8 @@ public class AttackStateManager : BaseStateManager
 
     private void InitStates()
     {
-        idleState = new AttackIdleState(this, inputManager);
-        attackState = new AttackState(this, inputManager);
+        idleState = new ToolIdleState(this, inputManager);
+        useToolState = new UseToolState(this, inputManager);
         aimState = new AimState(this, inputManager);
 
         ChangeState(idleState);

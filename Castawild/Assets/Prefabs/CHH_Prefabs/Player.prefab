@@ -1805,8 +1805,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4993387297895651439}
-  - component: {fileID: 3161168489052335409}
   - component: {fileID: 2660774277226879753}
+  - component: {fileID: 3161168489052335409}
   - component: {fileID: 5464433208732490659}
   - component: {fileID: 1159495505722438167}
   - component: {fileID: 6180852379802345285}
@@ -1836,37 +1836,6 @@ Transform:
   - {fileID: 3220394449219885876}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3161168489052335409
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7051484618498464286}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37780f67a756e1342a61c5fca868bd42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  anim: {fileID: 7857028766390958448}
-  inputManager: {fileID: 5464433208732490659}
-  cineCam: {fileID: 0}
-  player: {fileID: 0}
-  controller: {fileID: 2660774277226879753}
-  currentMoveSpeed: 3
-  walkSpeed: 7
-  runSpeed: 15
-  crouchSpeed: 2
-  dir: {x: 0, y: 0, z: 0}
-  groundYOffset: 0
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 8
-  gravity: -9.81
-  jumpForce: 5
-  jumped: 0
-  velocity: {x: 0, y: 0, z: 0}
-  animationLerpSpeed: 10
 --- !u!143 &2660774277226879753
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1892,6 +1861,42 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1.83, z: 0}
+--- !u!114 &3161168489052335409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7051484618498464286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37780f67a756e1342a61c5fca868bd42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anim: {fileID: 7857028766390958448}
+  inputManager: {fileID: 5464433208732490659}
+  cam: {fileID: 0}
+  player: {fileID: 0}
+  toolStateManager: {fileID: 0}
+  controller: {fileID: 2660774277226879753}
+  currentMoveSpeed: 3
+  airSpeedMuliplier: 0.7
+  walkSpeed: 5
+  runSpeed: 10
+  crouchSpeed: 2
+  dir: {x: 0, y: 0, z: 0}
+  canJump: 1
+  groundYOffset: 0
+  groundCheckRadius: 0.3
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 8
+  fallMultiplier: 1.5
+  gravity: -9.81
+  jumpForce: 8
+  jumped: 0
+  velocity: {x: 0, y: 0, z: 0}
+  animationLerpSpeed: 10
 --- !u!114 &5464433208732490659
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1968,11 +1973,11 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
-  attackAction:
+  toolAction:
     m_Name: 
     m_Type: 0
     m_ExpectedControlType: 
-    m_Id: 048f2c14-2725-43df-bcd3-fea7b1ab27c6
+    m_Id: 945da919-a519-4774-805c-678cce71a2b8
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings: []
@@ -1995,7 +2000,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   anim: {fileID: 0}
   inputManager: {fileID: 0}
-  cineCam: {fileID: 0}
+  cam: {fileID: 0}
   player: {fileID: 0}
   movementManager: {fileID: 0}
   cameraManager: {fileID: 0}
@@ -2016,8 +2021,8 @@ MonoBehaviour:
   rigid: {fileID: 0}
   inputManager: {fileID: 0}
   movementManager: {fileID: 0}
-  attackStateManager: {fileID: 0}
-  currentWeaponType: 0
+  toolStateManager: {fileID: 0}
+  currentToolType: 0
   currentMoveType: 0
   currentAttackType: 0
   playerData: {fileID: 11400000, guid: 643df4f9e15c3f445a30530c009e87cf, type: 2}
