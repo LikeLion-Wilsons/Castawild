@@ -9,8 +9,6 @@ public class UseToolState : ToolBaseState
 
     public override void EnterState()
     {
-        toolStateManager.animTrigger.canComboAttack = true;
-
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState
             || toolStateManager.player.currentToolType == ToolType.Sword)
             toolStateManager.anim.SetBool("FullUseTool", true);
@@ -55,8 +53,6 @@ public class UseToolState : ToolBaseState
     public override void ExitState()
     {
         comboCount = 1;
-        toolStateManager.animTrigger.canComboAttack = true;
-
         toolStateManager.player.isAimLocked = false;
 
         toolStateManager.anim.SetBool("FullUseTool", false);
@@ -83,7 +79,7 @@ public class UseToolState : ToolBaseState
 
         bool isMelee = type == ToolType.Sword || type == ToolType.Fist;
         bool pressed = inputManager.toolAction.WasPressedThisFrame();
-        bool canCombo = toolStateManager.animTrigger.canComboAttack;
+        bool canCombo = toolStateManager.animTrigger.canReceiveInput;
 
         return isMelee && pressed && canCombo;
     }

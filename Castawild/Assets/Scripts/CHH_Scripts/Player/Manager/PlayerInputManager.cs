@@ -116,7 +116,7 @@ public class PlayerInputManager : MonoBehaviour
     /// </summary>
     public bool MoveInputDectected()
     {
-        if (moveAction.IsPressed() && player.CanMove())
+        if (moveAction.IsPressed())
             return true;
         else
             return false;

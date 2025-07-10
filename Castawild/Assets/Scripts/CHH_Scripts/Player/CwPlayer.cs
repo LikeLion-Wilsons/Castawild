@@ -97,12 +97,4 @@ public class CwPlayer : MonoBehaviour
         else
             return false;
     }
-
-    public bool CanMove()
-    {
-        if (currentToolType == ToolType.Sword && toolStateManager.currentState == toolStateManager.useToolState)
-            return false;
-
-        return true;
-    }
 }

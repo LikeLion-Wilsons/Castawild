@@ -87,8 +87,7 @@ public class MovementStateManager : BaseStateManager
     {
         UpdateMoveAnimation();
 
-        if (player.CanMove())
-            HandleMovement();
+        HandleMovement();
     }
 
     private void UpdateMoveAnimation()
