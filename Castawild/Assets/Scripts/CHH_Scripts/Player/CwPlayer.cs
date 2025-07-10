@@ -97,4 +97,12 @@ public class CwPlayer : MonoBehaviour
         else
             return false;
     }
+
+    public bool HoldAttackTool()
+    {
+        if (currentToolType == ToolType.Spear || currentToolType == ToolType.Sword)
+            return true;
+        else
+            return false;
+    }
 }

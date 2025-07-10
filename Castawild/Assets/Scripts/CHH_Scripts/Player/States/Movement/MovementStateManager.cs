@@ -18,6 +18,7 @@ public class MovementStateManager : BaseStateManager
     #endregion
 
     #region Movement
+    [HideInInspector] public bool canMove = true;
     public float currentMoveSpeed;
     public float airSpeedMuliplier = 0.7f;
     public float walkSpeed = 3f;
@@ -87,7 +88,8 @@ public class MovementStateManager : BaseStateManager
     {
         UpdateMoveAnimation();
 
-        HandleMovement();
+        if (canMove)
+            HandleMovement();
     }
 
     private void UpdateMoveAnimation()
@@ -172,5 +174,11 @@ public class MovementStateManager : BaseStateManager
             walkSpeed -= value;
             runSpeed -= value;
         }
+    }
+
+    public void ChangeIdleState()
+    {
+        canMove = false;
+        ChangeState(idleState);
     }
 }

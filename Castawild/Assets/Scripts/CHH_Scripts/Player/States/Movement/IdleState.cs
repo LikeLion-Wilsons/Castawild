@@ -15,7 +15,7 @@ public class IdleState : MovementBaseState
     public override void UpdateState()
     {
         // Move
-        if (movementManager.inputManager.MoveInputDectected())
+        if (movementManager.inputManager.MoveInputDectected() && movementManager.canMove)
         {
             if (movementManager.inputManager.sprintAction.IsPressed() && movementManager.player.currentAttackType != AttackType.Aim)
                 movementManager.ChangeState(movementManager.runState);

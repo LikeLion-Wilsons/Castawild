@@ -19,9 +19,13 @@ public class ToolIdleState : ToolBaseState
         // UseTool
         else if (inputManager.toolAction.WasPressedThisFrame())
         {
-            if (toolStateManager.player.currentToolType == ToolType.Sword
-                && toolStateManager.movementManager.currentState == toolStateManager.movementManager.jumpState)
-                return;
+            // 점프상태일 땐 막기
+            if (toolStateManager.player.HoldAttackTool())
+            {
+                if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.jumpState)
+                    return;
+                toolStateManager.movementManager.ChangeIdleState();
+            }
             toolStateManager.ChangeState(toolStateManager.useToolState);
         }
     }

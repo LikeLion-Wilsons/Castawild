@@ -34,7 +34,7 @@ public class UseToolState : ToolBaseState
             if (ComboAttack() && comboCount == 1)
             {
                 comboCount++;
-                toolStateManager.anim.SetBool("ComboAttack", true);
+                toolStateManager.animTrigger.canComboAttack = true;
                 return;
             }
         }
@@ -59,6 +59,7 @@ public class UseToolState : ToolBaseState
         toolStateManager.anim.SetBool("UseTool", false);
         toolStateManager.anim.SetBool("ComboAttack", false);
 
+        toolStateManager.movementManager.canMove = true;
         toolStateManager.player.currentAttackType = AttackType.None;
     }
 
