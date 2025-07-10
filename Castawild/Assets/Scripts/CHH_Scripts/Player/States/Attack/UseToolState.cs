@@ -30,8 +30,8 @@ public class UseToolState : ToolBaseState
         if (CraftingToolActionRelease())
             return;
 
-        if (inputManager.toolAction.WasPressedThisFrame())
         // 콤보 어택
+        if (inputManager.toolAction.WasPressedThisFrame())
         {
             if (ComboAttack() && comboCount == 1)
             {

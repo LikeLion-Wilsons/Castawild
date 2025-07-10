@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // 테스트용
-public enum ToolType { None, Fist, Throw, Sword, Bow, Axe, Pickaxe, Knife }
+public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife }
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
 public enum AttackType { None, Aim, Attack }
 
