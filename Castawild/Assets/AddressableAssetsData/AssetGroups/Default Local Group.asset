@@ -16,7 +16,7 @@ MonoBehaviour:
   m_GUID: 97fca944b54a4ca4280c5552abb3e27e
   m_SerializeEntries:
   - m_GUID: c064942bee3fbdf4a93cd81e71554927
-    m_Address: Assets/Scripts/LSM_Scripts/Default Character Data.asset
+    m_Address: DefaultCharacter
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
