@@ -2,23 +2,66 @@ using UnityEngine;
 
 public class UI_Test : MonoBehaviour
 {
+    
     [SerializeField] Item_Scriptable[] itemData;
+    public Item[] itemsToPickUp;
+
+    public void PickUpItem(int id)
+    {
+        bool result = InventoryDataManager.Instance.AddItem(itemData[id]);
+        if(result == true)
+        {
+            Debug.Log(itemData[id].name+" 획득");
+        }
+        else
+        {
+            Debug.Log("인벤토리가 가득찼습니다.");
+        }
+    }
+
+    public void GetSelectedItem()
+    {
+        Item_Scriptable receivedItem = InventoryDataManager.Instance.GetSeletedItem(false);
+        if(receivedItem != null)
+        {
+            Debug.Log("Received item : " + receivedItem);
+        }
+        else
+        {
+            Debug.Log("No Item Received!");
+        }
+    }
+
+    public void UseSelectedItem()
+    {
+        Item_Scriptable receivedItem = InventoryDataManager.Instance.GetSeletedItem(true);
+        if (receivedItem != null)
+        {
+            Debug.Log("Used item : " + receivedItem);
+        }
+        else
+        {
+            Debug.Log("No Item Used!");
+        }
+    }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Z))
         {
-            Debug.Log("나뭇가지 획득");
-            InventoryDataManager.Instance.GetItem(itemData[0], 1);
+            PickUpItem(0);
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetKeyDown(KeyCode.X))
         {
-            Debug.Log("돌 획득");
-            InventoryDataManager.Instance.GetItem(itemData[1], 1);
+            PickUpItem(1);
         }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Input.GetKeyDown(KeyCode.C))
         {
-            Debug.Log("도끼 획득");
-            InventoryDataManager.Instance.GetItem(itemData[2], 1);
+            PickUpItem(2);
         }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            UseSelectedItem();
+        }
+
     }
 }

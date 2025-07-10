@@ -12,6 +12,10 @@ public class Item_Panel :
     public GameObject itemData;
     public GameObject inventory;
 
+    public Image image;
+    public Color selectedColor, notSelectedColor;
+
+
     public Image item_icon;
     public TextMeshProUGUI itemCountText;
     [SerializeField] Image durabilityBar;//내구도 UI
@@ -31,6 +35,7 @@ public class Item_Panel :
 
     void Start()
     {
+        Deselect();
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
     }
@@ -57,6 +62,14 @@ public class Item_Panel :
         }
     }
 
+    public void Select()
+    {
+        image.color = selectedColor;
+    }
+    public void Deselect()
+    {
+        image.color = notSelectedColor;
+    }
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (item == null || item.item_Data == null) return;
@@ -169,6 +182,7 @@ public class Item_Panel :
 
     public void OnDrop(PointerEventData eventData)
     {
+        InventoryItem inventoryitem = eventData.pointerDrag.GetComponent<InventoryItem>();
         var droppedObj = eventData.pointerDrag;
         if (droppedObj == null) return;
 

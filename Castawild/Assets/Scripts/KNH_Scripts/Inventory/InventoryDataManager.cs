@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public delegate void OnItemGet();
@@ -8,13 +9,27 @@ public class InventoryDataManager : MonoBehaviour
 {
     public static InventoryDataManager Instance { get; private set; }
     [SerializeField] int maxStackCount;//아이템 최대 스택 개수
-    public List<Item> itemList = new List<Item>(20);
+    public List<Item> itemList = new List<Item>(29);
+    public Item_Panel[] inventorySlots;
+    public GameObject inventoryItemPrefab;
+    int selectedSlot = -1;
+    int maxSlotCount = 9; // 총 슬롯 수
+
+    void ChangeSelectedSlot(int newValue)
+    {
+        if (selectedSlot >= 0)
+        {
+            inventorySlots[selectedSlot].Deselect();
+        }
+        inventorySlots[newValue].Select();
+        selectedSlot = newValue;
+    }
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 29; i++)
         {
             itemList.Add(null);
         }
@@ -26,10 +41,94 @@ public class InventoryDataManager : MonoBehaviour
 
     private void Start()
     {
-
+        ChangeSelectedSlot(0);
     }
+
+    private void Update()
+    {
+       if(Input.inputString != null)
+        {
+            bool isNumber = int.TryParse(Input.inputString, out int number);
+            if(isNumber && number > 0 && number < 10)
+            {
+                ChangeSelectedSlot(number - 1);
+            }
+        }
+        // 마우스 휠 입력
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll > 0f) // 휠 위로
+        {
+            int next = (selectedSlot - 1 + maxSlotCount) % maxSlotCount;
+            ChangeSelectedSlot(next);
+        }
+        else if (scroll < 0f) // 휠 아래로
+        {
+            int next = (selectedSlot + 1) % maxSlotCount;
+            ChangeSelectedSlot(next);
+        }
+    }
+
+    public bool AddItem(Item_Scriptable item)
+    {
+        for (int i = 0; i < inventorySlots.Length; i++)
+        {
+            Item_Panel slot = inventorySlots[i];
+            InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
+            if (itemInSlot != null && itemInSlot.item == item && itemInSlot.count < maxStackCount
+                && itemInSlot.item.stackable)
+            {
+                itemInSlot.count++;
+                itemInSlot.RefreshCount();
+                return true;
+            }
+        }
+
+        for (int i = 0; i < inventorySlots.Length; i++)
+        {
+            Item_Panel slot = inventorySlots[i];
+            InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
+            if (itemInSlot == null)
+            {
+                SpawnNewItem(item, slot);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void SpawnNewItem(Item_Scriptable item, Item_Panel slot)
+    {
+        GameObject newItemGO = Instantiate(inventoryItemPrefab, slot.transform);
+        InventoryItem inventoryItem = newItemGO.GetComponent<InventoryItem>();
+        inventoryItem.InitializeItem(item);
+    }
+
+    public Item_Scriptable GetSeletedItem(bool use)
+    {
+        Item_Panel slot = inventorySlots[selectedSlot];
+        InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
+        if(itemInSlot != null)
+        {
+            Item_Scriptable item = itemInSlot.item;
+            if (use)
+            {
+                itemInSlot.count--;
+                if(itemInSlot.count <= 0)
+                {
+                    Destroy(itemInSlot.gameObject);
+                }
+                else
+                {
+                    itemInSlot.RefreshCount();
+                }
+            }
+            return itemInSlot.item;
+        }
+        return null;
+    }
+
     // 아이템 획득
-    public  void GetItem(Item_Scriptable scriptableData, int amount)
+    public void GetItem(Item_Scriptable scriptableData, int amount)
     {
         int id = scriptableData.itemID;
         // 이미 존재하는 아이템이면 개수만 증가
@@ -45,8 +144,8 @@ public class InventoryDataManager : MonoBehaviour
                     onInventoryUpdated?.Invoke();
                     return;
                 }
-            } 
-            
+            }
+
         }
         // 빈 슬롯 찾기
         for (int i = 0; i < itemList.Count; i++)
