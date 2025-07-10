@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MovementStateManager : BaseStateManager
@@ -79,7 +80,6 @@ public class MovementStateManager : BaseStateManager
         GetDirectionAndMove();
         Gravity();
         Falling();
-
         currentState.UpdateState();
     }
 

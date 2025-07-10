@@ -39,6 +39,7 @@ public class CwPlayer : MonoBehaviour
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
         inputManager = GetComponent<PlayerInputManager>();
+        toolStateManager = GetComponent<ToolStateManager>();
     }
 
     private void Singleton()
@@ -81,8 +82,19 @@ public class CwPlayer : MonoBehaviour
         anim.SetInteger("WeaponType", (int)currentToolType);
     }
 
-    public bool IsAimTool() => currentToolType == ToolType.Bow || currentToolType == ToolType.Throw;
-    public bool IsTool() => currentToolType == ToolType.Axe || currentToolType == ToolType.Pickaxe;
+    /// <summary>
+    /// 조준가능한 도구인지 확인
+    /// </summary>
+    public bool HoldAimTool() => currentToolType == ToolType.Bow || currentToolType == ToolType.Throw;
+
+    /// <summary>
+    /// 곡괭이/도끼 들고있는지 확인
+    /// </summary>
+    public bool HoldCraftingTool()
+    {
+        if (currentToolType == ToolType.Axe || currentToolType == ToolType.Pickaxe)
+            return true;
+        else
+            return false;
+    }
 }
-
-

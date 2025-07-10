@@ -4,6 +4,7 @@ public class AnimationTrigger : MonoBehaviour
 {
     private MovementStateManager movementManager;
     [HideInInspector] public bool isAnimationFinished = false;
+    [HideInInspector] public bool canComboAttack = true;
 
     private void Awake()
     {
@@ -14,4 +15,5 @@ public class AnimationTrigger : MonoBehaviour
     public void AnimationStartTrigger() => isAnimationFinished = false;
     public void JumpForce() => movementManager.velocity.y += movementManager.jumpForce;
     public void Jumped() => movementManager.jumped = true;
+    public void ComboAttack() => canComboAttack = false;
 }

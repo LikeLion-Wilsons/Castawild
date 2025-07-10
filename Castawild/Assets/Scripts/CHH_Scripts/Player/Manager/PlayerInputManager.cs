@@ -32,6 +32,8 @@ public class PlayerInputManager : MonoBehaviour
     public Action cursorUnLocked;
     #endregion 
 
+    private CwPlayer player;
+
     private void OnEnable()
     {
         inputActions.FindActionMap("Player").Enable();
@@ -45,6 +47,7 @@ public class PlayerInputManager : MonoBehaviour
     private void Awake()
     {
         InitInputActions();
+        player = GetComponent<CwPlayer>();
     }
 
     private void InitInputActions()
@@ -108,6 +111,9 @@ public class PlayerInputManager : MonoBehaviour
         zoomInput = zoomAction.ReadValue<Vector2>();
     }
 
+    /// <summary>
+    ///  움직임 입력 감지
+    /// </summary>
     public bool MoveInputDectected()
     {
         if (moveAction.IsPressed())

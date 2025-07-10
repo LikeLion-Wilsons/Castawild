@@ -23,7 +23,7 @@ public class WalkState : MovementBaseState
             movementManager.ChangeState(movementManager.crouchState);
 
         // Idle
-        else if (movementManager.dir.magnitude < 0.1f)
+        else if (!inputManager.MoveInputDectected())
             movementManager.ChangeState(movementManager.idleState);
 
         // Jump

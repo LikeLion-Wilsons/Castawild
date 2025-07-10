@@ -19,7 +19,7 @@ public class RunState : MovementBaseState
             movementManager.ChangeState(movementManager.walkState);
 
         // Idle
-        else if (movementManager.dir.magnitude < 0.1f)
+        else if (!inputManager.MoveInputDectected())
             movementManager.ChangeState(movementManager.idleState);
 
         // Jump
