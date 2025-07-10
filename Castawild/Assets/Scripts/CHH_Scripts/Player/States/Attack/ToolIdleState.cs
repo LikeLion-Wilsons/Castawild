@@ -13,12 +13,17 @@ public class ToolIdleState : ToolBaseState
     {
         // Aim
         if (inputManager.aimAction.WasPressedThisFrame()
-            && toolStateManager.player.currentToolType != ToolType.None && toolStateManager.player.currentToolType != ToolType.Fist)
+            && toolStateManager.player.HoldAimTool())
             toolStateManager.ChangeState(toolStateManager.aimState);
 
         // UseTool
         else if (inputManager.toolAction.WasPressedThisFrame())
+        {
+            if (toolStateManager.player.currentToolType == ToolType.Sword
+                && toolStateManager.movementManager.currentState == toolStateManager.movementManager.jumpState)
+                return;
             toolStateManager.ChangeState(toolStateManager.useToolState);
+        }
     }
 
     public override void ExitState()

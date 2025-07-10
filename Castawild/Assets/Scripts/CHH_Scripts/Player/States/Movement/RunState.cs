@@ -19,7 +19,8 @@ public class RunState : MovementBaseState
             movementManager.ChangeState(movementManager.walkState);
 
         // Idle
-        else if (!inputManager.MoveInputDectected())
+        else if (!inputManager.MoveInputDectected()
+            || !movementManager.player.CanMove())
             movementManager.ChangeState(movementManager.idleState);
 
         // Jump

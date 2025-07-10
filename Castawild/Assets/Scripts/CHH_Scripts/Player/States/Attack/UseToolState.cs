@@ -11,7 +11,8 @@ public class UseToolState : ToolBaseState
     {
         toolStateManager.animTrigger.canComboAttack = true;
 
-        if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
+        if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState
+            || toolStateManager.player.currentToolType == ToolType.Sword)
             toolStateManager.anim.SetBool("FullUseTool", true);
         toolStateManager.anim.SetBool("UseTool", true);
 

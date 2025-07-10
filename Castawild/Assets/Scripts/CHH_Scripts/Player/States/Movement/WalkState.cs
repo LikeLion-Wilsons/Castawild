@@ -23,7 +23,7 @@ public class WalkState : MovementBaseState
             movementManager.ChangeState(movementManager.crouchState);
 
         // Idle
-        else if (!inputManager.MoveInputDectected())
+        else if (!inputManager.MoveInputDectected() || !movementManager.player.CanMove())
             movementManager.ChangeState(movementManager.idleState);
 
         // Jump
