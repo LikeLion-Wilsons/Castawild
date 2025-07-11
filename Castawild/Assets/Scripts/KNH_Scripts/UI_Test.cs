@@ -8,7 +8,8 @@ public class UI_Test : MonoBehaviour
 
     public void PickUpItem(int id)
     {
-        bool result = InventoryDataManager.Instance.AddItem(itemData[id]);
+        //bool result = InventoryDataManager.Instance.AddItem(itemData[id]);
+        bool result = InventoryDataManager.Instance.GetItem(itemData[id],1);
         if(result == true)
         {
             Debug.Log(itemData[id].name+" 획득");
@@ -60,7 +61,7 @@ public class UI_Test : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            UseSelectedItem();
+            UseSelectedItem(); 
         }
 
     }

@@ -15,11 +15,9 @@ public class Item_Panel :
     public Image image;
     public Color selectedColor, notSelectedColor;
 
-
     public Image item_icon;
     public TextMeshProUGUI itemCountText;
     [SerializeField] Image durabilityBar;//내구도 UI
-    [SerializeField] Sprite[] icons;
 
     [Header("Drag&Drop")]
     [SerializeField] private Transform originalParent;
@@ -50,7 +48,7 @@ public class Item_Panel :
         {
             itemData.gameObject.SetActive(item.item_Data);
             //임시
-            item_icon.sprite = icons[item.item_Data.itemID];
+            item_icon.sprite = item.item_Data.image;
             itemCountText.text = item.count.ToString();
             durabilityBar.fillAmount = item.durability;
         }
@@ -189,8 +187,8 @@ public class Item_Panel :
         var droppedPanel = droppedObj.GetComponent<Item_Panel>();
         if (droppedPanel == null || droppedPanel == this) return;
 
-        int indexA = transform.GetSiblingIndex();
-        int indexB = droppedPanel.transform.GetSiblingIndex();
+        int indexA = inventory.GetComponent<UIInventory>().GetIndex(this);
+        int indexB = inventory.GetComponent<UIInventory>().GetIndex(droppedPanel);
 
         var items = InventoryDataManager.Instance.itemList;
         var fromItem = items[indexB];
@@ -239,6 +237,7 @@ public class Item_Panel :
                 }
 
             }
+
             inventory.GetComponent<UIInventory>().SwapItems(indexA, indexB);
         }
     }

@@ -18,15 +18,15 @@ public class UIInventory : UIPart
     public void Init()
     {
         //items.Clear();
-        itemPanels.Clear();
+        //itemPanels.Clear();
 
         int itemMaximumValue = content.childCount;
 
         //아이템 슬롯 할당
-        for (int i = 0; i < itemMaximumValue; i++)
-        {
-            itemPanels.Add(content.GetChild(i).GetComponent<Item_Panel>());
-        }
+        //for (int i = 0; i < itemMaximumValue; i++)
+        //{
+        //    itemPanels.Add(content.GetChild(i).GetComponent<Item_Panel>());
+        //}
         SetItemList();
     }
 
@@ -75,5 +75,15 @@ public class UIInventory : UIPart
         itemClick.gameObject.SetActive(true);
         itemClick.transform.SetParent(panel.transform);
         itemClick.transform.localPosition = Vector2.zero;
+    }
+
+    public int GetIndex(Item_Panel slot)
+    {
+        for (int i = 0; i < itemPanels.Count; i++)
+        {
+            if (slot == itemPanels[i])
+                return i;
+        }
+        return -1;
     }
 }

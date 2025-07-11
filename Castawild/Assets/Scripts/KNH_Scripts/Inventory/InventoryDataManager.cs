@@ -128,7 +128,7 @@ public class InventoryDataManager : MonoBehaviour
     }
 
     // 아이템 획득
-    public void GetItem(Item_Scriptable scriptableData, int amount)
+    public bool GetItem(Item_Scriptable scriptableData, int amount)
     {
         int id = scriptableData.itemID;
         // 이미 존재하는 아이템이면 개수만 증가
@@ -142,7 +142,7 @@ public class InventoryDataManager : MonoBehaviour
                 {
                     itemList[i].count += amount;
                     onInventoryUpdated?.Invoke();
-                    return;
+                    return true;
                 }
             }
 
@@ -155,9 +155,10 @@ public class InventoryDataManager : MonoBehaviour
                 Item newItem = new Item { item_Data = scriptableData, count = amount };
                 itemList[i] = newItem;
                 onInventoryUpdated?.Invoke();
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     //아이템 버리기
