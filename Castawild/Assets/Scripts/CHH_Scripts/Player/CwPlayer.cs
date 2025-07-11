@@ -1,4 +1,14 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+
+// 테스트용
+[System.Serializable]
+public class HoldTool
+{
+    public string toolName;
+    public GameObject tool;
+}
 
 // 테스트용
 public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife }
@@ -15,6 +25,9 @@ public class CwPlayer : MonoBehaviour
     [HideInInspector] public MovementStateManager movementManager;
     [HideInInspector] public ToolStateManager toolStateManager;
 
+    // 테스트용
+    public List<HoldTool> holdTools = new List<HoldTool>();
+    public Dictionary<ToolType, Tool> tools;
     public ToolType currentToolType;
     public MoveType currentMoveType;
     public AttackType currentAttackType;
@@ -29,17 +42,10 @@ public class CwPlayer : MonoBehaviour
     {
         Singleton();
 
-        InitializeComponents();
+        InitComponents();
+        InitTools();
 
         SetWeapon(ToolType.Fist);
-    }
-
-    private void InitializeComponents()
-    {
-        anim = GetComponentInChildren<Animator>();
-        rigid = GetComponent<Rigidbody>();
-        inputManager = GetComponent<PlayerInputManager>();
-        toolStateManager = GetComponent<ToolStateManager>();
     }
 
     private void Singleton()
@@ -48,6 +54,29 @@ public class CwPlayer : MonoBehaviour
             instance = this;
         else
             Destroy(gameObject);
+    }
+
+    private void InitComponents()
+    {
+        anim = GetComponentInChildren<Animator>();
+        rigid = GetComponent<Rigidbody>();
+        inputManager = GetComponent<PlayerInputManager>();
+        toolStateManager = GetComponent<ToolStateManager>();
+    }
+
+    private void InitTools()
+    {
+        tools = new Dictionary<ToolType, Tool>
+        {
+            { ToolType.Fist, new Fist(this) },
+            { ToolType.Throw, new Throw(this) },
+            { ToolType.Spear, new Spear(this) },
+            { ToolType.Sword, new Sword(this) },
+            { ToolType.Bow, new Bow(this) },
+            { ToolType.Axe, new Axe(this) },
+            { ToolType.Pickaxe, new Pickaxe(this) },
+            { ToolType.Knife, new Knife(this) }
+        };
     }
 
     /// <summary>
@@ -66,20 +95,22 @@ public class CwPlayer : MonoBehaviour
     {
         anim.SetInteger("WeaponType", (int)currentToolType);
 
-        if (currentToolType == ToolType.Throw)
-        {
-
-        }
-        else if (currentToolType == ToolType.Bow)
-        {
-
-        }
+        if (tools.TryGetValue(currentToolType, out Tool currentTool))
+            currentTool.Attack();
     }
 
     // 테스트용
     private void OnValidate()
     {
-        anim.SetInteger("WeaponType", (int)currentToolType);
+        foreach (var holdTool in holdTools)
+        {
+            if (holdTool.tool != null)
+                holdTool.tool.SetActive(false);
+        }
+
+        string key = currentToolType.ToString();
+        GameObject toolObject = holdTools.FirstOrDefault(t => t.toolName == key)?.tool;
+        toolObject?.SetActive(true);
     }
 
     /// <summary>
