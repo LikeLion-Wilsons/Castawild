@@ -1,57 +1,64 @@
 using UnityEngine;
 
-public class AimState : AttackBaseState
+public class AimState : ToolBaseState
 {
-    public AimState(AttackStateManager _attackManager, PlayerInputManager _inputManager)
-        : base(_attackManager, _inputManager)
+    public AimState(ToolStateManager _toolStateManager, PlayerInputManager _inputManager)
+        : base(_toolStateManager, _inputManager)
     {
     }
 
     public override void EnterState()
     {
         LookForward();
+        toolStateManager.player.isAimLocked = true;
 
-        if (attackManager.movementManager.currentState == attackManager.movementManager.idleState)
-            attackManager.anim.SetBool("FullAiming", true);
-        attackManager.anim.SetBool("Aiming", true);
+        if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
+            toolStateManager.anim.SetBool("FullAiming", true);
+        toolStateManager.anim.SetBool("Aiming", true);
 
-        attackManager.cameraManager.MoveCamera(true);
-        attackManager.player.currentAttackType = AttackType.Aim;
+        toolStateManager.cameraManager.MoveCamera(true);
+
+        toolStateManager.player.currentAttackType = AttackType.Aim;
     }
 
     public override void UpdateState()
     {
         RotatePlayer();
 
-        if (attackManager.player.currentMoveType != MoveType.Idle)
-            attackManager.anim.SetBool("FullAiming", false);
+        if (toolStateManager.player.currentMoveType != MoveType.Idle)
+            toolStateManager.anim.SetBool("FullAiming", false);
 
-        if (inputManager.attackAction.WasReleasedThisFrame())
-            attackManager.ChangeState(attackManager.attackState);
+        if (inputManager.toolAction.WasReleasedThisFrame())
+            toolStateManager.ChangeState(toolStateManager.useToolState);
+
         else if (inputManager.aimAction.WasReleasedThisFrame())
-            attackManager.ChangeState(attackManager.idleState);
+        {
+            toolStateManager.player.isAimLocked = false;
+            toolStateManager.ChangeState(toolStateManager.idleState);
+        }
     }
 
     private void RotatePlayer()
     {
-        Vector3 lookDirection = attackManager.cam.transform.forward;
+        Vector3 lookDirection = toolStateManager.cam.transform.forward;
         lookDirection.y = 0f;
 
         if (lookDirection.sqrMagnitude > 0.001f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-            attackManager.transform.rotation = Quaternion.Slerp(attackManager.transform.rotation, targetRotation, Time.deltaTime * 10f);
+            toolStateManager.transform.rotation = Quaternion.Slerp(toolStateManager.transform.rotation, targetRotation, Time.deltaTime * 10f);
         }
     }
 
     public override void ExitState()
     {
-        attackManager.anim.SetBool("FullAiming", false);
-        attackManager.anim.SetBool("Aiming", false);
+        toolStateManager.player.currentAttackType = AttackType.None;
+    }
 
-        attackManager.anim.speed = 1f;
-
-        attackManager.cameraManager.MoveCamera(false);
-        attackManager.player.currentAttackType = AttackType.None;
+    private void LookForward()
+    {
+        Vector3 lookDir = toolStateManager.cam.transform.forward;
+        lookDir.y = 0f;
+        toolStateManager.transform.rotation = Quaternion.LookRotation(lookDir);
     }
 }

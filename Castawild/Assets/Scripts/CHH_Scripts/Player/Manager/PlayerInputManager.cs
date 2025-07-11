@@ -14,7 +14,7 @@ public class PlayerInputManager : MonoBehaviour
     [HideInInspector] public InputAction zoomAction;
     [HideInInspector] public InputAction aimAction;
     [HideInInspector] public InputAction sprintAction;
-    [HideInInspector] public InputAction attackAction;
+    [HideInInspector] public InputAction toolAction;
 
     public Vector2 moveInput { get; private set; }
     public Vector2 lookInput { get; private set; }
@@ -32,6 +32,8 @@ public class PlayerInputManager : MonoBehaviour
     public Action cursorUnLocked;
     #endregion 
 
+    private CwPlayer player;
+
     private void OnEnable()
     {
         inputActions.FindActionMap("Player").Enable();
@@ -45,6 +47,7 @@ public class PlayerInputManager : MonoBehaviour
     private void Awake()
     {
         InitInputActions();
+        player = GetComponent<CwPlayer>();
     }
 
     private void InitInputActions()
@@ -56,7 +59,7 @@ public class PlayerInputManager : MonoBehaviour
         zoomAction = InputSystem.actions.FindAction("Zoom");
         sprintAction = InputSystem.actions.FindAction("Sprint");
         aimAction = InputSystem.actions.FindAction("Aim");
-        attackAction = InputSystem.actions.FindAction("Attack");
+        toolAction = InputSystem.actions.FindAction("Attack");
     }
 
     private void Update()
@@ -99,11 +102,6 @@ public class PlayerInputManager : MonoBehaviour
         horizontalInput = moveInput.x;
     }
 
-    private void HandleJumpingInput()
-    {
-
-    }
-
     /// <summary>
     /// 카메라 입력 Update
     /// </summary>
@@ -111,5 +109,16 @@ public class PlayerInputManager : MonoBehaviour
     {
         lookInput = lookAction.ReadValue<Vector2>();
         zoomInput = zoomAction.ReadValue<Vector2>();
+    }
+
+    /// <summary>
+    ///  움직임 입력 감지
+    /// </summary>
+    public bool MoveInputDectected()
+    {
+        if (moveAction.IsPressed())
+            return true;
+        else
+            return false;
     }
 }

@@ -23,9 +23,9 @@ public class JumpState : MovementBaseState
         {
             movementManager.jumped = false;
 
-            if (inputManager.moveInput.magnitude == 0f)
+            if (!inputManager.MoveInputDectected())
                 movementManager.ChangeState(movementManager.idleState);
-            else if (inputManager.sprintAction.IsPressed())
+            else if (inputManager.MoveInputDectected() && inputManager.sprintAction.IsPressed())
                 movementManager.ChangeState(movementManager.runState);
             else
                 movementManager.ChangeState(movementManager.walkState);
@@ -34,6 +34,6 @@ public class JumpState : MovementBaseState
 
     public override void ExitState()
     {
-
+        movementManager.canJump = true;
     }
 }
