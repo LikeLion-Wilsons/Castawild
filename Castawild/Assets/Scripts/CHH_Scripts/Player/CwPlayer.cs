@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 // 테스트용
 [System.Serializable]
@@ -33,10 +32,11 @@ public class CwPlayer : MonoBehaviour
     public MoveType currentMoveType;
     public AttackType currentAttackType;
 
-
+    public GameObject crosshairImage;
     public float throwForce = 10f;
+    public float throwUpForce = 5f;
 
-    public bool isAimLocked = false;
+    [HideInInspector] public bool isAimLocked = false;
 
     public PlayerData playerData;
 
@@ -49,7 +49,7 @@ public class CwPlayer : MonoBehaviour
         InitComponents();
         InitTools();
 
-        SetWeapon(ToolType.Fist);
+        //SetWeapon(ToolType.Fist);
     }
 
     private void Singleton()

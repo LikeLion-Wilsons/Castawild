@@ -25,6 +25,8 @@ public class Fist : Tool
 
 public class Throw : Tool
 {
+    private bool hasThrown = false;
+
     public Throw(CwPlayer _player) : base(_player)
     {
     }
@@ -32,14 +34,7 @@ public class Throw : Tool
     public override void ApplyTool()
     {
         GameObject throwObject = player.GetHoldToolObject();
-
-        Vector3 throwDirection = player.transform.forward + player.transform.up * 0.3f;
-        if (throwObject.GetComponent<Rigidbody>() == null)
-        {
-            throwObject.transform.parent = null;
-            throwObject.AddComponent<Rigidbody>();
-            throwObject.GetComponent<Rigidbody>().AddForce(throwDirection.normalized * player.throwForce, ForceMode.Impulse);
-        }
+        throwObject.GetComponent<ThrowObject>()?.Throw(player);
     }
 }
 

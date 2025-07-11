@@ -19,6 +19,7 @@ public class AimState : ToolBaseState
         toolStateManager.cameraManager.MoveCamera(true);
 
         toolStateManager.anim.SetInteger("WeaponType", (int)toolStateManager.player.currentToolType);
+        toolStateManager.player.crosshairImage.SetActive(true);
         toolStateManager.player.currentAttackType = AttackType.Aim;
     }
 
@@ -28,6 +29,8 @@ public class AimState : ToolBaseState
 
         if (toolStateManager.player.currentMoveType != MoveType.Idle)
             toolStateManager.anim.SetBool("FullAiming", false);
+        else if (toolStateManager.player.currentMoveType != MoveType.Walk)
+            toolStateManager.anim.SetBool("FullAiming", true);
 
         if (inputManager.toolAction.WasReleasedThisFrame())
             toolStateManager.ChangeState(toolStateManager.useToolState);
@@ -54,6 +57,7 @@ public class AimState : ToolBaseState
     public override void ExitState()
     {
         toolStateManager.player.currentAttackType = AttackType.None;
+        toolStateManager.player.crosshairImage.SetActive(false);
     }
 
     private void LookForward()
