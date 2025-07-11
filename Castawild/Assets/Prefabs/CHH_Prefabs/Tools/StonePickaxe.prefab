@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4144373302085674}
   - component: {fileID: 33229055108078904}
   - component: {fileID: 23411166652760648}
+  - component: {fileID: 4440043442953955982}
   m_Layer: 0
   m_Name: StonePickaxe
   m_TagString: Untagged
@@ -86,3 +87,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &4440043442953955982
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1683656624262994}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.7519965, y: 1.1752052, z: 0.13769689}
+  m_Center: {x: 0.0135483295, y: 0.19510776, z: -0.0026383472}
