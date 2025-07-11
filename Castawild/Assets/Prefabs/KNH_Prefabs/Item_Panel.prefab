@@ -246,7 +246,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.3490566, g: 0.3490566, b: 0.3490566, a: 0.27058825}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -339,8 +339,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -469,7 +469,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 223390825bdf7f7488411f7b7ca1c776, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -497,27 +497,12 @@ MonoBehaviour:
     durability: 0
   itemData: {fileID: 6561729517177915155}
   inventory: {fileID: 0}
-  image: {fileID: 695216775382904445}
-  selectedColor: {r: 0, g: 0, b: 0, a: 0}
-  notSelectedColor: {r: 0, g: 0, b: 0, a: 0}
+  image: {fileID: 1351514211392362751}
+  selectedColor: {r: 0.036712356, g: 0.7075472, b: 0.036712356, a: 0.5294118}
+  notSelectedColor: {r: 1, g: 1, b: 1, a: 1}
   item_icon: {fileID: 1351514211392362751}
   itemCountText: {fileID: 6112187857808343133}
   durabilityBar: {fileID: 1069641077678254244}
-  icons:
-  - {fileID: 21300000, guid: f8a9cfc721a20ce409c3d743e9b251bc, type: 3}
-  - {fileID: 21300000, guid: e504bf3779bda9c40ba6d311e0611951, type: 3}
-  - {fileID: 21300000, guid: 6a08ec4b334ea1c46b8171679417a74f, type: 3}
-  - {fileID: 21300000, guid: 14e62563269c11443b9c936be93b95f4, type: 3}
-  - {fileID: 21300000, guid: adf92f5459022124193e381473dbcce6, type: 3}
-  - {fileID: 21300000, guid: c1101a972f67d164db2754844fbeeda2, type: 3}
-  - {fileID: 21300000, guid: 966ff550585ec504896a28b55fd7281c, type: 3}
-  - {fileID: 21300000, guid: ce993d5f7ca6ea8459974fd88e71861d, type: 3}
-  - {fileID: 21300000, guid: 59c8cd2a91ad7f846b9efd79b945c356, type: 3}
-  - {fileID: 21300000, guid: bbf8638a8a75d9c42b93639213c92c9b, type: 3}
-  - {fileID: 21300000, guid: 7b8e0222a006d824e930445c7d435ac3, type: 3}
-  - {fileID: 21300000, guid: 38d5dde8fb892364296297a3a5c97a20, type: 3}
-  - {fileID: 21300000, guid: 1fb46228a3bcb5042a763829cc07f9e5, type: 3}
-  - {fileID: 21300000, guid: 68e1f3d1470827b49b3b3347af0e4f6d, type: 3}
   originalParent: {fileID: 0}
   onDragParent: {fileID: 0}
   rectTransform: {fileID: 0}

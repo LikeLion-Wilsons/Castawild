@@ -45,6 +45,7 @@ public class UI_Test : MonoBehaviour
             Debug.Log("No Item Used!");
         }
     }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Z))
@@ -63,6 +64,10 @@ public class UI_Test : MonoBehaviour
         {
             UseSelectedItem(); 
         }
-
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            if (Canvas_Holder.instance.IsInventoryOpen()) return;
+            InventoryDataManager.Instance.ThrowItem(InventoryDataManager.Instance.GetSelectedIndex());
+        }
     }
 }

@@ -17,6 +17,7 @@ public class InventoryDataManager : MonoBehaviour
 
     void ChangeSelectedSlot(int newValue)
     {
+        if (Canvas_Holder.instance.IsInventoryOpen()) return;
         if (selectedSlot >= 0)
         {
             inventorySlots[selectedSlot].Deselect();
@@ -67,62 +68,22 @@ public class InventoryDataManager : MonoBehaviour
             ChangeSelectedSlot(next);
         }
     }
-
-    public bool AddItem(Item_Scriptable item)
-    {
-        for (int i = 0; i < inventorySlots.Length; i++)
-        {
-            Item_Panel slot = inventorySlots[i];
-            InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
-            if (itemInSlot != null && itemInSlot.item == item && itemInSlot.count < maxStackCount
-                && itemInSlot.item.stackable)
-            {
-                itemInSlot.count++;
-                itemInSlot.RefreshCount();
-                return true;
-            }
-        }
-
-        for (int i = 0; i < inventorySlots.Length; i++)
-        {
-            Item_Panel slot = inventorySlots[i];
-            InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
-            if (itemInSlot == null)
-            {
-                SpawnNewItem(item, slot);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    void SpawnNewItem(Item_Scriptable item, Item_Panel slot)
-    {
-        GameObject newItemGO = Instantiate(inventoryItemPrefab, slot.transform);
-        InventoryItem inventoryItem = newItemGO.GetComponent<InventoryItem>();
-        inventoryItem.InitializeItem(item);
-    }
-
     public Item_Scriptable GetSeletedItem(bool use)
     {
         Item_Panel slot = inventorySlots[selectedSlot];
-        InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
-        if(itemInSlot != null)
+        if (slot.item != null)
         {
-            Item_Scriptable item = itemInSlot.item;
+            Item_Scriptable item = slot.item.item_Data;
             if (use)
             {
-                itemInSlot.count--;
-                if(itemInSlot.count <= 0)
+                slot.item.count--;
+                if(slot.item.count <= 0)
                 {
-                    Destroy(itemInSlot.gameObject);
+                    itemList[selectedSlot] = null;
                 }
-                else
-                {
-                    itemInSlot.RefreshCount();
-                }
+                onInventoryUpdated?.Invoke();
             }
-            return itemInSlot.item;
+            return null;
         }
         return null;
     }
@@ -166,6 +127,7 @@ public class InventoryDataManager : MonoBehaviour
     {
         if (index >= 0 && index < itemList.Count)
         {
+            //Debug.Log(itemList[index].item_Data.name + " 버림!");
             itemList[index] = null;
             onInventoryUpdated?.Invoke();
         }
@@ -187,4 +149,8 @@ public class InventoryDataManager : MonoBehaviour
         return itemList;
     }
 
+    public int GetSelectedIndex()
+    {
+        return selectedSlot;
+    }
 }

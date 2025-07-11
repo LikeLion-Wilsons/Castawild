@@ -72,6 +72,7 @@ public class UIInventory : UIPart
 
     public void SetItemClickAnimation(Item_Panel panel)
     {
+        if (!Canvas_Holder.instance.IsInventoryOpen()) return;
         itemClick.gameObject.SetActive(true);
         itemClick.transform.SetParent(panel.transform);
         itemClick.transform.localPosition = Vector2.zero;

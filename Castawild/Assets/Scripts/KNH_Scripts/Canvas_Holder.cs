@@ -9,6 +9,7 @@ public class Canvas_Holder : MonoBehaviour
         if (instance == null) instance = this;
     }
 
+    [SerializeField] UIPart[] parts;
     private Dictionary<string, UIPart> uiParts = new Dictionary<string, UIPart>();
     public void OpenUI(string uiName)
     {
@@ -29,7 +30,7 @@ public class Canvas_Holder : MonoBehaviour
 
     public void CloseAllUI()
     {
-        foreach(var part in uiParts.Values)
+        foreach (var part in uiParts.Values)
         {
             part.Close();
         }
@@ -38,8 +39,8 @@ public class Canvas_Holder : MonoBehaviour
     [SerializeField] private Transform ui_Part_Parent;
     void Start()
     {
-        UIPart[] parts = ui_Part_Parent.GetComponentsInChildren<UIPart>(true);//비활성화된 오브젝트도 찾기
-        foreach(var part in parts)
+        parts = ui_Part_Parent.GetComponentsInChildren<UIPart>(true);//비활성화된 오브젝트도 찾기
+        foreach (var part in parts)
         {
             uiParts.Add(part.name, part);
         }
@@ -50,7 +51,22 @@ public class Canvas_Holder : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.I))
         {
-            uiParts["Inventory"].Toggle();
-        }    
+            uiParts["InventoryBG"].Toggle();
+        }
+    }
+
+    public bool IsInventoryOpen()
+    {
+        return uiParts.ContainsKey("InventoryBG") && uiParts["InventoryBG"].IsOpen();
+    }
+
+    public bool AnyUIOpen()
+    {
+        foreach (var part in uiParts.Values)
+        {
+            if (part.IsOpen())
+                return true;
+        }
+        return false;
     }
 }

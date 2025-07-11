@@ -20,6 +20,7 @@ public class Item_Panel :
     [SerializeField] Image durabilityBar;//내구도 UI
 
     [Header("Drag&Drop")]
+    bool isInveontoryOpen = true;
     [SerializeField] private Transform originalParent;
     [SerializeField] private Transform onDragParent;
     [SerializeField] private RectTransform rectTransform;
@@ -36,6 +37,11 @@ public class Item_Panel :
         Deselect();
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
+    }
+
+    void Update()
+    {
+        isInveontoryOpen = Canvas_Holder.instance.IsInventoryOpen();
     }
     public void SlotInit(Item _item)
     {
@@ -83,11 +89,11 @@ public class Item_Panel :
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-
-        if (item == null || item.item_Data == null) return;
+        if (!isInveontoryOpen) return;
 
         originalAnchoredPos = rectTransform.anchoredPosition;
         originalParent = transform.parent;
+        if (item == null || item.item_Data == null) return;
         //우클릭 여부 저장
         isRightMouseDrag = Input.GetMouseButton(1);
 
@@ -126,6 +132,8 @@ public class Item_Panel :
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (!isInveontoryOpen) return;
+        if (item == null || item.item_Data == null) return;
         if (isRightMouseDrag && draggedClone != null)
         {
             draggedClone.GetComponent<RectTransform>().position = eventData.position;
@@ -138,10 +146,10 @@ public class Item_Panel :
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!isInveontoryOpen) return;
         // 드래그 종료 위치 기준으로 레이캐스트
         List<RaycastResult> results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventData, results);
-
         bool droppedOnSlot = false;
         if (isRightMouseDrag)
         {
@@ -180,6 +188,7 @@ public class Item_Panel :
 
     public void OnDrop(PointerEventData eventData)
     {
+        if (!isInveontoryOpen) return;
         InventoryItem inventoryitem = eventData.pointerDrag.GetComponent<InventoryItem>();
         var droppedObj = eventData.pointerDrag;
         if (droppedObj == null) return;

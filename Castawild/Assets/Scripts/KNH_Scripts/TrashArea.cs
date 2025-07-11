@@ -5,6 +5,7 @@ public class TrashArea : MonoBehaviour, IDropHandler
 {
     public void OnDrop(PointerEventData eventData)
     {
+        if (!Canvas_Holder.instance.IsInventoryOpen()) return;
         var itemPanel = eventData.pointerDrag?.GetComponent<Item_Panel>();
         if (itemPanel == null) return;
 

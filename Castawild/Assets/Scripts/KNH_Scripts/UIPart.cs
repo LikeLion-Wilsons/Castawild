@@ -23,4 +23,9 @@ public class UIPart : MonoBehaviour
         if (isActive) Close();
         else Open();
     }
+
+    public virtual bool IsOpen()
+    {
+        return gameObject.activeSelf;
+    }
 }
