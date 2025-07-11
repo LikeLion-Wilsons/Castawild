@@ -18,6 +18,7 @@ public class AimState : ToolBaseState
 
         toolStateManager.cameraManager.MoveCamera(true);
 
+        toolStateManager.anim.SetInteger("WeaponType", (int)toolStateManager.player.currentToolType);
         toolStateManager.player.currentAttackType = AttackType.Aim;
     }
 

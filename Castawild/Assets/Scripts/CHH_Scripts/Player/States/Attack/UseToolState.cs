@@ -14,7 +14,7 @@ public class UseToolState : ToolBaseState
             toolStateManager.anim.SetBool("FullUseTool", true);
         toolStateManager.anim.SetBool("UseTool", true);
 
-        toolStateManager.player.Attack();
+        toolStateManager.anim.SetInteger("WeaponType", (int)toolStateManager.player.currentToolType);
         toolStateManager.player.currentAttackType = AttackType.Attack;
     }
 

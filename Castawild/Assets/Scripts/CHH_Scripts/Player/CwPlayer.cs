@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 // 테스트용
 [System.Serializable]
@@ -31,6 +32,9 @@ public class CwPlayer : MonoBehaviour
     public ToolType currentToolType;
     public MoveType currentMoveType;
     public AttackType currentAttackType;
+
+
+    public float throwForce = 10f;
 
     public bool isAimLocked = false;
 
@@ -91,12 +95,10 @@ public class CwPlayer : MonoBehaviour
     /// <summary>
     /// 공격시 호출
     /// </summary>
-    public void Attack()
+    public void ApplyTool()
     {
-        anim.SetInteger("WeaponType", (int)currentToolType);
-
         if (tools.TryGetValue(currentToolType, out Tool currentTool))
-            currentTool.Attack();
+            currentTool.ApplyTool();
     }
 
     // 테스트용
@@ -108,9 +110,17 @@ public class CwPlayer : MonoBehaviour
                 holdTool.tool.SetActive(false);
         }
 
-        string key = currentToolType.ToString();
-        GameObject toolObject = holdTools.FirstOrDefault(t => t.toolName == key)?.tool;
+        GameObject toolObject = GetHoldToolObject();
         toolObject?.SetActive(true);
+    }
+
+    /// <summary>
+    /// 들고있는 도구 가져오기
+    /// </summary>
+    public GameObject GetHoldToolObject()
+    {
+        string key = currentToolType.ToString();
+        return holdTools.FirstOrDefault(t => t.toolName == key)?.tool;
     }
 
     /// <summary>

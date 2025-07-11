@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public abstract class Tool
 {
     protected CwPlayer player;
@@ -7,7 +9,7 @@ public abstract class Tool
         player = _player;
     }
 
-    public abstract void Attack();
+    public abstract void ApplyTool();
 }
 
 public class Fist : Tool
@@ -16,7 +18,7 @@ public class Fist : Tool
     {
     }
 
-    public override void Attack()
+    public override void ApplyTool()
     {
     }
 }
@@ -27,8 +29,17 @@ public class Throw : Tool
     {
     }
 
-    public override void Attack()
+    public override void ApplyTool()
     {
+        GameObject throwObject = player.GetHoldToolObject();
+
+        Vector3 throwDirection = player.transform.forward + player.transform.up * 0.3f;
+        if (throwObject.GetComponent<Rigidbody>() == null)
+        {
+            throwObject.transform.parent = null;
+            throwObject.AddComponent<Rigidbody>();
+            throwObject.GetComponent<Rigidbody>().AddForce(throwDirection.normalized * player.throwForce, ForceMode.Impulse);
+        }
     }
 }
 
@@ -38,7 +49,7 @@ public class Spear : Tool
     {
     }
 
-    public override void Attack()
+    public override void ApplyTool()
     {
     }
 }
@@ -49,7 +60,7 @@ public class Sword : Tool
     {
     }
 
-    public override void Attack()
+    public override void ApplyTool()
     {
     }
 }
@@ -60,7 +71,7 @@ public class Bow : Tool
     {
     }
 
-    public override void Attack()
+    public override void ApplyTool()
     {
     }
 }
@@ -71,7 +82,7 @@ public class Axe : Tool
     {
     }
 
-    public override void Attack()
+    public override void ApplyTool()
     {
     }
 }
@@ -82,7 +93,7 @@ public class Pickaxe : Tool
     {
     }
 
-    public override void Attack()
+    public override void ApplyTool()
     {
     }
 }
@@ -93,7 +104,7 @@ public class Knife : Tool
     {
     }
 
-    public override void Attack()
+    public override void ApplyTool()
     {
     }
 }
