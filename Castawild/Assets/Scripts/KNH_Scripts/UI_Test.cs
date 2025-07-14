@@ -2,18 +2,74 @@ using UnityEngine;
 
 public class UI_Test : MonoBehaviour
 {
+    
     [SerializeField] Item_Scriptable[] itemData;
+    public Item[] itemsToPickUp;
+
+
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.B))
+        if (Input.GetKeyDown(KeyCode.Z))
         {
-            Debug.Log("나뭇가지 획득");
-            InventoryDataManager.Instance.GetItem(itemData[0], 1);
+            PickUpItem(0);
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            PickUpItem(1);
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            PickUpItem(2);
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            Debug.Log("돌 획득");
-            InventoryDataManager.Instance.GetItem(itemData[1], 1);
+            UseSelectedItem(); 
+        }
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            if (Canvas_Holder.instance.IsInventoryOpen()) return;
+            InventoryDataManager.Instance.ThrowItem(InventoryDataManager.Instance.GetSelectedIndex());
+        }
+    }
+
+    public void PickUpItem(int id)
+    {
+        //bool result = InventoryDataManager.Instance.AddItem(itemData[id]);
+        bool result = InventoryDataManager.Instance.GetItem(itemData[id], 1);
+        if (result == true)
+        {
+            Debug.Log(itemData[id].name + " 획득");
+        }
+        else
+        {
+            Debug.Log("인벤토리가 가득찼습니다.");
+        }
+    }
+
+    public void GetSelectedItem()
+    {
+        Item_Scriptable receivedItem = InventoryDataManager.Instance.GetSeletedItem(false);
+        if (receivedItem != null)
+        {
+            Debug.Log("Received item : " + receivedItem);
+        }
+        else
+        {
+            Debug.Log("No Item Received!");
+        }
+    }
+
+    public void UseSelectedItem()
+    {
+        Item_Scriptable receivedItem = InventoryDataManager.Instance.GetSeletedItem(true);
+        if (receivedItem != null)
+        {
+            Debug.Log("Used item : " + receivedItem);
+        }
+        else
+        {
+            Debug.Log("No Item Used!");
         }
     }
 }

@@ -5,15 +5,32 @@ public class TrashArea : MonoBehaviour, IDropHandler
 {
     public void OnDrop(PointerEventData eventData)
     {
+        if (!Canvas_Holder.instance.IsInventoryOpen()) return;
         var itemPanel = eventData.pointerDrag?.GetComponent<Item_Panel>();
         if (itemPanel == null) return;
+        Debug.Log(itemPanel.isClone);
 
-        int index = itemPanel.transform.GetSiblingIndex();
         var inventory = itemPanel.inventory.GetComponent<UIInventory>();
+        int index = inventory.GetComponent<UIInventory>().GetIndex(itemPanel);
+        //클론 오브젝트일 경우(우클릭으로 나눠짐)
+        if (itemPanel.draggedClone != null)
+        {
+            var clonePanel = itemPanel.draggedClone.GetComponent<Item_Panel>();
+            if (clonePanel != null && clonePanel.isClone)
+            {
+                Destroy(clonePanel.gameObject);
+                itemPanel.draggedClone = null; // 드래그 종료 처리
+                                               //Destroy(itemPanel);
+            }
+        }
+        
+        else
+        {
+            Debug.Log(inventory.GetItemByIndex(index).draggedClone);
+            InventoryDataManager.Instance.ThrowItem(index);          // 아이템 제거
+            itemPanel.SlotInit(null); // 슬롯 비우기
+        }
 
-        InventoryDataManager.Instance.ThrowItem(inventory.items[index].item_Data.itemID);          // 아이템 제거
-        inventory.items[index] = null;  
-        itemPanel.SlotInit(null, inventory); // 슬롯 비우기
         itemPanel.SetItemSlot();             // UI 갱신
     }
 }
