@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Test
 {
-    public class PlayerInput2 : NetworkBehaviour
+    public class PlayerInput : NetworkBehaviour
     {
         public override void Spawned()
         {
@@ -30,16 +30,16 @@ namespace Test
         
         public void OnInput(NetworkRunner runner, NetworkInput input)
         {
-            var myInput = new NetworkInputData2();
+            var myInput = new NetworkInputData();
 
             var horizontal = Input.GetAxisRaw("Horizontal");
             var vertical = Input.GetAxisRaw("Vertical");
 
-            myInput.Buttons.Set(NetworkInputData2.BUTTON_FORWARD, vertical > 0);
-            myInput.Buttons.Set(NetworkInputData2.BUTTON_BACKWARD, vertical < 0);
-            myInput.Buttons.Set(NetworkInputData2.BUTTON_RIGHT, horizontal > 0);
-            myInput.Buttons.Set(NetworkInputData2.BUTTON_LEFT, horizontal < 0);
-            myInput.Buttons.Set(NetworkInputData2.BUTTON_INTERACT, Input.GetKey(KeyCode.E));
+            myInput.Buttons.Set(NetworkInputData.BUTTON_FORWARD, vertical > 0);
+            myInput.Buttons.Set(NetworkInputData.BUTTON_BACKWARD, vertical < 0);
+            myInput.Buttons.Set(NetworkInputData.BUTTON_RIGHT, horizontal > 0);
+            myInput.Buttons.Set(NetworkInputData.BUTTON_LEFT, horizontal < 0);
+            myInput.Buttons.Set(NetworkInputData.BUTTON_INTERACT, Input.GetKey(KeyCode.E));
 
             input.Set(myInput);
         }

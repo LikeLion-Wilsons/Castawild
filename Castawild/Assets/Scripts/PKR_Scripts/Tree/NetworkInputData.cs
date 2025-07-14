@@ -1,7 +1,7 @@
 ﻿using Fusion;
 
 namespace Test {
-  public struct NetworkInputData2 : INetworkInput {
+  public struct NetworkInputData : INetworkInput {
     public const int BUTTON_FORWARD = 1;
     public const int BUTTON_BACKWARD = 2;
     public const int BUTTON_LEFT = 3;
