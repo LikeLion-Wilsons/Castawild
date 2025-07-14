@@ -1,7 +1,17 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public enum WeaponType { None, Fist, Throw, Sword, Bow }
+// 테스트용
+[System.Serializable]
+public class HoldTool
+{
+    public string toolName;
+    public GameObject tool;
+}
+
+// 테스트용
+public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife }
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
 public enum AttackType { None, Aim, Attack }
 
@@ -13,12 +23,16 @@ public class CwPlayer : MonoBehaviour
     [HideInInspector] public Rigidbody rigid;
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public MovementStateManager movementManager;
-    [HideInInspector] public AttackStateManager attackStateManager;
+    [HideInInspector] public ToolStateManager toolStateManager;
 
-    private Dictionary<WeaponType, Weapon> weaponDict;
-    public WeaponType currentWeaponType;
+    // 테스트용
+    public List<HoldTool> holdTools = new List<HoldTool>();
+    public Dictionary<ToolType, Tool> tools;
+    public ToolType currentToolType;
     public MoveType currentMoveType;
     public AttackType currentAttackType;
+
+    public bool isAimLocked = false;
 
     public PlayerData playerData;
 
@@ -28,17 +42,10 @@ public class CwPlayer : MonoBehaviour
     {
         Singleton();
 
-        InitializeComponents();
-        InitializeWeapon();
+        InitComponents();
+        InitTools();
 
-        SetWeapon(WeaponType.Fist);
-    }
-
-    private void InitializeComponents()
-    {
-        anim = GetComponentInChildren<Animator>();
-        rigid = GetComponent<Rigidbody>();
-        inputManager = GetComponent<PlayerInputManager>();
+        SetWeapon(ToolType.Fist);
     }
 
     private void Singleton()
@@ -49,24 +56,36 @@ public class CwPlayer : MonoBehaviour
             Destroy(gameObject);
     }
 
-    private void InitializeWeapon()
+    private void InitComponents()
     {
-        weaponDict = new Dictionary<WeaponType, Weapon>
+        anim = GetComponentInChildren<Animator>();
+        rigid = GetComponent<Rigidbody>();
+        inputManager = GetComponent<PlayerInputManager>();
+        toolStateManager = GetComponent<ToolStateManager>();
+    }
+
+    private void InitTools()
+    {
+        tools = new Dictionary<ToolType, Tool>
         {
-            { WeaponType.Fist, new Melee() },
-            { WeaponType.Throw, new Throw() },
-            { WeaponType.Bow, new Bow() },
-            { WeaponType.Sword, new Sword() }
+            { ToolType.Fist, new Fist(this) },
+            { ToolType.Throw, new Throw(this) },
+            { ToolType.Spear, new Spear(this) },
+            { ToolType.Sword, new Sword(this) },
+            { ToolType.Bow, new Bow(this) },
+            { ToolType.Axe, new Axe(this) },
+            { ToolType.Pickaxe, new Pickaxe(this) },
+            { ToolType.Knife, new Knife(this) }
         };
     }
 
     /// <summary>
     /// 무기 바꿀 때 호출
     /// </summary>
-    public void SetWeapon(WeaponType weaponType)
+    public void SetWeapon(ToolType weaponType)
     {
-        currentWeaponType = weaponType;
-        anim.SetInteger("WeaponType", (int)currentWeaponType);
+        currentToolType = weaponType;
+        anim.SetInteger("WeaponType", (int)currentToolType);
     }
 
     /// <summary>
@@ -74,18 +93,47 @@ public class CwPlayer : MonoBehaviour
     /// </summary>
     public void Attack()
     {
-        anim.SetInteger("WeaponType", (int)currentWeaponType);
+        anim.SetInteger("WeaponType", (int)currentToolType);
 
-        if (weaponDict.TryGetValue(currentWeaponType, out Weapon weapon))
-            weapon.Attack();
-
-        else
-            Debug.LogWarning("Weapon not found: " + currentWeaponType);
+        if (tools.TryGetValue(currentToolType, out Tool currentTool))
+            currentTool.Attack();
     }
 
     // 테스트용
     private void OnValidate()
     {
-        anim.SetInteger("WeaponType", (int)currentWeaponType);
+        foreach (var holdTool in holdTools)
+        {
+            if (holdTool.tool != null)
+                holdTool.tool.SetActive(false);
+        }
+
+        string key = currentToolType.ToString();
+        GameObject toolObject = holdTools.FirstOrDefault(t => t.toolName == key)?.tool;
+        toolObject?.SetActive(true);
+    }
+
+    /// <summary>
+    /// 조준가능한 도구인지 확인
+    /// </summary>
+    public bool HoldAimTool() => currentToolType == ToolType.Bow || currentToolType == ToolType.Throw;
+
+    /// <summary>
+    /// 곡괭이/도끼 들고있는지 확인
+    /// </summary>
+    public bool HoldCraftingTool()
+    {
+        if (currentToolType == ToolType.Axe || currentToolType == ToolType.Pickaxe)
+            return true;
+        else
+            return false;
+    }
+
+    public bool HoldAttackTool()
+    {
+        if (currentToolType == ToolType.Spear || currentToolType == ToolType.Sword)
+            return true;
+        else
+            return false;
     }
 }

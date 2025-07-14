@@ -1,3 +1,5 @@
+using Unity.VisualScripting;
+
 public class IdleState : MovementBaseState
 {
     public IdleState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
@@ -13,7 +15,7 @@ public class IdleState : MovementBaseState
     public override void UpdateState()
     {
         // Move
-        if (movementManager.inputManager.moveInput.magnitude > 0.1f)
+        if (movementManager.inputManager.MoveInputDectected() && movementManager.canMove)
         {
             if (movementManager.inputManager.sprintAction.IsPressed() && movementManager.player.currentAttackType != AttackType.Aim)
                 movementManager.ChangeState(movementManager.runState);
@@ -26,8 +28,9 @@ public class IdleState : MovementBaseState
             movementManager.ChangeState(movementManager.crouchState);
 
         // Jump
-        if (inputManager.jumpAction.WasPressedThisFrame())
+        if (inputManager.jumpAction.WasPressedThisFrame() && movementManager.canJump)
         {
+            movementManager.canJump = false;
             movementManager.previousState = this;
             movementManager.ChangeState(movementManager.jumpState);
         }

@@ -11,6 +11,7 @@ public class PlayerCameraManager : MonoBehaviour
     private CinemachineInputAxisController inputAxisController;
     #endregion
 
+    public bool isAiming = false;
     #region Third Person Aim
     [Header("3인칭 Aim")]
     [SerializeField] private Transform thirdPersonTarget;
@@ -89,15 +90,19 @@ public class PlayerCameraManager : MonoBehaviour
     /// <summary>
     /// 3인칭 조준할 때 카메라 움직이는 함수
     /// </summary>
-    public void MoveCamera(bool isAiming)
+    public void MoveCamera(bool _isAiming)
     {
+        if (isAiming == _isAiming)
+            return;
+        isAiming = _isAiming;
+
         if (moveCameraCoroutine != null)
         {
             StopCoroutine(moveCameraCoroutine);
             moveCameraCoroutine = null;
         }
 
-        if (isAiming)
+        if (_isAiming)
             moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(thirdPerson_AimTargetPos.localPosition, thirdPerson_AimFov));
         else
             moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(thirdPerson_DefaultTargetPos, thirdPerson_DefaultFov));
