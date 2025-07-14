@@ -10,19 +10,32 @@ namespace Test
     {
         [SerializeField] private NetworkTree _treePrefab;
 
-        private List<NetworkTree> _tree = new();
+        private NetworkTree instanceTree;
 
         public override void Spawned()
         {
             if (HasStateAuthority == false) return;
+            SpawnTree();
+        }
 
-
-            var tree = Runner.Spawn(_treePrefab, new Vector3(2, 0, 2), Quaternion.identity, Object.InputAuthority, (runner, o) =>
+        public override void FixedUpdateNetwork()
+        {
+            if (HasStateAuthority == false) return;
+            if (instanceTree == null)
             {
-                o.GetComponent<NetworkTree>().health.Init(100);
+                SpawnTree();
+            }
+        }
+
+        void SpawnTree()
+        {
+            var x= UnityEngine.Random.Range(0, 3f);
+            var z= UnityEngine.Random.Range(-3f, 3f);
+            instanceTree = Runner.Spawn(_treePrefab, new Vector3(x, 1, z), Quaternion.identity, null, (runner, o) =>
+            {
+                o.GetComponent<NetworkTree>().Init(100);
             });
-            tree.transform.SetParent(transform);
-            _tree.Add(tree);
+            instanceTree.transform.SetParent(transform);
         }
     }
 }

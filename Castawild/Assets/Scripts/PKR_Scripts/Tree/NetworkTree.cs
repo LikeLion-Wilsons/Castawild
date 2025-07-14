@@ -5,60 +5,58 @@ namespace Test
 {
     public interface IInteractable
     {
-        void Interact(PlayerRef player);
+        void Interact(PlayerRef playerRef);
     }
 
     public class NetworkTree : NetworkBehaviour, IInteractable
     {
-        public NetworkHealth health;
-        private PlayerRef lastAttacker;
-        public GameObject visualRoot;
-        [Networked] private TickTimer _respawnTimer { get; set; }
+        [Networked, OnChangedRender(nameof(OnChangedHealth))] public int Health { get; set; }
+
+        [SerializeField] private GameObject tree3;
+        [SerializeField] private GameObject tree2;
+        [SerializeField] private GameObject tree1;
+
+        public void Init(int initHp)
+        {
+            Health = initHp;
+        }
+
+        public override void Spawned()
+        {
+            Refresh();
+        }
 
         public void Interact(PlayerRef player)
         {
-            if (!health.IsAlive()) return;
-            if (!HasStateAuthority) return;
+            RPC_Request(player);
+        }
 
-            if(Runner.LocalPlayer == player)
-                Debug.Log("Take Damage 10!");
-            lastAttacker = player;
-            health.TakeDamage(10);
-            if (health.IsAlive() == false)
+        //클라->서버
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer)]
+        void RPC_Request(PlayerRef player)
+        {
+            Health -= 10;
+            if (Health <= 0)
             {
-                Die();
+                //막타 플레이어에게 아이템지급.
+                var playerObj = Runner.GetPlayerObject(player);
+                var inven = playerObj.GetComponent<PlayerInventory>();
+                inven.AddItem("wood", 1);
+                Runner.Despawn(Object);
             }
         }
 
-        public override void FixedUpdateNetwork()
+        void OnChangedHealth()
         {
-            if (health.IsAlive()) return;
-            bool isActive = _respawnTimer.ExpiredOrNotRunning(Runner);
-            if (isActive)
-            {
-                Revive();
-            }
+            Debug.Log($"나무체력: {Health}");
+            Refresh();
         }
 
-        void Die()
+        void Refresh()
         {
-            visualRoot.SetActive(false);
-            _respawnTimer = TickTimer.CreateFromSeconds(Runner, 3f);
-
-
-            var playerObj = Runner.GetPlayerObject(lastAttacker);
-            playerObj.GetComponent<PlayerInventory>().materialWood += 10;
-
-            if (lastAttacker == Runner.LocalPlayer)
-            {
-                Debug.Log("나무를 얻었다!");
-            }
-        }
-
-        void Revive()
-        {
-            visualRoot.SetActive(true);
-            health.Revive();
+            tree3.SetActive(Health >= 100);
+            tree2.SetActive(Health >= 50);
+            tree1.SetActive(Health >= 10);
         }
     }
 }
