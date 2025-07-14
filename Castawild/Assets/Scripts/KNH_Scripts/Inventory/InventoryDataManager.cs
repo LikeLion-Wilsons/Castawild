@@ -1,20 +1,37 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 
 public delegate void OnItemGet();
 
 public class InventoryDataManager : MonoBehaviour
 {
-    public static InventoryDataManager Instance { get; private set; }
     [SerializeField] int maxStackCount;//아이템 최대 스택 개수
-    public List<Item> itemList = new List<Item>(29);
+    public List<Item> itemList;
     public Item_Panel[] inventorySlots;
     public GameObject inventoryItemPrefab;
     int selectedSlot = -1;
     int maxSlotCount = 9; // 총 슬롯 수
+    public static InventoryDataManager Instance { get; private set; }
+    private void Awake()
+    {
+        itemList = new List<Item>();
+        for (int i = 0; i < 29; i++)
+        {
+            itemList.Add(new Item
+            {
+                item_Data = null,
+                count = 0,
+                durability = 1
+            });
+        }
 
+        if (Instance == null) Instance = this;
+        else if (Instance != this) Destroy(gameObject);
+
+    }
     void ChangeSelectedSlot(int newValue)
     {
         if (Canvas_Holder.instance.IsInventoryOpen()) return;
@@ -25,16 +42,7 @@ public class InventoryDataManager : MonoBehaviour
         inventorySlots[newValue].Select();
         selectedSlot = newValue;
     }
-    private void Awake()
-    {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-
-        for (int i = 0; i < 29; i++)
-        {
-            itemList.Add(null);
-        }
-    }
+   
 
     public static event Action onInventoryUpdated;//기존에 있던 아이템이 추가될 때
 
@@ -127,7 +135,7 @@ public class InventoryDataManager : MonoBehaviour
     {
         if (index >= 0 && index < itemList.Count)
         {
-            //Debug.Log(itemList[index].item_Data.name + " 버림!");
+            Debug.Log(itemList[index].item_Data.name + " 버림!");
             itemList[index] = null;
             onInventoryUpdated?.Invoke();
         }

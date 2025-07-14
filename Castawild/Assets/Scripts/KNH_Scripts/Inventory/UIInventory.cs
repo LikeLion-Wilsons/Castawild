@@ -87,4 +87,9 @@ public class UIInventory : UIPart
         }
         return -1;
     }
+
+    public Item_Panel GetItemByIndex(int index)
+    {
+        return itemPanels[index];
+    }
 }

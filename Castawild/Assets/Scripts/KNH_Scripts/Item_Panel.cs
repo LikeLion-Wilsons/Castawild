@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -28,7 +29,8 @@ public class Item_Panel :
     private CanvasGroup canvasGroup;
     private int originalCount;
 
-    GameObject draggedClone;
+    public GameObject draggedClone;
+    public bool isClone = false;
 
     private bool isRightMouseDrag = false;    //우클릭 드래그 플래그
 
@@ -118,6 +120,7 @@ public class Item_Panel :
                 durability = item.durability
             };
             clonePanel.inventory = inventory;
+            clonePanel.isClone = true;
             clonePanel.SetItemSlot();
 
             // 드래그 오브젝트는 마우스 따라다니게 설정
@@ -167,11 +170,26 @@ public class Item_Panel :
             //이동 실패
             if (!droppedOnSlot)
             {
-                item.count = originalCount;
-                SetItemSlot();
-            }
+                foreach (var result in results)
+                {
+                    //버리는 구역에 드랍했을 때
+                    if (result.gameObject.GetComponent<TrashArea>() != null)
+                    {
+                        //버리기
+                        break;
+                    }
+                    else
+                    {
+                        item.count = originalCount;
+                        SetItemSlot();
+                    }
+                }
 
-            Destroy(draggedClone);
+            }
+            else
+            {
+                Destroy(draggedClone);
+            }
         }
         else
         {
@@ -184,6 +202,7 @@ public class Item_Panel :
         canvasGroup.blocksRaycasts = true;
         SetItemSlot();
         inventory.GetComponent<UIInventory>().SetItemList();
+
     }
 
     public void OnDrop(PointerEventData eventData)
