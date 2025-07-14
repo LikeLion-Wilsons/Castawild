@@ -44,14 +44,15 @@ public class TreeHealth : MonoBehaviour
 
     private void Die()
     {
-        if (!isInitialized) return;
-        isInitialized = false;
-
         if (!string.IsNullOrEmpty(definition.dropItemID))
         {
             Debug.Log($"[Tree] {treeID}, 드랍: {definition.dropItemID} x {definition.dropAmount}");
             //나중에 인벤토리에 추가.
+            //나중에 take damage일때 아이템 드랍
         }
+
+        if (!isInitialized) return;
+        isInitialized = false;
 
         if (!string.IsNullOrEmpty(definition.destroySFX))
         {
