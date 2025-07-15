@@ -1,10 +1,6 @@
 fileFormatVersion: 2
-guid: a1681f2c6482435aa351534ad2219738
-labels:
-- FusionPrefab
-- Tree
-- Vegetation
-PrefabImporter:
+guid: 1428b285098892c4eaf341fef821540e
+DefaultImporter:
   externalObjects: {}
   userData: 
   assetBundleName: 

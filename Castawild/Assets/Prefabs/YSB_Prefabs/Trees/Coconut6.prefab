@@ -114,6 +114,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f48f9e3007ba4908974e5e5e73f58c0c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1043687569573148666}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f48f9e3007ba4908974e5e5e73f58c0c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3208360676766567735}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f48f9e3007ba4908974e5e5e73f58c0c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6381536166488518207}
   m_SourcePrefab: {fileID: 100100000, guid: f48f9e3007ba4908974e5e5e73f58c0c, type: 3}
 --- !u!1 &3079479647208147444 stripped
 GameObject:
@@ -150,10 +156,40 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3079479647208147444}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fbb95c51d9e40d442bfba4097a7c0c2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  definition: {fileID: 0}
-  treeID: 
+--- !u!114 &3208360676766567735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3079479647208147444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 971352eea68afe14e965ec568800bb03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Health: 0
+--- !u!114 &6381536166488518207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3079479647208147444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3685522182
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 3208360676766567735}
+  ForceRemoteRenderTimeframe: 0
