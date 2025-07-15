@@ -51,13 +51,13 @@ public class Canvas_Holder : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.I))
         {
-            uiParts["InventoryBG"].Toggle();
+            uiParts["Inventory"].Toggle();
         }
     }
 
     public bool IsInventoryOpen()
     {
-        return uiParts.ContainsKey("InventoryBG") && uiParts["InventoryBG"].IsOpen();
+        return uiParts.ContainsKey("Inventory") && uiParts["Inventory"].IsOpen();
     }
 
     public bool AnyUIOpen()
