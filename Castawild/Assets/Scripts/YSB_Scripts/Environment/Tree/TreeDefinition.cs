@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-[CreateAssetMenu(menuName = "Tree/TreeDefinition", fileName = "NewTreeDefinition")]
+[CreateAssetMenu(menuName = "Tree/TreeDefinition")]
 public class TreeDefinition : ScriptableObject
 {
     public string treeName;
@@ -10,10 +10,10 @@ public class TreeDefinition : ScriptableObject
     public AssetReferenceGameObject prefabReference;
 
     [Header("Health")]
-    public float maxHealth = 100f;
+    public int maxHealth = 100;
 
     [Header("Drop")]
-    public string dropItemID;      // 드랍할 아이템 ID
+    public int dropItemID;      // 드랍할 아이템 ID
     public int dropAmount = 1;     // 드랍 개수
 
     [Header("Effect & Sound")]
