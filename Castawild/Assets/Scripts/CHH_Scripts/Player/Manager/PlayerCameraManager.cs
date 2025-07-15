@@ -2,18 +2,32 @@ using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 
+public enum ViewType { None, FirstPerson, ThirdPerson }
+
 public class PlayerCameraManager : MonoBehaviour
 {
     #region Components
-    [SerializeField] private PlayerInputManager inputManager;
-    private CinemachineCamera cam;
+    private PlayerInputManager inputManager;
     private CinemachineOrbitalFollow orbital;
     private CinemachineInputAxisController inputAxisController;
+    private CwPlayer player;
     #endregion
 
     public bool isAiming = false;
+
     #region Third Person Aim
-    [Header("3인칭 Aim")]
+    [Header("1인칭")]
+    [SerializeField] private CinemachineCamera firstPersonCam;
+    [SerializeField] private Transform firstPersonTarget;
+
+    [SerializeField] private GameObject playerMesh;
+    private ViewType currentView;
+
+    #endregion
+
+    #region Third Person Aim
+    [Header("3인칭")]
+    [SerializeField] private CinemachineCamera thirdPersonCam;
     [SerializeField] private Transform thirdPersonTarget;
     [SerializeField] private Transform thirdPerson_AimTargetPos;
     [SerializeField] private float thirdPerson_AimFov;
@@ -36,18 +50,31 @@ public class PlayerCameraManager : MonoBehaviour
     private float currentZoom;
     #endregion
 
+    public CinemachineCamera CurrenCam
+    {
+        get
+        {
+            if (currentView == ViewType.FirstPerson)
+                return firstPersonCam;
+            else
+                return thirdPersonCam;
+        }
+    }
+
     private void Awake()
     {
         InitComponents();
         InitVariables();
         SubscribeEvents();
+        HandleViewChanged(ViewType.FirstPerson);
     }
 
     private void InitComponents()
     {
-        cam = GetComponent<CinemachineCamera>();
-        orbital = cam.GetComponent<CinemachineOrbitalFollow>();
-        inputAxisController = cam.GetComponent<CinemachineInputAxisController>();
+        player = GetComponentInParent<CwPlayer>();
+        inputManager = GetComponentInParent<PlayerInputManager>();
+        orbital = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
+        inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
     }
 
     private void SubscribeEvents()
@@ -59,7 +86,7 @@ public class PlayerCameraManager : MonoBehaviour
     private void InitVariables()
     {
         thirdPerson_DefaultTargetPos = thirdPersonTarget.localPosition;
-        thirdPerson_DefaultFov = cam.Lens.FieldOfView;
+        thirdPerson_DefaultFov = thirdPersonCam.Lens.FieldOfView;
         targetZoom = currentZoom = orbital.Radius;
     }
 
@@ -69,7 +96,38 @@ public class PlayerCameraManager : MonoBehaviour
     private void Update()
     {
         inputManager.HandleCameraInput();
-        //ZoomCamera();
+        ViewChange();
+        ZoomCamera();
+    }
+
+    private void ViewChange()
+    {
+        if (inputManager.viewChangeAction.WasPressedThisFrame())
+        {
+            if (currentView == ViewType.FirstPerson)
+                HandleViewChanged(ViewType.ThirdPerson);
+            else if (currentView == ViewType.ThirdPerson)
+                HandleViewChanged(ViewType.FirstPerson);
+        }
+    }
+
+    private void HandleViewChanged(ViewType viewType)
+    {
+        if (viewType == ViewType.FirstPerson)
+        {
+            currentView = ViewType.FirstPerson;
+            playerMesh.SetActive(false);
+            firstPersonCam.Priority = 1;
+            thirdPersonCam.Priority = 0;
+        }
+
+        else if (viewType == ViewType.ThirdPerson)
+        {
+            currentView = ViewType.ThirdPerson;
+            playerMesh.SetActive(true);
+            firstPersonCam.Priority = 0;
+            thirdPersonCam.Priority = 1;
+        }
     }
 
     private void ZoomCamera()
@@ -111,14 +169,14 @@ public class PlayerCameraManager : MonoBehaviour
     private IEnumerator MoveCameraCoroutine(Vector3 targetPos, float targetFov)
     {
         Vector3 startPosition = thirdPersonTarget.localPosition;
-        float startFov = cam.Lens.FieldOfView;
+        float startFov = thirdPersonCam.Lens.FieldOfView;
 
         float elapsed = 0f;
 
         while (elapsed < thirdPerson_aimZoomDuration)
         {
             thirdPersonTarget.localPosition = Vector3.Lerp(startPosition, targetPos, elapsed / thirdPerson_aimZoomDuration);
-            cam.Lens.FieldOfView = Mathf.Lerp(startFov, targetFov, elapsed / thirdPerson_aimZoomDuration);
+            thirdPersonCam.Lens.FieldOfView = Mathf.Lerp(startFov, targetFov, elapsed / thirdPerson_aimZoomDuration);
 
             elapsed += Time.deltaTime;
             yield return null;

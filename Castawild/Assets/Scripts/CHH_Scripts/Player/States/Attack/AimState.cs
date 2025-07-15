@@ -44,7 +44,7 @@ public class AimState : ToolBaseState
 
     private void RotatePlayer()
     {
-        Vector3 lookDirection = toolStateManager.cam.transform.forward;
+        Vector3 lookDirection = toolStateManager.cameraManager.CurrenCam.transform.forward;
         lookDirection.y = 0f;
 
         if (lookDirection.sqrMagnitude > 0.001f)
@@ -62,7 +62,7 @@ public class AimState : ToolBaseState
 
     private void LookForward()
     {
-        Vector3 lookDir = toolStateManager.cam.transform.forward;
+        Vector3 lookDir = toolStateManager.cameraManager.CurrenCam.transform.forward;
         lookDir.y = 0f;
         toolStateManager.transform.rotation = Quaternion.LookRotation(lookDir);
     }

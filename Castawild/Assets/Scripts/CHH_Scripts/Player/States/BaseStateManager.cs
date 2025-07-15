@@ -1,11 +1,10 @@
-using Unity.Cinemachine;
 using UnityEngine;
 
 public class BaseStateManager : MonoBehaviour
 {
     [HideInInspector] public Animator anim;
     [HideInInspector] public PlayerInputManager inputManager;
-    [HideInInspector] public CinemachineCamera cam;
+    [HideInInspector] public PlayerCameraManager cameraManager;
     [HideInInspector] public CwPlayer player;
 
     public BaseState currentState;
@@ -14,7 +13,7 @@ public class BaseStateManager : MonoBehaviour
     {
         anim = GetComponentInChildren<Animator>();
         inputManager = GetComponent<PlayerInputManager>();
-        cam = GetComponentInChildren<CinemachineCamera>();
+        cameraManager = GetComponentInChildren<PlayerCameraManager>();
         player = GetComponent<CwPlayer>();
     }
 

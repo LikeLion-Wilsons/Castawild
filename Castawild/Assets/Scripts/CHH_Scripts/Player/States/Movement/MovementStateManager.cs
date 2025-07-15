@@ -103,8 +103,8 @@ public class MovementStateManager : BaseStateManager
 
     private void HandleMovement()
     {
-        Vector3 forward = cam.transform.forward;
-        Vector3 right = cam.transform.right;
+        Vector3 forward = cameraManager.CurrenCam.transform.forward;
+        Vector3 right = cameraManager.CurrenCam.transform.right;
 
         forward.y = 0f;
         right.y = 0f;
