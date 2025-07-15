@@ -90911,7 +90911,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &813833626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122782,6 +122782,7 @@ MonoBehaviour:
     activeTrees: []
   maxSpawnAttempts: 20
   checkInterval: 5
+  reviveDelay: 10
 --- !u!4 &1094382505
 Transform:
   m_ObjectHideFlags: 0
@@ -152650,13 +152651,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1353417336}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.10259572, y: 0.6591665, z: -0.12430518, w: -0.7345215}
-  m_LocalPosition: {x: -710.75, y: 64.4, z: -431.07}
+  m_LocalRotation: {x: 0.20885949, y: -0, z: -0, w: 0.9779457}
+  m_LocalPosition: {x: -724.37, y: 72.79, z: -477.19}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 18.336, y: -443.349, z: 2.86}
+  m_LocalEulerAnglesHint: {x: 24.111, y: 0, z: 0}
 --- !u!1001 &1355467283
 PrefabInstance:
   m_ObjectHideFlags: 0
