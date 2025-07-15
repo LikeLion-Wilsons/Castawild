@@ -5,25 +5,36 @@ namespace Test
 {
     public interface IInteractable
     {
+        bool CanInteract();
         void Interact(PlayerRef playerRef);
     }
 
     public class NetworkTree : NetworkBehaviour, IInteractable
     {
-        [Networked, OnChangedRender(nameof(OnChangedHealth))] public int Health { get; set; }
+        [Networked, OnChangedRender(nameof(OnChangedHealth))]
+        public int Health { get; set; }
 
+        [Networked] private TickTimer reviveTimer { get; set; }
         [SerializeField] private GameObject tree3;
         [SerializeField] private GameObject tree2;
         [SerializeField] private GameObject tree1;
-
+        public bool IsAlive => Health > 0;
+        private int maxHP;
         public void Init(int initHp)
         {
-            Health = initHp;
+            Health = maxHP = initHp;
         }
+
+        
 
         public override void Spawned()
         {
             Refresh();
+        }
+
+        public bool CanInteract()
+        {
+            return IsAlive;
         }
 
         public void Interact(PlayerRef player)
@@ -32,7 +43,7 @@ namespace Test
         }
 
         //클라->서버
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer)]
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         void RPC_Request(PlayerRef player)
         {
             Health -= 10;
@@ -41,21 +52,30 @@ namespace Test
                 //막타 플레이어에게 아이템지급.
                 var playerObj = Runner.GetPlayerObject(player);
                 var inven = playerObj.GetComponent<PlayerInventory>();
-                inven.AddItem("wood", 1);
-                Runner.Despawn(Object);
+                inven.AddItem(1000, 1);
+                reviveTimer = TickTimer.CreateFromSeconds(Runner, 2f);
             }
+        }
+        
+        public bool CanRevive()
+        {
+            return IsAlive == false && reviveTimer.ExpiredOrNotRunning(Runner);
+        }
+
+        public void Revive()
+        {
+            Health = maxHP;
         }
 
         void OnChangedHealth()
         {
-            Debug.Log($"나무체력: {Health}");
             Refresh();
         }
 
         void Refresh()
         {
-            tree3.SetActive(Health >= 100);
-            tree2.SetActive(Health >= 50);
+            tree3.SetActive(Health >= 30);
+            tree2.SetActive(Health >= 20);
             tree1.SetActive(Health >= 10);
         }
     }

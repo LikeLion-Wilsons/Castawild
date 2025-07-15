@@ -12,21 +12,26 @@ namespace Test
         Collider[] _interactResult = new Collider[5];
         [Networked] private TickTimer interactTimer { get; set; }
         [Networked] private Color color { get; set; }
-        [SerializeField] private Renderer renderer; 
+        [SerializeField] private Renderer render;
+
         void Awake()
         {
             _cc = GetComponent<NetworkCharacterController>();
-            
         }
 
         public void Init(Color color)
         {
             this.color = color;
-            renderer.material.color = color;
+        }
+
+        public override void Spawned()
+        {
+            render.material.color = color;
         }
 
         public override void FixedUpdateNetwork()
         {
+            if (HasStateAuthority == false) return;
             if (GetInput<NetworkInputData>(out var input))
             {
                 var dir = default(Vector3);
@@ -46,11 +51,13 @@ namespace Test
                     {
                         TryInteract();
                     }
-                    else
-                    {
-                        Debug.Log($"E키 남은 쿨타임:[{interactTimer.RemainingTime(Runner)}]");
-                    }
                 }
+
+                if (input.WasPressed(_prevInputButtons, NetworkInputData.BUTTON_INVENTORY))
+                {
+                    GetComponent<PlayerInventory>().ShowLog();
+                }
+
 
                 _prevInputButtons = input.Buttons;
             }
@@ -67,9 +74,12 @@ namespace Test
                 {
                     if (_interactResult[i].TryGetComponent<IInteractable>(out var interactable))
                     {
-                        interactable.Interact(Object.InputAuthority);
-                        interactTimer = TickTimer.CreateFromSeconds(Runner, 1f);
-                        break;
+                        if (interactable.CanInteract())
+                        {
+                            interactable.Interact(Object.InputAuthority);
+                            interactTimer = TickTimer.CreateFromSeconds(Runner, 1f);
+                            break;
+                        }
                     }
                 }
             }
