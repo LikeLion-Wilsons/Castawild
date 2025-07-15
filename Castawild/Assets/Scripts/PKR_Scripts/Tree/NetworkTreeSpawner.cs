@@ -9,33 +9,39 @@ namespace Test
     public class NetworkTreeSpawner : NetworkBehaviour
     {
         [SerializeField] private NetworkTree _treePrefab;
-
-        private NetworkTree instanceTree;
+        [SerializeField] private Transform[] points;
+        private List<NetworkTree> trees = new List<NetworkTree>();
 
         public override void Spawned()
         {
-            if (HasStateAuthority == false) return;
-            SpawnTree();
+            for (int i = 0; i < points.Length; i++)
+            {
+                SpawnTree(points[i].position);    
+            }
+            
         }
 
         public override void FixedUpdateNetwork()
         {
             if (HasStateAuthority == false) return;
-            if (instanceTree == null)
+            for (int i = 0; i < trees.Count; i++)
             {
-                SpawnTree();
+                if (trees[i].IsAlive == false && trees[i].CanRevive())
+                {
+                    trees[i].Revive();
+                }
             }
         }
 
-        void SpawnTree()
+        void SpawnTree(Vector3 spawnPos)
         {
-            var x= UnityEngine.Random.Range(0, 3f);
-            var z= UnityEngine.Random.Range(-3f, 3f);
-            instanceTree = Runner.Spawn(_treePrefab, new Vector3(x, 1, z), Quaternion.identity, null, (runner, o) =>
+            if (HasStateAuthority == false) return;
+            var tree = Runner.Spawn(_treePrefab, spawnPos, Quaternion.identity, null, (runner, o) =>
             {
-                o.GetComponent<NetworkTree>().Init(100);
+                o.GetComponent<NetworkTree>().Init(30);
             });
-            instanceTree.transform.SetParent(transform);
+            tree.transform.SetParent(transform);
+            trees.Add(tree);
         }
     }
 }
