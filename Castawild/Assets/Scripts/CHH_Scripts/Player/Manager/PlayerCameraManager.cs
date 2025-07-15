@@ -23,6 +23,11 @@ public class PlayerCameraManager : MonoBehaviour
     [SerializeField] private GameObject playerMesh;
     public ViewType currentView { get; private set; }
 
+    public float sensitivity = 1.5f;
+    [SerializeField] private float maxXRotation = 80f;
+    [SerializeField] private float minXRotation = -80f;
+    private float xRotation = 0f;
+
     #endregion
 
     #region Third Person Aim
@@ -66,7 +71,7 @@ public class PlayerCameraManager : MonoBehaviour
         InitComponents();
         InitVariables();
         SubscribeEvents();
-        HandleViewChanged(ViewType.FirstPerson);
+        HandleViewChanged(ViewType.ThirdPerson);
     }
 
     private void InitComponents()
@@ -96,8 +101,19 @@ public class PlayerCameraManager : MonoBehaviour
     private void Update()
     {
         inputManager.HandleCameraInput();
+        RotateCamera();
         ViewChange();
         ZoomCamera();
+    }
+
+    public void RotateCamera()
+    {
+        if (currentView == ViewType.ThirdPerson || !inputManager.isCursorLocked)
+            return;
+
+        xRotation -= inputManager.lookInput.y * sensitivity;
+        xRotation = Mathf.Clamp(xRotation, minXRotation, maxXRotation);
+        firstPersonCam.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
     }
 
     private void ViewChange()

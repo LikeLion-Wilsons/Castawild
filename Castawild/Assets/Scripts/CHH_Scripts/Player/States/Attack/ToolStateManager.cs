@@ -39,7 +39,6 @@ public class ToolStateManager : BaseStateManager
 
     private void Update()
     {
-        inputManager.HandleMovementInput();
         currentState?.UpdateState();
 
         if (inputManager.aimAction.WasReleasedThisFrame())

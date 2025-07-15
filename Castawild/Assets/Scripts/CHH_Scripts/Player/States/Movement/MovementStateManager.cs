@@ -1,11 +1,10 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class MovementStateManager : BaseStateManager
 {
     #region Conponent
     [HideInInspector] public ToolStateManager toolStateManager;
-    [SerializeField] private CharacterController controller;
+    //[SerializeField] private CharacterController controller;
     #endregion
 
     #region States
@@ -24,6 +23,7 @@ public class MovementStateManager : BaseStateManager
     public float walkSpeed = 3f;
     public float runSpeed = 7f;
     public float crouchSpeed = 2f;
+    public float rotationSpeed = 10f;
     [HideInInspector] public Vector3 dir;
     [HideInInspector] public bool canJump = true;
     #endregion
@@ -37,7 +37,7 @@ public class MovementStateManager : BaseStateManager
     #endregion
 
     #region Gravity
-    public float gravity = -9.81f;
+    public float gravity = -20f;
     public float jumpForce = 10f;
     [HideInInspector] public bool jumped;
     [HideInInspector] public Vector3 velocity;
@@ -59,7 +59,7 @@ public class MovementStateManager : BaseStateManager
 
     private void InitComponents()
     {
-        controller = GetComponent<CharacterController>();
+        //controller = GetComponent<CharacterController>();
         toolStateManager = GetComponent<ToolStateManager>();
     }
 
@@ -76,20 +76,8 @@ public class MovementStateManager : BaseStateManager
 
     private void Update()
     {
-        inputManager.HandleMovementInput();
-
-        GetDirectionAndMove();
-        Gravity();
-        Falling();
-        currentState.UpdateState();
-    }
-
-    private void GetDirectionAndMove()
-    {
         UpdateMoveAnimation();
-
-        if (canMove)
-            HandleMovement();
+        currentState.UpdateState();
     }
 
     private void UpdateMoveAnimation()
@@ -99,14 +87,29 @@ public class MovementStateManager : BaseStateManager
 
         anim.SetFloat("Horizontal", currentHorizontal);
         anim.SetFloat("Vertical", currentVertical);
+        anim.SetBool("Falling", !IsGrounded());
     }
 
-    private void HandleMovement()
+
+
+
+    public float sensitivity = 1.5f;
+    public float maxXRotation = 80f;
+    public float minXRotation = -80f;
+
+    private float xRotation = 0f;
+    /// <summary>
+    /// 움직이는 방향
+    /// </summary>
+    public Vector3 GetMoveDir(bool hasInputAuthority)
     {
+        if (!canMove)
+            return Vector3.zero;
+
         Vector3 forward;
         Vector3 right;
 
-        if (cameraManager.currentView == ViewType.FirstPerson)
+        if (cameraManager.currentView == ViewType.FirstPerson && hasInputAuthority)
         {
             forward = transform.forward;
             right = transform.right;
@@ -124,30 +127,37 @@ public class MovementStateManager : BaseStateManager
         right.Normalize();
 
         dir = forward * inputManager.moveInput.y + right * inputManager.moveInput.x;
-        controller.Move(dir * currentMoveSpeed * Time.deltaTime);
 
-        if (dir.sqrMagnitude > 0.001f && cameraManager.currentView == ViewType.ThirdPerson)
+        if ((hasInputAuthority && cameraManager.currentView == ViewType.ThirdPerson)
+            || !hasInputAuthority)
+            RotateToward(dir);
+
+        else if (hasInputAuthority && cameraManager.currentView == ViewType.FirstPerson && inputManager.isCursorLocked)
+            transform.Rotate(Vector3.up * inputManager.lookInput.x * cameraManager.sensitivity);
+
+        return dir;
+    }
+
+    private void RotateToward(Vector3 moveDir)
+    {
+        if (moveDir.sqrMagnitude > 0.001f && !player.isAimLocked && IsGrounded())
         {
-            // 조준, 점프 중이 아닐 때만 회전
-            if (!player.isAimLocked && IsGrounded())
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(dir);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-            }
-
-            Vector3 speed = IsGrounded() ? dir * currentMoveSpeed : dir * currentMoveSpeed * airSpeedMuliplier;
-            controller.Move(speed * Time.deltaTime);
+            Quaternion targetRotation = Quaternion.LookRotation(moveDir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
         }
     }
 
-    private void Gravity()
+    /// <summary>
+    /// 중력 적용
+    /// </summary>
+    public Vector3 Gravity()
     {
         if (IsGrounded() && velocity.y < 0)
             velocity.y = -1f;
         else
-            velocity.y += gravity * fallMultiplier * Time.deltaTime;
+            velocity.y += gravity * fallMultiplier * Time.fixedDeltaTime;
 
-        controller.Move(velocity * Time.deltaTime);
+        return velocity;
     }
 
     /// <summary>
@@ -160,8 +170,6 @@ public class MovementStateManager : BaseStateManager
             return true;
         return false;
     }
-
-    private void Falling() => anim.SetBool("Falling", !IsGrounded());
 
     private void OnDrawGizmos()
     {
