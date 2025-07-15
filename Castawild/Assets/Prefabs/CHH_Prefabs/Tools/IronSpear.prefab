@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4361283557316514}
   - component: {fileID: 33146941298289444}
   - component: {fileID: 23417563219040520}
+  - component: {fileID: 8757142168340949672}
   m_Layer: 0
   m_Name: IronSpear
   m_TagString: Untagged
@@ -86,3 +87,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &8757142168340949672
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1532900757012956}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.4175155, y: 0.7930301, z: 0.5802399}
+  m_Center: {x: -0.038183164, y: 1.3633746, z: 0.01040035}

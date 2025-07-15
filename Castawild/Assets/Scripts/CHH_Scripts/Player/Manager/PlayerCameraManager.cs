@@ -69,7 +69,7 @@ public class PlayerCameraManager : MonoBehaviour
     private void Update()
     {
         inputManager.HandleCameraInput();
-        ZoomCamera();
+        //ZoomCamera();
     }
 
     private void ZoomCamera()

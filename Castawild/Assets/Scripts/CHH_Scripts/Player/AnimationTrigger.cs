@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class AnimationTrigger : MonoBehaviour
 {
+    private CwPlayer player;
     private MovementStateManager movementManager;
     [HideInInspector] public bool isAnimationFinished = false;
     [HideInInspector] public bool canReceiveInput = false;
@@ -9,6 +10,7 @@ public class AnimationTrigger : MonoBehaviour
 
     private void Awake()
     {
+        player = GetComponentInParent<CwPlayer>();
         movementManager = GetComponentInParent<MovementStateManager>();
     }
 
@@ -24,4 +26,6 @@ public class AnimationTrigger : MonoBehaviour
         canComboAttack = false;
         canReceiveInput = false;
     }
+
+    public void ApplyTool() => player.ApplyTool();
 }

@@ -32,7 +32,11 @@ public class CwPlayer : MonoBehaviour
     public MoveType currentMoveType;
     public AttackType currentAttackType;
 
-    public bool isAimLocked = false;
+    public GameObject crosshairImage;
+    public float throwForce = 10f;
+    public float throwUpForce = 5f;
+
+    [HideInInspector] public bool isAimLocked = false;
 
     public PlayerData playerData;
 
@@ -45,7 +49,7 @@ public class CwPlayer : MonoBehaviour
         InitComponents();
         InitTools();
 
-        SetWeapon(ToolType.Fist);
+        //SetWeapon(ToolType.Fist);
     }
 
     private void Singleton()
@@ -91,12 +95,10 @@ public class CwPlayer : MonoBehaviour
     /// <summary>
     /// 공격시 호출
     /// </summary>
-    public void Attack()
+    public void ApplyTool()
     {
-        anim.SetInteger("WeaponType", (int)currentToolType);
-
         if (tools.TryGetValue(currentToolType, out Tool currentTool))
-            currentTool.Attack();
+            currentTool.ApplyTool();
     }
 
     // 테스트용
@@ -108,9 +110,17 @@ public class CwPlayer : MonoBehaviour
                 holdTool.tool.SetActive(false);
         }
 
-        string key = currentToolType.ToString();
-        GameObject toolObject = holdTools.FirstOrDefault(t => t.toolName == key)?.tool;
+        GameObject toolObject = GetHoldToolObject();
         toolObject?.SetActive(true);
+    }
+
+    /// <summary>
+    /// 들고있는 도구 가져오기
+    /// </summary>
+    public GameObject GetHoldToolObject()
+    {
+        string key = currentToolType.ToString();
+        return holdTools.FirstOrDefault(t => t.toolName == key)?.tool;
     }
 
     /// <summary>

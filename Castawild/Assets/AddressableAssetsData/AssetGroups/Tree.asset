@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Tree
+  m_EditorClassIdentifier: 
+  m_GroupName: Tree
+  m_GUID: 6f0de8fb4fdfd2245ad5be2b8342cb73
+  m_SerializeEntries:
+  - m_GUID: 0500c9cc85014f5f9807902c10469a4e
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Coconut6.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 19216f88adc74159be81e2dbbe0eea71
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Coconut3.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2f3e9539bda247f49c4d64b142c4bbae
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Coconut4.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3116fe56d90a4e4bb3c63be2c7ca6068
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Coconut1.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 552365f4070b4fc8aac383be43a197ed
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Coconut5.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a7d7fcdbb174de18edc0b968e8dab51
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Pandanace1.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a1681f2c6482435aa351534ad2219738
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Pandanace2.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d6de07b6226a44d49af4fcaa7c722418
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Pandanace3.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f6b432ab29364fb0a0b0ab7a44d1e899
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Coconut2.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: b4ac3e4228df9544f927583c15ed8e13, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: ab3ed5e2820a6cd4aaa07831ae5c4435, type: 2}
+    - {fileID: 11400000, guid: 801aef06831b4254aae9c5c5f363ddbd, type: 2}
