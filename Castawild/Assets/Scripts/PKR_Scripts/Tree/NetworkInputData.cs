@@ -7,6 +7,7 @@ namespace Test {
     public const int BUTTON_LEFT = 3;
     public const int BUTTON_RIGHT = 4;
     public const int BUTTON_INTERACT = 5;
+    public const int BUTTON_INVENTORY = 6;
 
     public NetworkButtons Buttons;
 

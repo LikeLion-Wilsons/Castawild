@@ -40,6 +40,7 @@ namespace Test
             myInput.Buttons.Set(NetworkInputData.BUTTON_RIGHT, horizontal > 0);
             myInput.Buttons.Set(NetworkInputData.BUTTON_LEFT, horizontal < 0);
             myInput.Buttons.Set(NetworkInputData.BUTTON_INTERACT, Input.GetKey(KeyCode.E));
+            myInput.Buttons.Set(NetworkInputData.BUTTON_INVENTORY, Input.GetKey(KeyCode.I));
 
             input.Set(myInput);
         }
