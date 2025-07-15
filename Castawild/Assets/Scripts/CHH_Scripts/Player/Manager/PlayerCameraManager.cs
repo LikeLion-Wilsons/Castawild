@@ -21,7 +21,7 @@ public class PlayerCameraManager : MonoBehaviour
     [SerializeField] private Transform firstPersonTarget;
 
     [SerializeField] private GameObject playerMesh;
-    private ViewType currentView;
+    public ViewType currentView { get; private set; }
 
     #endregion
 

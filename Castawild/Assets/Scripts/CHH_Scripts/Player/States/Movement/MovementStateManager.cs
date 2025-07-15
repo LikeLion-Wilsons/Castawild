@@ -103,8 +103,19 @@ public class MovementStateManager : BaseStateManager
 
     private void HandleMovement()
     {
-        Vector3 forward = cameraManager.CurrenCam.transform.forward;
-        Vector3 right = cameraManager.CurrenCam.transform.right;
+        Vector3 forward;
+        Vector3 right;
+
+        if (cameraManager.currentView == ViewType.FirstPerson)
+        {
+            forward = transform.forward;
+            right = transform.right;
+        }
+        else
+        {
+            forward = cameraManager.CurrenCam.transform.forward;
+            right = cameraManager.CurrenCam.transform.right;
+        }
 
         forward.y = 0f;
         right.y = 0f;
@@ -115,7 +126,7 @@ public class MovementStateManager : BaseStateManager
         dir = forward * inputManager.moveInput.y + right * inputManager.moveInput.x;
         controller.Move(dir * currentMoveSpeed * Time.deltaTime);
 
-        if (dir.sqrMagnitude > 0.001f)
+        if (dir.sqrMagnitude > 0.001f && cameraManager.currentView == ViewType.ThirdPerson)
         {
             // 조준, 점프 중이 아닐 때만 회전
             if (!player.isAimLocked && IsGrounded())
