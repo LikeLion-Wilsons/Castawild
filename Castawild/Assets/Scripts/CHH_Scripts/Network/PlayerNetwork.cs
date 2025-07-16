@@ -1,5 +1,4 @@
 using Fusion;
-using UnityEditor.EditorTools;
 using UnityEngine;
 
 public class PlayerNetworkManager : NetworkBehaviour
@@ -8,14 +7,24 @@ public class PlayerNetworkManager : NetworkBehaviour
     private CharacterController controller;
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
-
+    private PlayerCameraManager cameraManager;
 
     void Awake()
     {
         player = GetComponent<CwPlayer>();
+        controller = GetComponent<CharacterController>();
         movementManager = GetComponent<MovementStateManager>();
         toolManager = GetComponent<ToolStateManager>();
-        controller = GetComponent<CharacterController>();
+        cameraManager = GetComponentInChildren<PlayerCameraManager>();
+    }
+
+    public override void Spawned()
+    {
+        if (!HasInputAuthority)
+        {
+            cameraManager.firstPersonCam.gameObject.SetActive(false);
+            cameraManager.thirdPersonCam.gameObject.SetActive(false);
+        }
     }
 
     public override void FixedUpdateNetwork()
@@ -48,4 +57,6 @@ public class PlayerNetworkManager : NetworkBehaviour
             controller.Move(finalVelocity * Time.fixedDeltaTime);
         }
     }
+
+    public bool GetHasInputAuthority() => HasInputAuthority;
 }

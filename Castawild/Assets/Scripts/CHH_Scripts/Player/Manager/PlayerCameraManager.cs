@@ -10,6 +10,7 @@ public class PlayerCameraManager : MonoBehaviour
     private PlayerInputManager inputManager;
     private CinemachineOrbitalFollow orbital;
     private CinemachineInputAxisController inputAxisController;
+    private PlayerNetworkManager networkManager;
     private CwPlayer player;
     #endregion
 
@@ -17,7 +18,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     #region Third Person Aim
     [Header("1인칭")]
-    [SerializeField] private CinemachineCamera firstPersonCam;
+    public CinemachineCamera firstPersonCam;
     [SerializeField] private Transform firstPersonTarget;
 
     [SerializeField] private GameObject playerMesh;
@@ -32,7 +33,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     #region Third Person Aim
     [Header("3인칭")]
-    [SerializeField] private CinemachineCamera thirdPersonCam;
+    public CinemachineCamera thirdPersonCam;
     [SerializeField] private Transform thirdPersonTarget;
     [SerializeField] private Transform thirdPerson_AimTargetPos;
     [SerializeField] private float thirdPerson_AimFov;
@@ -71,7 +72,7 @@ public class PlayerCameraManager : MonoBehaviour
         InitComponents();
         InitVariables();
         SubscribeEvents();
-        HandleViewChanged(ViewType.ThirdPerson);
+        currentView = ViewType.FirstPerson; // 기본값은 3인칭
     }
 
     private void InitComponents()
@@ -80,6 +81,7 @@ public class PlayerCameraManager : MonoBehaviour
         inputManager = GetComponentInParent<PlayerInputManager>();
         orbital = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
         inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
+        networkManager = GetComponentInParent<PlayerNetworkManager>();
     }
 
     private void SubscribeEvents()
@@ -131,7 +133,8 @@ public class PlayerCameraManager : MonoBehaviour
         if (viewType == ViewType.FirstPerson)
         {
             currentView = ViewType.FirstPerson;
-            playerMesh.SetActive(false);
+            if (networkManager.GetHasInputAuthority())
+                playerMesh.SetActive(false);
             firstPersonCam.Priority = 1;
             thirdPersonCam.Priority = 0;
         }
