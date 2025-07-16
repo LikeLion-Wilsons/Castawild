@@ -20,7 +20,7 @@ MonoBehaviour:
     m_SubObjectType: 
     m_EditorAssetChanged: 0
   maxHealth: 100
-  dropItemID: Log_Coconut
+  dropItemID: 0
   dropAmount: 1
   destroySFX: 
   destroyVFX: 
