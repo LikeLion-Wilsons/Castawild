@@ -5,7 +5,6 @@ public class ToolStateManager : BaseStateManager
 {
     #region Components
     [HideInInspector] public MovementStateManager movementManager;
-    [HideInInspector] public PlayerCameraManager cameraManager;
     [HideInInspector] public AnimationTrigger animTrigger;
     #endregion
 
@@ -26,7 +25,6 @@ public class ToolStateManager : BaseStateManager
     private void InitComponents()
     {
         movementManager = GetComponent<MovementStateManager>();
-        cameraManager = GetComponentInChildren<PlayerCameraManager>();
         animTrigger = GetComponentInChildren<AnimationTrigger>();
     }
 
@@ -41,7 +39,6 @@ public class ToolStateManager : BaseStateManager
 
     private void Update()
     {
-        inputManager.HandleMovementInput();
         currentState?.UpdateState();
 
         if (inputManager.aimAction.WasReleasedThisFrame())
