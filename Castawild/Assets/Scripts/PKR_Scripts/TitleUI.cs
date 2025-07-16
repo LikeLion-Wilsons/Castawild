@@ -16,7 +16,9 @@ namespace Test
         public GameObject disconnectGroup;
         public CanvasGroup panelGroup;
         
+        public TMP_InputField sessionnameInput;
         public TMP_InputField nicknameInput;
+        
         private NetworkRunner _runner;
         private static string _shutdownStatus;
 
@@ -30,6 +32,8 @@ namespace Test
             }
             nicknameInput.text = nickname;
             
+            //세션네임.
+            sessionnameInput.text = "TestRoom";
             
             // Try to load previous shutdown status
             StatusText.text = _shutdownStatus != null ? _shutdownStatus : string.Empty;
@@ -57,6 +61,7 @@ namespace Test
             await Disconnect();
             PlayerTempData.nickname = nicknameInput.text;
             nicknameInput.interactable = false;
+            sessionnameInput.interactable = false;
             _runner = GameObject.Instantiate(RunnerPrefab);
             var events = _runner.GetComponent<NetworkEvents>();
             events.OnShutdown.AddListener(OnShutdown);
@@ -66,9 +71,9 @@ namespace Test
 
             var startArguments = new StartGameArgs()
             {
-                GameMode = GameMode.AutoHostOrClient, //Single이 있.네?. 테스트필요.
+                GameMode = GameMode.AutoHostOrClient,
                 Scene = sceneInfo,
-                //SessionName = "TestRoom",
+                SessionName = sessionnameInput.text,
                 //PlayerCount = MaxPlayerCount,
             };
             
