@@ -32,7 +32,7 @@ public class AimState : ToolBaseState
         else if (toolStateManager.player.currentMoveType != MoveType.Walk)
             toolStateManager.anim.SetBool("FullAiming", true);
 
-        if (inputManager.toolAction.WasReleasedThisFrame())
+        if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
             toolStateManager.ChangeState(toolStateManager.useToolState);
 
         else if (inputManager.aimAction.WasReleasedThisFrame())

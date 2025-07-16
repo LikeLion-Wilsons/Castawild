@@ -15,11 +15,11 @@ public class WalkState : MovementBaseState
     public override void UpdateState()
     {
         // Run
-        if (movementManager.inputManager.sprintAction.IsPressed() && movementManager.player.currentAttackType != AttackType.Aim)
+        if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.player.currentAttackType != AttackType.Aim)
             movementManager.ChangeState(movementManager.runState);
 
         // Crouch
-        else if (movementManager.inputManager.crouchAction.WasPressedThisFrame())
+        else if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.crouchInput))
             movementManager.ChangeState(movementManager.crouchState);
 
         // Idle
@@ -27,7 +27,7 @@ public class WalkState : MovementBaseState
             movementManager.ChangeState(movementManager.idleState);
 
         // Jump
-        if (inputManager.jumpAction.WasPressedThisFrame() && movementManager.canJump)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.canJump)
         {
             movementManager.canJump = false;
             movementManager.previousState = this;

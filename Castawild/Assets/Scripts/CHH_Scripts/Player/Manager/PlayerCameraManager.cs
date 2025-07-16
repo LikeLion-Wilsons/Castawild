@@ -100,7 +100,6 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void Update()
     {
-        inputManager.HandleCameraInput();
         RotateCamera();
         ViewChange();
         ZoomCamera();

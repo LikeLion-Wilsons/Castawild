@@ -4,7 +4,6 @@ public class MovementStateManager : BaseStateManager
 {
     #region Conponent
     [HideInInspector] public ToolStateManager toolStateManager;
-    //[SerializeField] private CharacterController controller;
     #endregion
 
     #region States
@@ -26,6 +25,10 @@ public class MovementStateManager : BaseStateManager
     public float rotationSpeed = 10f;
     [HideInInspector] public Vector3 dir;
     [HideInInspector] public bool canJump = true;
+
+    public float sensitivity = 1.5f;
+    public float maxXRotation = 80f;
+    public float minXRotation = -80f;
     #endregion
 
     #region GoundCheck
@@ -59,7 +62,6 @@ public class MovementStateManager : BaseStateManager
 
     private void InitComponents()
     {
-        //controller = GetComponent<CharacterController>();
         toolStateManager = GetComponent<ToolStateManager>();
     }
 
@@ -74,34 +76,20 @@ public class MovementStateManager : BaseStateManager
         ChangeState(idleState);
     }
 
-    private void Update()
+    public void UpdateMoveAnimation()
     {
-        UpdateMoveAnimation();
-        currentState.UpdateState();
-    }
+        //currentHorizontal = Mathf.Lerp(currentHorizontal, inputManager.horizontalInput, Time.deltaTime * animationLerpSpeed);
+        //currentVertical = Mathf.Lerp(currentVertical, inputManager.verticalInput, Time.deltaTime * animationLerpSpeed);
 
-    private void UpdateMoveAnimation()
-    {
-        currentHorizontal = Mathf.Lerp(currentHorizontal, inputManager.horizontalInput, Time.deltaTime * animationLerpSpeed);
-        currentVertical = Mathf.Lerp(currentVertical, inputManager.verticalInput, Time.deltaTime * animationLerpSpeed);
-
-        anim.SetFloat("Horizontal", currentHorizontal);
-        anim.SetFloat("Vertical", currentVertical);
+        //anim.SetFloat("Horizontal", currentHorizontal);
+        //anim.SetFloat("Vertical", currentVertical);
         anim.SetBool("Falling", !IsGrounded());
     }
 
-
-
-
-    public float sensitivity = 1.5f;
-    public float maxXRotation = 80f;
-    public float minXRotation = -80f;
-
-    private float xRotation = 0f;
     /// <summary>
     /// 움직이는 방향
     /// </summary>
-    public Vector3 GetMoveDir(bool hasInputAuthority)
+    public Vector3 GetMoveDir(Vector2 moveInput)
     {
         if (!canMove)
             return Vector3.zero;
@@ -109,7 +97,7 @@ public class MovementStateManager : BaseStateManager
         Vector3 forward;
         Vector3 right;
 
-        if (cameraManager.currentView == ViewType.FirstPerson && hasInputAuthority)
+        if (cameraManager.currentView == ViewType.FirstPerson)
         {
             forward = transform.forward;
             right = transform.right;
@@ -126,13 +114,12 @@ public class MovementStateManager : BaseStateManager
         forward.Normalize();
         right.Normalize();
 
-        dir = forward * inputManager.moveInput.y + right * inputManager.moveInput.x;
+        dir = forward * moveInput.y + right * moveInput.x;
 
-        if ((hasInputAuthority && cameraManager.currentView == ViewType.ThirdPerson)
-            || !hasInputAuthority)
+        if (cameraManager.currentView == ViewType.ThirdPerson)
             RotateToward(dir);
 
-        else if (hasInputAuthority && cameraManager.currentView == ViewType.FirstPerson && inputManager.isCursorLocked)
+        else if (cameraManager.currentView == ViewType.FirstPerson && inputManager.isCursorLocked)
             transform.Rotate(Vector3.up * inputManager.lookInput.x * cameraManager.sensitivity);
 
         return dir;

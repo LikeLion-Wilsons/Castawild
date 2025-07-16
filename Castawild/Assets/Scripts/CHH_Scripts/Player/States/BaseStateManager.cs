@@ -1,3 +1,4 @@
+using Fusion;
 using UnityEngine;
 
 public class BaseStateManager : MonoBehaviour
@@ -6,6 +7,9 @@ public class BaseStateManager : MonoBehaviour
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public PlayerCameraManager cameraManager;
     [HideInInspector] public CwPlayer player;
+
+    public PlayerNetworkInputData input;
+    public NetworkButtons prevInputButtons;
 
     public BaseState currentState;
 
@@ -23,4 +27,8 @@ public class BaseStateManager : MonoBehaviour
         currentState = newState;
         currentState.EnterState();
     }
+
+    public void SetInput(PlayerNetworkInputData inputData) => input = inputData;
+    public PlayerNetworkInputData GetInput() => input;
+    public void SetPrevInputButton(NetworkButtons _prevInputButtons) => prevInputButtons = _prevInputButtons;
 }

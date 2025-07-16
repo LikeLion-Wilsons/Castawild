@@ -15,7 +15,7 @@ public class RunState : MovementBaseState
     public override void UpdateState()
     {
         // Walk
-        if (movementManager.inputManager.sprintAction.WasReleasedThisFrame())
+        if (movementManager.input.IsUp(PlayerNetworkInputData.sprintInput))
             movementManager.ChangeState(movementManager.walkState);
 
         // Idle
@@ -23,7 +23,7 @@ public class RunState : MovementBaseState
             movementManager.ChangeState(movementManager.idleState);
 
         // Jump
-        if (inputManager.jumpAction.WasPressedThisFrame() && movementManager.canJump)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.canJump)
         {
             movementManager.canJump = false;
             movementManager.previousState = this;

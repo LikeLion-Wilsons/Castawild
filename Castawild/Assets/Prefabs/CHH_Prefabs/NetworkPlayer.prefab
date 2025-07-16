@@ -2570,6 +2570,7 @@ GameObject:
   - component: {fileID: 8225308212403291209}
   - component: {fileID: 230939324335428207}
   - component: {fileID: 4943324450787485491}
+  - component: {fileID: 6363259293620697004}
   m_Layer: 0
   m_Name: NetworkPlayer
   m_TagString: Untagged
@@ -2617,6 +2618,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 5666542114330375686}
   - {fileID: 4943324450787485491}
+  - {fileID: 6363259293620697004}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &5666542114330375686
 MonoBehaviour:
@@ -2724,6 +2726,9 @@ MonoBehaviour:
   rotationSpeed: 10
   dir: {x: 0, y: 0, z: 0}
   canJump: 1
+  sensitivity: 1.5
+  maxXRotation: 80
+  minXRotation: -80
   groundYOffset: 0
   groundCheckRadius: 0.3
   groundMask:
@@ -2735,9 +2740,6 @@ MonoBehaviour:
   jumped: 0
   velocity: {x: 0, y: 0, z: 0}
   animationLerpSpeed: 10
-  sensitivity: 1.5
-  maxXRotation: 80
-  minXRotation: -80
 --- !u!114 &8225308212403291209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2864,6 +2866,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cbf3efdcb2b6c8d4f948344dd00cf44e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6363259293620697004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a655bd9f5eea8b47aabd0434f9ef686, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &7288379860564303627

@@ -20,9 +20,9 @@ public class CrouchState : MovementBaseState
         else if (!inputManager.MoveInputDectected())
             movementManager.anim.SetBool("Walking", false);
 
-        if (movementManager.inputManager.sprintAction.IsPressed())
+        if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput))
             movementManager.ChangeState(movementManager.runState);
-        else if (movementManager.inputManager.crouchAction.WasPressedThisFrame())
+        else if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.crouchInput))
         {
             if (movementManager.dir.magnitude < 0.1f)
                 movementManager.ChangeState(movementManager.idleState);
