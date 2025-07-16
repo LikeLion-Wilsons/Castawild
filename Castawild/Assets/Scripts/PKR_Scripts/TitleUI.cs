@@ -15,12 +15,48 @@ namespace Test
         public GameObject startGroup;
         public GameObject disconnectGroup;
         public CanvasGroup panelGroup;
+        
+        public TMP_InputField nicknameInput;
         private NetworkRunner _runner;
         private static string _shutdownStatus;
+
+        private void OnEnable()
+        {
+            //닉네임 임시저장.
+            var nickname = PlayerTempData.nickname;
+            if (string.IsNullOrEmpty(nickname))
+            {
+                nickname = "Player" + Random.Range(10000, 100000);
+            }
+            nicknameInput.text = nickname;
+            
+            
+            // Try to load previous shutdown status
+            StatusText.text = _shutdownStatus != null ? _shutdownStatus : string.Empty;
+            _shutdownStatus = null;
+        }
+        
+        private void Update()
+        {
+            if (panelGroup.gameObject.activeSelf)
+            {
+                startGroup.SetActive(_runner == null);
+                disconnectGroup.SetActive(_runner != null);
+
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+        }
         public async void StartGame()
         {
             await Disconnect();
-            
+            PlayerTempData.nickname = nicknameInput.text;
+            nicknameInput.interactable = false;
             _runner = GameObject.Instantiate(RunnerPrefab);
             var events = _runner.GetComponent<NetworkEvents>();
             events.OnShutdown.AddListener(OnShutdown);
@@ -57,29 +93,6 @@ namespace Test
             await Disconnect();
         }
         
-        private void Update()
-        {
-            if (panelGroup.gameObject.activeSelf)
-            {
-                startGroup.SetActive(_runner == null);
-                disconnectGroup.SetActive(_runner != null);
-
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-            }
-            else
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-            }
-        }
-        private void OnEnable()
-        {
-
-            // Try to load previous shutdown status
-            StatusText.text = _shutdownStatus != null ? _shutdownStatus : string.Empty;
-            _shutdownStatus = null;
-        }
         public async Task Disconnect()
         {
             if (_runner == null)
