@@ -10,6 +10,7 @@ public class PlayerInputManager : MonoBehaviour
     [HideInInspector] public InputAction moveAction;
     [HideInInspector] public InputAction jumpAction;
     [HideInInspector] public InputAction crouchAction;
+    [HideInInspector] public InputAction viewChangeAction;
     [HideInInspector] public InputAction lookAction;
     [HideInInspector] public InputAction zoomAction;
     [HideInInspector] public InputAction aimAction;
@@ -55,6 +56,7 @@ public class PlayerInputManager : MonoBehaviour
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
         crouchAction = InputSystem.actions.FindAction("Crouch");
+        viewChangeAction = InputSystem.actions.FindAction("ViewChange");
         lookAction = InputSystem.actions.FindAction("Look");
         zoomAction = InputSystem.actions.FindAction("Zoom");
         sprintAction = InputSystem.actions.FindAction("Sprint");
