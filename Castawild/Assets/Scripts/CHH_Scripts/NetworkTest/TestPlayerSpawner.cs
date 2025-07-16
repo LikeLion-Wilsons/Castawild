@@ -1,6 +1,8 @@
 using Fusion;
 using UnityEngine;
+#if UNITY_EDITOR
 using static UnityEditor.PlayerSettings;
+#endif
 using static UnityEngine.Rendering.DebugUI.Table;
 
 public class TestPlayerSpawner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
