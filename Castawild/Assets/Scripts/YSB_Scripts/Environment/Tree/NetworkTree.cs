@@ -17,10 +17,6 @@ namespace YSB_Scripts
 
         [Networked] private TickTimer reviveTimer { get; set; }
 
-        // --- 추가 ---
-        // Render()에서 비주얼을 딱 한 번만 초기화하기 위한 플래그
-        private bool _visualsInitialized = false;
-
         public void Init(TreeDefinition def, int treeId)
         {
             if (def == null)
@@ -34,23 +30,11 @@ namespace YSB_Scripts
             TreeId = treeId;
         }
 
-        // --- 수정 ---
-        // Spawned()는 데이터 초기화에만 집중하고, 시각적 처리는 Render()로 넘깁니다.
         public override void Spawned()
         {
-            // RefreshVisual() 호출을 여기서 제거합니다.
+            RefreshVisual();
         }
 
-        // --- 추가 ---
-        // Render()는 네트워크 상태가 객체의 Transform에 완전히 적용된 후에 호출됩니다.
-        public override void Render()
-        {
-            if (!_visualsInitialized)
-            {
-                RefreshVisual();
-                _visualsInitialized = true;
-            }
-        }
 
         public bool CanInteract() => Health > 0;
 
@@ -91,17 +75,16 @@ namespace YSB_Scripts
 
         void RefreshVisual()
         {
-            // visualRoot가 할당되지 않았으면 아무것도 하지 않습니다.
             if (visualRoot == null) return;
 
             bool isAlive = Health > 0;
             visualRoot.SetActive(isAlive);
 
-            if (isAlive)
-            {
-                float ratio = MaxHP > 0 ? (float)Health / MaxHP : 0;
-                // Debug.Log($"Tree Health: {Health}/{MaxHP} ({ratio:P})");
-            }
+            // if (isAlive)
+            // {
+            //     float ratio = MaxHP > 0 ? (float)Health / MaxHP : 0;
+            //     Debug.Log($"Tree Health: {Health}/{MaxHP} ({ratio:P})");
+            // }
         }
     }
 }
