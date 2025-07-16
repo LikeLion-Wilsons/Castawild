@@ -1,7 +1,9 @@
 fileFormatVersion: 2
-guid: 3116fe56d90a4e4bb3c63be2c7ca6068
+guid: 0147153ce717def4b96b931d577b7f43
 labels:
 - FusionPrefab
+- Tree
+- Vegetation
 PrefabImporter:
   externalObjects: {}
   userData: 
