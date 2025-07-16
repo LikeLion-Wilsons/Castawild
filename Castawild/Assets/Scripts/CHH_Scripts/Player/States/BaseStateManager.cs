@@ -8,7 +8,7 @@ public class BaseStateManager : MonoBehaviour
     [HideInInspector] public PlayerCameraManager cameraManager;
     [HideInInspector] public CwPlayer player;
 
-    public PlayerNetworkInputData input;
+    public PlayerNetworkInputData input { get; private set; }
     public NetworkButtons prevInputButtons;
 
     public BaseState currentState;
@@ -29,6 +29,5 @@ public class BaseStateManager : MonoBehaviour
     }
 
     public void SetInput(PlayerNetworkInputData inputData) => input = inputData;
-    public PlayerNetworkInputData GetInput() => input;
     public void SetPrevInputButton(NetworkButtons _prevInputButtons) => prevInputButtons = _prevInputButtons;
 }

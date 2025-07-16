@@ -72,7 +72,11 @@ public class PlayerCameraManager : MonoBehaviour
         InitComponents();
         InitVariables();
         SubscribeEvents();
-        currentView = ViewType.FirstPerson; // 기본값은 3인칭
+    }
+
+    private void Start()
+    {
+        HandleViewChanged(ViewType.FirstPerson);
     }
 
     private void InitComponents()

@@ -23,7 +23,6 @@ public class MovementStateManager : BaseStateManager
     public float runSpeed = 7f;
     public float crouchSpeed = 2f;
     public float rotationSpeed = 10f;
-    [HideInInspector] public Vector3 dir;
     [HideInInspector] public bool canJump = true;
 
     public float sensitivity = 1.5f;
@@ -114,24 +113,20 @@ public class MovementStateManager : BaseStateManager
         forward.Normalize();
         right.Normalize();
 
-        dir = forward * moveInput.y + right * moveInput.x;
-
-        if (cameraManager.currentView == ViewType.ThirdPerson)
-            RotateToward(dir);
-
-        else if (cameraManager.currentView == ViewType.FirstPerson && inputManager.isCursorLocked)
-            transform.Rotate(Vector3.up * inputManager.lookInput.x * cameraManager.sensitivity);
-
-        return dir;
+        return forward * moveInput.y + right * moveInput.x;
     }
 
-    private void RotateToward(Vector3 moveDir)
+    public void RotatePlayer(Vector3 moveDir)
     {
-        if (moveDir.sqrMagnitude > 0.001f && !player.isAimLocked && IsGrounded())
+        if (cameraManager.currentView == ViewType.ThirdPerson &&
+            moveDir.sqrMagnitude > 0.001f && !player.isAimLocked && IsGrounded())
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
         }
+
+        else if (cameraManager.currentView == ViewType.FirstPerson && inputManager.isCursorLocked)
+            transform.Rotate(Vector3.up * inputManager.lookInput.x * cameraManager.sensitivity);
     }
 
     /// <summary>

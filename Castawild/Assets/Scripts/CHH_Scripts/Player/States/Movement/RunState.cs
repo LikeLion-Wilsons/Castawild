@@ -19,8 +19,12 @@ public class RunState : MovementBaseState
             movementManager.ChangeState(movementManager.walkState);
 
         // Idle
-        else if (!inputManager.MoveInputDectected())
+        else if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
             movementManager.ChangeState(movementManager.idleState);
+
+        // Crouch
+        else if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.crouchInput))
+            movementManager.ChangeState(movementManager.crouchState);
 
         // Jump
         if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.canJump)

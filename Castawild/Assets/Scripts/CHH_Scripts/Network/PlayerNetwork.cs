@@ -27,35 +27,51 @@ public class PlayerNetworkManager : NetworkBehaviour
         }
     }
 
+    // HasInputAuthority : 내가 조종하는 캐릭터인가
+    // HasStateAuthority : 캐릭터의 위치를 결정하는 주인인가 -> 호스트인가
+    // HasInputAuthority && HasStateAuthority : 호스트의 자기 캐릭터
+    // HasInputAuthority && !HasStateAuthority : 클라이언트의 자기 캐릭터
+    // !HasInputAuthority && HasStateAuthority : 호스트의 다른 유저 캐릭터
     public override void FixedUpdateNetwork()
     {
-        if (!HasInputAuthority)
-            return;
-
         if (GetInput<PlayerNetworkInputData>(out var input))
         {
-            movementManager.SetInput(input);
-            toolManager.SetInput(input);
-
-            movementManager.UpdateMoveAnimation();
-            movementManager.currentState.UpdateState();
-            toolManager.currentState.UpdateState();
-
-            movementManager.SetPrevInputButton(input.Buttons);
-            toolManager.SetPrevInputButton(input.Buttons);
-
-
-
-
-
             Vector3 moveDir = movementManager.GetMoveDir(input.moveValue);
-            Vector3 moveVelocity = moveDir * movementManager.currentMoveSpeed;
-            Vector3 gravityVelocity = movementManager.Gravity();
+            // 호스트 : 위치 이동
+            if (HasStateAuthority)
+            {
+                HandleMovement(input, moveDir);
+            }
 
-            Vector3 finalVelocity = new Vector3(moveVelocity.x, gravityVelocity.y, moveVelocity.z);
-
-            controller.Move(finalVelocity * Time.fixedDeltaTime);
+            // 클라 : 애니메이션, 회전
+            if (HasInputAuthority)
+                HandleLocalVisuals(input, moveDir);
         }
+    }
+
+    private void HandleMovement(PlayerNetworkInputData input, Vector3 moveDir)
+    {
+        Vector3 moveVelocity = moveDir * movementManager.currentMoveSpeed;
+        Vector3 gravityVelocity = movementManager.Gravity();
+
+        Vector3 finalVelocity = new Vector3(moveVelocity.x, gravityVelocity.y, moveVelocity.z);
+
+        controller.Move(finalVelocity * Time.fixedDeltaTime);
+    }
+
+    private void HandleLocalVisuals(PlayerNetworkInputData input, Vector3 moveDir)
+    {
+        movementManager.RotatePlayer(moveDir);
+
+        movementManager.SetInput(input);
+        toolManager.SetInput(input);
+
+        movementManager.UpdateMoveAnimation();
+        movementManager.currentState.UpdateState();
+        toolManager.currentState.UpdateState();
+
+        movementManager.SetPrevInputButton(input.Buttons);
+        toolManager.SetPrevInputButton(input.Buttons);
     }
 
     public bool GetHasInputAuthority() => HasInputAuthority;
