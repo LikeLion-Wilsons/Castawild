@@ -1,5 +1,5 @@
-    using Fusion;
-    using UnityEngine;
+using Fusion;
+using UnityEngine;
 
 namespace YSB_Scripts
 {
@@ -7,24 +7,34 @@ namespace YSB_Scripts
     {
         public event System.Action<NetworkTree> OnTreeDied;
 
-        [Networked, OnChangedRender(nameof(OnChangedHealth))]
+        [Networked, OnChangedRender(nameof(OnChangedHealth))]//tree 외형 변화 없으면 굳이 필요 없을지도
         public int Health { get; set; }
-        private int maxHP;
+        [Networked] private int MaxHP { get; set; }
+        [Networked] public int TreeId { get; set; } // TreeId는 스폰 시에 할당
         private TreeDefinition definition;
+
         [SerializeField] public GameObject visualRoot;
+
         [Networked] private TickTimer reviveTimer { get; set; }
 
-
-        // [SerializeField] private GameObject treeStage1;
-        // [SerializeField] private GameObject treeStage2;
-        // [SerializeField] private GameObject treeStage3;
-
-        public void Init(TreeDefinition def)
+        public void Init(TreeDefinition def, int treeId)
         {
+            if (def == null)
+            {
+                Debug.LogError("TreeDefinition is null!");
+                return;
+            }
             definition = def;
-            maxHP = def.maxHealth;
-            Health = maxHP;
+            MaxHP = def.maxHealth;
+            Health = MaxHP;
+            TreeId = treeId;
         }
+
+        public override void Spawned()
+        {
+            RefreshVisual();
+        }
+
 
         public bool CanInteract() => Health > 0;
 
@@ -42,22 +52,11 @@ namespace YSB_Scripts
 
             if (Health <= 0)
             {
-                // 드랍 아이템 지급
                 var playerObj = Runner.GetPlayerObject(player);
                 var inven = playerObj.GetComponent<Test.PlayerInventory>();
                 inven.AddItem(definition.dropItemID, definition.dropAmount);
-
-                // 이펙트 / 사운드
-                // if (!string.IsNullOrEmpty(definition.destroySFX))
-                //     SoundManager.Instance?.PlaySound(definition.destroySFX, transform.position);
-
-                // if (!string.IsNullOrEmpty(definition.destroyVFX))
-                //     EffectManager.Instance?.PlayEffect(definition.destroyVFX, transform.position);
-
-                //reviveTimer = TickTimer.CreateFromSeconds(Runner, 10f);
-
-                visualRoot.SetActive(false); // 비주얼 숨기기
-                OnTreeDied?.Invoke(this);  
+                
+                OnTreeDied?.Invoke(this);
             }
         }
 
@@ -65,21 +64,27 @@ namespace YSB_Scripts
 
         public void Revive()
         {
-            Health = maxHP;
+            Health = MaxHP;
+            reviveTimer = TickTimer.CreateFromSeconds(Runner, 10f);
         }
 
-        void OnChangedHealth()
+        void OnChangedHealth()//tree 외형 변화 없으면 굳이 필요 없을지도
         {
             RefreshVisual();
         }
 
         void RefreshVisual()
         {
-            float ratio = (float)Health / maxHP;
-            Debug.Log($"Tree Health: {Health}/{maxHP} ({ratio:P})");
-            // treeStage1.SetActive(ratio >= 0.7f);
-            // treeStage2.SetActive(ratio >= 0.4f && ratio < 0.7f);
-            // treeStage3.SetActive(ratio > 0 && ratio < 0.4f);
+            if (visualRoot == null) return;
+
+            bool isAlive = Health > 0;
+            visualRoot.SetActive(isAlive);
+
+            // if (isAlive)
+            // {
+            //     float ratio = MaxHP > 0 ? (float)Health / MaxHP : 0;
+            //     Debug.Log($"Tree Health: {Health}/{MaxHP} ({ratio:P})");
+            // }
         }
     }
 }
