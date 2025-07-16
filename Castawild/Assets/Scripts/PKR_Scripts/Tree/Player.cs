@@ -5,29 +5,31 @@ namespace Test
 {
     public class Player : NetworkBehaviour
     {
-        private NetworkCharacterController _cc;
+        [SerializeField] private  NetworkCharacterController _cc;
+        [SerializeField] private NicknameUI nicknameUI;
+        [Networked] private TickTimer interactTimer { get; set; }
+        [Networked, OnChangedRender(nameof(OnChangedNickname))] private string nickname { get; set; }
 
         private NetworkButtons _prevInputButtons;
         private float _interactRadius = 1f;
         Collider[] _interactResult = new Collider[5];
-        [Networked] private TickTimer interactTimer { get; set; }
-        [Networked] private Color color { get; set; }
-        [SerializeField] private Renderer render;
-
-        void Awake()
+        public void Init()
         {
-            _cc = GetComponent<NetworkCharacterController>();
-        }
-
-        public void Init(Color color)
-        {
-            this.color = color;
+            //spawned 되기전에 초기화작업.
         }
 
         public override void Spawned()
         {
-            render.material.color = color;
+            //내 닉네임은 서버로 RPC.
+            if (HasInputAuthority)
+            {
+                RPC_SetNickname(PlayerTempData.nickname);
+            }
+            
+            //다른플레이어 닉네임 refresh.
+            OnChangedNickname();
         }
+
 
         public override void FixedUpdateNetwork()
         {
@@ -83,6 +85,18 @@ namespace Test
                     }
                 }
             }
+        }
+
+
+        [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+        private void RPC_SetNickname(string nickname)
+        {
+            this.nickname = nickname;
+        }
+
+        void OnChangedNickname()
+        {
+            nicknameUI.SetNickname(nickname);
         }
     }
 }

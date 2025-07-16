@@ -7,7 +7,6 @@ namespace Test
     public class PlayerSpawner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     {
         [SerializeField] private NetworkObject PlayerPrefab;
-        public float SpawnRadius = 3f;
 
         public void PlayerJoined(PlayerRef playerRef)
         {
@@ -19,7 +18,7 @@ namespace Test
 
             var playerObj = Runner.Spawn(PlayerPrefab, spawnPosition, Quaternion.identity, playerRef, (runner, o) =>
             {
-                o.GetComponent<Player>().Init(Random.ColorHSV());
+                o.GetComponent<Player>().Init();
             });
             Runner.SetPlayerObject(playerRef, playerObj);
         }
