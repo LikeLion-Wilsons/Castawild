@@ -90925,7 +90925,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerPrefab: {fileID: 2804261436695638738, guid: 732e9519962638f4fb4c697783ba8443, type: 3}
-  SpawnRadius: 3
 --- !u!114 &813833627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -219337,63 +219336,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3019166380638683884, guid: c4e94b00b5fc406b9a10eda663aa7809, type: 3}
   m_PrefabInstance: {fileID: 1988152244}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1988752991
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1988752993}
-  - component: {fileID: 1988752992}
-  - component: {fileID: 1988752994}
-  m_Layer: 0
-  m_Name: TreeManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &1988752992
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1988752991}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 919091becaab33f4b8f72297eedf5998, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1988752993
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1988752991}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1988752994
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1988752991}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae05b32f71c23424abdef2e20d8a880c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1990590040
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -235230,7 +235172,6 @@ SceneRoots:
   - {fileID: 1403553894}
   - {fileID: 720544973}
   - {fileID: 1563946641}
-  - {fileID: 1988752993}
   - {fileID: 1094382505}
   - {fileID: 813833628}
   - {fileID: 1526098358}

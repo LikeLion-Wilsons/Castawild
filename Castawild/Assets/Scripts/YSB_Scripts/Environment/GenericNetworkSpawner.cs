@@ -1,37 +1,36 @@
+using Fusion;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using Fusion;
 
-public class NetworkTreeSpawner : NetworkBehaviour
+public abstract class GenericNetworkSpawner<T, U> : NetworkBehaviour
+    where T : NetworkBehaviour, ISpawnable // ISpawnable interface
+    where U : SpawnableDefinition // SpawnableDefinition class
 {
-    [Header("Tree Definitions")]
-    [SerializeField] private List<TreeDefinition> treeDefinitions;
+    [Header("Definitions")]
+    [SerializeField] protected List<U> definitions;
 
     [Header("Terrain Settings")]
-    [SerializeField] private List<TerrainSpawnSettings> terrainSettings;
+    [SerializeField] protected List<TerrainSpawnSettings> terrainSettings;
 
     [Header("Spawn Settings")]
-    [SerializeField] private int maxSpawnAttempts = 20;
-    [SerializeField] private float checkInterval = 5f;
-    [SerializeField] private float reviveDelay = 10f;
+    [SerializeField] protected int maxSpawnAttempts = 20;
+    [SerializeField] protected float checkInterval = 5f;
+    [SerializeField] protected float reviveDelay = 10f;
 
-    private Dictionary<Terrain, float[,,]> terrainAlphaMapCache = new();
-    private Dictionary<Terrain, int> terrainTextureIndexCache = new();
-    private Dictionary<GameObject, TreeDefinition> prefabToDefinitionMap = new();
-    private List<GameObject> loadedPrefabs = new();
-    private int nextTreeId = 1; // 유니크 트리 ID 부여용(임시)
+    protected Dictionary<Terrain, float[,,]> terrainAlphaMapCache = new();
+    protected Dictionary<Terrain, int> terrainTextureIndexCache = new();
+    protected Dictionary<GameObject, U> prefabToDefinitionMap = new();
+    protected List<GameObject> loadedPrefabs = new();
+    protected int nextInstanceId = 1;
 
-    // 트리 죽음 후 리젠을 위한 구조체
-    private class DeadTreeEntry
+    protected class DeadObjectEntry
     {
-        public YSB_Scripts.NetworkTree tree;
+        public T spawnableObject;
         public float reviveAtTime;
     }
-
-    private List<DeadTreeEntry> deadTrees = new();
+    protected List<DeadObjectEntry> deadObjects = new();
 
     public override void Spawned()
     {
@@ -39,23 +38,20 @@ public class NetworkTreeSpawner : NetworkBehaviour
             StartCoroutine(InitAndSpawnLoop());
     }
 
-    // 스폰 루프 초기화, 시작하는 코루틴
-    private IEnumerator InitAndSpawnLoop()
+    protected IEnumerator InitAndSpawnLoop()
     {
-        yield return CacheTerrainAlphamaps(); // 알파맵 캐싱
-        yield return LoadTreePrefabs();       // 프리팹 로딩
+        yield return CacheTerrainAlphamaps();
+        yield return LoadPrefabs();
 
         if (loadedPrefabs.Count > 0)
-            StartCoroutine(SpawnLoop());       // 스폰 루프 시작
+            StartCoroutine(SpawnLoop());
     }
 
-    // 터레인 알파맵과 텍스처 인덱스를 캐시를 위한 함수
-    private IEnumerator CacheTerrainAlphamaps()
+    protected IEnumerator CacheTerrainAlphamaps()
     {
         foreach (var setting in terrainSettings)
         {
             if (setting.terrain == null) continue;
-
             TerrainData data = setting.terrain.terrainData;
             int index = setting.spawnTextureLayerIndex;
             if (index >= data.alphamapLayers) continue;
@@ -67,13 +63,12 @@ public class NetworkTreeSpawner : NetworkBehaviour
         yield return null;
     }
 
-    // 어드레서블 리소스에서 트리 로드하는 함수
-    private IEnumerator LoadTreePrefabs()
+    protected IEnumerator LoadPrefabs()
     {
         prefabToDefinitionMap.Clear();
         loadedPrefabs.Clear();
 
-        foreach (var def in treeDefinitions)
+        foreach (var def in definitions)
         {
             if (def.prefabReference.RuntimeKeyIsValid())
             {
@@ -90,8 +85,7 @@ public class NetworkTreeSpawner : NetworkBehaviour
         }
     }
 
-    // 터레인의 특정 텍스처에서 최대 트리 수를 유지하며 스폰하는 코루틴
-    private IEnumerator SpawnLoop()
+    protected IEnumerator SpawnLoop()
     {
         while (true)
         {
@@ -100,16 +94,14 @@ public class NetworkTreeSpawner : NetworkBehaviour
                 int needed = setting.maxTrees - setting.activeTrees.Count;
                 for (int i = 0; i < needed; i++)
                 {
-                    TrySpawnOneTree(setting);
+                    TrySpawnOne(setting);
                 }
             }
             yield return new WaitForSeconds(checkInterval);
         }
     }
 
-    // 터레인에서 트리를 스폰하는 함수(Handler)
-    // maxSpawnAttempts 이하로 시도, 텍스처가 유효한지, 나무끼리 겹치지 않는지 확인 후 스폰
-    private void TrySpawnOneTree(TerrainSpawnSettings setting)
+    protected void TrySpawnOne(TerrainSpawnSettings setting)
     {
         for (int attempt = 0; attempt < maxSpawnAttempts; attempt++)
         {
@@ -127,13 +119,12 @@ public class NetworkTreeSpawner : NetworkBehaviour
             if (!IsOnValidTexture(worldPos, terrain)) continue;
             if (IsOverlapping(worldPos, setting)) continue;
 
-            SpawnTree(worldPos, setting);
+            SpawnObject(worldPos, setting);
             return;
         }
     }
 
-    // 터레인에서 특정 텍스처 위에 있는지 확인하는 함수
-    private bool IsOnValidTexture(Vector3 pos, Terrain terrain)
+    protected bool IsOnValidTexture(Vector3 pos, Terrain terrain)
     {
         if (!terrainAlphaMapCache.TryGetValue(terrain, out var alphamaps)) return false;
 
@@ -151,8 +142,7 @@ public class NetworkTreeSpawner : NetworkBehaviour
         return value > 0.5f;
     }
 
-    // 터레인에서 트리가 겹치는지 확인하는 함수
-    private bool IsOverlapping(Vector3 pos, TerrainSpawnSettings setting)
+    protected bool IsOverlapping(Vector3 pos, TerrainSpawnSettings setting)
     {
         foreach (var tree in setting.activeTrees)
         {
@@ -162,72 +152,67 @@ public class NetworkTreeSpawner : NetworkBehaviour
         return false;
     }
 
-    // 텍스처, 트리 겹침 확인 후 트리 스폰하는 함수
-    private void SpawnTree(Vector3 pos, TerrainSpawnSettings setting)
+    protected void SpawnObject(Vector3 pos, TerrainSpawnSettings setting)
     {
         var prefab = loadedPrefabs[Random.Range(0, loadedPrefabs.Count)];
+        if (!prefabToDefinitionMap.TryGetValue(prefab, out var def)) return;
 
-        if (!prefabToDefinitionMap.TryGetValue(prefab, out var def))
-        {
-            Debug.LogError("No TreeDefinition for prefab");
-            return;
-        }
-
-        if (prefab == null || prefab.GetComponent<NetworkObject>() == null)
-        {
-            Debug.LogError("Prefab null or missing NetworkObject");
-            return;
-        }
-
-        NetworkObject treeObj = Runner.Spawn(
+        NetworkObject netObj = Runner.Spawn(
             prefab,
             pos,
             Quaternion.Euler(0, Random.Range(0, 360), 0),
-            inputAuthority: null,
             onBeforeSpawned: (runner, obj) =>
             {
-                var tree = obj.GetComponent<YSB_Scripts.NetworkTree>();
-                tree.Init(def, nextTreeId++);
-                tree.OnTreeDied += OnTreeDied;
+                var spawnable = obj.GetComponent<T>();
+                spawnable.Init(def, nextInstanceId++);
+                spawnable.OnDied += OnObjectDied;
             }
         );
 
-        // 후입자에게도 보이도록 러너 씬으로 이동
-        if (treeObj != null)
+        if (netObj != null)
         {
-            Runner.MoveToRunnerScene(treeObj.gameObject);
-
-            if (treeObj.HasStateAuthority)
+            Runner.MoveToRunnerScene(netObj.gameObject);
+            if (netObj.HasStateAuthority)
             {
-                setting.activeTrees.Add(treeObj);
+                setting.activeTrees.Add(netObj);
             }
         }
     }
 
-    // 트리가 죽었을 때 호출되는 콜백
-    private void OnTreeDied(YSB_Scripts.NetworkTree tree)
+    protected void OnObjectDied(NetworkBehaviour obj)
     {
-        deadTrees.Add(new DeadTreeEntry
+        if (obj is T spawnable)
         {
-            tree = tree,
-            reviveAtTime = Time.time + reviveDelay
-        });
+            deadObjects.Add(new DeadObjectEntry
+            {
+                spawnableObject = spawnable,
+                reviveAtTime = Time.time + reviveDelay
+            });
+
+            foreach (var setting in terrainSettings)
+            {
+                if (setting.activeTrees.Remove(obj.GetComponent<NetworkObject>()))
+                {
+                    break;
+                }
+            }
+        }
     }
 
-    // FixedUpdateNetwork에서 리젠 시간 체크 및 복구
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority) return;
 
-        for (int i = deadTrees.Count - 1; i >= 0; i--)
+        for (int i = deadObjects.Count - 1; i >= 0; i--)
         {
-            if (Time.time >= deadTrees[i].reviveAtTime)
+            if (Time.time >= deadObjects[i].reviveAtTime)
             {
-                var entry = deadTrees[i];
-                entry.tree.Revive();
-                entry.tree.gameObject.SetActive(true);
-                deadTrees.RemoveAt(i);
+                var entry = deadObjects[i];
+                entry.spawnableObject.Revive();
+
+                deadObjects.RemoveAt(i);
             }
         }
     }
 }
+
