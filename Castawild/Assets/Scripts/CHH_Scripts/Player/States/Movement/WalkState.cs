@@ -7,8 +7,7 @@ public class WalkState : MovementBaseState
 
     public override void EnterState()
     {
-        base.EnterState();
-        movementManager.isWalking = true;
+        movementManager.CurrentMoveType = MoveAnimationType.Walk;
         movementManager.currentMoveSpeed = movementManager.walkSpeed;
         movementManager.player.currentMoveType = MoveType.Walk;
     }
@@ -38,6 +37,5 @@ public class WalkState : MovementBaseState
 
     public override void ExitState()
     {
-        movementManager.isWalking = false;
     }
 }
