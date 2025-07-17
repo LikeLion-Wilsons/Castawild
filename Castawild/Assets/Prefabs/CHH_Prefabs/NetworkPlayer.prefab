@@ -2617,6 +2617,8 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 5666542114330375686}
+  - {fileID: 3318766871343913700}
+  - {fileID: 230939324335428207}
   - {fileID: 4943324450787485491}
   - {fileID: 6363259293620697004}
   ForceRemoteRenderTimeframe: 0
@@ -2724,7 +2726,6 @@ MonoBehaviour:
   runSpeed: 10
   crouchSpeed: 2
   rotationSpeed: 10
-  dir: {x: 0, y: 0, z: 0}
   canJump: 1
   sensitivity: 1.5
   maxXRotation: 80
@@ -2740,6 +2741,8 @@ MonoBehaviour:
   jumped: 0
   velocity: {x: 0, y: 0, z: 0}
   animationLerpSpeed: 10
+  _CurrentMoveType: 0
+  isTriggerSet: 0
 --- !u!114 &8225308212403291209
 MonoBehaviour:
   m_ObjectHideFlags: 0

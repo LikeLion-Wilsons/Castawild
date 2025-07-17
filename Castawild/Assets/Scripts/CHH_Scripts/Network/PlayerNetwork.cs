@@ -1,6 +1,8 @@
 using Fusion;
 using UnityEngine;
 
+public enum MoveAnimationType { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump }
+
 public class PlayerNetworkManager : NetworkBehaviour
 {
     private CwPlayer player;
@@ -8,6 +10,9 @@ public class PlayerNetworkManager : NetworkBehaviour
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
     private PlayerCameraManager cameraManager;
+
+    [Networked] public MoveAnimationType CurrentMoveType { get; set; }
+    public bool isSpawned = false;
 
     void Awake()
     {
@@ -20,10 +25,15 @@ public class PlayerNetworkManager : NetworkBehaviour
 
     public override void Spawned()
     {
+        isSpawned = true;
         if (!HasInputAuthority)
         {
             cameraManager.firstPersonCam.gameObject.SetActive(false);
             cameraManager.thirdPersonCam.gameObject.SetActive(false);
+        }
+        if (HasStateAuthority)
+        {
+            CurrentMoveType = MoveAnimationType.Idle;
         }
     }
 
@@ -48,7 +58,9 @@ public class PlayerNetworkManager : NetworkBehaviour
             {
                 HandleLocalVisuals(input, moveDir);
             }
+
         }
+        movementManager.UpdateMoveAnimation();
     }
 
     private void HandleMovement(PlayerNetworkInputData input, Vector3 moveDir)
@@ -73,9 +85,6 @@ public class PlayerNetworkManager : NetworkBehaviour
     private void HandleLocalVisuals(PlayerNetworkInputData input, Vector3 moveDir)
     {
         movementManager.RotatePlayer(moveDir);
-
-        movementManager.NetworkUpdateMoveAnimation();
-        movementManager.UpdateMoveAnimation();
     }
 
     public bool GetHasInputAuthority() => HasInputAuthority;

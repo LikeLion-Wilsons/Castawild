@@ -1,12 +1,14 @@
 using Fusion;
 using UnityEngine;
 
-public class BaseStateManager : MonoBehaviour
+public class BaseStateManager : NetworkBehaviour
 {
     [HideInInspector] public Animator anim;
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public PlayerCameraManager cameraManager;
     [HideInInspector] public CwPlayer player;
+    [HideInInspector] public PlayerNetworkManager networkManager;
+
 
     public PlayerNetworkInputData input { get; private set; }
     public NetworkButtons prevInputButtons;
@@ -19,6 +21,7 @@ public class BaseStateManager : MonoBehaviour
         inputManager = GetComponent<PlayerInputManager>();
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
         player = GetComponent<CwPlayer>();
+        networkManager = GetComponent<PlayerNetworkManager>();
     }
 
     public void ChangeState(BaseState newState)

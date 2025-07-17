@@ -1,7 +1,6 @@
 using Fusion;
 using UnityEngine;
 
-public enum MoveAnimationType { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump }
 public class MovementStateManager : BaseStateManager
 {
     #region Conponent
@@ -54,7 +53,6 @@ public class MovementStateManager : BaseStateManager
     #endregion
 
     #region Network
-    [Networked] public MoveAnimationType CurrentMoveType { get; set; }
     #endregion
 
     protected override void Awake()
@@ -88,6 +86,38 @@ public class MovementStateManager : BaseStateManager
 
         //anim.SetFloat("Horizontal", currentHorizontal);
         //anim.SetFloat("Vertical", currentVertical);
+
+        anim.SetBool("Walking", false);
+        anim.SetBool("Running", false);
+        anim.SetBool("Crouching", false);
+        anim.SetBool("Falling", false);
+
+        switch (networkManager.CurrentMoveType)
+        {
+            case MoveAnimationType.Walk:
+                anim.SetBool("Walking", true);
+                break;
+            case MoveAnimationType.Run:
+                anim.SetBool("Running", true);
+                break;
+            case MoveAnimationType.CrouchIdle:
+                anim.SetBool("Crouching", true);
+                break;
+            case MoveAnimationType.CrouchWalk:
+                anim.SetBool("Crouching", true);
+                anim.SetBool("Walking", true);
+                break;
+            case MoveAnimationType.IdleJump:
+                if (!isTriggerSet)
+                    anim.SetTrigger("IdleJump");
+                isTriggerSet = true;
+                break;
+            case MoveAnimationType.RunJump:
+                if (!isTriggerSet)
+                    anim.SetTrigger("RunJump");
+                isTriggerSet = true;
+                break;
+        }
         anim.SetBool("Falling", !IsGrounded());
     }
 
@@ -190,37 +220,4 @@ public class MovementStateManager : BaseStateManager
     }
 
     public bool isTriggerSet = false;
-    public void NetworkUpdateMoveAnimation()
-    {
-        anim.SetBool("Walking", false);
-        anim.SetBool("Running", false);
-        anim.SetBool("Crouching", false);
-
-        switch (CurrentMoveType)
-        {
-            case MoveAnimationType.Walk:
-                anim.SetBool("Walking", true);
-                break;
-            case MoveAnimationType.Run:
-                anim.SetBool("Running", true);
-                break;
-            case MoveAnimationType.CrouchIdle:
-                anim.SetBool("Crouching", true);
-                break;
-            case MoveAnimationType.CrouchWalk:
-                anim.SetBool("Crouching", true);
-                anim.SetBool("Walking", true);
-                break;
-            case MoveAnimationType.IdleJump:
-                if (!isTriggerSet)
-                    anim.SetTrigger("IdleJump");
-                isTriggerSet = true;
-                break;
-            case MoveAnimationType.RunJump:
-                if (!isTriggerSet)
-                    anim.SetTrigger("RunJump");
-                isTriggerSet = true;
-                break;
-        }
-    }
 }

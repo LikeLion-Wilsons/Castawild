@@ -8,6 +8,8 @@ public class IdleState : MovementBaseState
 
     public override void EnterState()
     {
+        if (movementManager.networkManager.isSpawned)
+            movementManager.networkManager.CurrentMoveType = MoveAnimationType.Idle;
         movementManager.player.currentMoveType = MoveType.Idle;
     }
 
