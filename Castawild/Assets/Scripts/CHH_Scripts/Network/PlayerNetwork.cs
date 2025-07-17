@@ -42,25 +42,18 @@ public class PlayerNetworkManager : NetworkBehaviour
     // HasInputAuthority && HasStateAuthority : 호스트의 자기 캐릭터
     // HasInputAuthority && !HasStateAuthority : 클라이언트의 자기 캐릭터
     // !HasInputAuthority && HasStateAuthority : 호스트의 다른 유저 캐릭터
+
+    // FixedUpdateNetwork : HasInputAuthority || HasStateAuthority 일 때 실행 -> 입력처리, 이동 처리 등
+    // LateUpdateNetwork : 모두 실행 -> 위치보간같은 최종처리
+    // Render : 모든 클라 - 매 프레임 -> 애니메이션같은 시각효과 처리
     public override void FixedUpdateNetwork()
     {
         if (GetInput<PlayerNetworkInputData>(out var input))
         {
             Vector3 moveDir = movementManager.GetMoveDir(input.moveValue);
-            // 호스트 : 상태변경, 위치 이동
-            if (HasStateAuthority)
-            {
-                HandleMovement(input, moveDir);
-            }
-
-            // 클라 : 애니메이션, 회전
-            if (HasInputAuthority)
-            {
-                HandleLocalVisuals(input, moveDir);
-            }
-
+            HandleMovement(input, moveDir);
+            HandleLocalVisuals(input, moveDir);
         }
-        movementManager.UpdateMoveAnimation();
     }
 
     private void HandleMovement(PlayerNetworkInputData input, Vector3 moveDir)
@@ -85,6 +78,11 @@ public class PlayerNetworkManager : NetworkBehaviour
     private void HandleLocalVisuals(PlayerNetworkInputData input, Vector3 moveDir)
     {
         movementManager.RotatePlayer(moveDir);
+    }
+
+    public override void Render()
+    {
+        movementManager.UpdateMoveAnimation();
     }
 
     public bool GetHasInputAuthority() => HasInputAuthority;
