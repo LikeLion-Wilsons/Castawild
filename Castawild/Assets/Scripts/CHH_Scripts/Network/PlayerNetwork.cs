@@ -37,7 +37,7 @@ public class PlayerNetworkManager : NetworkBehaviour
         if (GetInput<PlayerNetworkInputData>(out var input))
         {
             Vector3 moveDir = movementManager.GetMoveDir(input.moveValue);
-            // 호스트 : 위치 이동
+            // 호스트 : 상태변경, 위치 이동
             if (HasStateAuthority)
             {
                 HandleMovement(input, moveDir);
@@ -45,7 +45,9 @@ public class PlayerNetworkManager : NetworkBehaviour
 
             // 클라 : 애니메이션, 회전
             if (HasInputAuthority)
+            {
                 HandleLocalVisuals(input, moveDir);
+            }
         }
     }
 
@@ -57,21 +59,23 @@ public class PlayerNetworkManager : NetworkBehaviour
         Vector3 finalVelocity = new Vector3(moveVelocity.x, gravityVelocity.y, moveVelocity.z);
 
         controller.Move(finalVelocity * Time.fixedDeltaTime);
+
+        movementManager.SetInput(input);
+        toolManager.SetInput(input);
+
+        movementManager.currentState.UpdateState();
+        toolManager.currentState.UpdateState();
+
+        movementManager.SetPrevInputButton(input.Buttons);
+        toolManager.SetPrevInputButton(input.Buttons);
     }
 
     private void HandleLocalVisuals(PlayerNetworkInputData input, Vector3 moveDir)
     {
         movementManager.RotatePlayer(moveDir);
 
-        movementManager.SetInput(input);
-        toolManager.SetInput(input);
-
+        movementManager.NetworkUpdateMoveAnimation();
         movementManager.UpdateMoveAnimation();
-        movementManager.currentState.UpdateState();
-        toolManager.currentState.UpdateState();
-
-        movementManager.SetPrevInputButton(input.Buttons);
-        toolManager.SetPrevInputButton(input.Buttons);
     }
 
     public bool GetHasInputAuthority() => HasInputAuthority;

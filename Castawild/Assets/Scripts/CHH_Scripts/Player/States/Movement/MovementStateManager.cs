@@ -1,3 +1,4 @@
+using Fusion;
 using UnityEngine;
 
 public class MovementStateManager : BaseStateManager
@@ -49,6 +50,17 @@ public class MovementStateManager : BaseStateManager
     [SerializeField] private float animationLerpSpeed = 10f;
     private float currentHorizontal;
     private float currentVertical;
+    #endregion
+
+    #region Network
+    [Networked] public MoveType CurrentMoveType { get; set; }
+    public bool isWalking;
+    public bool isCrouching;
+    public bool isJumping;
+    public bool isRunning;
+    public bool isIdleJump;
+    public bool isRunJump;
+
     #endregion
 
     protected override void Awake()
@@ -181,5 +193,24 @@ public class MovementStateManager : BaseStateManager
     {
         canMove = false;
         ChangeState(idleState);
+    }
+
+    public void NetworkUpdateMoveAnimation()
+    {
+        anim.SetBool("Walking", isWalking);
+        anim.SetBool("Running", isRunning);
+        anim.SetBool("Crouching", isCrouching);
+        anim.SetBool("Jumping", isJumping);
+
+        if (isIdleJump)
+        {
+            isIdleJump = false;
+            anim.SetTrigger("IdleJump");
+        }
+        if (isRunJump)
+        {
+            isRunJump = false;
+            anim.SetTrigger("RunJump");
+        }
     }
 }

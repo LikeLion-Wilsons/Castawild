@@ -7,7 +7,8 @@ public class RunState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.anim.SetBool("Running", true);
+        base.EnterState();
+        movementManager.isRunning = true;
         movementManager.currentMoveSpeed = movementManager.runSpeed;
         movementManager.player.currentMoveType = MoveType.Run;
     }
@@ -37,6 +38,6 @@ public class RunState : MovementBaseState
 
     public override void ExitState()
     {
-        movementManager.anim.SetBool("Running", false);
+        movementManager.isRunning = false;
     }
 }

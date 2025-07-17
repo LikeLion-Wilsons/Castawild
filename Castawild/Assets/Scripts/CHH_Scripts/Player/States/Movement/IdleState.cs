@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 
 public class IdleState : MovementBaseState
 {
@@ -9,6 +8,7 @@ public class IdleState : MovementBaseState
 
     public override void EnterState()
     {
+        base.EnterState();
         movementManager.player.currentMoveType = MoveType.Idle;
     }
 
