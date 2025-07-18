@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 934542335319136159}
   - component: {fileID: 298317164471834319}
-  - component: {fileID: 2828586658257829324}
   - component: {fileID: 7923129873838452555}
   - component: {fileID: 4973858626686696035}
   - component: {fileID: -5800857443617161371}
@@ -64,29 +63,6 @@ LODGroup:
     renderers:
     - renderer: {fileID: 4694324732190904482}
   m_Enabled: 1
---- !u!136 &2828586658257829324
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 161643516142887002}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.54218745
-  m_Height: 2.6110878
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.8055439, z: -0.3385284}
 --- !u!114 &7923129873838452555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -322,6 +298,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7343636605319604954}
+  - component: {fileID: 6585810282119766524}
   m_Layer: 0
   m_Name: VisualRoot
   m_TagString: Untagged
@@ -347,6 +324,29 @@ Transform:
   - {fileID: 2788011340195573822}
   m_Father: {fileID: 934542335319136159}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &6585810282119766524
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7578240401573347610}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.54218745
+  m_Height: 9.56833
+  m_Direction: 1
+  m_Center: {x: 0, y: 4.284165, z: -0.3385284}
 --- !u!1 &8584210070361926603
 GameObject:
   m_ObjectHideFlags: 0

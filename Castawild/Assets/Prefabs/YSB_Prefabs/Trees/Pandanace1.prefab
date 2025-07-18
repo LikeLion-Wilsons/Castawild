@@ -184,7 +184,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7484381453325555763}
   - component: {fileID: 4960077781854839542}
-  - component: {fileID: 899911701792513296}
   - component: {fileID: 6089377397551816743}
   - component: {fileID: 4926783167410525722}
   - component: {fileID: -2652594294217927794}
@@ -242,29 +241,6 @@ LODGroup:
     renderers:
     - renderer: {fileID: 8484708634755946196}
   m_Enabled: 1
---- !u!136 &899911701792513296
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1778812408909486491}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.31018066
-  m_Height: 1.4555244
-  m_Direction: 1
-  m_Center: {x: 0.0026397705, y: 0.34662437, z: 0.025161743}
 --- !u!114 &6089377397551816743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -499,6 +475,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7084899947030106256}
+  - component: {fileID: 2257344242897639636}
   m_Layer: 0
   m_Name: VisualRoot
   m_TagString: Untagged
@@ -525,3 +502,26 @@ Transform:
   - {fileID: 3333744634041432884}
   m_Father: {fileID: 7484381453325555763}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &2257344242897639636
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8683473795628248164}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.4670816
+  m_Height: 5.6670933
+  m_Direction: 1
+  m_Center: {x: 0.03027767, y: 2.4524088, z: 0.025161743}
