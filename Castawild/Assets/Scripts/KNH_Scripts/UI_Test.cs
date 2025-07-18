@@ -1,14 +1,15 @@
+using Fusion;
 using UnityEngine;
 
-public class UI_Test : MonoBehaviour
+public class UI_Test : NetworkBehaviour
 {
-    
+
     [SerializeField] Item_Scriptable[] itemData;
     public Item[] itemsToPickUp;
 
 
 
-    private void Update()
+    public override void FixedUpdateNetwork()
     {
         if (Input.GetKeyDown(KeyCode.Z))
         {
@@ -24,7 +25,7 @@ public class UI_Test : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            UseSelectedItem(); 
+            UseSelectedItem();
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -36,7 +37,7 @@ public class UI_Test : MonoBehaviour
     public void PickUpItem(int id)
     {
         //bool result = InventoryDataManager.Instance.AddItem(itemData[id]);
-        bool result = InventoryDataManager.Instance.GetItem(itemData[id], 1);
+        bool result = InventoryDataManager.Instance.GetItem(id, 1);
         if (result == true)
         {
             Debug.Log(itemData[id].name + " 획득");

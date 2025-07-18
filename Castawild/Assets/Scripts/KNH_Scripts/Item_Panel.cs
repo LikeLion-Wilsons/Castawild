@@ -52,11 +52,11 @@ public class Item_Panel :
 
     public void SetItemSlot()
     {
-        if (item != null && item.item_Data != null && item.count != 0)
+        if (item.isNull == false && item.itemID != -1 && item.count != 0)
         {
-            itemData.gameObject.SetActive(item.item_Data);
+            itemData.gameObject.SetActive(true);
             //임시
-            item_icon.sprite = item.item_Data.image;
+            item_icon.sprite = item.GetData().image;
             itemCountText.text = item.count.ToString();
             durabilityBar.fillAmount = item.durability;
         }
@@ -78,13 +78,13 @@ public class Item_Panel :
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (item == null || item.item_Data == null) return;
+        if (item.isNull == true || item.itemID == -1) return;
         inventory.GetComponent<UIInventory>().SetItemClickAnimation(this);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (item == null || item.item_Data == null) return;
+        if (item.isNull == true || item.itemID == -1) return;
         if (inventory.GetComponent<UIInventory>().itemClick.activeSelf == true)
             inventory.GetComponent<UIInventory>().itemClick.SetActive(false);
     }
@@ -95,7 +95,7 @@ public class Item_Panel :
 
         originalAnchoredPos = rectTransform.anchoredPosition;
         originalParent = transform.parent;
-        if (item == null || item.item_Data == null) return;
+        if (item.isNull == true || item.itemID == -1) return;
         //우클릭 여부 저장
         isRightMouseDrag = Input.GetMouseButton(1);
 
@@ -115,7 +115,7 @@ public class Item_Panel :
             // 복제 아이템 설정
             clonePanel.item = new Item
             {
-                item_Data = item.item_Data,
+                itemID = item.itemID,
                 count = half,
                 durability = item.durability
             };
@@ -136,7 +136,7 @@ public class Item_Panel :
     public void OnDrag(PointerEventData eventData)
     {
         if (!isInveontoryOpen) return;
-        if (item == null || item.item_Data == null) return;
+        if (item.isNull == true || item.itemID == -1) return;
         if (isRightMouseDrag && draggedClone != null)
         {
             draggedClone.GetComponent<RectTransform>().position = eventData.position;
@@ -228,12 +228,12 @@ public class Item_Panel :
             int half = droppedPanel.originalCount / 2;
             if (half <= 0) return;
 
-            if (toItem.item_Data == null)
+            if (toItem.itemID == -1)
             {
                 // 빈 슬롯이면 새 아이템 삽입
                 items[indexA] = new Item
                 {
-                    item_Data = fromItem.item_Data,
+                    itemID = fromItem.itemID,
                     count = half,
                     durability = fromItem.durability
                 };
@@ -252,10 +252,10 @@ public class Item_Panel :
         //좌클릭 드래그
         else
         {
-            if (toItem.item_Data != null)//이동하려는 슬롯이 null이 아닌 경우
+            if (toItem.itemID != -1)//이동하려는 슬롯이 null이 아닌 경우
             {
-                if (toItem.item_Data.itemID == fromItem.item_Data.itemID && toItem.count + fromItem.count < 20
-                    && fromItem.item_Data.type != Item_Type.Equipment)
+                if (toItem.GetData().itemID == fromItem.GetData().itemID && toItem.count + fromItem.count < 20
+                    && fromItem.GetData().type != Item_Type.Equipment)
                 {
                     // 같은 아이템이면 합치기
                     toItem.count += fromItem.count;
