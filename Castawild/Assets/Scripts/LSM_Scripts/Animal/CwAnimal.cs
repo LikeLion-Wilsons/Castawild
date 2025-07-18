@@ -8,7 +8,6 @@ using static AnimalData;
 /// </summary>
 public class CwAnimal : CwCharacter
 {
-
     // Animal 전용 필드 추가
     // 추후 선공몹 비선공몹으로 다시 나눌 예정
     #region Animal Info  

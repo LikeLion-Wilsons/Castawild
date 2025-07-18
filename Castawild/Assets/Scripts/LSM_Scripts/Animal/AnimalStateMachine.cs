@@ -1,0 +1,33 @@
+using UnityEngine;
+ 
+
+/// <summary>
+/// 상태 머신을 관리하는 클래스
+/// </summary>
+public class AnimalStateMachine
+{
+    //현재의 상태를 나타내는 변수
+    public AnimalState currentState { get; private set; }
+
+    /// <summary>
+    /// 상태 머신을 초기화하는 메서드
+    /// </summary>
+    /// <param name="_startState">초기 상태로 지정할 변수</param>
+    public void Initialize(AnimalState _startState)
+    {
+        currentState = _startState;
+        currentState.Enter();
+    }
+
+    /// <summary>
+    /// 상태를 변경하는 메서드
+    /// </summary>
+    /// <param name="_newState">변경 할 상태 변수</param>
+    public void ChangeState(AnimalState _newState)
+    { 
+        currentState.Exit();
+        currentState = _newState;
+        currentState.Enter();
+    }
+
+}
