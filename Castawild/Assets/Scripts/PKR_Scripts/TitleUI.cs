@@ -4,6 +4,7 @@ using Fusion;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Test
 {
@@ -18,7 +19,7 @@ namespace Test
         
         public TMP_InputField sessionnameInput;
         public TMP_InputField nicknameInput;
-        
+        public Toggle singleToggle;
         private NetworkRunner _runner;
         private static string _shutdownStatus;
 
@@ -71,7 +72,7 @@ namespace Test
 
             var startArguments = new StartGameArgs()
             {
-                GameMode = GameMode.AutoHostOrClient,
+                GameMode = singleToggle.isOn ? GameMode.Single : GameMode.AutoHostOrClient,
                 Scene = sceneInfo,
                 SessionName = sessionnameInput.text,
                 //PlayerCount = MaxPlayerCount,
