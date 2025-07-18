@@ -48,13 +48,13 @@ namespace Test
                 startGroup.SetActive(_runner == null);
                 disconnectGroup.SetActive(_runner != null);
 
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
+                //Cursor.lockState = CursorLockMode.None;
+                //Cursor.visible = true;
             }
             else
             {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
+                //Cursor.lockState = CursorLockMode.Locked;
+                //Cursor.visible = false;
             }
         }
         public async void StartGame()
