@@ -2635,12 +2635,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _stateAuthorityChangeErrorCorrectionDelta: 0
-  gravity: -20
-  jumpImpulse: 8
-  acceleration: 10
-  braking: 10
-  maxSpeed: 2
-  rotationSpeed: 15
+  gravity: 0
+  jumpImpulse: 0
+  acceleration: 0
+  braking: 0
+  maxSpeed: 0
+  rotationSpeed: 0
 --- !u!143 &8876788245779154075
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2718,6 +2718,7 @@ MonoBehaviour:
   inputManager: {fileID: 8225308212403291209}
   cameraManager: {fileID: 0}
   player: {fileID: 0}
+  networkManager: {fileID: 0}
   toolStateManager: {fileID: 0}
   canMove: 1
   currentMoveSpeed: 3
@@ -2741,7 +2742,6 @@ MonoBehaviour:
   jumped: 0
   velocity: {x: 0, y: 0, z: 0}
   animationLerpSpeed: 10
-  _CurrentMoveType: 0
   isTriggerSet: 0
 --- !u!114 &8225308212403291209
 MonoBehaviour:
@@ -2811,6 +2811,7 @@ MonoBehaviour:
   inputManager: {fileID: 0}
   cameraManager: {fileID: 0}
   player: {fileID: 0}
+  networkManager: {fileID: 0}
   movementManager: {fileID: 0}
   animTrigger: {fileID: 0}
 --- !u!114 &4943324450787485491
@@ -2825,6 +2826,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbf3efdcb2b6c8d4f948344dd00cf44e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _CurrentMoveType: 0
+  isSpawned: 0
 --- !u!114 &6363259293620697004
 MonoBehaviour:
   m_ObjectHideFlags: 0

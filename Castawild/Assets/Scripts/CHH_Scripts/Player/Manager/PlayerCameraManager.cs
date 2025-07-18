@@ -1,8 +1,8 @@
+using Fusion;
 using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 
-public enum ViewType { None, FirstPerson, ThirdPerson }
 
 public class PlayerCameraManager : MonoBehaviour
 {
@@ -15,6 +15,7 @@ public class PlayerCameraManager : MonoBehaviour
     #endregion
 
     public bool isAiming = false;
+    public ViewType CurrentView { get; private set; }
 
     #region Third Person Aim
     [Header("1인칭")]
@@ -22,7 +23,6 @@ public class PlayerCameraManager : MonoBehaviour
     [SerializeField] private Transform firstPersonTarget;
 
     [SerializeField] private GameObject playerMesh;
-    public ViewType currentView { get; private set; }
 
     public float sensitivity = 1.5f;
     [SerializeField] private float maxXRotation = 80f;
@@ -60,7 +60,7 @@ public class PlayerCameraManager : MonoBehaviour
     {
         get
         {
-            if (currentView == ViewType.FirstPerson)
+            if (CurrentView == ViewType.FirstPerson)
                 return firstPersonCam;
             else
                 return thirdPersonCam;
@@ -72,11 +72,12 @@ public class PlayerCameraManager : MonoBehaviour
         InitComponents();
         InitVariables();
         SubscribeEvents();
+        ViewChange(ViewType.FirstPerson);
     }
 
     private void Start()
     {
-        HandleViewChanged(ViewType.FirstPerson);
+        ViewChange(ViewType.FirstPerson);
     }
 
     private void InitComponents()
@@ -107,13 +108,13 @@ public class PlayerCameraManager : MonoBehaviour
     private void Update()
     {
         RotateCamera();
-        ViewChange();
+        HandleViewChange();
         ZoomCamera();
     }
 
     public void RotateCamera()
     {
-        if (currentView == ViewType.ThirdPerson || !inputManager.isCursorLocked)
+        if (CurrentView == ViewType.ThirdPerson || !inputManager.isCursorLocked)
             return;
 
         xRotation -= inputManager.lookInput.y * sensitivity;
@@ -121,34 +122,47 @@ public class PlayerCameraManager : MonoBehaviour
         firstPersonCam.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
     }
 
-    private void ViewChange()
+    private void HandleViewChange()
     {
         if (inputManager.viewChangeAction.WasPressedThisFrame())
         {
-            if (currentView == ViewType.FirstPerson)
-                HandleViewChanged(ViewType.ThirdPerson);
-            else if (currentView == ViewType.ThirdPerson)
-                HandleViewChanged(ViewType.FirstPerson);
+            if (CurrentView == ViewType.FirstPerson)
+                ViewChange(ViewType.ThirdPerson);
+            else if (CurrentView == ViewType.ThirdPerson)
+                ViewChange(ViewType.FirstPerson);
         }
     }
 
-    private void HandleViewChanged(ViewType viewType)
+    public void SetNetworkCamera()
+    {
+        CurrentView = ViewType.FirstPerson;
+        playerMesh.SetActive(true);
+        firstPersonCam.Priority = 1;
+        thirdPersonCam.Priority = 0;
+    }
+
+    public void ViewChange(ViewType viewType)
     {
         if (viewType == ViewType.FirstPerson)
         {
-            currentView = ViewType.FirstPerson;
-            if (networkManager.GetHasInputAuthority())
+            if (networkManager.HasInputAuthority)
+            {
+                CurrentView = ViewType.FirstPerson;
                 playerMesh.SetActive(false);
-            firstPersonCam.Priority = 1;
-            thirdPersonCam.Priority = 0;
+                firstPersonCam.Priority = 10;
+                thirdPersonCam.Priority = 0;
+            }
         }
 
         else if (viewType == ViewType.ThirdPerson)
         {
-            currentView = ViewType.ThirdPerson;
-            playerMesh.SetActive(true);
-            firstPersonCam.Priority = 0;
-            thirdPersonCam.Priority = 1;
+            if (networkManager.HasInputAuthority)
+            {
+                CurrentView = ViewType.ThirdPerson;
+                playerMesh.SetActive(true);
+                firstPersonCam.Priority = 0;
+                thirdPersonCam.Priority = 10;
+            }
         }
     }
 

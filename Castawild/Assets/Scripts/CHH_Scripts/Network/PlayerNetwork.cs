@@ -1,6 +1,7 @@
 using Fusion;
 using UnityEngine;
 
+public enum ViewType { None, FirstPerson, ThirdPerson }
 public enum MoveAnimationType { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump }
 
 public class PlayerNetworkManager : NetworkBehaviour
@@ -27,14 +28,9 @@ public class PlayerNetworkManager : NetworkBehaviour
     {
         isSpawned = true;
         if (!HasInputAuthority)
-        {
-            cameraManager.firstPersonCam.gameObject.SetActive(false);
-            cameraManager.thirdPersonCam.gameObject.SetActive(false);
-        }
+            cameraManager.SetNetworkCamera();
         if (HasStateAuthority)
-        {
             CurrentMoveType = MoveAnimationType.Idle;
-        }
     }
 
     // HasInputAuthority : 내가 조종하는 캐릭터인가
@@ -50,9 +46,14 @@ public class PlayerNetworkManager : NetworkBehaviour
     {
         if (GetInput<PlayerNetworkInputData>(out var input))
         {
-            Vector3 moveDir = movementManager.GetMoveDir(input.moveValue);
-            HandleMovement(input, moveDir);
-            HandleLocalVisuals(input, moveDir);
+            Vector3 moveDir = movementManager.GetMoveDir(input.moveValue, HasInputAuthority);
+
+            // 호스트 : 위치 & 상태 업데이트
+            if (HasStateAuthority)
+            {
+                HandleMovement(input, moveDir);
+                movementManager.RotatePlayer(moveDir);
+            }
         }
     }
 
@@ -75,15 +76,8 @@ public class PlayerNetworkManager : NetworkBehaviour
         toolManager.SetPrevInputButton(input.Buttons);
     }
 
-    private void HandleLocalVisuals(PlayerNetworkInputData input, Vector3 moveDir)
-    {
-        movementManager.RotatePlayer(moveDir);
-    }
-
     public override void Render()
     {
         movementManager.UpdateMoveAnimation();
     }
-
-    public bool GetHasInputAuthority() => HasInputAuthority;
 }

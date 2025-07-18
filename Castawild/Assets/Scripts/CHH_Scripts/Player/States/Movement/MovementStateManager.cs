@@ -124,7 +124,7 @@ public class MovementStateManager : BaseStateManager
     /// <summary>
     /// 움직이는 방향
     /// </summary>
-    public Vector3 GetMoveDir(Vector2 moveInput)
+    public Vector3 GetMoveDir(Vector2 moveInput, bool isLocalPlayer)
     {
         if (!canMove)
             return Vector3.zero;
@@ -132,7 +132,7 @@ public class MovementStateManager : BaseStateManager
         Vector3 forward;
         Vector3 right;
 
-        if (cameraManager.currentView == ViewType.FirstPerson)
+        if (isLocalPlayer && cameraManager.CurrentView == ViewType.FirstPerson)
         {
             forward = transform.forward;
             right = transform.right;
@@ -154,15 +154,16 @@ public class MovementStateManager : BaseStateManager
 
     public void RotatePlayer(Vector3 moveDir)
     {
-        if (cameraManager.currentView == ViewType.ThirdPerson &&
+        if (cameraManager.CurrentView == ViewType.FirstPerson && inputManager.isCursorLocked)
+            transform.Rotate(Vector3.up * inputManager.lookInput.x * cameraManager.sensitivity);
+
+        else if (cameraManager.CurrentView == ViewType.ThirdPerson &&
             moveDir.sqrMagnitude > 0.001f && !player.isAimLocked && IsGrounded())
         {
+            Debug.Log("3인칭 회전");
             Quaternion targetRotation = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
         }
-
-        else if (cameraManager.currentView == ViewType.FirstPerson && inputManager.isCursorLocked)
-            transform.Rotate(Vector3.up * inputManager.lookInput.x * cameraManager.sensitivity);
     }
 
     /// <summary>
