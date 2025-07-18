@@ -50,12 +50,19 @@ namespace YSB_Scripts
 
             Health -= 10;
 
+            if (Health > 0)
+            {
+                float ratio = MaxHP > 0 ? (float)Health / MaxHP : 0;
+                string log = $"Tree[{TreeId}] Health: {Health}/{MaxHP} ({ratio:P})";
+                NetworkLogManager.Instance.Log(log, player);
+            }
+
             if (Health <= 0)
             {
                 var playerObj = Runner.GetPlayerObject(player);
                 var inven = playerObj.GetComponent<Test.PlayerInventory>();
                 inven.AddItem(definition.dropItemID, definition.dropAmount);
-                
+
                 OnTreeDied?.Invoke(this);
             }
         }
@@ -79,12 +86,6 @@ namespace YSB_Scripts
 
             bool isAlive = Health > 0;
             visualRoot.SetActive(isAlive);
-
-            // if (isAlive)
-            // {
-            //     float ratio = MaxHP > 0 ? (float)Health / MaxHP : 0;
-            //     Debug.Log($"Tree Health: {Health}/{MaxHP} ({ratio:P})");
-            // }
         }
     }
 }

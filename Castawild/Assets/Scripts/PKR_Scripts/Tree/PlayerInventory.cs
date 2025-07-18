@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,16 +9,19 @@ namespace Test
     //클래스가 아닌, 구조체.
     public struct InventorySlot : INetworkStruct
     {
-        public int id;
-        public int count;
+        public short id; //	-32,768 to 32,767
+        public byte count; // 0 to 255
     }
 
     public class PlayerInventory : NetworkBehaviour
     {
         [Networked, Capacity(30)] public NetworkLinkedList<InventorySlot> Slots => default;
 
-        public void AddItem(int id, int count)
+        public void AddItem(int _id, int _count)
         {
+            short id = ToShortChecked(_id);
+            byte count = ToByteChecked(_count);
+
             bool added = false;
             for (int i = 0; i < Slots.Count; i++)
             {
@@ -53,8 +56,11 @@ namespace Test
             return 0;
         }
 
-        public void RemoveItem(int id, int count)
+        public void RemoveItem(int _id, int _count)
         {
+            short id = ToShortChecked(_id);
+            byte count = ToByteChecked(_count);
+            
             for (int i = 0; i < Slots.Count; i++)
             {
                 var slot = Slots.Get(i);
@@ -125,6 +131,29 @@ namespace Test
             }
         }
 
+        #endregion
+        
+
+        #region Util
+        public short ToShortChecked(int value)
+        {
+            try { return checked((short)value); }
+            catch (OverflowException)
+            {
+                Debug.LogWarning($"short 범위를 벗어났습니다: {value}");
+                return (short)Mathf.Clamp(value, short.MinValue, short.MaxValue);
+            }
+        }
+
+        public byte ToByteChecked(int value)
+        {
+            try { return checked((byte)value); }
+            catch (OverflowException)
+            {
+                Debug.LogWarning($"byte 범위를 벗어났습니다: {value}");
+                return (byte)Mathf.Clamp(value, byte.MinValue, byte.MaxValue);
+            }
+        }
         #endregion
     }
 }

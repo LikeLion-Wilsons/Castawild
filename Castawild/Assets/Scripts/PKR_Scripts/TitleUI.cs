@@ -4,6 +4,7 @@ using Fusion;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Test
 {
@@ -18,7 +19,7 @@ namespace Test
         
         public TMP_InputField sessionnameInput;
         public TMP_InputField nicknameInput;
-        
+        public Toggle singleToggle;
         private NetworkRunner _runner;
         private static string _shutdownStatus;
 
@@ -47,13 +48,13 @@ namespace Test
                 startGroup.SetActive(_runner == null);
                 disconnectGroup.SetActive(_runner != null);
 
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
+                //Cursor.lockState = CursorLockMode.None;
+                //Cursor.visible = true;
             }
             else
             {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
+                //Cursor.lockState = CursorLockMode.Locked;
+                //Cursor.visible = false;
             }
         }
         public async void StartGame()
@@ -71,7 +72,7 @@ namespace Test
 
             var startArguments = new StartGameArgs()
             {
-                GameMode = GameMode.AutoHostOrClient,
+                GameMode = singleToggle.isOn ? GameMode.Single : GameMode.AutoHostOrClient,
                 Scene = sceneInfo,
                 SessionName = sessionnameInput.text,
                 //PlayerCount = MaxPlayerCount,
