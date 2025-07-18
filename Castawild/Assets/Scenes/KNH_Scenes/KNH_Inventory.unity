@@ -374,7 +374,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxStackCount: 20
-  itemList: []
   inventorySlots:
   - {fileID: 1499725588}
   - {fileID: 1150114375}
@@ -406,6 +405,7 @@ MonoBehaviour:
   - {fileID: 1072219055}
   - {fileID: 1274962721}
   inventoryItemPrefab: {fileID: 8961097428526538935, guid: 551b2102b25139449aa8117c654bb412, type: 3}
+  _itemList: []
 --- !u!4 &787751161
 Transform:
   m_ObjectHideFlags: 0

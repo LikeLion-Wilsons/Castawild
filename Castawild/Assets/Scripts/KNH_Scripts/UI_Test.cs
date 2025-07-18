@@ -1,14 +1,15 @@
+using Fusion;
 using UnityEngine;
 
-public class UI_Test : MonoBehaviour
+public class UI_Test : NetworkBehaviour
 {
-    
+
     [SerializeField] Item_Scriptable[] itemData;
     public Item[] itemsToPickUp;
 
 
 
-    private void Update()
+    public override void FixedUpdateNetwork()
     {
         if (Input.GetKeyDown(KeyCode.Z))
         {
@@ -24,7 +25,7 @@ public class UI_Test : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            UseSelectedItem(); 
+            UseSelectedItem();
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
