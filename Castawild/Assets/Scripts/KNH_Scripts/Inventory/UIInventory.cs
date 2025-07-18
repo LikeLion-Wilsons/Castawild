@@ -10,7 +10,7 @@ public class UIInventory : UIPart
 
     public GameObject itemClick;
 
-    private void Start()
+    private void Awake()
     {
         InventoryDataManager.onInventoryUpdated += SetItemList;
         Init();
@@ -26,6 +26,8 @@ public class UIInventory : UIPart
     //아이템을 얻을 때 실행
     public void SetItemList()
     {
+
+        Debug.Log("SetItemList");
         var items = InventoryDataManager.Instance.itemList;
 
         for (int i = 0; i < itemPanels.Count; i++)
