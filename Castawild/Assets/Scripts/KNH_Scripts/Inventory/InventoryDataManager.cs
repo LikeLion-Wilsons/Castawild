@@ -9,11 +9,17 @@ public class InventoryDataManager : NetworkBehaviour
 {
     [SerializeField] int maxStackCount;//아이템 최대 스택 개수
     GameObject uiCanvas;
-    Canvas_Holder uiHolder;
+    GameObject uiHolder;
+    Canvas_Holder canvasHolder;
     [Networked, Capacity(30)] public NetworkLinkedList<Item> itemList => default;
     public override void Spawned()
     {
-        for (int i = 0; i < 29; i++)
+        uiHolder = GameObject.Find("UIHolder");
+        uiCanvas = uiHolder.transform.Find("UI_Canvas").gameObject;
+        if(uiCanvas != null)
+            uiCanvas.SetActive(true);
+        canvasHolder = uiCanvas.GetComponent<Canvas_Holder>();
+        for (int j = 0; j < 29; j++)
         {
             itemList.Add(new Item
             {
@@ -21,6 +27,19 @@ public class InventoryDataManager : NetworkBehaviour
                 count = 0,
                 durability = 1
             });
+        }
+        int i = 0;
+        while (i < 9)
+        {
+            inventorySlots[i] = canvasHolder.hotBarUI.transform.GetChild(i).GetComponent<Item_Panel>();
+            i++;
+        }
+        int index = 0;
+        while (i < 29)
+        {
+            inventorySlots[i] = canvasHolder.inventoryUI.transform.GetChild(index).GetComponent<Item_Panel>();
+            i++;
+            index++;
         }
     }
 
@@ -33,24 +52,9 @@ public class InventoryDataManager : NetworkBehaviour
     {
         if (Instance == null) Instance = this;
         else if (Instance != this) Destroy(gameObject);
-        uiCanvas = GameObject.Find("UI_Canvas");
-        uiHolder = uiCanvas.GetComponent<Canvas_Holder>();
-        int i = 0;
-        while (i < 9)
-        {
-            inventorySlots[i] = uiHolder.hotBarUI.transform.GetChild(i).GetComponent<Item_Panel>();
-            i++;
-        }
-        int index = 0;
-        while (i < 29)
-        {
-            inventorySlots[i] = uiHolder.inventoryUI.transform.GetChild(index).GetComponent<Item_Panel>();
-            i++;
-            index++;
-        }
+
+        
     }
-
-
     void ChangeSelectedSlot(int newValue)
     {
         if (Canvas_Holder.instance.IsInventoryOpen()) return;
