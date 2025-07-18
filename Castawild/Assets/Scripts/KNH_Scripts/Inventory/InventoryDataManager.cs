@@ -1,15 +1,29 @@
+using Fusion;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public delegate void OnItemGet();
 
-public class InventoryDataManager : MonoBehaviour
+public class InventoryDataManager : NetworkBehaviour
 {
     [SerializeField] int maxStackCount;//아이템 최대 스택 개수
-    public List<Item> itemList;
+    GameObject uiCanvas;
+    Canvas_Holder uiHolder;
+    [Networked, Capacity(30)] public NetworkLinkedList<Item> itemList => default;
+    public override void Spawned()
+    {
+        for (int i = 0; i < 29; i++)
+        {
+            itemList.Add(new Item
+            {
+                itemID = -1,
+                count = 0,
+                durability = 1
+            });
+        }
+    }
+
     public Item_Panel[] inventorySlots;
     public GameObject inventoryItemPrefab;
     int selectedSlot = -1;
@@ -17,21 +31,26 @@ public class InventoryDataManager : MonoBehaviour
     public static InventoryDataManager Instance { get; private set; }
     private void Awake()
     {
-        itemList = new List<Item>();
-        for (int i = 0; i < 29; i++)
-        {
-            itemList.Add(new Item
-            {
-                item_Data = null,
-                count = 0,
-                durability = 1
-            });
-        }
-
         if (Instance == null) Instance = this;
         else if (Instance != this) Destroy(gameObject);
-
+        uiCanvas = GameObject.Find("UI_Canvas");
+        uiHolder = uiCanvas.GetComponent<Canvas_Holder>();
+        int i = 0;
+        while (i < 9)
+        {
+            inventorySlots[i] = uiHolder.hotBarUI.transform.GetChild(i).GetComponent<Item_Panel>();
+            i++;
+        }
+        int index = 0;
+        while (i < 29)
+        {
+            inventorySlots[i] = uiHolder.inventoryUI.transform.GetChild(index).GetComponent<Item_Panel>();
+            i++;
+            index++;
+        }
     }
+
+
     void ChangeSelectedSlot(int newValue)
     {
         if (Canvas_Holder.instance.IsInventoryOpen()) return;
@@ -42,7 +61,7 @@ public class InventoryDataManager : MonoBehaviour
         inventorySlots[newValue].Select();
         selectedSlot = newValue;
     }
-   
+
 
     public static event Action onInventoryUpdated;//기존에 있던 아이템이 추가될 때
 
@@ -55,10 +74,10 @@ public class InventoryDataManager : MonoBehaviour
 
     private void Update()
     {
-       if(Input.inputString != null)
+        if (Input.inputString != null)
         {
             bool isNumber = int.TryParse(Input.inputString, out int number);
-            if(isNumber && number > 0 && number < 10)
+            if (isNumber && number > 0 && number < 10)
             {
                 ChangeSelectedSlot(number - 1);
             }
@@ -79,15 +98,19 @@ public class InventoryDataManager : MonoBehaviour
     public Item_Scriptable GetSeletedItem(bool use)
     {
         Item_Panel slot = inventorySlots[selectedSlot];
-        if (slot.item != null)
+        if (slot.item.isNull == false)
         {
-            Item_Scriptable item = slot.item.item_Data;
             if (use)
             {
                 slot.item.count--;
-                if(slot.item.count <= 0)
+                if (slot.item.count <= 0)
                 {
-                    itemList[selectedSlot] = null;
+                    //null 설정
+                    var item = itemList.Get(selectedSlot);
+                    item.isNull = true;
+                    item.count = 0;
+                    itemList.Set(selectedSlot, item);
+                    //itemList[selectedSlot] = null;
                 }
                 onInventoryUpdated?.Invoke();
             }
@@ -97,19 +120,22 @@ public class InventoryDataManager : MonoBehaviour
     }
 
     // 아이템 획득
-    public bool GetItem(Item_Scriptable scriptableData, int amount)
+    public bool GetItem(int id, int amount)
     {
-        int id = scriptableData.itemID;
+        //int id = scriptableData.itemID;
         // 이미 존재하는 아이템이면 개수만 증가
         for (int i = 0; i < itemList.Count; i++)
         {
-            if (itemList[i].item_Data != null)
+            if (itemList[i].itemID != -1)
             {
-                if (itemList[i].item_Data.type == Item_Type.Equipment) maxStackCount = 1;
+                if (itemList[i].GetData().type == Item_Type.Equipment) maxStackCount = 1;
                 else maxStackCount = 20;
-                if (itemList[i].item_Data.itemID == id && itemList[i].count < maxStackCount)
+                if (itemList[i].itemID == id && itemList[i].count < maxStackCount)
                 {
-                    itemList[i].count += amount;
+                    var item = itemList.Get(i);
+                    item.count += amount;
+                    itemList.Set(i, item);
+                    //itemList[i].count += amount;
                     onInventoryUpdated?.Invoke();
                     return true;
                 }
@@ -119,10 +145,11 @@ public class InventoryDataManager : MonoBehaviour
         // 빈 슬롯 찾기
         for (int i = 0; i < itemList.Count; i++)
         {
-            if (itemList[i].item_Data == null)
+            if (itemList[i].itemID == -1)
             {
-                Item newItem = new Item { item_Data = scriptableData, count = amount };
-                itemList[i] = newItem;
+                Item newItem = new Item { itemID = id, count = amount };
+                itemList.Set(i, newItem);
+                //itemList[i] = newItem;
                 onInventoryUpdated?.Invoke();
                 return true;
             }
@@ -135,8 +162,12 @@ public class InventoryDataManager : MonoBehaviour
     {
         if (index >= 0 && index < itemList.Count)
         {
-            Debug.Log(itemList[index].item_Data.name + " 버림!");
-            itemList[index] = null;
+            Debug.Log(itemList[index].GetData().name + " 버림!");
+            var item = itemList.Get(index);
+            item.count = 0;
+            item.isNull = true;
+            itemList.Set(index, item);
+            //itemList[index] = null;
             onInventoryUpdated?.Invoke();
         }
     }
@@ -146,13 +177,13 @@ public class InventoryDataManager : MonoBehaviour
     {
         foreach (var item in itemList)
         {
-            if (item != null && item.item_Data.itemID == id)
+            if (item.isNull == false && item.GetData().itemID == id)
                 return true;
         }
         return false;
     }
 
-    public List<Item> GetItemList()
+    public NetworkLinkedList<Item> GetItemList()
     {
         return itemList;
     }
