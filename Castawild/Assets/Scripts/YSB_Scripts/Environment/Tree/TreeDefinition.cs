@@ -2,12 +2,12 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 [CreateAssetMenu(menuName = "Tree/TreeDefinition")]
-public class TreeDefinition : ScriptableObject
+public class TreeDefinition : SpawnableDefinition
 {
-    public string treeName;
+    //public string treeName;
 
-    [Header("Prefab (Addressables)")]
-    public AssetReferenceGameObject prefabReference;
+    //[Header("Prefab (Addressables)")]
+    //public AssetReferenceGameObject prefabReference;
 
     [Header("Health")]
     public int maxHealth = 100;

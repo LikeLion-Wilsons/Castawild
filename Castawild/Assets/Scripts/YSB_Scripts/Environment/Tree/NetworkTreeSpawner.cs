@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using Fusion;
+using Test;
 
 public class NetworkTreeSpawner : NetworkBehaviour
 {
@@ -14,9 +15,14 @@ public class NetworkTreeSpawner : NetworkBehaviour
     [SerializeField] private List<TerrainSpawnSettings> terrainSettings;
 
     [Header("Spawn Settings")]
-    [SerializeField] private int maxSpawnAttempts = 20;
-    [SerializeField] private float checkInterval = 5f;
-    [SerializeField] private float reviveDelay = 10f;
+
+    [SerializeField,Tooltip("스폰 최대 횟수")] private int maxSpawnAttempts = 20;
+    [SerializeField, Tooltip("나무 거리 체크 간격")] private float checkInterval = 5f;
+    [SerializeField, Tooltip("revive 지연 시간")] private float reviveDelay = 10f;
+
+    [Header("Pooling Settings")]
+    [SerializeField, Tooltip("트리 프리팹 최대 풀 개수. 0이면 무한, -1이면 풀링 안 함")]
+    private int maxPoolCountPerPrefab = 10;
 
     private Dictionary<Terrain, float[,,]> terrainAlphaMapCache = new();
     private Dictionary<Terrain, int> terrainTextureIndexCache = new();
@@ -44,6 +50,15 @@ public class NetworkTreeSpawner : NetworkBehaviour
     {
         yield return CacheTerrainAlphamaps(); // 알파맵 캐싱
         yield return LoadTreePrefabs();       // 프리팹 로딩
+
+        // 풀 최대 개수 세팅
+        foreach (var prefab in loadedPrefabs)
+        {
+            if (Runner != null && prefab != null)
+            {
+                Runner.SetMaxPool(prefab.name, maxPoolCountPerPrefab);
+            }
+        }
 
         if (loadedPrefabs.Count > 0)
             StartCoroutine(SpawnLoop());       // 스폰 루프 시작
@@ -201,13 +216,14 @@ public class NetworkTreeSpawner : NetworkBehaviour
             {
                 setting.activeTrees.Add(treeObj);
             }
+
+            NetworkObjectVisibilityManager.Instance?.RegisterObject(treeObj);
         }
     }
 
     // 트리가 죽었을 때 호출되는 콜백
     private void OnTreeDied(YSB_Scripts.NetworkTree tree)
     {
-        // tree.gameObject.SetActive(false); // NetworkTree가 스스로 비활성화하므로 이 줄은 필요 없습니다.
         deadTrees.Add(new DeadTreeEntry
         {
             tree = tree,
