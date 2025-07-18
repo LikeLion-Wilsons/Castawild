@@ -2,16 +2,8 @@ using UnityEngine;
 using Fusion;
 using System;
 
-public class NetworkLogManager : NetworkBehaviour
+public class NetworkLogManager : NetworkSingleton<NetworkLogManager>
 {
-    public static NetworkLogManager Instance { get; private set; }
-
-    private void Awake()
-    {
-        if (Instance != null && Instance != this) Destroy(gameObject);
-        else Instance = this;
-    }
-
     public void Log(string message, PlayerRef player)
     {
         if (Runner.LocalPlayer == player)

@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 818165054393195202}
+  - component: {fileID: 3345704371563666495}
   m_Layer: 0
   m_Name: VisualRoot
   m_TagString: Untagged
@@ -34,6 +35,29 @@ Transform:
   - {fileID: 114086688545874985}
   m_Father: {fileID: 2150493920908066840}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &3345704371563666495
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057274572752878765}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.16053163
+  m_Height: 2.8096137
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.8408723, z: -0.05137302}
 --- !u!1 &4445757397335692056
 GameObject:
   m_ObjectHideFlags: 0
@@ -44,7 +68,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2150493920908066840}
   - component: {fileID: 7944786107689879708}
-  - component: {fileID: 8710995683477221231}
   - component: {fileID: 8722764026981258867}
   - component: {fileID: 3550234414826201151}
   - component: {fileID: -2932382964224354444}
@@ -63,7 +86,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4445757397335692056}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -98,29 +121,6 @@ LODGroup:
     renderers:
     - renderer: {fileID: 7335228672870143713}
   m_Enabled: 1
---- !u!136 &8710995683477221231
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4445757397335692056}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.16053163
-  m_Height: 2.8096137
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.8408723, z: -0.05137302}
 --- !u!114 &8722764026981258867
 MonoBehaviour:
   m_ObjectHideFlags: 0
