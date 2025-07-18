@@ -1,5 +1,6 @@
 using Fusion;
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public delegate void OnItemGet();
@@ -7,6 +8,8 @@ public delegate void OnItemGet();
 public class InventoryDataManager : NetworkBehaviour
 {
     [SerializeField] int maxStackCount;//아이템 최대 스택 개수
+    GameObject uiCanvas;
+    Canvas_Holder uiHolder;
     [Networked, Capacity(30)] public NetworkLinkedList<Item> itemList => default;
     public override void Spawned()
     {
@@ -28,11 +31,23 @@ public class InventoryDataManager : NetworkBehaviour
     public static InventoryDataManager Instance { get; private set; }
     private void Awake()
     {
-       
-
         if (Instance == null) Instance = this;
         else if (Instance != this) Destroy(gameObject);
-
+        uiCanvas = GameObject.Find("UI_Canvas");
+        uiHolder = uiCanvas.GetComponent<Canvas_Holder>();
+        int i = 0;
+        while (i < 9)
+        {
+            inventorySlots[i] = uiHolder.hotBarUI.transform.GetChild(i).GetComponent<Item_Panel>();
+            i++;
+        }
+        int index = 0;
+        while (i < 29)
+        {
+            inventorySlots[i] = uiHolder.inventoryUI.transform.GetChild(index).GetComponent<Item_Panel>();
+            i++;
+            index++;
+        }
     }
 
 
@@ -46,7 +61,7 @@ public class InventoryDataManager : NetworkBehaviour
         inventorySlots[newValue].Select();
         selectedSlot = newValue;
     }
-   
+
 
     public static event Action onInventoryUpdated;//기존에 있던 아이템이 추가될 때
 
@@ -59,10 +74,10 @@ public class InventoryDataManager : NetworkBehaviour
 
     private void Update()
     {
-       if(Input.inputString != null)
+        if (Input.inputString != null)
         {
             bool isNumber = int.TryParse(Input.inputString, out int number);
-            if(isNumber && number > 0 && number < 10)
+            if (isNumber && number > 0 && number < 10)
             {
                 ChangeSelectedSlot(number - 1);
             }
@@ -88,7 +103,7 @@ public class InventoryDataManager : NetworkBehaviour
             if (use)
             {
                 slot.item.count--;
-                if(slot.item.count <= 0)
+                if (slot.item.count <= 0)
                 {
                     //null 설정
                     var item = itemList.Get(selectedSlot);
@@ -105,9 +120,9 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
     // 아이템 획득
-    public bool GetItem(Item_Scriptable scriptableData, int amount)
+    public bool GetItem(int id, int amount)
     {
-        int id = scriptableData.itemID;
+        //int id = scriptableData.itemID;
         // 이미 존재하는 아이템이면 개수만 증가
         for (int i = 0; i < itemList.Count; i++)
         {
@@ -132,7 +147,7 @@ public class InventoryDataManager : NetworkBehaviour
         {
             if (itemList[i].itemID == -1)
             {
-                Item newItem = new Item { itemID = scriptableData.itemID, count = amount };
+                Item newItem = new Item { itemID = id, count = amount };
                 itemList.Set(i, newItem);
                 //itemList[i] = newItem;
                 onInventoryUpdated?.Invoke();
