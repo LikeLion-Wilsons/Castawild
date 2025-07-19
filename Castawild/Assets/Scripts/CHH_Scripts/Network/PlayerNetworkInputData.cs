@@ -11,6 +11,7 @@ public struct PlayerNetworkInputData : INetworkInput
     public const int toolUseInput = 6;
 
     public Vector2 moveValue;
+    public Vector2 lookValue;
 
     public NetworkButtons Buttons;
 

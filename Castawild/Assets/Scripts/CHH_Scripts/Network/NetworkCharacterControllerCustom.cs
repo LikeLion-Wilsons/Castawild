@@ -1,0 +1,201 @@
+namespace Fusion
+{
+    using System.Diagnostics;
+    using System.Runtime.CompilerServices;
+    using System.Runtime.InteropServices;
+    using UnityEngine;
+
+    [StructLayout(LayoutKind.Explicit)]
+    [NetworkStructWeaved(WORDS + 4)]
+    public unsafe struct NetworkCCDataCustom : INetworkStruct
+    {
+        public const int WORDS = NetworkTRSPData.WORDS + 4;
+        public const int SIZE = WORDS * 4;
+
+        [FieldOffset(0)]
+        public NetworkTRSPData TRSPData;
+
+        [FieldOffset((NetworkTRSPData.WORDS + 0) * Allocator.REPLICATE_WORD_SIZE)]
+        int _grounded;
+
+        [FieldOffset((NetworkTRSPData.WORDS + 1) * Allocator.REPLICATE_WORD_SIZE)]
+        Vector3Compressed _velocityData;
+
+        public bool Grounded
+        {
+            get => _grounded == 1;
+            set => _grounded = (value ? 1 : 0);
+        }
+
+        public Vector3 Velocity
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _velocityData;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set => _velocityData = value;
+        }
+    }
+
+    [DisallowMultipleComponent]
+    [RequireComponent(typeof(CharacterController))]
+    [NetworkBehaviourWeaved(NetworkCCDataCustom.WORDS)]
+    public sealed unsafe class NetworkCharacterControllerCustom : NetworkTRSP, INetworkTRSPTeleport, IBeforeAllTicks, IAfterAllTicks, IBeforeCopyPreviousState
+    {
+        new ref NetworkCCDataCustom Data => ref ReinterpretState<NetworkCCDataCustom>();
+
+        [Header("Character Controller Settings")]
+        public float gravity = -20.0f;
+        public float acceleration = 10.0f;
+        public float maxSpeed = 2.0f;
+        public float rotationSpeed = 15.0f;
+
+        Tick _initial;
+        CharacterController _controller;
+
+        MovementStateManager movementManager;
+        PlayerCameraManager cameraManager;
+        PlayerInputManager inputManager;
+
+        public Vector3 Velocity
+        {
+            get => Data.Velocity;
+            set => Data.Velocity = value;
+        }
+
+        public bool Grounded
+        {
+            get => Data.Grounded;
+            set => Data.Grounded = value;
+        }
+
+        public void Teleport(Vector3? position = null, Quaternion? rotation = null)
+        {
+            _controller.enabled = false;
+            NetworkTRSP.Teleport(this, transform, position, rotation);
+            _controller.enabled = true;
+        }
+
+        public void Move(Vector3 direction)
+        {
+            var deltaTime = Runner.DeltaTime;
+            var previousPos = transform.position;
+            var moveVelocity = Data.Velocity;
+
+            direction = direction.normalized;
+
+            if (Data.Grounded && moveVelocity.y < 0)
+            {
+                moveVelocity.y = 0f;
+            }
+
+            // 중력 적용
+            moveVelocity.y += gravity * Runner.DeltaTime;
+
+            // 수평 이동
+            var horizontalVel = default(Vector3);
+            horizontalVel.x = moveVelocity.x;
+            horizontalVel.z = moveVelocity.z;
+
+            if (direction == default)
+                horizontalVel = Vector3.zero;
+            else
+                // 방향을 기준으로 가속, 최대 속도 넘지 않게 Clamp
+                horizontalVel = Vector3.ClampMagnitude(horizontalVel + direction * acceleration * deltaTime, maxSpeed);
+
+            moveVelocity.x = horizontalVel.x;
+            moveVelocity.z = horizontalVel.z;
+
+            _controller.Move(moveVelocity * deltaTime);
+
+            Data.Velocity = (transform.position - previousPos) * Runner.TickRate;
+            Data.Grounded = _controller.isGrounded;
+        }
+
+        public override void Spawned()
+        {
+            _initial = default;
+            TryGetComponent(out _controller);
+            _controller.enabled = false;
+            _controller.enabled = true;
+            CopyToBuffer();
+        }
+
+        public override void Render()
+        {
+            NetworkTRSP.Render(this, transform, false, false, false, ref _initial);
+            movementManager.UpdateMoveAnimation();
+        }
+
+        // Tick 시작 전에 호출 -> 현재 시뮬레이션 상태를 Unity 오브젝트에 반영
+        void IBeforeAllTicks.BeforeAllTicks(bool resimulation, int tickCount)
+        {
+            CopyToEngine();
+        }
+
+        // Tick 끝난 후 호출 -> Unity 오브젝트의 변경 내용을 네트워크 상태로 복사
+        void IAfterAllTicks.AfterAllTicks(bool resimulation, int tickCount)
+        {
+            CopyToBuffer();
+        }
+
+        // State 복사 직전에 호출됨 -> 보간/롤백을 위한 상태 백업
+        void IBeforeCopyPreviousState.BeforeCopyPreviousState()
+        {
+            CopyToBuffer();
+        }
+
+        void Awake()
+        {
+            TryGetComponent(out _controller);
+            InitComponents();
+        }
+
+        // 현재 트랜스폼 상태를 네트워크 상태에 복사 -> HasStateAuthority 에서만 호출
+        void CopyToBuffer()
+        {
+            Data.TRSPData.Position = transform.position;
+            Data.TRSPData.Rotation = transform.rotation;
+        }
+
+        // 네트워크 상태를 현재 트랜스폼에 반영 -> 모두 호출
+        void CopyToEngine()
+        {
+            // Unity CharacterController 특성상 위치를 강제로 바꿀 때 껐다 켜줘야 충돌 오류 안남
+            _controller.enabled = false;
+
+            transform.SetPositionAndRotation(Data.TRSPData.Position, Data.TRSPData.Rotation);
+
+            _controller.enabled = true;
+        }
+
+
+        private void InitComponents()
+        {
+            movementManager = GetComponent<MovementStateManager>();
+            cameraManager = GetComponentInChildren<PlayerCameraManager>();
+            inputManager = GetComponentInChildren<PlayerInputManager>();
+        }
+
+        public override void FixedUpdateNetwork()
+        {
+            if (GetInput<PlayerNetworkInputData>(out var input))
+            {
+                // 호스트 : 위치 & 상태 업데이트
+                if (HasStateAuthority)
+                {
+                    Vector3 moveDir = movementManager.GetMoveDir(input.moveValue);
+
+                    maxSpeed = movementManager.currentMoveSpeed;
+                    Move(moveDir);
+                    if (cameraManager.CurrentView == ViewType.FirstPerson)
+                    {
+                        transform.Rotate(Vector3.up * input.lookValue.x * cameraManager.sensitivity);
+                    }
+
+                    movementManager.HandleState(input);
+                    movementManager.RotatePlayer(moveDir);
+                }
+            }
+        }
+    }
+}

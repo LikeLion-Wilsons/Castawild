@@ -107,19 +107,8 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void Update()
     {
-        RotateCamera();
         HandleViewChange();
         ZoomCamera();
-    }
-
-    public void RotateCamera()
-    {
-        if (CurrentView == ViewType.ThirdPerson || !inputManager.isCursorLocked)
-            return;
-
-        xRotation -= inputManager.lookInput.y * sensitivity;
-        xRotation = Mathf.Clamp(xRotation, minXRotation, maxXRotation);
-        firstPersonCam.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
     }
 
     private void HandleViewChange()

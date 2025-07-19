@@ -19,7 +19,7 @@ public class JumpState : MovementBaseState
 
     public override void UpdateState()
     {
-        if (movementManager.jumped && movementManager.IsGrounded())
+        if (movementManager.jumped && movementManager.networkCharacterController.Grounded)
         {
             movementManager.jumped = false;
 

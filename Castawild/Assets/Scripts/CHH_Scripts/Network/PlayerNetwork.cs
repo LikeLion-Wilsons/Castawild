@@ -42,42 +42,7 @@ public class PlayerNetworkManager : NetworkBehaviour
     // FixedUpdateNetwork : HasInputAuthority || HasStateAuthority 일 때 실행 -> 입력처리, 이동 처리 등
     // LateUpdateNetwork : 모두 실행 -> 위치보간같은 최종처리
     // Render : 모든 클라 - 매 프레임 -> 애니메이션같은 시각효과 처리
-    public override void FixedUpdateNetwork()
-    {
-        if (GetInput<PlayerNetworkInputData>(out var input))
-        {
-            Vector3 moveDir = movementManager.GetMoveDir(input.moveValue, HasInputAuthority);
 
-            // 호스트 : 위치 & 상태 업데이트
-            if (HasStateAuthority)
-            {
-                HandleMovement(input, moveDir);
-                movementManager.RotatePlayer(moveDir);
-            }
-        }
-    }
 
-    private void HandleMovement(PlayerNetworkInputData input, Vector3 moveDir)
-    {
-        Vector3 moveVelocity = moveDir * movementManager.currentMoveSpeed;
-        Vector3 gravityVelocity = movementManager.Gravity();
 
-        Vector3 finalVelocity = new Vector3(moveVelocity.x, gravityVelocity.y, moveVelocity.z);
-
-        controller.Move(finalVelocity * Time.fixedDeltaTime);
-
-        movementManager.SetInput(input);
-        toolManager.SetInput(input);
-
-        movementManager.currentState.UpdateState();
-        toolManager.currentState.UpdateState();
-
-        movementManager.SetPrevInputButton(input.Buttons);
-        toolManager.SetPrevInputButton(input.Buttons);
-    }
-
-    public override void Render()
-    {
-        movementManager.UpdateMoveAnimation();
-    }
 }

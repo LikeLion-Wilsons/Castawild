@@ -88,6 +88,8 @@ public class PlayerInputManager : MonoBehaviour
         inputData.Buttons.Set(PlayerNetworkInputData.toolUseInput, toolAction.IsPressed());
 
         inputData.moveValue = moveAction.ReadValue<Vector2>();
+        if (isCursorLocked)
+            inputData.lookValue = lookAction.ReadValue<Vector2>();
 
         return inputData;
     }

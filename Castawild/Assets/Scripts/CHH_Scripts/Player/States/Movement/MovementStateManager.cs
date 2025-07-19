@@ -1,10 +1,16 @@
 using Fusion;
 using UnityEngine;
 
-public class MovementStateManager : BaseStateManager
+public class MovementStateManager : MonoBehaviour
 {
     #region Conponent
+    [HideInInspector] public Animator anim;
+    [HideInInspector] public PlayerInputManager inputManager;
+    [HideInInspector] public PlayerCameraManager cameraManager;
+    [HideInInspector] public CwPlayer player;
+    [HideInInspector] public PlayerNetworkManager networkManager;
     [HideInInspector] public ToolStateManager toolStateManager;
+    [HideInInspector] public NetworkCharacterControllerCustom networkCharacterController;
     #endregion
 
     #region States
@@ -14,6 +20,7 @@ public class MovementStateManager : BaseStateManager
     public RunState runState;
     public JumpState jumpState;
     public CrouchState crouchState;
+    public BaseState currentState;
     #endregion
 
     #region Movement
@@ -53,12 +60,12 @@ public class MovementStateManager : BaseStateManager
     #endregion
 
     #region Network
+    public PlayerNetworkInputData input { get; private set; }
+    public NetworkButtons prevInputButtons;
     #endregion
 
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
-
         InitComponents();
         InitStates();
     }
@@ -66,6 +73,12 @@ public class MovementStateManager : BaseStateManager
     private void InitComponents()
     {
         toolStateManager = GetComponent<ToolStateManager>();
+        networkCharacterController = GetComponent<NetworkCharacterControllerCustom>();
+        anim = GetComponentInChildren<Animator>();
+        inputManager = GetComponent<PlayerInputManager>();
+        cameraManager = GetComponentInChildren<PlayerCameraManager>();
+        player = GetComponent<CwPlayer>();
+        networkManager = GetComponent<PlayerNetworkManager>();
     }
 
     private void InitStates()
@@ -77,6 +90,13 @@ public class MovementStateManager : BaseStateManager
         jumpState = new JumpState(this, inputManager);
 
         ChangeState(idleState);
+    }
+
+    public void ChangeState(BaseState newState)
+    {
+        currentState?.ExitState();
+        currentState = newState;
+        currentState.EnterState();
     }
 
     public void UpdateMoveAnimation()
@@ -118,7 +138,7 @@ public class MovementStateManager : BaseStateManager
                 isTriggerSet = true;
                 break;
         }
-        anim.SetBool("Falling", !IsGrounded());
+        anim.SetBool("Falling", !networkCharacterController.Grounded);
     }
 
     /// <summary>
@@ -158,7 +178,7 @@ public class MovementStateManager : BaseStateManager
             transform.Rotate(Vector3.up * inputManager.lookInput.x * cameraManager.sensitivity);
 
         else if (cameraManager.CurrentView == ViewType.ThirdPerson &&
-            moveDir.sqrMagnitude > 0.001f && !player.isAimLocked && IsGrounded())
+            moveDir.sqrMagnitude > 0.001f && !player.isAimLocked && networkCharacterController.Grounded)
         {
             Debug.Log("3인칭 회전");
             Quaternion targetRotation = Quaternion.LookRotation(moveDir);
@@ -171,23 +191,12 @@ public class MovementStateManager : BaseStateManager
     /// </summary>
     public Vector3 Gravity()
     {
-        if (IsGrounded() && velocity.y < 0)
+        if (networkCharacterController.Grounded && velocity.y < 0)
             velocity.y = -1f;
         else
             velocity.y += gravity * fallMultiplier * Time.fixedDeltaTime;
 
         return velocity;
-    }
-
-    /// <summary>
-    /// 땅 체크
-    /// </summary>
-    public bool IsGrounded()
-    {
-        spherePos = new Vector3(transform.position.x, transform.position.y - groundYOffset, transform.position.z);
-        if (Physics.CheckSphere(spherePos, groundCheckRadius, groundMask))
-            return true;
-        return false;
     }
 
     private void OnDrawGizmos()
@@ -221,4 +230,40 @@ public class MovementStateManager : BaseStateManager
     }
 
     public bool isTriggerSet = false;
+
+
+
+
+    public void HandleState(PlayerNetworkInputData input)
+    {
+        SetInput(input);
+
+        currentState.UpdateState();
+        currentState.UpdateState();
+
+        SetPrevInputButton(input.Buttons);
+    }
+
+    public Vector3 GetMoveDir(Vector2 moveInput)
+    {
+        if (!canMove)
+            return Vector3.zero;
+
+        Vector3 forward;
+        Vector3 right;
+
+        forward = transform.forward;
+        right = transform.right;
+
+        forward.y = 0f;
+        right.y = 0f;
+
+        forward.Normalize();
+        right.Normalize();
+
+        return forward * moveInput.y + right * moveInput.x;
+    }
+
+    public void SetInput(PlayerNetworkInputData inputData) => input = inputData;
+    public void SetPrevInputButton(NetworkButtons _prevInputButtons) => prevInputButtons = _prevInputButtons;
 }
