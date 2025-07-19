@@ -187,14 +187,19 @@ namespace Fusion
 
                     maxSpeed = movementManager.currentMoveSpeed;
                     Move(moveDir);
-                    if (cameraManager.CurrentView == ViewType.FirstPerson)
-                    {
-                        transform.Rotate(Vector3.up * input.lookValue.x * cameraManager.sensitivity);
-                    }
+                    Rotate(input);
 
                     movementManager.HandleState(input);
                     movementManager.RotatePlayer(moveDir);
                 }
+            }
+        }
+
+        private void Rotate(PlayerNetworkInputData input)
+        {
+            if (cameraManager.CurrentView == ViewType.FirstPerson)
+            {
+                transform.Rotate(Vector3.up * input.lookValue.x * cameraManager.sensitivity);
             }
         }
     }
