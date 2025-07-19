@@ -11,11 +11,11 @@ public class PlayerCameraManager : MonoBehaviour
     private CinemachineOrbitalFollow orbital;
     private CinemachineInputAxisController inputAxisController;
     private PlayerNetworkManager networkManager;
+    private NetworkCharacterControllerCustom networkCharacterController;
     private CwPlayer player;
     #endregion
 
     public bool isAiming = false;
-    public ViewType CurrentView { get; private set; }
 
     #region Third Person Aim
     [Header("1인칭")]
@@ -27,7 +27,10 @@ public class PlayerCameraManager : MonoBehaviour
     public float sensitivity = 1.5f;
     [SerializeField] private float maxXRotation = 80f;
     [SerializeField] private float minXRotation = -80f;
-    private float xRotation = 0f;
+
+    private float pitch = 0f;
+    public float minPitch = -80f;
+    public float maxPitch = 80f;
 
     #endregion
 
@@ -60,7 +63,7 @@ public class PlayerCameraManager : MonoBehaviour
     {
         get
         {
-            if (CurrentView == ViewType.FirstPerson)
+            if (networkCharacterController.CurrentView == ViewType.FirstPerson)
                 return firstPersonCam;
             else
                 return thirdPersonCam;
@@ -87,6 +90,7 @@ public class PlayerCameraManager : MonoBehaviour
         orbital = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
         inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
         networkManager = GetComponentInParent<PlayerNetworkManager>();
+        networkCharacterController = GetComponentInParent<NetworkCharacterControllerCustom>();
     }
 
     private void SubscribeEvents()
@@ -108,6 +112,7 @@ public class PlayerCameraManager : MonoBehaviour
     private void Update()
     {
         HandleViewChange();
+        UpdateCameraPitch();
         ZoomCamera();
     }
 
@@ -115,16 +120,14 @@ public class PlayerCameraManager : MonoBehaviour
     {
         if (inputManager.viewChangeAction.WasPressedThisFrame())
         {
-            if (CurrentView == ViewType.FirstPerson)
-                ViewChange(ViewType.ThirdPerson);
-            else if (CurrentView == ViewType.ThirdPerson)
-                ViewChange(ViewType.FirstPerson);
+            networkCharacterController.RPC_RequestViewChange();
+            ViewChange(networkCharacterController.CurrentView);
         }
     }
 
     public void SetNetworkCamera()
     {
-        CurrentView = ViewType.FirstPerson;
+        networkCharacterController.RPC_RequestViewChange(ViewType.FirstPerson);
         playerMesh.SetActive(true);
         firstPersonCam.Priority = 1;
         thirdPersonCam.Priority = 0;
@@ -136,7 +139,6 @@ public class PlayerCameraManager : MonoBehaviour
         {
             if (networkManager.HasInputAuthority)
             {
-                CurrentView = ViewType.FirstPerson;
                 playerMesh.SetActive(false);
                 firstPersonCam.Priority = 10;
                 thirdPersonCam.Priority = 0;
@@ -147,12 +149,23 @@ public class PlayerCameraManager : MonoBehaviour
         {
             if (networkManager.HasInputAuthority)
             {
-                CurrentView = ViewType.ThirdPerson;
                 playerMesh.SetActive(true);
                 firstPersonCam.Priority = 0;
                 thirdPersonCam.Priority = 10;
             }
         }
+    }
+
+
+    private void UpdateCameraPitch()
+    {
+        if (networkCharacterController.CurrentView == ViewType.ThirdPerson || !inputManager.isCursorLocked)
+            return;
+
+        pitch -= inputManager.lookInput.y * sensitivity;
+        pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
+
+        firstPersonCam.transform.localEulerAngles = new Vector3(pitch, 0f, 0f);
     }
 
     private void ZoomCamera()

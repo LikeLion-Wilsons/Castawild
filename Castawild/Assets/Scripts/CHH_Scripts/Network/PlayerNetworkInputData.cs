@@ -10,8 +10,10 @@ public struct PlayerNetworkInputData : INetworkInput
     public const int sprintInput = 5;
     public const int toolUseInput = 6;
 
-    public Vector2 moveValue;
-    public Vector2 lookValue;
+    public Vector3 lookValue;
+    public Vector3 moveValue;
+    public Vector3 moveDir; // 캐릭터 움직이는 방향
+    public Vector3 camForward;
 
     public NetworkButtons Buttons;
 

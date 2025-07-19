@@ -1,6 +1,5 @@
 namespace Fusion
 {
-    using System.Diagnostics;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
     using UnityEngine;
@@ -54,7 +53,7 @@ namespace Fusion
 
         MovementStateManager movementManager;
         PlayerCameraManager cameraManager;
-        PlayerInputManager inputManager;
+        [Networked] public ViewType CurrentView { get; set; }
 
         public Vector3 Velocity
         {
@@ -117,6 +116,7 @@ namespace Fusion
             TryGetComponent(out _controller);
             _controller.enabled = false;
             _controller.enabled = true;
+            cameraManager.SetNetworkCamera();
             CopyToBuffer();
         }
 
@@ -124,6 +124,10 @@ namespace Fusion
         {
             NetworkTRSP.Render(this, transform, false, false, false, ref _initial);
             movementManager.UpdateMoveAnimation();
+            if (!HasInputAuthority)
+            {
+                Debug.Log(CurrentView);
+            }
         }
 
         // Tick 시작 전에 호출 -> 현재 시뮬레이션 상태를 Unity 오브젝트에 반영
@@ -168,39 +172,47 @@ namespace Fusion
             _controller.enabled = true;
         }
 
-
         private void InitComponents()
         {
             movementManager = GetComponent<MovementStateManager>();
             cameraManager = GetComponentInChildren<PlayerCameraManager>();
-            inputManager = GetComponentInChildren<PlayerInputManager>();
         }
 
         public override void FixedUpdateNetwork()
         {
             if (GetInput<PlayerNetworkInputData>(out var input))
             {
-                // 호스트 : 위치 & 상태 업데이트
+                movementManager.SetInput(input);
+
                 if (HasStateAuthority)
                 {
-                    Vector3 moveDir = movementManager.GetMoveDir(input.moveValue);
-
+                    Debug.Log(CurrentView);
                     maxSpeed = movementManager.currentMoveSpeed;
-                    Move(moveDir);
                     Rotate(input);
-
-                    movementManager.HandleState(input);
-                    movementManager.RotatePlayer(moveDir);
+                    Move(input.moveDir);
+                    movementManager.HandleState();
                 }
             }
         }
 
         private void Rotate(PlayerNetworkInputData input)
         {
-            if (cameraManager.CurrentView == ViewType.FirstPerson)
-            {
+            if (CurrentView == ViewType.FirstPerson)
                 transform.Rotate(Vector3.up * input.lookValue.x * cameraManager.sensitivity);
+
+            if (CurrentView == ViewType.ThirdPerson && input.moveValue.sqrMagnitude > 0.001f)
+                transform.forward = input.camForward;
+        }
+
+        [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+        public void RPC_RequestViewChange(ViewType viewType = ViewType.None)
+        {
+            if (viewType != ViewType.None)
+            {
+                CurrentView = viewType;
+                return;
             }
+            CurrentView = CurrentView == ViewType.FirstPerson ? ViewType.ThirdPerson : ViewType.FirstPerson;
         }
     }
 }

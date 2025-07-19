@@ -1,3 +1,4 @@
+using Fusion;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -20,8 +21,6 @@ public class PlayerInputManager : MonoBehaviour
     [HideInInspector] public Vector2 lookInput;
     [HideInInspector] public Vector2 zoomInput;
 
-    //[HideInInspector] private float verticalInput;
-    //[HideInInspector] private float horizontalInput;
     #endregion
 
     #region Cursor
@@ -29,6 +28,10 @@ public class PlayerInputManager : MonoBehaviour
     public Action cursorLocked;
     public Action cursorUnLocked;
     #endregion 
+
+    PlayerCameraManager cameraManager;
+    MovementStateManager movementManager;
+    NetworkCharacterControllerCustom networkCharacterController;
 
     private void OnEnable()
     {
@@ -42,6 +45,9 @@ public class PlayerInputManager : MonoBehaviour
 
     private void Awake()
     {
+        cameraManager = GetComponentInChildren<PlayerCameraManager>();
+        movementManager = GetComponent<MovementStateManager>();
+        networkCharacterController = GetComponent<NetworkCharacterControllerCustom>();
         InitInputActions();
     }
 
@@ -88,8 +94,44 @@ public class PlayerInputManager : MonoBehaviour
         inputData.Buttons.Set(PlayerNetworkInputData.toolUseInput, toolAction.IsPressed());
 
         inputData.moveValue = moveAction.ReadValue<Vector2>();
-        if (isCursorLocked)
-            inputData.lookValue = lookAction.ReadValue<Vector2>();
+        inputData = SetMoveDir(inputData);
+
+        return inputData;
+    }
+
+    private PlayerNetworkInputData SetMoveDir(PlayerNetworkInputData inputData)
+    {
+        if (movementManager.canMove && isCursorLocked)
+        {
+            Vector3 forward = Vector3.zero;
+            Vector3 right = Vector3.zero;
+
+            if (networkCharacterController.CurrentView == ViewType.FirstPerson)
+            {
+                forward = transform.forward;
+                right = transform.right;
+
+                inputData.lookValue = lookAction.ReadValue<Vector2>();
+            }
+
+            else if (networkCharacterController.CurrentView == ViewType.ThirdPerson)
+            {
+                forward = cameraManager.CurrenCam.transform.forward;
+                right = cameraManager.CurrenCam.transform.right;
+
+                Vector3 camForward = cameraManager.CurrenCam.transform.forward;
+                inputData.camForward = new Vector3(camForward.x, 0f, camForward.z);
+            }
+
+            forward.y = 0f;
+            right.y = 0f;
+            forward.Normalize();
+            right.Normalize();
+
+            inputData.moveDir = forward * inputData.moveValue.y + right * inputData.moveValue.x;
+        }
+        else
+            inputData.moveDir = Vector3.zero;
 
         return inputData;
     }

@@ -101,11 +101,8 @@ public class MovementStateManager : MonoBehaviour
 
     public void UpdateMoveAnimation()
     {
-        //currentHorizontal = Mathf.Lerp(currentHorizontal, inputManager.horizontalInput, Time.deltaTime * animationLerpSpeed);
-        //currentVertical = Mathf.Lerp(currentVertical, inputManager.verticalInput, Time.deltaTime * animationLerpSpeed);
-
-        //anim.SetFloat("Horizontal", currentHorizontal);
-        //anim.SetFloat("Vertical", currentVertical);
+        anim.SetFloat("Horizontal", input.moveValue.x, 0.1f, Time.deltaTime);
+        anim.SetFloat("Vertical", input.moveValue.y, 0.1f, Time.deltaTime);
 
         anim.SetBool("Walking", false);
         anim.SetBool("Running", false);
@@ -152,7 +149,7 @@ public class MovementStateManager : MonoBehaviour
         Vector3 forward;
         Vector3 right;
 
-        if (isLocalPlayer && cameraManager.CurrentView == ViewType.FirstPerson)
+        if (isLocalPlayer && networkCharacterController.CurrentView == ViewType.FirstPerson)
         {
             forward = transform.forward;
             right = transform.right;
@@ -174,10 +171,10 @@ public class MovementStateManager : MonoBehaviour
 
     public void RotatePlayer(Vector3 moveDir)
     {
-        if (cameraManager.CurrentView == ViewType.FirstPerson && inputManager.isCursorLocked)
+        if (networkCharacterController.CurrentView == ViewType.FirstPerson && inputManager.isCursorLocked)
             transform.Rotate(Vector3.up * inputManager.lookInput.x * cameraManager.sensitivity);
 
-        else if (cameraManager.CurrentView == ViewType.ThirdPerson &&
+        else if (networkCharacterController.CurrentView == ViewType.ThirdPerson &&
             moveDir.sqrMagnitude > 0.001f && !player.isAimLocked && networkCharacterController.Grounded)
         {
             Debug.Log("3인칭 회전");
@@ -234,34 +231,12 @@ public class MovementStateManager : MonoBehaviour
 
 
 
-    public void HandleState(PlayerNetworkInputData input)
+    public void HandleState()
     {
-        SetInput(input);
-
         currentState.UpdateState();
         currentState.UpdateState();
 
         SetPrevInputButton(input.Buttons);
-    }
-
-    public Vector3 GetMoveDir(Vector2 moveInput)
-    {
-        if (!canMove)
-            return Vector3.zero;
-
-        Vector3 forward;
-        Vector3 right;
-
-        forward = transform.forward;
-        right = transform.right;
-
-        forward.y = 0f;
-        right.y = 0f;
-
-        forward.Normalize();
-        right.Normalize();
-
-        return forward * moveInput.y + right * moveInput.x;
     }
 
     public void SetInput(PlayerNetworkInputData inputData) => input = inputData;
