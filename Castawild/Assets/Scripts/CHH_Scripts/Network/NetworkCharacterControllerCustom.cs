@@ -53,7 +53,6 @@ namespace Fusion
 
         MovementStateManager movementManager;
         PlayerCameraManager cameraManager;
-        [Networked] public ViewType CurrentView { get; set; }
 
         public Vector3 Velocity
         {
@@ -124,10 +123,6 @@ namespace Fusion
         {
             NetworkTRSP.Render(this, transform, false, false, false, ref _initial);
             movementManager.UpdateMoveAnimation();
-            if (!HasInputAuthority)
-            {
-                Debug.Log(CurrentView);
-            }
         }
 
         // Tick 시작 전에 호출 -> 현재 시뮬레이션 상태를 Unity 오브젝트에 반영
@@ -186,7 +181,6 @@ namespace Fusion
 
                 if (HasStateAuthority)
                 {
-                    Debug.Log(CurrentView);
                     maxSpeed = movementManager.currentMoveSpeed;
                     Rotate(input);
                     Move(input.moveDir);
@@ -197,22 +191,11 @@ namespace Fusion
 
         private void Rotate(PlayerNetworkInputData input)
         {
-            if (CurrentView == ViewType.FirstPerson)
+            if (input.currentView == ViewType.FirstPerson)
                 transform.Rotate(Vector3.up * input.lookValue.x * cameraManager.sensitivity);
 
-            if (CurrentView == ViewType.ThirdPerson && input.moveValue.sqrMagnitude > 0.001f)
+            if (input.currentView == ViewType.ThirdPerson && input.moveValue.sqrMagnitude > 0.001f)
                 transform.forward = input.camForward;
-        }
-
-        [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-        public void RPC_RequestViewChange(ViewType viewType = ViewType.None)
-        {
-            if (viewType != ViewType.None)
-            {
-                CurrentView = viewType;
-                return;
-            }
-            CurrentView = CurrentView == ViewType.FirstPerson ? ViewType.ThirdPerson : ViewType.FirstPerson;
         }
     }
 }

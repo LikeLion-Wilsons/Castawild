@@ -1,5 +1,6 @@
 using Fusion;
 using System.Collections;
+using System.Transactions;
 using Unity.Cinemachine;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ public class PlayerCameraManager : MonoBehaviour
     #endregion
 
     public bool isAiming = false;
+    public ViewType currentView = ViewType.FirstPerson;
 
     #region Third Person Aim
     [Header("1인칭")]
@@ -63,7 +65,7 @@ public class PlayerCameraManager : MonoBehaviour
     {
         get
         {
-            if (networkCharacterController.CurrentView == ViewType.FirstPerson)
+            if (currentView == ViewType.FirstPerson)
                 return firstPersonCam;
             else
                 return thirdPersonCam;
@@ -75,7 +77,6 @@ public class PlayerCameraManager : MonoBehaviour
         InitComponents();
         InitVariables();
         SubscribeEvents();
-        ViewChange(ViewType.FirstPerson);
     }
 
     private void Start()
@@ -120,14 +121,12 @@ public class PlayerCameraManager : MonoBehaviour
     {
         if (inputManager.viewChangeAction.WasPressedThisFrame())
         {
-            networkCharacterController.RPC_RequestViewChange();
-            ViewChange(networkCharacterController.CurrentView);
+            ViewChange(currentView == ViewType.FirstPerson ? ViewType.ThirdPerson : ViewType.FirstPerson);
         }
     }
 
     public void SetNetworkCamera()
     {
-        networkCharacterController.RPC_RequestViewChange(ViewType.FirstPerson);
         playerMesh.SetActive(true);
         firstPersonCam.Priority = 1;
         thirdPersonCam.Priority = 0;
@@ -139,6 +138,7 @@ public class PlayerCameraManager : MonoBehaviour
         {
             if (networkManager.HasInputAuthority)
             {
+                currentView = ViewType.FirstPerson;
                 playerMesh.SetActive(false);
                 firstPersonCam.Priority = 10;
                 thirdPersonCam.Priority = 0;
@@ -149,6 +149,7 @@ public class PlayerCameraManager : MonoBehaviour
         {
             if (networkManager.HasInputAuthority)
             {
+                currentView = ViewType.ThirdPerson;
                 playerMesh.SetActive(true);
                 firstPersonCam.Priority = 0;
                 thirdPersonCam.Priority = 10;
@@ -159,7 +160,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void UpdateCameraPitch()
     {
-        if (networkCharacterController.CurrentView == ViewType.ThirdPerson || !inputManager.isCursorLocked)
+        if (currentView == ViewType.ThirdPerson || !inputManager.isCursorLocked)
             return;
 
         pitch -= inputManager.lookInput.y * sensitivity;

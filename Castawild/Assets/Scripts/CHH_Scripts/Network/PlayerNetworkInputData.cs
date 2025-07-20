@@ -14,6 +14,7 @@ public struct PlayerNetworkInputData : INetworkInput
     public Vector3 moveValue;
     public Vector3 moveDir; // 캐릭터 움직이는 방향
     public Vector3 camForward;
+    public ViewType currentView;
 
     public NetworkButtons Buttons;
 

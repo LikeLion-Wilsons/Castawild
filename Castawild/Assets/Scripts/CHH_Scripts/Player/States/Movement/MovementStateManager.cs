@@ -149,7 +149,7 @@ public class MovementStateManager : MonoBehaviour
         Vector3 forward;
         Vector3 right;
 
-        if (isLocalPlayer && networkCharacterController.CurrentView == ViewType.FirstPerson)
+        if (isLocalPlayer && cameraManager.currentView == ViewType.FirstPerson)
         {
             forward = transform.forward;
             right = transform.right;
@@ -171,10 +171,10 @@ public class MovementStateManager : MonoBehaviour
 
     public void RotatePlayer(Vector3 moveDir)
     {
-        if (networkCharacterController.CurrentView == ViewType.FirstPerson && inputManager.isCursorLocked)
+        if (cameraManager.currentView == ViewType.FirstPerson && inputManager.isCursorLocked)
             transform.Rotate(Vector3.up * inputManager.lookInput.x * cameraManager.sensitivity);
 
-        else if (networkCharacterController.CurrentView == ViewType.ThirdPerson &&
+        else if (cameraManager.currentView == ViewType.ThirdPerson &&
             moveDir.sqrMagnitude > 0.001f && !player.isAimLocked && networkCharacterController.Grounded)
         {
             Debug.Log("3인칭 회전");

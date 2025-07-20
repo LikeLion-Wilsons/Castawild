@@ -95,6 +95,7 @@ public class PlayerInputManager : MonoBehaviour
 
         inputData.moveValue = moveAction.ReadValue<Vector2>();
         inputData = SetMoveDir(inputData);
+        inputData.currentView = cameraManager.currentView;
 
         return inputData;
     }
@@ -106,7 +107,7 @@ public class PlayerInputManager : MonoBehaviour
             Vector3 forward = Vector3.zero;
             Vector3 right = Vector3.zero;
 
-            if (networkCharacterController.CurrentView == ViewType.FirstPerson)
+            if (cameraManager.currentView == ViewType.FirstPerson)
             {
                 forward = transform.forward;
                 right = transform.right;
@@ -114,7 +115,7 @@ public class PlayerInputManager : MonoBehaviour
                 inputData.lookValue = lookAction.ReadValue<Vector2>();
             }
 
-            else if (networkCharacterController.CurrentView == ViewType.ThirdPerson)
+            else if (cameraManager.currentView == ViewType.ThirdPerson)
             {
                 forward = cameraManager.CurrenCam.transform.forward;
                 right = cameraManager.CurrenCam.transform.right;
