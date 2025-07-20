@@ -1,9 +1,9 @@
 using Fusion;
 using System.Collections;
-using System.Transactions;
 using Unity.Cinemachine;
 using UnityEngine;
 
+public enum ViewType { None, FirstPerson, ThirdPerson }
 
 public class PlayerCameraManager : MonoBehaviour
 {

@@ -48,11 +48,14 @@ namespace Fusion
         public float maxSpeed = 2.0f;
         public float rotationSpeed = 15.0f;
 
+
         Tick _initial;
         CharacterController _controller;
 
+        Animator anim;
         MovementStateManager movementManager;
         PlayerCameraManager cameraManager;
+        PlayerNetworkManager playerNetworkManager;
 
         public Vector3 Velocity
         {
@@ -82,9 +85,7 @@ namespace Fusion
             direction = direction.normalized;
 
             if (Data.Grounded && moveVelocity.y < 0)
-            {
                 moveVelocity.y = 0f;
-            }
 
             // 중력 적용
             moveVelocity.y += gravity * Runner.DeltaTime;
@@ -113,8 +114,10 @@ namespace Fusion
         {
             _initial = default;
             TryGetComponent(out _controller);
+
             _controller.enabled = false;
             _controller.enabled = true;
+
             cameraManager.SetNetworkCamera();
             CopyToBuffer();
         }
@@ -123,6 +126,8 @@ namespace Fusion
         {
             NetworkTRSP.Render(this, transform, false, false, false, ref _initial);
             movementManager.UpdateMoveAnimation();
+            anim.SetFloat("Horizontal", playerNetworkManager.MoveValue.x, 0.1f, Runner.DeltaTime);
+            anim.SetFloat("Vertical", playerNetworkManager.MoveValue.y, 0.1f, Runner.DeltaTime);
         }
 
         // Tick 시작 전에 호출 -> 현재 시뮬레이션 상태를 Unity 오브젝트에 반영
@@ -171,22 +176,26 @@ namespace Fusion
         {
             movementManager = GetComponent<MovementStateManager>();
             cameraManager = GetComponentInChildren<PlayerCameraManager>();
+            anim = GetComponentInChildren<Animator>();
+            playerNetworkManager = GetComponent<PlayerNetworkManager>();
         }
 
+        // HasInputAuthority || HasStateAuthority 일 때 실행
         public override void FixedUpdateNetwork()
         {
+            // 서버에 보낸 Input값 가져오기 
             if (GetInput<PlayerNetworkInputData>(out var input))
             {
                 movementManager.SetInput(input);
-
-                if (HasStateAuthority)
-                {
-                    maxSpeed = movementManager.currentMoveSpeed;
-                    Rotate(input);
-                    Move(input.moveDir);
-                    movementManager.HandleState();
-                }
+                maxSpeed = movementManager.currentMoveSpeed;
+                movementManager.HandleState();
+                movementManager.SetPrevInputButton(input.Buttons);
             }
+
+                playerNetworkManager.MoveValue = input.moveValue;
+
+            Move(input.moveDir);
+            Rotate(input);
         }
 
         private void Rotate(PlayerNetworkInputData input)

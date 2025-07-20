@@ -101,9 +101,6 @@ public class MovementStateManager : MonoBehaviour
 
     public void UpdateMoveAnimation()
     {
-        anim.SetFloat("Horizontal", input.moveValue.x, 0.1f, Time.deltaTime);
-        anim.SetFloat("Vertical", input.moveValue.y, 0.1f, Time.deltaTime);
-
         anim.SetBool("Walking", false);
         anim.SetBool("Running", false);
         anim.SetBool("Crouching", false);
@@ -228,15 +225,10 @@ public class MovementStateManager : MonoBehaviour
 
     public bool isTriggerSet = false;
 
-
-
-
     public void HandleState()
     {
         currentState.UpdateState();
         currentState.UpdateState();
-
-        SetPrevInputButton(input.Buttons);
     }
 
     public void SetInput(PlayerNetworkInputData inputData) => input = inputData;

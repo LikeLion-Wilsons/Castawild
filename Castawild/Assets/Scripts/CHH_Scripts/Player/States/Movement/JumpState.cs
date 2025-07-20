@@ -35,5 +35,6 @@ public class JumpState : MovementBaseState
     public override void ExitState()
     {
         movementManager.canJump = true;
+        movementManager.isTriggerSet = false;
     }
 }
