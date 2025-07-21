@@ -1,5 +1,6 @@
 using Fusion;
 using UnityEngine;
+using static Unity.Collections.Unicode;
 
 public class MovementStateManager : MonoBehaviour
 {
@@ -99,8 +100,11 @@ public class MovementStateManager : MonoBehaviour
         currentState.EnterState();
     }
 
-    public void UpdateMoveAnimation()
+    public void UpdateMoveAnimation(float deltaTime)
     {
+        anim.SetFloat("Horizontal", networkManager.MoveValue.x, 0.1f, deltaTime);
+        anim.SetFloat("Vertical", networkManager.MoveValue.y, 0.1f, deltaTime);
+
         anim.SetBool("Walking", false);
         anim.SetBool("Running", false);
         anim.SetBool("Crouching", false);

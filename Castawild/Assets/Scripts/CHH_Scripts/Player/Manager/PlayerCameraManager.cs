@@ -127,7 +127,6 @@ public class PlayerCameraManager : MonoBehaviour
 
     public void SetNetworkCamera()
     {
-        playerMesh.SetActive(true);
         firstPersonCam.Priority = 1;
         thirdPersonCam.Priority = 0;
     }
