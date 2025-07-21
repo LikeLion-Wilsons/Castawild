@@ -121,7 +121,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TrackerSettings:
     BindingMode: 4
-    PositionDamping: {x: 1, y: 1, z: 1}
+    PositionDamping: {x: 0, y: 0, z: 0}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
@@ -2563,13 +2563,14 @@ GameObject:
   m_Component:
   - component: {fileID: 6388187669656790763}
   - component: {fileID: 7933685528624486573}
-  - component: {fileID: 5666542114330375686}
   - component: {fileID: 8876788245779154075}
   - component: {fileID: 731358021191424698}
   - component: {fileID: 3318766871343913700}
   - component: {fileID: 8225308212403291209}
   - component: {fileID: 230939324335428207}
   - component: {fileID: 4943324450787485491}
+  - component: {fileID: 6363259293620697004}
+  - component: {fileID: 4127318726655667768}
   m_Layer: 0
   m_Name: NetworkPlayer
   m_TagString: Untagged
@@ -2615,28 +2616,11 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 5666542114330375686}
+  - {fileID: 230939324335428207}
   - {fileID: 4943324450787485491}
+  - {fileID: 6363259293620697004}
+  - {fileID: 4127318726655667768}
   ForceRemoteRenderTimeframe: 0
---- !u!114 &5666542114330375686
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7137290088832178523}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 378411a89480da345945c2f888327a2d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _stateAuthorityChangeErrorCorrectionDelta: 0
-  gravity: -20
-  jumpImpulse: 8
-  acceleration: 10
-  braking: 10
-  maxSpeed: 2
-  rotationSpeed: 15
 --- !u!143 &8876788245779154075
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2714,7 +2698,9 @@ MonoBehaviour:
   inputManager: {fileID: 8225308212403291209}
   cameraManager: {fileID: 0}
   player: {fileID: 0}
+  networkManager: {fileID: 0}
   toolStateManager: {fileID: 0}
+  networkCharacterController: {fileID: 0}
   canMove: 1
   currentMoveSpeed: 3
   airSpeedMuliplier: 0.7
@@ -2722,8 +2708,10 @@ MonoBehaviour:
   runSpeed: 10
   crouchSpeed: 2
   rotationSpeed: 10
-  dir: {x: 0, y: 0, z: 0}
   canJump: 1
+  sensitivity: 1.5
+  maxXRotation: 80
+  minXRotation: -80
   groundYOffset: 0
   groundCheckRadius: 0.3
   groundMask:
@@ -2735,9 +2723,7 @@ MonoBehaviour:
   jumped: 0
   velocity: {x: 0, y: 0, z: 0}
   animationLerpSpeed: 10
-  sensitivity: 1.5
-  maxXRotation: 80
-  minXRotation: -80
+  isTriggerSet: 0
 --- !u!114 &8225308212403291209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2751,35 +2737,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  moveAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: c32701e8-fb66-4823-a151-562a2ffaec30
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  jumpAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 404f3505-a92f-4d93-86d6-23a8199cca3b
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  crouchAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 56e1bc9f-3d04-4a6f-baef-c01bf3e18b96
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
   viewChangeAction:
-    m_Name: 
+    m_Name: View Change
     m_Type: 0
     m_ExpectedControlType: 
     m_Id: 75b40b62-fbda-4623-ab86-7d131b5cc99a
@@ -2788,7 +2747,7 @@ MonoBehaviour:
     m_SingletonActionBindings: []
     m_Flags: 0
   lookAction:
-    m_Name: 
+    m_Name: Look
     m_Type: 0
     m_ExpectedControlType: 
     m_Id: 166f8a36-fb3e-4cf8-94ab-bbedbdff921e
@@ -2797,7 +2756,7 @@ MonoBehaviour:
     m_SingletonActionBindings: []
     m_Flags: 0
   zoomAction:
-    m_Name: 
+    m_Name: Zoom
     m_Type: 0
     m_ExpectedControlType: 
     m_Id: 98710f0e-aa0d-4a49-b843-3c3edfc76681
@@ -2806,7 +2765,7 @@ MonoBehaviour:
     m_SingletonActionBindings: []
     m_Flags: 0
   aimAction:
-    m_Name: 
+    m_Name: Aim
     m_Type: 0
     m_ExpectedControlType: 
     m_Id: f1229533-9614-40d3-be85-3e30162076a3
@@ -2814,27 +2773,8 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
-  sprintAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 1843c83b-7048-486a-99fd-00a808b3d3b4
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  toolAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 945da919-a519-4774-805c-678cce71a2b8
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
+  lookInput: {x: 0, y: 0}
   zoomInput: {x: 0, y: 0}
-  verticalInput: 0
-  horizontalInput: 0
   isCursorLocked: 0
 --- !u!114 &230939324335428207
 MonoBehaviour:
@@ -2852,6 +2792,7 @@ MonoBehaviour:
   inputManager: {fileID: 0}
   cameraManager: {fileID: 0}
   player: {fileID: 0}
+  networkManager: {fileID: 0}
   movementManager: {fileID: 0}
   animTrigger: {fileID: 0}
 --- !u!114 &4943324450787485491
@@ -2866,6 +2807,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbf3efdcb2b6c8d4f948344dd00cf44e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _CurrentMoveType: 0
+  isSpawned: 0
+--- !u!114 &6363259293620697004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a655bd9f5eea8b47aabd0434f9ef686, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4127318726655667768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4f3852bc61d9144fb7dbbeac025174f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  gravity: -20
+  acceleration: 50
+  maxSpeed: 2
+  rotationSpeed: 15
 --- !u!1 &7288379860564303627
 GameObject:
   m_ObjectHideFlags: 0

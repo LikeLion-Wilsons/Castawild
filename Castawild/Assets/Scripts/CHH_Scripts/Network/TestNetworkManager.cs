@@ -27,12 +27,13 @@ public class TestNetworkManager : MonoBehaviour
         sceneInfo.AddSceneRef(SceneRef.FromIndex(buildIndex));
 
         // StartGame 설정
+        runner.ProvideInput = true;
         var result = await runner.StartGame(new StartGameArgs()
         {
             GameMode = GameMode.AutoHostOrClient,
             SessionName = "MyTestSession",
             Scene = sceneInfo,
-            SceneManager = sceneManager
+            SceneManager = sceneManager,
         });
 
         if (!result.Ok)

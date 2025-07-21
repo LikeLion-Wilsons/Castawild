@@ -1,11 +1,11 @@
-﻿using Fusion;
+using Fusion;
 using UnityEngine;
 
 namespace Test
 {
     public class Player : NetworkBehaviour
     {
-        [SerializeField] private  NetworkCharacterController _cc;
+        [SerializeField] private  NetworkCharacterControllerCustom _cc;
         [SerializeField] private NicknameUI nicknameUI;
         [Networked] private TickTimer interactTimer { get; set; }
         [Networked, OnChangedRender(nameof(OnChangedNickname))] private string nickname { get; set; }

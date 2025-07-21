@@ -29,7 +29,7 @@ public class UseToolState : ToolBaseState
             return;
 
         // 콤보 어택
-        if (inputManager.toolAction.WasPressedThisFrame())
+        if (toolStateManager.input.IsDown(PlayerNetworkInputData.toolUseInput))
         {
             if (ComboAttack() && comboCount == 1)
             {
@@ -67,7 +67,7 @@ public class UseToolState : ToolBaseState
     {
         if (toolStateManager.player.HoldCraftingTool())
         {
-            if (!inputManager.toolAction.IsPressed() && toolStateManager.animTrigger.isAnimationFinished)
+            if (!toolStateManager.input.IsDown(PlayerNetworkInputData.toolUseInput) && toolStateManager.animTrigger.isAnimationFinished)
                 toolStateManager.ChangeState(toolStateManager.idleState);
             return true;
         }
@@ -79,7 +79,7 @@ public class UseToolState : ToolBaseState
         ToolType type = toolStateManager.player.currentToolType;
 
         bool isMelee = type == ToolType.Sword || type == ToolType.Fist;
-        bool pressed = inputManager.toolAction.WasPressedThisFrame();
+        bool pressed = toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput);
         bool canCombo = toolStateManager.animTrigger.canReceiveInput;
 
         return isMelee && pressed && canCombo;
