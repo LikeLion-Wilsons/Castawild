@@ -5,7 +5,7 @@ namespace Test
 {
     public class Player : NetworkBehaviour
     {
-        [SerializeField] private  NetworkCharacterControllerCustom _cc;
+        [SerializeField] private NetworkCharacterController _cc;
         [SerializeField] private NicknameUI nicknameUI;
         [Networked] private TickTimer interactTimer { get; set; }
         [Networked, OnChangedRender(nameof(OnChangedNickname))] private string nickname { get; set; }
@@ -25,7 +25,7 @@ namespace Test
             {
                 RPC_SetNickname(PlayerTempData.nickname);
             }
-            
+
             //다른플레이어 닉네임 refresh.
             OnChangedNickname();
         }
