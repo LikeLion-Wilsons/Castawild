@@ -23,9 +23,6 @@ public class NetworkSingleton<T> : NetworkBehaviour where T : NetworkBehaviour
                         var singletonObject = new GameObject();
                         _instance = singletonObject.AddComponent<T>();
                         singletonObject.name = typeof(T).ToString() + " (NetworkSingleton)";
-
-                        // 네트워크 관련 싱글턴은 DontDestroyOnLoad 해도 씬마다 새로 생성하는 게 보통이라
-                        // 필요에 따라 조절 가능
                     }
                 }
             }
@@ -39,7 +36,7 @@ public class NetworkSingleton<T> : NetworkBehaviour where T : NetworkBehaviour
         if (_instance == null)
         {
             _instance = this as T;
-            // 필요하면 DontDestroyOnLoad(gameObject); 추가
+            // 필요하면 DontDestroyOnLoad(gameObject);
         }
         else if (_instance != this)
         {

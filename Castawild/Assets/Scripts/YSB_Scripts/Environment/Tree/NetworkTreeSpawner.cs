@@ -216,14 +216,15 @@ public class NetworkTreeSpawner : NetworkBehaviour
             {
                 setting.activeTrees.Add(treeObj);
             }
-
-            NetworkObjectVisibilityManager.Instance?.RegisterObject(treeObj);
         }
     }
 
     // 트리가 죽었을 때 호출되는 콜백
     private void OnTreeDied(YSB_Scripts.NetworkTree tree)
     {
+        // 가시성 관리자에게서 이 나무를 제거하여, 죽어있는 동안 다시 나타나지 않도록 합니다.
+        NetworkObjectVisibilityManager.Instance?.UnregisterObject(tree.Object);
+
         deadTrees.Add(new DeadTreeEntry
         {
             tree = tree,
@@ -242,7 +243,10 @@ public class NetworkTreeSpawner : NetworkBehaviour
             {
                 var entry = deadTrees[i];
                 entry.tree.Revive();
-                entry.tree.gameObject.SetActive(true);
+
+                // 나무가 부활했으므로, 다시 가시성 관리 대상에 포함시킵니다.
+                NetworkObjectVisibilityManager.Instance?.RegisterObject(entry.tree.Object);
+
                 deadTrees.RemoveAt(i);
             }
         }
