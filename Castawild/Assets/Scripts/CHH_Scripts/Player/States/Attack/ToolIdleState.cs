@@ -17,7 +17,7 @@ public class ToolIdleState : ToolBaseState
             toolStateManager.ChangeState(toolStateManager.aimState);
 
         // UseTool
-        else if (inputManager.toolAction.WasPressedThisFrame())
+        else if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
         {
             // 점프상태일 땐 막기
             if (toolStateManager.player.HoldAttackTool())

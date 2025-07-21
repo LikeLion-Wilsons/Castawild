@@ -1,10 +1,16 @@
+using Fusion;
 using UnityEngine;
 
-public class MovementStateManager : BaseStateManager
+public class MovementStateManager : MonoBehaviour
 {
     #region Conponent
+    [HideInInspector] public Animator anim;
+    [HideInInspector] public PlayerInputManager inputManager;
+    [HideInInspector] public PlayerCameraManager cameraManager;
+    [HideInInspector] public CwPlayer player;
+    [HideInInspector] public PlayerNetworkManager networkManager;
     [HideInInspector] public ToolStateManager toolStateManager;
-    //[SerializeField] private CharacterController controller;
+    [HideInInspector] public NetworkCharacterControllerCustom networkCharacterController;
     #endregion
 
     #region States
@@ -14,6 +20,7 @@ public class MovementStateManager : BaseStateManager
     public RunState runState;
     public JumpState jumpState;
     public CrouchState crouchState;
+    public BaseState currentState;
     #endregion
 
     #region Movement
@@ -24,8 +31,11 @@ public class MovementStateManager : BaseStateManager
     public float runSpeed = 7f;
     public float crouchSpeed = 2f;
     public float rotationSpeed = 10f;
-    [HideInInspector] public Vector3 dir;
     [HideInInspector] public bool canJump = true;
+
+    public float sensitivity = 1.5f;
+    public float maxXRotation = 80f;
+    public float minXRotation = -80f;
     #endregion
 
     #region GoundCheck
@@ -49,18 +59,26 @@ public class MovementStateManager : BaseStateManager
     private float currentVertical;
     #endregion
 
-    protected override void Awake()
-    {
-        base.Awake();
+    #region Network
+    public PlayerNetworkInputData input { get; private set; }
+    public NetworkButtons prevInputButtons;
+    #endregion
 
+    protected void Awake()
+    {
         InitComponents();
         InitStates();
     }
 
     private void InitComponents()
     {
-        //controller = GetComponent<CharacterController>();
         toolStateManager = GetComponent<ToolStateManager>();
+        networkCharacterController = GetComponent<NetworkCharacterControllerCustom>();
+        anim = GetComponentInChildren<Animator>();
+        inputManager = GetComponent<PlayerInputManager>();
+        cameraManager = GetComponentInChildren<PlayerCameraManager>();
+        player = GetComponent<CwPlayer>();
+        networkManager = GetComponent<PlayerNetworkManager>();
     }
 
     private void InitStates()
@@ -74,34 +92,53 @@ public class MovementStateManager : BaseStateManager
         ChangeState(idleState);
     }
 
-    private void Update()
+    public void ChangeState(BaseState newState)
     {
-        UpdateMoveAnimation();
-        currentState.UpdateState();
+        currentState?.ExitState();
+        currentState = newState;
+        currentState.EnterState();
     }
 
-    private void UpdateMoveAnimation()
+    public void UpdateMoveAnimation()
     {
-        currentHorizontal = Mathf.Lerp(currentHorizontal, inputManager.horizontalInput, Time.deltaTime * animationLerpSpeed);
-        currentVertical = Mathf.Lerp(currentVertical, inputManager.verticalInput, Time.deltaTime * animationLerpSpeed);
+        anim.SetBool("Walking", false);
+        anim.SetBool("Running", false);
+        anim.SetBool("Crouching", false);
+        anim.SetBool("Falling", false);
 
-        anim.SetFloat("Horizontal", currentHorizontal);
-        anim.SetFloat("Vertical", currentVertical);
-        anim.SetBool("Falling", !IsGrounded());
+        switch (networkManager.CurrentMoveType)
+        {
+            case MoveAnimationType.Walk:
+                anim.SetBool("Walking", true);
+                break;
+            case MoveAnimationType.Run:
+                anim.SetBool("Running", true);
+                break;
+            case MoveAnimationType.CrouchIdle:
+                anim.SetBool("Crouching", true);
+                break;
+            case MoveAnimationType.CrouchWalk:
+                anim.SetBool("Crouching", true);
+                anim.SetBool("Walking", true);
+                break;
+            case MoveAnimationType.IdleJump:
+                if (!isTriggerSet)
+                    anim.SetTrigger("IdleJump");
+                isTriggerSet = true;
+                break;
+            case MoveAnimationType.RunJump:
+                if (!isTriggerSet)
+                    anim.SetTrigger("RunJump");
+                isTriggerSet = true;
+                break;
+        }
+        anim.SetBool("Falling", !networkCharacterController.Grounded);
     }
 
-
-
-
-    public float sensitivity = 1.5f;
-    public float maxXRotation = 80f;
-    public float minXRotation = -80f;
-
-    private float xRotation = 0f;
     /// <summary>
     /// 움직이는 방향
     /// </summary>
-    public Vector3 GetMoveDir(bool hasInputAuthority)
+    public Vector3 GetMoveDir(Vector2 moveInput, bool isLocalPlayer)
     {
         if (!canMove)
             return Vector3.zero;
@@ -109,7 +146,7 @@ public class MovementStateManager : BaseStateManager
         Vector3 forward;
         Vector3 right;
 
-        if (cameraManager.currentView == ViewType.FirstPerson && hasInputAuthority)
+        if (isLocalPlayer && cameraManager.currentView == ViewType.FirstPerson)
         {
             forward = transform.forward;
             right = transform.right;
@@ -126,22 +163,18 @@ public class MovementStateManager : BaseStateManager
         forward.Normalize();
         right.Normalize();
 
-        dir = forward * inputManager.moveInput.y + right * inputManager.moveInput.x;
-
-        if ((hasInputAuthority && cameraManager.currentView == ViewType.ThirdPerson)
-            || !hasInputAuthority)
-            RotateToward(dir);
-
-        else if (hasInputAuthority && cameraManager.currentView == ViewType.FirstPerson && inputManager.isCursorLocked)
-            transform.Rotate(Vector3.up * inputManager.lookInput.x * cameraManager.sensitivity);
-
-        return dir;
+        return forward * moveInput.y + right * moveInput.x;
     }
 
-    private void RotateToward(Vector3 moveDir)
+    public void RotatePlayer(Vector3 moveDir)
     {
-        if (moveDir.sqrMagnitude > 0.001f && !player.isAimLocked && IsGrounded())
+        if (cameraManager.currentView == ViewType.FirstPerson && inputManager.isCursorLocked)
+            transform.Rotate(Vector3.up * inputManager.lookInput.x * cameraManager.sensitivity);
+
+        else if (cameraManager.currentView == ViewType.ThirdPerson &&
+            moveDir.sqrMagnitude > 0.001f && !player.isAimLocked && networkCharacterController.Grounded)
         {
+            Debug.Log("3인칭 회전");
             Quaternion targetRotation = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
         }
@@ -152,23 +185,12 @@ public class MovementStateManager : BaseStateManager
     /// </summary>
     public Vector3 Gravity()
     {
-        if (IsGrounded() && velocity.y < 0)
+        if (networkCharacterController.Grounded && velocity.y < 0)
             velocity.y = -1f;
         else
             velocity.y += gravity * fallMultiplier * Time.fixedDeltaTime;
 
         return velocity;
-    }
-
-    /// <summary>
-    /// 땅 체크
-    /// </summary>
-    public bool IsGrounded()
-    {
-        spherePos = new Vector3(transform.position.x, transform.position.y - groundYOffset, transform.position.z);
-        if (Physics.CheckSphere(spherePos, groundCheckRadius, groundMask))
-            return true;
-        return false;
     }
 
     private void OnDrawGizmos()
@@ -200,4 +222,15 @@ public class MovementStateManager : BaseStateManager
         canMove = false;
         ChangeState(idleState);
     }
+
+    public bool isTriggerSet = false;
+
+    public void HandleState()
+    {
+        currentState.UpdateState();
+        currentState.UpdateState();
+    }
+
+    public void SetInput(PlayerNetworkInputData inputData) => input = inputData;
+    public void SetPrevInputButton(NetworkButtons _prevInputButtons) => prevInputButtons = _prevInputButtons;
 }

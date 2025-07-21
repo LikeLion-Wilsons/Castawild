@@ -1,3 +1,4 @@
+using Fusion;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,24 +8,19 @@ public class PlayerInputManager : MonoBehaviour
     #region Input Action
     [SerializeField] private InputActionAsset inputActions;
 
-    [HideInInspector] public InputAction moveAction;
-    [HideInInspector] public InputAction jumpAction;
-    [HideInInspector] public InputAction crouchAction;
-    [HideInInspector] public InputAction viewChangeAction;
-    [HideInInspector] public InputAction lookAction;
-    [HideInInspector] public InputAction zoomAction;
-    [HideInInspector] public InputAction aimAction;
-    [HideInInspector] public InputAction sprintAction;
-    [HideInInspector] public InputAction toolAction;
+    private InputAction moveAction;
+    private InputAction jumpAction;
+    private InputAction crouchAction;
+    public InputAction viewChangeAction;
+    public InputAction lookAction;
+    public InputAction zoomAction;
+    public InputAction aimAction;
+    private InputAction sprintAction;
+    private InputAction toolAction;
 
-    public Vector2 moveInput { get; private set; }
-    public Vector2 lookInput { get; private set; }
+    [HideInInspector] public Vector2 lookInput;
     [HideInInspector] public Vector2 zoomInput;
-    public bool aimInput { get; private set; }
-    public bool attackInput { get; private set; }
 
-    [HideInInspector] public float verticalInput;
-    [HideInInspector] public float horizontalInput;
     #endregion
 
     #region Cursor
@@ -33,7 +29,9 @@ public class PlayerInputManager : MonoBehaviour
     public Action cursorUnLocked;
     #endregion 
 
-    private CwPlayer player;
+    PlayerCameraManager cameraManager;
+    MovementStateManager movementManager;
+    NetworkCharacterControllerCustom networkCharacterController;
 
     private void OnEnable()
     {
@@ -47,8 +45,10 @@ public class PlayerInputManager : MonoBehaviour
 
     private void Awake()
     {
+        cameraManager = GetComponentInChildren<PlayerCameraManager>();
+        movementManager = GetComponent<MovementStateManager>();
+        networkCharacterController = GetComponent<NetworkCharacterControllerCustom>();
         InitInputActions();
-        player = GetComponent<CwPlayer>();
     }
 
     private void InitInputActions()
@@ -77,6 +77,64 @@ public class PlayerInputManager : MonoBehaviour
         // ESC 눌렀을 때 해제
         if (isCursorLocked && Keyboard.current.escapeKey.wasPressedThisFrame)
             UnlockCursor();
+
+        HandleCameraInput();
+    }
+
+    public PlayerNetworkInputData CollectInput()
+    {
+        PlayerNetworkInputData inputData = new PlayerNetworkInputData();
+
+        // 버튼은 내부에서 bitmask를 누적시키는 방식이라 따로 여러 번 호출해야함
+        inputData.Buttons.Set(PlayerNetworkInputData.moveInput, moveAction.IsPressed());
+        inputData.Buttons.Set(PlayerNetworkInputData.jumpInput, jumpAction.IsPressed());
+        inputData.Buttons.Set(PlayerNetworkInputData.crouchInput, crouchAction.IsPressed());
+        inputData.Buttons.Set(PlayerNetworkInputData.aimInput, aimAction.IsPressed());
+        inputData.Buttons.Set(PlayerNetworkInputData.sprintInput, sprintAction.IsPressed());
+        inputData.Buttons.Set(PlayerNetworkInputData.toolUseInput, toolAction.IsPressed());
+
+        inputData.moveValue = moveAction.ReadValue<Vector2>();
+        inputData = SetMoveDir(inputData);
+        inputData.currentView = cameraManager.currentView;
+
+        return inputData;
+    }
+
+    private PlayerNetworkInputData SetMoveDir(PlayerNetworkInputData inputData)
+    {
+        if (movementManager.canMove && isCursorLocked)
+        {
+            Vector3 forward = Vector3.zero;
+            Vector3 right = Vector3.zero;
+
+            if (cameraManager.currentView == ViewType.FirstPerson)
+            {
+                forward = transform.forward;
+                right = transform.right;
+
+                inputData.lookValue = lookAction.ReadValue<Vector2>();
+            }
+
+            else if (cameraManager.currentView == ViewType.ThirdPerson)
+            {
+                forward = cameraManager.CurrenCam.transform.forward;
+                right = cameraManager.CurrenCam.transform.right;
+
+                Vector3 camForward = cameraManager.CurrenCam.transform.forward;
+                inputData.camForward = new Vector3(camForward.x, 0f, camForward.z);
+            }
+
+            forward.y = 0f;
+            right.y = 0f;
+            forward.Normalize();
+            right.Normalize();
+
+            inputData.moveDir = forward * inputData.moveValue.y + right * inputData.moveValue.x;
+        }
+        else
+            inputData.moveDir = Vector3.zero;
+
+        return inputData;
     }
 
     private void LockCursor()
@@ -97,30 +155,9 @@ public class PlayerInputManager : MonoBehaviour
         cursorUnLocked?.Invoke();
     }
 
-    public void HandleMovementInput()
-    {
-        moveInput = moveAction.ReadValue<Vector2>();
-        verticalInput = moveInput.y;
-        horizontalInput = moveInput.x;
-    }
-
-    /// <summary>
-    /// 카메라 입력 Update
-    /// </summary>
-    public void HandleCameraInput()
+    private void HandleCameraInput()
     {
         lookInput = lookAction.ReadValue<Vector2>();
         zoomInput = zoomAction.ReadValue<Vector2>();
-    }
-
-    /// <summary>
-    ///  움직임 입력 감지
-    /// </summary>
-    public bool MoveInputDectected()
-    {
-        if (moveAction.IsPressed())
-            return true;
-        else
-            return false;
     }
 }

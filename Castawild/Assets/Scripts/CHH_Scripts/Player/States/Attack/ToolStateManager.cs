@@ -39,8 +39,6 @@ public class ToolStateManager : BaseStateManager
 
     private void Update()
     {
-        currentState?.UpdateState();
-
         if (inputManager.aimAction.WasReleasedThisFrame())
         {
             anim.SetBool("Aiming", false);

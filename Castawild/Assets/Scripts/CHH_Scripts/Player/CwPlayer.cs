@@ -44,20 +44,8 @@ public class CwPlayer : MonoBehaviour
 
     private void Awake()
     {
-        Singleton();
-
         InitComponents();
         InitTools();
-
-        //SetWeapon(ToolType.Fist);
-    }
-
-    private void Singleton()
-    {
-        if (instance == null)
-            instance = this;
-        else
-            Destroy(gameObject);
     }
 
     private void InitComponents()
