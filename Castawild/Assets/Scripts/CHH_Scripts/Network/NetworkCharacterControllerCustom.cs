@@ -44,6 +44,7 @@ namespace Fusion
 
         [Header("Character Controller Settings")]
         public float gravity = -20.0f;
+        public float jumpImpulse = 8.0f;
         public float acceleration = 10.0f;
         public float maxSpeed = 2.0f;
         public float rotationSpeed = 15.0f;
@@ -74,6 +75,16 @@ namespace Fusion
             _controller.enabled = false;
             NetworkTRSP.Teleport(this, transform, position, rotation);
             _controller.enabled = true;
+        }
+
+        public void Jump(bool ignoreGrounded = false, float? overrideImpulse = null)
+        {
+            if (Data.Grounded || ignoreGrounded)
+            {
+                var newVel = Data.Velocity;
+                newVel.y += overrideImpulse ?? jumpImpulse;
+                Data.Velocity = newVel;
+            }
         }
 
         public void Move(Vector3 direction)
@@ -192,7 +203,7 @@ namespace Fusion
                 movementManager.SetPrevInputButton(input.Buttons);
             }
 
-                playerNetworkManager.MoveValue = input.moveValue;
+            playerNetworkManager.MoveValue = input.moveValue;
 
             Move(input.moveDir);
             Rotate(input);
