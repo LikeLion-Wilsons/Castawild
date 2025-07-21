@@ -54,8 +54,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2804261436695638738, guid: 732e9519962638f4fb4c697783ba8443, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 2804261436695638738, guid: 732e9519962638f4fb4c697783ba8443, type: 3}
+      propertyPath: 'NetworkedBehaviours.Array.data[3]'
+      value: 
+      objectReference: {fileID: 4371022737066499998}
     - target: {fileID: 2804261436695638738, guid: 732e9519962638f4fb4c697783ba8443, type: 3}
       propertyPath: 'NetworkedBehaviours.Array.data[4]'
       value: 
@@ -68,7 +72,8 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5877564307736719340, guid: 732e9519962638f4fb4c697783ba8443, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -94,6 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxStackCount: 0
+  playerUIPrefab: {fileID: 2839189812646824299, guid: e749cc6fe2a853349bb3f6bb330140f7, type: 3}
   inventorySlots:
   - {fileID: 0}
   - {fileID: 0}
