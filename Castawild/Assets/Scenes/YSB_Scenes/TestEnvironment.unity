@@ -90955,10 +90955,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 813833625}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a9cacc8067e62740bc184a7fea85143, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b6402be66476f244be9c442717431cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerPrefab: {fileID: 0}
+  PlayerPrefab: {fileID: 2292606411756923124, guid: 4fbadd92986965444a68476a8ef4086b, type: 3}
 --- !u!1001 &815476314
 PrefabInstance:
   m_ObjectHideFlags: 0
