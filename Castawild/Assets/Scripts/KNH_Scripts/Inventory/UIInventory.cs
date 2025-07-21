@@ -9,10 +9,18 @@ public class UIInventory : UIPart
     public List<Item_Panel> itemPanels = new List<Item_Panel>();
 
     public GameObject itemClick;
+    private InventoryDataManager inventoryData;
+    public void BindToInventoryData(InventoryDataManager data)
+    {
+        inventoryData = data;
+        data.onInventoryUpdated += SetItemList;
+        Init();
+    }
+
 
     private void Awake()
     {
-        InventoryDataManager.onInventoryUpdated += SetItemList;
+        //InventoryDataManager.onInventoryUpdated += SetItemList;
         Init();
     }
     public void Init()
@@ -28,7 +36,7 @@ public class UIInventory : UIPart
     {
 
         Debug.Log("SetItemList");
-        var items = InventoryDataManager.Instance.itemList;
+        var items = inventoryData.itemList;
 
         for (int i = 0; i < itemPanels.Count; i++)
         {
@@ -56,7 +64,7 @@ public class UIInventory : UIPart
 
     public void SwapItems(int indexA, int indexB)
     {
-        var items = InventoryDataManager.Instance.itemList;
+        var items = inventoryData.itemList;
 
         if (indexA >= items.Count && indexB >= items.Count) return;
 
@@ -79,7 +87,7 @@ public class UIInventory : UIPart
 
     public void SetItemClickAnimation(Item_Panel panel)
     {
-        if (!Canvas_Holder.instance.IsInventoryOpen()) return;
+        if (inventoryData.canvasHolder.IsInventoryOpen()) return;
         itemClick.gameObject.SetActive(true);
         itemClick.transform.SetParent(panel.transform);
         itemClick.transform.localPosition = Vector2.zero;

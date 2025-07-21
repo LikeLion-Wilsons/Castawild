@@ -1,5 +1,6 @@
 using Fusion;
 using System;
+using Test;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -8,38 +9,53 @@ public delegate void OnItemGet();
 public class InventoryDataManager : NetworkBehaviour
 {
     [SerializeField] int maxStackCount;//아이템 최대 스택 개수
-    GameObject uiCanvas;
-    GameObject uiHolder;
-    Canvas_Holder canvasHolder;
+    public Canvas_Holder canvasHolder;
+    private UIInventory uiInventory;
+    [SerializeField] GameObject playerUIPrefab; // 인스펙터에 연결
     [Networked, Capacity(30)] public NetworkLinkedList<Item> itemList => default;
     public override void Spawned()
     {
-        uiHolder = GameObject.Find("UIHolder");
-        uiCanvas = uiHolder.transform.Find("UI_Canvas").gameObject;
-        if(uiCanvas != null)
-            uiCanvas.SetActive(true);
-        canvasHolder = uiCanvas.GetComponent<Canvas_Holder>();
-        for (int j = 0; j < 29; j++)
+        if (Object.HasInputAuthority)
         {
-            itemList.Add(new Item
+            // 본인의 UI만 생성
+            GameObject uiCanvas = Instantiate(playerUIPrefab);
+            uiCanvas.transform.SetParent(null); // 루트로 이동
+            uiInventory = uiCanvas.GetComponentInChildren<UIInventory>();
+            uiInventory.BindToInventoryData(this);
+            canvasHolder = uiCanvas.GetComponent<Canvas_Holder>();
+
+            int i = 0;
+            while (i < 9)
             {
-                itemID = -1,
-                count = 0,
-                durability = 1
-            });
+                inventorySlots[i] = canvasHolder.hotBarUI.transform.GetChild(i).GetComponent<Item_Panel>();
+                i++;
+            }
+            int index = 0;
+            while (i < 29)
+            {
+                inventorySlots[i] = canvasHolder.inventoryUI.transform.GetChild(index).GetComponent<Item_Panel>();
+                i++;
+                index++;
+            }
+
+            for (int k = 0; k < inventorySlots.Length; k++)
+            {
+                inventorySlots[k].GetComponent<Item_Panel>().BindToInventoryData(this);
+            }
         }
-        int i = 0;
-        while (i < 9)
+
+        if (Object.HasStateAuthority)
         {
-            inventorySlots[i] = canvasHolder.hotBarUI.transform.GetChild(i).GetComponent<Item_Panel>();
-            i++;
-        }
-        int index = 0;
-        while (i < 29)
-        {
-            inventorySlots[i] = canvasHolder.inventoryUI.transform.GetChild(index).GetComponent<Item_Panel>();
-            i++;
-            index++;
+            while (itemList.Count < 29)
+            {
+                itemList.Add(new Item
+                {
+                    itemID = -1,
+                    count = 0,
+                    durability = 1
+                });
+            }
+
         }
     }
 
@@ -47,17 +63,11 @@ public class InventoryDataManager : NetworkBehaviour
     public GameObject inventoryItemPrefab;
     int selectedSlot = -1;
     int maxSlotCount = 9; // 총 슬롯 수
-    public static InventoryDataManager Instance { get; private set; }
-    private void Awake()
-    {
-        if (Instance == null) Instance = this;
-        else if (Instance != this) Destroy(gameObject);
+    public static InventoryDataManager Instance { get; set; }
 
-        
-    }
     void ChangeSelectedSlot(int newValue)
     {
-        if (Canvas_Holder.instance.IsInventoryOpen()) return;
+        if (canvasHolder.IsInventoryOpen()) return;
         if (selectedSlot >= 0)
         {
             inventorySlots[selectedSlot].Deselect();
@@ -67,13 +77,13 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
 
-    public static event Action onInventoryUpdated;//기존에 있던 아이템이 추가될 때
+    public event Action onInventoryUpdated;//기존에 있던 아이템이 추가될 때
 
 
 
     private void Start()
     {
-        ChangeSelectedSlot(0);
+        //ChangeSelectedSlot(0);
     }
 
     private void Update()

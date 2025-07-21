@@ -3,12 +3,10 @@ using UnityEngine;
 
 public class Canvas_Holder : MonoBehaviour
 {
-    public static Canvas_Holder instance = null;
     public GameObject hotBarUI;
     public GameObject inventoryUI;
     private void Awake()
     {
-        if (instance == null) instance = this;
     }
 
     [SerializeField] UIPart[] parts;

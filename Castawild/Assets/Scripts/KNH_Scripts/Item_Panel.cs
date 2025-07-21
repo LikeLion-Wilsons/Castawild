@@ -12,7 +12,8 @@ public class Item_Panel :
     public Item item;
     public GameObject itemData;
     public GameObject inventory;
-
+    UIInventory uiInventory;
+    InventoryDataManager inventoryData;
     public Image image;
     public Color selectedColor, notSelectedColor;
 
@@ -39,11 +40,15 @@ public class Item_Panel :
         Deselect();
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
+        uiInventory = inventory.GetComponent<UIInventory>();
     }
-
+    public void BindToInventoryData(InventoryDataManager data)
+    {
+        inventoryData = data;
+    }
     void Update()
     {
-        isInveontoryOpen = Canvas_Holder.instance.IsInventoryOpen();
+        isInveontoryOpen = inventoryData.canvasHolder.IsInventoryOpen();
     }
     public void SlotInit(Item _item)
     {
@@ -79,14 +84,14 @@ public class Item_Panel :
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (item.isNull == true || item.itemID == -1) return;
-        inventory.GetComponent<UIInventory>().SetItemClickAnimation(this);
+        uiInventory.SetItemClickAnimation(this);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         if (item.isNull == true || item.itemID == -1) return;
-        if (inventory.GetComponent<UIInventory>().itemClick.activeSelf == true)
-            inventory.GetComponent<UIInventory>().itemClick.SetActive(false);
+        if (uiInventory.itemClick.activeSelf == true)
+            uiInventory.itemClick.SetActive(false);
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -201,7 +206,7 @@ public class Item_Panel :
         }
         canvasGroup.blocksRaycasts = true;
         SetItemSlot();
-        inventory.GetComponent<UIInventory>().SetItemList();
+        uiInventory.SetItemList();
 
     }
 
@@ -215,10 +220,10 @@ public class Item_Panel :
         var droppedPanel = droppedObj.GetComponent<Item_Panel>();
         if (droppedPanel == null || droppedPanel == this) return;
 
-        int indexA = inventory.GetComponent<UIInventory>().GetIndex(this);
-        int indexB = inventory.GetComponent<UIInventory>().GetIndex(droppedPanel);
+        int indexA = uiInventory.GetIndex(this);
+        int indexB = uiInventory.GetIndex(droppedPanel);
 
-        var items = InventoryDataManager.Instance.itemList;
+        var items = inventoryData.itemList;
         var fromItem = items[indexB];
         var toItem = items[indexA];
 
@@ -246,7 +251,7 @@ public class Item_Panel :
                 return;
             }
             droppedPanel.SetItemSlot();
-            inventory.GetComponent<UIInventory>().SetItemList();
+            uiInventory.SetItemList();
             SetItemSlot();
         }
         //좌클릭 드래그
@@ -259,14 +264,14 @@ public class Item_Panel :
                 {
                     // 같은 아이템이면 합치기
                     toItem.count += fromItem.count;
-                    InventoryDataManager.Instance.ThrowItem(indexB);//합쳐지는 아이템 삭제
-                    inventory.GetComponent<UIInventory>().SetItemList();
+                    inventoryData.ThrowItem(indexB);//합쳐지는 아이템 삭제
+                    uiInventory.SetItemList();
                     return;
                 }
 
             }
 
-            inventory.GetComponent<UIInventory>().SwapItems(indexA, indexB);
+            uiInventory.SwapItems(indexA, indexB);
         }
     }
 }
