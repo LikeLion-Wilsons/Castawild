@@ -8,7 +8,7 @@ public class CrouchState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.networkManager.CurrentMoveType = MoveAnimationType.CrouchIdle;
+        movementManager.networkManager.CurrentMoveState = MoveAnimationState.CrouchIdle;
         movementManager.currentMoveSpeed = movementManager.crouchSpeed;
         movementManager.player.currentMoveType = MoveType.Crouch;
     }
@@ -16,9 +16,9 @@ public class CrouchState : MovementBaseState
     public override void UpdateState()
     {
         if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
-            movementManager.networkManager.CurrentMoveType = MoveAnimationType.CrouchWalk;
+            movementManager.networkManager.CurrentMoveState = MoveAnimationState.CrouchWalk;
         else
-            movementManager.networkManager.CurrentMoveType = MoveAnimationType.CrouchWalk;
+            movementManager.networkManager.CurrentMoveState = MoveAnimationState.CrouchWalk;
 
         if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput))
             movementManager.ChangeState(movementManager.runState);

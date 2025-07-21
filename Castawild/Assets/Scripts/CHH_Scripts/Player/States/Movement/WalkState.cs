@@ -7,7 +7,7 @@ public class WalkState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.networkManager.CurrentMoveType = MoveAnimationType.Walk;
+        movementManager.networkManager.CurrentMoveState = MoveAnimationState.Walk;
         movementManager.currentMoveSpeed = movementManager.walkSpeed;
         movementManager.player.currentMoveType = MoveType.Walk;
     }

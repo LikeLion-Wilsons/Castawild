@@ -2,6 +2,7 @@ namespace Fusion
 {
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
+    using Unity.IO.LowLevel.Unsafe;
     using UnityEngine;
 
     [StructLayout(LayoutKind.Explicit)]
@@ -53,6 +54,7 @@ namespace Fusion
         private CharacterController _controller;
 
         private MovementStateManager movementManager;
+        private ToolStateManager toolManager;
         private PlayerCameraManager cameraManager;
         private PlayerNetworkManager playerNetworkManager;
 
@@ -133,12 +135,19 @@ namespace Fusion
             CopyToBuffer();
             if (!HasInputAuthority)
                 cameraManager.SetNetworkCamera();
+
+            toolManager.ChangeState(toolManager.idleState);
+            movementManager.ChangeState(movementManager.idleState);
         }
 
         public override void Render()
         {
             NetworkTRSP.Render(this, transform, false, false, false, ref _initial);
+
+            if (!playerNetworkManager.isSpawned)
+                return;
             movementManager.UpdateMoveAnimation(Runner.DeltaTime);
+            toolManager.UpdateMoveAnimation();
         }
 
         // Tick 시작 전에 호출 -> 현재 시뮬레이션 상태를 Unity 오브젝트에 반영
@@ -186,6 +195,7 @@ namespace Fusion
         private void InitComponents()
         {
             movementManager = GetComponent<MovementStateManager>();
+            toolManager = GetComponent<ToolStateManager>();
             cameraManager = GetComponentInChildren<PlayerCameraManager>();
             playerNetworkManager = GetComponent<PlayerNetworkManager>();
         }
@@ -193,13 +203,23 @@ namespace Fusion
         // HasInputAuthority || HasStateAuthority 일 때 실행
         public override void FixedUpdateNetwork()
         {
+            if (!playerNetworkManager.isSpawned)
+                return;
+
             // 서버에 보낸 Input값 가져오기 
             if (GetInput<PlayerNetworkInputData>(out var input))
             {
-                movementManager.SetInput(input);
                 maxSpeed = movementManager.currentMoveSpeed;
+                movementManager.SetInput(input);
+                toolManager.SetInput(input);
+
                 movementManager.HandleState();
+                toolManager.HandleState();
+
+                toolManager.ChangeCurrentTool();
+
                 movementManager.SetPrevInputButton(input.Buttons);
+                toolManager.SetPrevInputButton(input.Buttons);
             }
 
             playerNetworkManager.MoveValue = input.moveValue;

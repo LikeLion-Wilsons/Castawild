@@ -1,15 +1,9 @@
 using Fusion;
 using UnityEngine;
-using static Unity.Collections.Unicode;
 
-public class MovementStateManager : MonoBehaviour
+public class MovementStateManager : BaseStateManager
 {
     #region Conponent
-    [HideInInspector] public Animator anim;
-    [HideInInspector] public PlayerInputManager inputManager;
-    [HideInInspector] public PlayerCameraManager cameraManager;
-    [HideInInspector] public CwPlayer player;
-    [HideInInspector] public PlayerNetworkManager networkManager;
     [HideInInspector] public ToolStateManager toolStateManager;
     [HideInInspector] public NetworkCharacterControllerCustom networkCharacterController;
     #endregion
@@ -56,17 +50,12 @@ public class MovementStateManager : MonoBehaviour
 
     #region Animation
     [SerializeField] private float animationLerpSpeed = 10f;
-    private float currentHorizontal;
-    private float currentVertical;
+    public bool isTriggerSet = false;
     #endregion
 
-    #region Network
-    public PlayerNetworkInputData input { get; private set; }
-    public NetworkButtons prevInputButtons;
-    #endregion
-
-    protected void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         InitComponents();
         InitStates();
     }
@@ -75,11 +64,6 @@ public class MovementStateManager : MonoBehaviour
     {
         toolStateManager = GetComponent<ToolStateManager>();
         networkCharacterController = GetComponent<NetworkCharacterControllerCustom>();
-        anim = GetComponentInChildren<Animator>();
-        inputManager = GetComponent<PlayerInputManager>();
-        cameraManager = GetComponentInChildren<PlayerCameraManager>();
-        player = GetComponent<CwPlayer>();
-        networkManager = GetComponent<PlayerNetworkManager>();
     }
 
     private void InitStates()
@@ -93,13 +77,6 @@ public class MovementStateManager : MonoBehaviour
         ChangeState(idleState);
     }
 
-    public void ChangeState(BaseState newState)
-    {
-        currentState?.ExitState();
-        currentState = newState;
-        currentState.EnterState();
-    }
-
     public void UpdateMoveAnimation(float deltaTime)
     {
         anim.SetFloat("Horizontal", networkManager.MoveValue.x, 0.1f, deltaTime);
@@ -110,27 +87,27 @@ public class MovementStateManager : MonoBehaviour
         anim.SetBool("Crouching", false);
         anim.SetBool("Falling", false);
 
-        switch (networkManager.CurrentMoveType)
+        switch (networkManager.CurrentMoveState)
         {
-            case MoveAnimationType.Walk:
+            case MoveAnimationState.Walk:
                 anim.SetBool("Walking", true);
                 break;
-            case MoveAnimationType.Run:
+            case MoveAnimationState.Run:
                 anim.SetBool("Running", true);
                 break;
-            case MoveAnimationType.CrouchIdle:
+            case MoveAnimationState.CrouchIdle:
                 anim.SetBool("Crouching", true);
                 break;
-            case MoveAnimationType.CrouchWalk:
+            case MoveAnimationState.CrouchWalk:
                 anim.SetBool("Crouching", true);
                 anim.SetBool("Walking", true);
                 break;
-            case MoveAnimationType.IdleJump:
+            case MoveAnimationState.IdleJump:
                 if (!isTriggerSet)
                     anim.SetTrigger("IdleJump");
                 isTriggerSet = true;
                 break;
-            case MoveAnimationType.RunJump:
+            case MoveAnimationState.RunJump:
                 if (!isTriggerSet)
                     anim.SetTrigger("RunJump");
                 isTriggerSet = true;
@@ -226,15 +203,4 @@ public class MovementStateManager : MonoBehaviour
         canMove = false;
         ChangeState(idleState);
     }
-
-    public bool isTriggerSet = false;
-
-    public void HandleState()
-    {
-        currentState.UpdateState();
-        currentState.UpdateState();
-    }
-
-    public void SetInput(PlayerNetworkInputData inputData) => input = inputData;
-    public void SetPrevInputButton(NetworkButtons _prevInputButtons) => prevInputButtons = _prevInputButtons;
 }

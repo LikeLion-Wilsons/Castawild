@@ -10,15 +10,16 @@ public class AimState : ToolBaseState
     public override void EnterState()
     {
         LookForward();
+
         toolStateManager.player.isAimLocked = true;
 
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
-            toolStateManager.anim.SetBool("FullAiming", true);
-        toolStateManager.anim.SetBool("Aiming", true);
+            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Aim;
+        else
+            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullAim;
 
         toolStateManager.cameraManager.MoveCamera(true);
 
-        toolStateManager.anim.SetInteger("WeaponType", (int)toolStateManager.player.currentToolType);
         toolStateManager.player.crosshairImage.SetActive(true);
         toolStateManager.player.currentAttackType = AttackType.Aim;
     }
@@ -28,14 +29,14 @@ public class AimState : ToolBaseState
         RotatePlayer();
 
         if (toolStateManager.player.currentMoveType != MoveType.Idle)
-            toolStateManager.anim.SetBool("FullAiming", false);
-        else if (toolStateManager.player.currentMoveType != MoveType.Walk)
-            toolStateManager.anim.SetBool("FullAiming", true);
+            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Aim;
+        else if (toolStateManager.player.currentMoveType == MoveType.Idle)
+            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullAim;
 
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
             toolStateManager.ChangeState(toolStateManager.useToolState);
 
-        else if (inputManager.aimAction.WasReleasedThisFrame())
+        else if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
             toolStateManager.player.isAimLocked = false;
             toolStateManager.ChangeState(toolStateManager.idleState);

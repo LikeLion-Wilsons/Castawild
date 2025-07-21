@@ -5,8 +5,9 @@ public class AnimationTrigger : MonoBehaviour
 {
     private CwPlayer player;
     private MovementStateManager movementManager;
+    private ToolStateManager toolManager;
     private NetworkCharacterControllerCustom networkCharacterController;
-    [HideInInspector] public bool isAnimationFinished = false;
+    private PlayerNetworkManager networkManager;
     [HideInInspector] public bool canReceiveInput = false;
     [HideInInspector] public bool canComboAttack = false;
 
@@ -14,18 +15,22 @@ public class AnimationTrigger : MonoBehaviour
     {
         player = GetComponentInParent<CwPlayer>();
         movementManager = GetComponentInParent<MovementStateManager>();
+        toolManager = GetComponentInParent<ToolStateManager>();
         networkCharacterController = GetComponentInParent<NetworkCharacterControllerCustom>();
+        networkManager = GetComponentInParent<PlayerNetworkManager>();
     }
 
-    public void AnimationFinishTrigger() => isAnimationFinished = true;
-    public void AnimationStartTrigger() => isAnimationFinished = false;
+    public void ToolAnimationFinishTrigger() => toolManager.isAnimationFinished = true;
+    public void ToolAnimationStartTrigger() => toolManager.isAnimationFinished = false;
+    public void MoveAnimationFinishTrigger() => movementManager.isAnimationFinished = true;
+    public void MoveAnimationStartTrigger() => movementManager.isAnimationFinished = false;
     public void JumpForce() => networkCharacterController.Jump();
     public void Jumped() => movementManager.jumped = true;
     public void ReceiveInput() => canReceiveInput = true;
     public void StopReceiveInput()
     {
         if (canComboAttack)
-            movementManager.anim.SetBool("ComboAttack", true);
+            networkManager.ComboAttack = true;
         canComboAttack = false;
         canReceiveInput = false;
     }

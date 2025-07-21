@@ -14,7 +14,7 @@ public class PlayerInputManager : MonoBehaviour
     public InputAction viewChangeAction;
     public InputAction lookAction;
     public InputAction zoomAction;
-    public InputAction aimAction;
+    private InputAction aimAction;
     private InputAction sprintAction;
     private InputAction toolAction;
 
@@ -92,6 +92,7 @@ public class PlayerInputManager : MonoBehaviour
         inputData.Buttons.Set(PlayerNetworkInputData.aimInput, aimAction.IsPressed());
         inputData.Buttons.Set(PlayerNetworkInputData.sprintInput, sprintAction.IsPressed());
         inputData.Buttons.Set(PlayerNetworkInputData.toolUseInput, toolAction.IsPressed());
+        inputData.Buttons.Set(PlayerNetworkInputData.toolChangedInput, Input.GetKey(KeyCode.Tab)); // 테스트용 
 
         inputData.moveValue = moveAction.ReadValue<Vector2>();
         inputData = SetMoveDir(inputData);

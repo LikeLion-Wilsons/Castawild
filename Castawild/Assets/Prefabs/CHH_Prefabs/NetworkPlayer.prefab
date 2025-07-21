@@ -2616,7 +2616,6 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 230939324335428207}
   - {fileID: 4943324450787485491}
   - {fileID: 6363259293620697004}
   - {fileID: 4127318726655667768}
@@ -2764,15 +2763,6 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
-  aimAction:
-    m_Name: Aim
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: f1229533-9614-40d3-be85-3e30162076a3
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
   lookInput: {x: 0, y: 0}
   zoomInput: {x: 0, y: 0}
   isCursorLocked: 0
@@ -2808,7 +2798,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _CurrentMoveType: 0
+  _CurrentToolUseType: 0
   isSpawned: 0
+  _MoveValue: {x: 0, y: 0}
+  _CurrentToolType: 0
+  _ComboAttack: 0
 --- !u!114 &6363259293620697004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2835,6 +2829,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stateAuthorityChangeErrorCorrectionDelta: 0
   gravity: -20
+  jumpImpulse: 8
   acceleration: 50
   maxSpeed: 2
   rotationSpeed: 15
@@ -3143,12 +3138,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isAiming: 0
+  currentView: 1
   firstPersonCam: {fileID: 3849144779001713377}
   firstPersonTarget: {fileID: 3312262715438081692}
   playerMesh: {fileID: 401308779718830453}
   sensitivity: 0.7
   maxXRotation: 80
   minXRotation: -80
+  minPitch: -80
+  maxPitch: 80
   thirdPersonCam: {fileID: 1706552347776469061}
   thirdPersonTarget: {fileID: 3533680929014235342}
   thirdPerson_AimTargetPos: {fileID: 3517969266310779276}
