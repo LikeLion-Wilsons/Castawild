@@ -326,7 +326,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5016a5bdaa7daa4293fd31608dbe1c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAnimationFinished: 0
   canReceiveInput: 0
   canComboAttack: 0
 --- !u!1 &1017937576476777739
@@ -2698,6 +2697,7 @@ MonoBehaviour:
   cameraManager: {fileID: 0}
   player: {fileID: 0}
   networkManager: {fileID: 0}
+  isAnimationFinished: 0
   toolStateManager: {fileID: 0}
   networkCharacterController: {fileID: 0}
   canMove: 1
@@ -2735,7 +2735,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06494a23ee37b9d41a8692505d27733d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  inputActionsRef: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   viewChangeAction:
     m_Name: View Change
     m_Type: 0
@@ -2783,6 +2783,7 @@ MonoBehaviour:
   cameraManager: {fileID: 0}
   player: {fileID: 0}
   networkManager: {fileID: 0}
+  isAnimationFinished: 0
   movementManager: {fileID: 0}
   animTrigger: {fileID: 0}
 --- !u!114 &4943324450787485491
@@ -2797,12 +2798,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbf3efdcb2b6c8d4f948344dd00cf44e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _CurrentMoveType: 0
-  _CurrentToolUseType: 0
   isSpawned: 0
+  _CurrentMoveState: 0
+  _CurrentToolUseState: 0
   _MoveValue: {x: 0, y: 0}
   _CurrentToolType: 0
   _ComboAttack: 0
+  _IsAnimationFinished: 0
 --- !u!114 &6363259293620697004
 MonoBehaviour:
   m_ObjectHideFlags: 0

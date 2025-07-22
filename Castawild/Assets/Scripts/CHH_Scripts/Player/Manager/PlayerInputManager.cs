@@ -6,14 +6,15 @@ using UnityEngine.InputSystem;
 public class PlayerInputManager : MonoBehaviour
 {
     #region Input Action
-    [SerializeField] private InputActionAsset inputActions;
+    [SerializeField] private InputActionAsset inputActionsRef;
+    private InputActionAsset inputActions;
 
     private InputAction moveAction;
     private InputAction jumpAction;
     private InputAction crouchAction;
-    public InputAction viewChangeAction;
-    public InputAction lookAction;
-    public InputAction zoomAction;
+    [HideInInspector] public InputAction viewChangeAction;
+    [HideInInspector] public InputAction lookAction;
+    [HideInInspector] public InputAction zoomAction;
     private InputAction aimAction;
     private InputAction sprintAction;
     private InputAction toolAction;
@@ -51,6 +52,8 @@ public class PlayerInputManager : MonoBehaviour
 
     private void InitInputActions()
     {
+        inputActions = Instantiate(inputActionsRef);
+
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
         crouchAction = InputSystem.actions.FindAction("Crouch");
