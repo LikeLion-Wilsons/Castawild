@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -116,6 +115,7 @@ public class Item_Panel :
             // 복제 오브젝트 생성
             draggedClone = Instantiate(gameObject, onDragParent);
             var clonePanel = draggedClone.GetComponent<Item_Panel>();
+            clonePanel.inventoryData = this.inventoryData;
 
             // 복제 아이템 설정
             clonePanel.item = new Item
@@ -172,6 +172,7 @@ public class Item_Panel :
                 }
                 else break;
             }
+
             //이동 실패
             if (!droppedOnSlot)
             {
@@ -186,6 +187,7 @@ public class Item_Panel :
                     else
                     {
                         item.count = originalCount;
+                        Destroy(draggedClone);
                         SetItemSlot();
                     }
                 }
@@ -243,7 +245,8 @@ public class Item_Panel :
                     durability = fromItem.durability
                 };
                 // 원래 아이템에서 수량 차감
-                toItem.count -= droppedPanel.originalCount / 2;
+                fromItem.count -= half;
+
             }
             else
             {

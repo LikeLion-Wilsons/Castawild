@@ -17,25 +17,16 @@ public class UIInventory : UIPart
         Init();
     }
 
-
-    private void Awake()
-    {
-        //InventoryDataManager.onInventoryUpdated += SetItemList;
-        Init();
-    }
     public void Init()
     {
-
         int itemMaximumValue = content.childCount;
 
-        //SetItemList();
+        SetItemList();
     }
 
     //아이템을 얻을 때 실행
     public void SetItemList()
     {
-
-        Debug.Log("SetItemList");
         var items = inventoryData.itemList;
 
         for (int i = 0; i < itemPanels.Count; i++)
@@ -83,7 +74,7 @@ public class UIInventory : UIPart
         SetItemList();
     }
 
-    
+
 
     public void SetItemClickAnimation(Item_Panel panel)
     {
