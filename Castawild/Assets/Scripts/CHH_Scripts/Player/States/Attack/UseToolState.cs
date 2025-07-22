@@ -43,9 +43,9 @@ public class UseToolState : ToolBaseState
             }
         }
 
-        if (toolStateManager.networkManager.IsAnimationFinished)
+        if (toolStateManager.isAnimationFinished)
         {
-            toolStateManager.networkManager.IsAnimationFinished = false;
+            toolStateManager.isAnimationFinished = false;
 
             if (toolStateManager.input.IsDown(PlayerNetworkInputData.aimInput) && toolStateManager.player.HoldAimTool())
                 toolStateManager.ChangeState(toolStateManager.aimState);
@@ -69,7 +69,7 @@ public class UseToolState : ToolBaseState
     {
         if (toolStateManager.player.HoldCraftingTool())
         {
-            if (!toolStateManager.input.IsDown(PlayerNetworkInputData.toolUseInput) && toolStateManager.networkManager.IsAnimationFinished)
+            if (!toolStateManager.input.IsDown(PlayerNetworkInputData.toolUseInput) && toolStateManager.isAnimationFinished)
                 toolStateManager.ChangeState(toolStateManager.idleState);
             return true;
         }

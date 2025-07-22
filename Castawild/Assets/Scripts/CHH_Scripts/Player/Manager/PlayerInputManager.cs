@@ -31,7 +31,6 @@ public class PlayerInputManager : MonoBehaviour
 
     PlayerCameraManager cameraManager;
     MovementStateManager movementManager;
-    NetworkCharacterControllerCustom networkCharacterController;
 
     private void OnEnable()
     {
@@ -47,7 +46,6 @@ public class PlayerInputManager : MonoBehaviour
     {
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
         movementManager = GetComponent<MovementStateManager>();
-        networkCharacterController = GetComponent<NetworkCharacterControllerCustom>();
         InitInputActions();
     }
 

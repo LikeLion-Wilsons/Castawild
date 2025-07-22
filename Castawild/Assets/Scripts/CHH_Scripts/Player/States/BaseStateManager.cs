@@ -34,7 +34,6 @@ public class BaseStateManager : MonoBehaviour
     public void HandleState()
     {
         networkManager.IsAnimationFinished = isAnimationFinished;
-        Debug.Log(networkManager.IsAnimationFinished);
         currentState.UpdateState();
     }
 
