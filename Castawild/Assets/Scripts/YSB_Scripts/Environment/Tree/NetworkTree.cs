@@ -7,7 +7,7 @@ namespace YSB_Scripts
     {
         public event System.Action<NetworkTree> OnTreeDied;
 
-        [Networked, OnChangedRender(nameof(OnChangedHealth))]//tree 외형 변화 없으면 굳이 필요 없을지도
+        //[Networked, OnChangedRender(nameof(OnChangedHealth))]//tree 외형 변화 없으면 굳이 필요 없을지도
         public int Health { get; set; }
         [Networked] private int MaxHP { get; set; }
         [Networked] public int TreeId { get; set; } // TreeId는 스폰 시에 할당
@@ -30,10 +30,10 @@ namespace YSB_Scripts
             TreeId = treeId;
         }
 
-        public override void Spawned()
-        {
-            RefreshVisual();
-        }
+        // public override void Spawned()
+        // {
+        //     RefreshVisual();
+        // }
 
 
         public bool CanInteract() => Health > 0;
@@ -73,19 +73,6 @@ namespace YSB_Scripts
         {
             Health = MaxHP;
             reviveTimer = TickTimer.CreateFromSeconds(Runner, 10f);
-        }
-
-        void OnChangedHealth()//tree 외형 변화 없으면 굳이 필요 없을지도
-        {
-            RefreshVisual();
-        }
-
-        void RefreshVisual()
-        {
-            if (visualRoot == null) return;
-
-            bool isAlive = Health > 0;
-            visualRoot.SetActive(isAlive);
         }
     }
 }

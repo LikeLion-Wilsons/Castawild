@@ -416,6 +416,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4073498359813649523}
   - component: {fileID: 2787711166388720148}
+  - component: {fileID: -400530396041819638}
   - component: {fileID: 1140545909777424436}
   - component: {fileID: 4822656981714518186}
   - component: {fileID: -3917717901780086496}
@@ -473,6 +474,18 @@ LODGroup:
     renderers:
     - renderer: {fileID: 6494105180613908467}
   m_Enabled: 1
+--- !u!114 &-400530396041819638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8870571539990684218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a6f672b1d9842841870274fa0b90c9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1140545909777424436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -485,7 +498,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 971352eea68afe14e965ec568800bb03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Health: 0
   _TreeId: 0
   visualRoot: {fileID: 1155283940809983396}
 --- !u!114 &4822656981714518186
@@ -505,6 +517,7 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
+  - {fileID: -400530396041819638}
   - {fileID: 1140545909777424436}
   - {fileID: -3917717901780086496}
   ForceRemoteRenderTimeframe: 0

@@ -5,7 +5,7 @@ public class TrashArea : MonoBehaviour, IDropHandler
 {
     public void OnDrop(PointerEventData eventData)
     {
-        if (!Canvas_Holder.instance.IsInventoryOpen()) return;
+        //if (!Canvas_Holder.instance.IsInventoryOpen()) return;
         var itemPanel = eventData.pointerDrag?.GetComponent<Item_Panel>();
         if (itemPanel == null) return;
 
@@ -25,7 +25,7 @@ public class TrashArea : MonoBehaviour, IDropHandler
         
         else
         {
-            InventoryDataManager.Instance.ThrowItem(index);          // 아이템 제거
+            //InventoryDataManager.Instance.ThrowItem(index);          // 아이템 제거
 
             var item = itemPanel.item;
             item.isNull = true;
