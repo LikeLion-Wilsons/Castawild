@@ -205,8 +205,8 @@ public class InventoryDataManager : NetworkBehaviour
         {
             Debug.Log(itemList[index].GetData().name + " 버림!");
             var item = itemList.Get(index);
+            item.itemID = -1;
             item.count = 0;
-            item.isNull = true;
             itemList.Set(index, item);
             //itemList[index] = null;
             onInventoryUpdated?.Invoke();

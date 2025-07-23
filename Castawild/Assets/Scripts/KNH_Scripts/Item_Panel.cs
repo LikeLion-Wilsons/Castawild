@@ -56,7 +56,7 @@ public class Item_Panel :
 
     public void SetItemSlot()
     {
-        if (item.isNull == false && item.itemID != -1 && item.count != 0)
+        if (item.itemID != -1 && item.count != 0)
         {
             itemData.gameObject.SetActive(true);
             //임시
@@ -187,6 +187,8 @@ public class Item_Panel :
                     else
                     {
                         item.count = originalCount;
+                        int index = uiInventory.GetIndex(this);
+                        inventoryData.itemList.Set(index, item);
                         Destroy(draggedClone);
                         SetItemSlot();
                     }
@@ -215,7 +217,7 @@ public class Item_Panel :
     public void OnDrop(PointerEventData eventData)
     {
         if (!isInveontoryOpen) return;
-        InventoryItem inventoryitem = eventData.pointerDrag.GetComponent<InventoryItem>();
+
         var droppedObj = eventData.pointerDrag;
         if (droppedObj == null) return;
 
@@ -246,6 +248,7 @@ public class Item_Panel :
                 };
                 // 원래 아이템에서 수량 차감
                 fromItem.count -= half;
+                inventoryData.itemList.Set(indexB, fromItem);
 
             }
             else
@@ -267,6 +270,7 @@ public class Item_Panel :
                 {
                     // 같은 아이템이면 합치기
                     toItem.count += fromItem.count;
+                    inventoryData.itemList.Set(indexA, toItem);
                     inventoryData.ThrowItem(indexB);//합쳐지는 아이템 삭제
                     uiInventory.SetItemList();
                     return;

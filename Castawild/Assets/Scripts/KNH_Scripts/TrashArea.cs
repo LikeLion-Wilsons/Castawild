@@ -11,6 +11,8 @@ public class TrashArea : MonoBehaviour, IDropHandler
 
         var inventory = itemPanel.inventory.GetComponent<UIInventory>();
         int index = inventory.GetComponent<UIInventory>().GetIndex(itemPanel);
+
+        if (inventory.inventoryData.canvasHolder.IsInventoryOpen()) return;
         //클론 오브젝트일 경우(우클릭으로 나눠짐)
         if (itemPanel.draggedClone != null)
         {
@@ -25,7 +27,7 @@ public class TrashArea : MonoBehaviour, IDropHandler
         
         else
         {
-            //InventoryDataManager.Instance.ThrowItem(index);          // 아이템 제거
+            inventory.inventoryData.ThrowItem(index);          // 아이템 제거
 
             var item = itemPanel.item;
             item.isNull = true;
