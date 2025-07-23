@@ -10,11 +10,11 @@ public class JumpState : MovementBaseState
     public override void EnterState()
     {
         if (movementManager.previousState == movementManager.idleState)
-            movementManager.networkManager.CurrentMoveType = MoveAnimationType.IdleJump;
+            movementManager.networkManager.CurrentMoveState = MoveAnimationState.IdleJump;
 
         else if (movementManager.previousState == movementManager.walkState
             || movementManager.previousState == movementManager.runState)
-            movementManager.networkManager.CurrentMoveType = MoveAnimationType.RunJump;
+            movementManager.networkManager.CurrentMoveState = MoveAnimationState.RunJump;
     }
 
     public override void UpdateState()

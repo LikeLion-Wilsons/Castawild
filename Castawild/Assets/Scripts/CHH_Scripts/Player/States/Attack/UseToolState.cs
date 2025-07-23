@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class UseToolState : ToolBaseState
 {
     private int comboCount = 1;
@@ -9,12 +11,12 @@ public class UseToolState : ToolBaseState
 
     public override void EnterState()
     {
-        if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState
-            || toolStateManager.player.currentToolType == ToolType.Sword)
-            toolStateManager.anim.SetBool("FullUseTool", true);
-        toolStateManager.anim.SetBool("UseTool", true);
+        if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
+            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullUse;
 
-        toolStateManager.anim.SetInteger("WeaponType", (int)toolStateManager.player.currentToolType);
+        else if (toolStateManager.movementManager.currentState != toolStateManager.movementManager.idleState)
+            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Use;
+
         toolStateManager.player.currentAttackType = AttackType.Attack;
     }
 
@@ -22,7 +24,9 @@ public class UseToolState : ToolBaseState
     {
         // 움직이면 상체 레이어만 적용
         if (toolStateManager.player.currentMoveType != MoveType.Idle)
-            toolStateManager.anim.SetBool("FullUseTool", false);
+            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Use;
+        else if (toolStateManager.player.currentMoveType == MoveType.Idle)
+            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullUse;
 
         // 곡괭이, 도구는 손 때까지 상태 유지
         if (CraftingToolActionRelease())
@@ -39,11 +43,9 @@ public class UseToolState : ToolBaseState
             }
         }
 
-        if (toolStateManager.animTrigger.isAnimationFinished)
+        if (toolStateManager.networkManager.IsAnimationFinished)
         {
-            toolStateManager.animTrigger.isAnimationFinished = false;
-
-            if (inputManager.aimAction.IsPressed() && toolStateManager.player.HoldAimTool())
+            if (toolStateManager.input.IsDown(PlayerNetworkInputData.aimInput) && toolStateManager.player.HoldAimTool())
                 toolStateManager.ChangeState(toolStateManager.aimState);
             else
                 toolStateManager.ChangeState(toolStateManager.idleState);
@@ -52,12 +54,11 @@ public class UseToolState : ToolBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
         comboCount = 1;
         toolStateManager.player.isAimLocked = false;
 
-        toolStateManager.anim.SetBool("FullUseTool", false);
-        toolStateManager.anim.SetBool("UseTool", false);
-        toolStateManager.anim.SetBool("ComboAttack", false);
+        toolStateManager.comboAttack = false;
 
         toolStateManager.movementManager.canMove = true;
         toolStateManager.player.currentAttackType = AttackType.None;
@@ -67,7 +68,7 @@ public class UseToolState : ToolBaseState
     {
         if (toolStateManager.player.HoldCraftingTool())
         {
-            if (!toolStateManager.input.IsDown(PlayerNetworkInputData.toolUseInput) && toolStateManager.animTrigger.isAnimationFinished)
+            if (!toolStateManager.input.IsDown(PlayerNetworkInputData.toolUseInput) && toolStateManager.networkManager.IsAnimationFinished)
                 toolStateManager.ChangeState(toolStateManager.idleState);
             return true;
         }
@@ -76,11 +77,11 @@ public class UseToolState : ToolBaseState
 
     private bool ComboAttack()
     {
-        ToolType type = toolStateManager.player.currentToolType;
+        ToolType type = toolStateManager.networkManager.CurrentToolType;
 
         bool isMelee = type == ToolType.Sword || type == ToolType.Fist;
         bool pressed = toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput);
-        bool canCombo = toolStateManager.animTrigger.canReceiveInput;
+        bool canCombo = toolStateManager.networkManager.CanReceiveInput;
 
         return isMelee && pressed && canCombo;
     }

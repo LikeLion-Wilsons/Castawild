@@ -7,7 +7,7 @@ public class RunState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.networkManager.CurrentMoveType = MoveAnimationType.Run;
+        movementManager.networkManager.CurrentMoveState = MoveAnimationState.Run;
         movementManager.currentMoveSpeed = movementManager.runSpeed;
         movementManager.player.currentMoveType = MoveType.Run;
     }

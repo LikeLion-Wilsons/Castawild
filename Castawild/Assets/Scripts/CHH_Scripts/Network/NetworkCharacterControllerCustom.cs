@@ -2,6 +2,7 @@ namespace Fusion
 {
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
+    using Unity.IO.LowLevel.Unsafe;
     using UnityEngine;
 
     [StructLayout(LayoutKind.Explicit)]
@@ -49,14 +50,13 @@ namespace Fusion
         public float maxSpeed = 2.0f;
         public float rotationSpeed = 15.0f;
 
+        private Tick _initial;
+        private CharacterController _controller;
 
-        Tick _initial;
-        CharacterController _controller;
-
-        Animator anim;
-        MovementStateManager movementManager;
-        PlayerCameraManager cameraManager;
-        PlayerNetworkManager playerNetworkManager;
+        private MovementStateManager movementManager;
+        private ToolStateManager toolManager;
+        private PlayerCameraManager cameraManager;
+        private PlayerNetworkManager playerNetworkManager;
 
         public Vector3 Velocity
         {
@@ -126,19 +126,28 @@ namespace Fusion
             _initial = default;
             TryGetComponent(out _controller);
 
+            // CharacterController는 enabled = true 상태로 처음 시작할 때 이전 프레임의 위치를 내부적으로 가지고 있음
+            // Fusion에서 Spawn된 직후 위치가 바뀔 수 있어서 초기 위치가 꼬이는 버그가 발생
+            // => 이를 방지하기 위해 한 번 껐다가 다시 켜면서 캐시를 초기화
             _controller.enabled = false;
             _controller.enabled = true;
 
-            cameraManager.SetNetworkCamera();
             CopyToBuffer();
+            if (!HasInputAuthority)
+                cameraManager.SetNetworkCamera();
+
+            toolManager.ChangeState(toolManager.idleState);
+            movementManager.ChangeState(movementManager.idleState);
         }
 
         public override void Render()
         {
             NetworkTRSP.Render(this, transform, false, false, false, ref _initial);
-            movementManager.UpdateMoveAnimation();
-            anim.SetFloat("Horizontal", playerNetworkManager.MoveValue.x, 0.1f, Runner.DeltaTime);
-            anim.SetFloat("Vertical", playerNetworkManager.MoveValue.y, 0.1f, Runner.DeltaTime);
+
+            if (!playerNetworkManager.isSpawned)
+                return;
+            movementManager.UpdateMoveAnimation(Runner.DeltaTime);
+            toolManager.UpdateMoveAnimation();
         }
 
         // Tick 시작 전에 호출 -> 현재 시뮬레이션 상태를 Unity 오브젝트에 반영
@@ -186,25 +195,35 @@ namespace Fusion
         private void InitComponents()
         {
             movementManager = GetComponent<MovementStateManager>();
+            toolManager = GetComponent<ToolStateManager>();
             cameraManager = GetComponentInChildren<PlayerCameraManager>();
-            anim = GetComponentInChildren<Animator>();
             playerNetworkManager = GetComponent<PlayerNetworkManager>();
         }
 
         // HasInputAuthority || HasStateAuthority 일 때 실행
         public override void FixedUpdateNetwork()
         {
+            if (!playerNetworkManager.isSpawned)
+                return;
+
             // 서버에 보낸 Input값 가져오기 
             if (GetInput<PlayerNetworkInputData>(out var input))
             {
-                movementManager.SetInput(input);
                 maxSpeed = movementManager.currentMoveSpeed;
-                movementManager.HandleState();
+                movementManager.SetInput(input);
+                toolManager.SetInput(input);
+
+                toolManager.UpdateAnimationFlags();
+                movementManager.currentState.UpdateState();
+                toolManager.currentState.UpdateState();
+
+                toolManager.ChangeCurrentTool();
+
                 movementManager.SetPrevInputButton(input.Buttons);
+                toolManager.SetPrevInputButton(input.Buttons);
             }
 
             playerNetworkManager.MoveValue = input.moveValue;
-
             Move(input.moveDir);
             Rotate(input);
         }
