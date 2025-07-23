@@ -33,5 +33,6 @@ public class ToolIdleState : ToolBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
     }
 }

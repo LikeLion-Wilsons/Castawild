@@ -30,7 +30,7 @@ public class AnimationTrigger : MonoBehaviour
     public void StopReceiveInput()
     {
         if (canComboAttack)
-            networkManager.ComboAttack = true;
+            toolManager.comboAttack = true;
         canComboAttack = false;
         canReceiveInput = false;
     }

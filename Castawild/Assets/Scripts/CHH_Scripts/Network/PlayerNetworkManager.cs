@@ -13,6 +13,7 @@ public class PlayerNetworkManager : NetworkBehaviour
     [Networked] public ToolType CurrentToolType { get; set; }
     [Networked] public bool ComboAttack { get; set; }
     [Networked] public bool IsAnimationFinished { get; set; }
+    [Networked] public bool CanReceiveInput { get; set; }
 
     public override void Spawned()
     {

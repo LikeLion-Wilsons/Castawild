@@ -213,8 +213,9 @@ namespace Fusion
                 movementManager.SetInput(input);
                 toolManager.SetInput(input);
 
-                movementManager.HandleState();
-                toolManager.HandleState();
+                toolManager.UpdateAnimationFlags();
+                movementManager.currentState.UpdateState();
+                toolManager.currentState.UpdateState();
 
                 toolManager.ChangeCurrentTool();
 

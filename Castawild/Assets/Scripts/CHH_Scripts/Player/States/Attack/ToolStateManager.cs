@@ -74,7 +74,6 @@ public class ToolStateManager : BaseStateManager
     {
         if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.toolChangedInput))
         {
-            Debug.Log("ChangeTool");
             int first = 1;
             int last = System.Enum.GetValues(typeof(ToolType)).Length - 1;
 
@@ -84,7 +83,13 @@ public class ToolStateManager : BaseStateManager
                 next = first;
 
             networkManager.CurrentToolType = (ToolType)next;
-            Debug.Log(networkManager.CurrentToolType);
         }
+    }
+
+    public override void UpdateAnimationFlags()
+    {
+        base.UpdateAnimationFlags();
+        networkManager.ComboAttack = comboAttack;
+        networkManager.CanReceiveInput = animTrigger.canReceiveInput;
     }
 }

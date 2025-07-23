@@ -9,6 +9,8 @@ public class BaseStateManager : MonoBehaviour
     [HideInInspector] public CwPlayer player;
     [HideInInspector] public PlayerNetworkManager networkManager;
 
+    public bool comboAttack;
+
     public PlayerNetworkInputData input { get; private set; }
     public NetworkButtons prevInputButtons;
 
@@ -31,10 +33,9 @@ public class BaseStateManager : MonoBehaviour
         currentState.EnterState();
     }
 
-    public void HandleState()
+    public virtual void UpdateAnimationFlags()
     {
         networkManager.IsAnimationFinished = isAnimationFinished;
-        currentState.UpdateState();
     }
 
     public void SetInput(PlayerNetworkInputData inputData) => input = inputData;

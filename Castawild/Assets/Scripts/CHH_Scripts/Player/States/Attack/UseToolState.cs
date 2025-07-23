@@ -43,10 +43,8 @@ public class UseToolState : ToolBaseState
             }
         }
 
-        if (toolStateManager.isAnimationFinished)
+        if (toolStateManager.networkManager.IsAnimationFinished)
         {
-            toolStateManager.isAnimationFinished = false;
-
             if (toolStateManager.input.IsDown(PlayerNetworkInputData.aimInput) && toolStateManager.player.HoldAimTool())
                 toolStateManager.ChangeState(toolStateManager.aimState);
             else
@@ -56,10 +54,11 @@ public class UseToolState : ToolBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
         comboCount = 1;
         toolStateManager.player.isAimLocked = false;
 
-        toolStateManager.networkManager.ComboAttack = false;
+        toolStateManager.comboAttack = false;
 
         toolStateManager.movementManager.canMove = true;
         toolStateManager.player.currentAttackType = AttackType.None;
@@ -69,7 +68,7 @@ public class UseToolState : ToolBaseState
     {
         if (toolStateManager.player.HoldCraftingTool())
         {
-            if (!toolStateManager.input.IsDown(PlayerNetworkInputData.toolUseInput) && toolStateManager.isAnimationFinished)
+            if (!toolStateManager.input.IsDown(PlayerNetworkInputData.toolUseInput) && toolStateManager.networkManager.IsAnimationFinished)
                 toolStateManager.ChangeState(toolStateManager.idleState);
             return true;
         }
@@ -78,11 +77,11 @@ public class UseToolState : ToolBaseState
 
     private bool ComboAttack()
     {
-        ToolType type = toolStateManager.player.currentToolType;
+        ToolType type = toolStateManager.networkManager.CurrentToolType;
 
         bool isMelee = type == ToolType.Sword || type == ToolType.Fist;
         bool pressed = toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput);
-        bool canCombo = toolStateManager.animTrigger.canReceiveInput;
+        bool canCombo = toolStateManager.networkManager.CanReceiveInput;
 
         return isMelee && pressed && canCombo;
     }

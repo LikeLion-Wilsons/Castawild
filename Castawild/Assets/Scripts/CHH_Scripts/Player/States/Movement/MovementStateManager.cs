@@ -15,7 +15,6 @@ public class MovementStateManager : BaseStateManager
     public RunState runState;
     public JumpState jumpState;
     public CrouchState crouchState;
-    public BaseState currentState;
     #endregion
 
     #region Movement
@@ -155,7 +154,6 @@ public class MovementStateManager : BaseStateManager
         else if (cameraManager.currentView == ViewType.ThirdPerson &&
             moveDir.sqrMagnitude > 0.001f && !player.isAimLocked && networkCharacterController.Grounded)
         {
-            Debug.Log("3인칭 회전");
             Quaternion targetRotation = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
         }

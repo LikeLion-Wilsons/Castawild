@@ -57,6 +57,7 @@ public class AimState : ToolBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
         toolStateManager.player.currentAttackType = AttackType.None;
         toolStateManager.player.crosshairImage.SetActive(false);
     }
