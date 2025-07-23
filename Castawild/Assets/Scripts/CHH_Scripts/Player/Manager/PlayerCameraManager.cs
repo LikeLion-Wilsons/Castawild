@@ -92,6 +92,7 @@ public class PlayerCameraManager : MonoBehaviour
         inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
         networkManager = GetComponentInParent<PlayerNetworkManager>();
         networkCharacterController = GetComponentInParent<NetworkCharacterControllerCustom>();
+        Camera.main.GetComponent<CinemachineBrain>().DefaultBlend = new(CinemachineBlendDefinition.Styles.Cut, 0f);
     }
 
     private void SubscribeEvents()
@@ -149,6 +150,9 @@ public class PlayerCameraManager : MonoBehaviour
             if (networkManager.HasInputAuthority)
             {
                 currentView = ViewType.ThirdPerson;
+
+                SettingThirdPersonCam();
+
                 playerMesh.SetActive(true);
                 firstPersonCam.Priority = 0;
                 thirdPersonCam.Priority = 10;
@@ -156,6 +160,19 @@ public class PlayerCameraManager : MonoBehaviour
         }
     }
 
+    private void SettingThirdPersonCam()
+    {
+        var transposer = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
+
+        if (transposer != null)
+        {
+            // 플레이어가 바라보는 방향의 각도를 카메라 회전값으로 설정
+            float targetYaw = player.transform.eulerAngles.y;
+            transposer.HorizontalAxis.Value = targetYaw;
+        }
+
+        thirdPersonCam.GetComponent<CinemachineOrbitalFollow>().VerticalAxis.Value = 22f;
+    }
 
     private void UpdateCameraPitch()
     {

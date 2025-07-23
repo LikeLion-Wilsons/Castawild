@@ -874,8 +874,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2344188678965562170}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.011446329, y: -0.12744237, z: 0.0014708393, w: 0.99177885}
-  m_LocalPosition: {x: 2.5272484, y: 2.6905441, z: -9.672635}
+  m_LocalRotation: {x: 0.19080904, y: 0.0000000013053261, z: -2.5372973e-10, w: 0.9816272}
+  m_LocalPosition: {x: 0, y: 6.206066, z: -9.271838}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -958,7 +958,7 @@ MonoBehaviour:
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
-    Value: -14.642792
+    Value: 0
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -968,7 +968,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: 1.3210378
+    Value: 22
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
@@ -2697,6 +2697,7 @@ MonoBehaviour:
   cameraManager: {fileID: 0}
   player: {fileID: 0}
   networkManager: {fileID: 0}
+  comboAttack: 0
   isAnimationFinished: 0
   toolStateManager: {fileID: 0}
   networkCharacterController: {fileID: 0}
@@ -2783,6 +2784,7 @@ MonoBehaviour:
   cameraManager: {fileID: 0}
   player: {fileID: 0}
   networkManager: {fileID: 0}
+  comboAttack: 0
   isAnimationFinished: 0
   movementManager: {fileID: 0}
   animTrigger: {fileID: 0}
@@ -2805,6 +2807,7 @@ MonoBehaviour:
   _CurrentToolType: 0
   _ComboAttack: 0
   _IsAnimationFinished: 0
+  _CanReceiveInput: 0
 --- !u!114 &6363259293620697004
 MonoBehaviour:
   m_ObjectHideFlags: 0
