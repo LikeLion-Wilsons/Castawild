@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class UseToolState : ToolBaseState
@@ -11,8 +12,17 @@ public class UseToolState : ToolBaseState
 
     public override void EnterState()
     {
+        if (toolStateManager.networkManager.HoldAttackTool())
+        {
+            toolStateManager.networkManager.CanMove = false;
+            toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
+        }
+
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
+        {
+            Debug.Log("EnterState FullUse");
             toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullUse;
+        }
 
         else if (toolStateManager.movementManager.currentState != toolStateManager.movementManager.idleState)
             toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Use;
@@ -26,7 +36,10 @@ public class UseToolState : ToolBaseState
         if (toolStateManager.player.currentMoveType != MoveType.Idle)
             toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Use;
         else if (toolStateManager.player.currentMoveType == MoveType.Idle)
+        {
+            Debug.Log("UpdateState FullUse");
             toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullUse;
+        }
 
         // 곡괭이, 도구는 손 때까지 상태 유지
         if (CraftingToolActionRelease())
@@ -55,12 +68,12 @@ public class UseToolState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
-        comboCount = 1;
+        toolStateManager.networkManager.CanMove = true;
         toolStateManager.player.isAimLocked = false;
 
+        comboCount = 1;
         toolStateManager.comboAttack = false;
 
-        toolStateManager.movementManager.canMove = true;
         toolStateManager.player.currentAttackType = AttackType.None;
     }
 

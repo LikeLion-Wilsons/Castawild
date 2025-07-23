@@ -56,7 +56,7 @@ namespace Fusion
         private MovementStateManager movementManager;
         private ToolStateManager toolManager;
         private PlayerCameraManager cameraManager;
-        private PlayerNetworkManager playerNetworkManager;
+        private PlayerNetworkManager networkManager;
 
         public Vector3 Velocity
         {
@@ -144,7 +144,7 @@ namespace Fusion
         {
             NetworkTRSP.Render(this, transform, false, false, false, ref _initial);
 
-            if (!playerNetworkManager.isSpawned)
+            if (!networkManager.isSpawned)
                 return;
             movementManager.UpdateMoveAnimation(Runner.DeltaTime);
             toolManager.UpdateMoveAnimation();
@@ -197,19 +197,22 @@ namespace Fusion
             movementManager = GetComponent<MovementStateManager>();
             toolManager = GetComponent<ToolStateManager>();
             cameraManager = GetComponentInChildren<PlayerCameraManager>();
-            playerNetworkManager = GetComponent<PlayerNetworkManager>();
+            networkManager = GetComponent<PlayerNetworkManager>();
         }
 
         // HasInputAuthority || HasStateAuthority 일 때 실행
         public override void FixedUpdateNetwork()
         {
-            if (!playerNetworkManager.isSpawned)
+            if (!networkManager.isSpawned)
                 return;
 
             // 서버에 보낸 Input값 가져오기 
             if (GetInput<PlayerNetworkInputData>(out var input))
             {
-                maxSpeed = movementManager.currentMoveSpeed;
+                if (networkManager.CanMove)
+                    maxSpeed = movementManager.currentMoveSpeed;
+                else
+                    maxSpeed = 0f;
                 movementManager.SetInput(input);
                 toolManager.SetInput(input);
 
@@ -223,7 +226,7 @@ namespace Fusion
                 toolManager.SetPrevInputButton(input.Buttons);
             }
 
-            playerNetworkManager.MoveValue = input.moveValue;
+            networkManager.MoveValue = input.moveValue;
             Move(input.moveDir);
             Rotate(input);
         }

@@ -14,10 +14,19 @@ public class PlayerNetworkManager : NetworkBehaviour
     [Networked] public bool ComboAttack { get; set; }
     [Networked] public bool IsAnimationFinished { get; set; }
     [Networked] public bool CanReceiveInput { get; set; }
+    [Networked] public bool CanMove { get; set; }
 
     public override void Spawned()
     {
         isSpawned = true;
         CurrentToolType = ToolType.Fist;
+    }
+
+    public bool HoldAttackTool()
+    {
+        if (CurrentToolType == ToolType.Fist || CurrentToolType == ToolType.Spear || CurrentToolType == ToolType.Sword)
+            return true;
+        else
+            return false;
     }
 }

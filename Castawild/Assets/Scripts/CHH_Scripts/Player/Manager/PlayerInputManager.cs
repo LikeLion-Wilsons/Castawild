@@ -94,6 +94,7 @@ public class PlayerInputManager : MonoBehaviour
         inputData.Buttons.Set(PlayerNetworkInputData.toolUseInput, toolAction.IsPressed());
         inputData.Buttons.Set(PlayerNetworkInputData.toolChangedInput, Input.GetKey(KeyCode.Tab)); // 테스트용 
 
+
         inputData.moveValue = moveAction.ReadValue<Vector2>();
         inputData = SetMoveDir(inputData);
         inputData.currentView = cameraManager.currentView;
@@ -103,7 +104,7 @@ public class PlayerInputManager : MonoBehaviour
 
     private PlayerNetworkInputData SetMoveDir(PlayerNetworkInputData inputData)
     {
-        if (movementManager.canMove && isCursorLocked)
+        if (isCursorLocked)
         {
             Vector3 forward = Vector3.zero;
             Vector3 right = Vector3.zero;
