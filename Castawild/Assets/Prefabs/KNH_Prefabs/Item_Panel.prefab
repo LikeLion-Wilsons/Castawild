@@ -340,7 +340,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -498,9 +498,9 @@ MonoBehaviour:
     isNull: 0
   itemData: {fileID: 6561729517177915155}
   inventory: {fileID: 0}
-  image: {fileID: 5560323546669280964}
+  image: {fileID: 695216775382904445}
   selectedColor: {r: 0.036712356, g: 0.7075472, b: 0.036712356, a: 0.5294118}
-  notSelectedColor: {r: 1, g: 1, b: 1, a: 0}
+  notSelectedColor: {r: 0.4056604, g: 0.4056604, b: 0.4056604, a: 0.76862746}
   item_icon: {fileID: 1351514211392362751}
   itemCountText: {fileID: 6112187857808343133}
   durabilityBar: {fileID: 1069641077678254244}

@@ -271,14 +271,13 @@ public class Item_Panel :
                     // 같은 아이템이면 합치기
                     toItem.count += fromItem.count;
                     inventoryData.itemList.Set(indexA, toItem);
-                    inventoryData.ThrowItem(indexB);//합쳐지는 아이템 삭제
+                    inventoryData.RPC_ThrowItem(indexB);//합쳐지는 아이템 삭제
                     uiInventory.SetItemList();
                     return;
                 }
 
             }
-
-            uiInventory.SwapItems(indexA, indexB);
+            inventoryData.RPC_SwapItems(indexA, indexB);
         }
     }
 }
