@@ -1,7 +1,5 @@
 using Fusion;
 using System;
-using Test;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public delegate void OnItemGet();
@@ -59,8 +57,6 @@ public class InventoryDataManager : NetworkBehaviour
             }
 
         }
-
-        
     }
 
 
@@ -116,6 +112,11 @@ public class InventoryDataManager : NetworkBehaviour
             int next = (selectedSlot + 1) % maxSlotCount;
             ChangeSelectedSlot(next);
         }
+        //선택된 아이템 버리기
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            ThrowItem(GetSelectedIndex());
+        }
 
     }
 
@@ -142,7 +143,10 @@ public class InventoryDataManager : NetworkBehaviour
                     itemList.Set(selectedSlot, item);
                     //itemList[selectedSlot] = null;
                 }
-                onInventoryUpdated?.Invoke();
+                if (Object.HasStateAuthority)
+                {
+                    RPC_UpdateInventoryUI();
+                }
 
             }
             return null;
@@ -153,7 +157,7 @@ public class InventoryDataManager : NetworkBehaviour
     // 아이템 획득
     public bool GetItem(int id, int amount)
     {
-        Debug.Log("GetItem");
+        //Debug.Log("GetItem");
 
         // 이미 존재하는 아이템이면 개수만 증가
         for (int i = 0; i < itemList.Count; i++)
@@ -203,13 +207,16 @@ public class InventoryDataManager : NetworkBehaviour
     {
         if (index >= 0 && index < itemList.Count)
         {
+            if (itemList[index].itemID == -1) return;
             Debug.Log(itemList[index].GetData().name + " 버림!");
             var item = itemList.Get(index);
             item.itemID = -1;
             item.count = 0;
             itemList.Set(index, item);
-            //itemList[index] = null;
-            onInventoryUpdated?.Invoke();
+            if (Object.HasStateAuthority)
+            {
+                RPC_UpdateInventoryUI();
+            }
         }
     }
 

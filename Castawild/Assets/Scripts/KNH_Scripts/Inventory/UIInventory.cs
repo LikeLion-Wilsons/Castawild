@@ -40,7 +40,7 @@ public class UIInventory : UIPart
                 item.itemID = -1;
                 item.count = 0;
             }
-            Debug.Log(i + " : " + items[i].itemID+" " + items[i].count);
+            //Debug.Log(i + " : " + items[i].itemID+" " + items[i].count);
             itemPanels[i].SlotInit(item);
             itemPanels[i].SetItemSlot();
         }
