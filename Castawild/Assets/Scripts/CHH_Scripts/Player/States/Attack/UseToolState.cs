@@ -1,4 +1,5 @@
 
+using Test;
 using UnityEngine;
 
 public class UseToolState : ToolBaseState
@@ -19,15 +20,13 @@ public class UseToolState : ToolBaseState
         }
 
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
-        {
-            Debug.Log("EnterState FullUse");
             toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullUse;
-        }
 
         else if (toolStateManager.movementManager.currentState != toolStateManager.movementManager.idleState)
             toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Use;
 
         toolStateManager.player.currentAttackType = AttackType.Attack;
+        SetActiveArmMesh(true);
     }
 
     public override void UpdateState()
@@ -36,10 +35,7 @@ public class UseToolState : ToolBaseState
         if (toolStateManager.player.currentMoveType != MoveType.Idle)
             toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Use;
         else if (toolStateManager.player.currentMoveType == MoveType.Idle)
-        {
-            Debug.Log("UpdateState FullUse");
             toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullUse;
-        }
 
         // 곡괭이, 도구는 손 때까지 상태 유지
         if (CraftingToolActionRelease())
@@ -68,6 +64,7 @@ public class UseToolState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
+        SetActiveArmMesh(false);
         toolStateManager.networkManager.CanMove = true;
         toolStateManager.player.isAimLocked = false;
 
@@ -97,5 +94,26 @@ public class UseToolState : ToolBaseState
         bool canCombo = toolStateManager.networkManager.CanReceiveInput;
 
         return isMelee && pressed && canCombo;
+    }
+
+    public void SetActiveArmMesh(bool isActive)
+    {
+        if (toolStateManager.networkManager.CurrentToolType == ToolType.Fist && toolStateManager.cameraManager.currentView == ViewType.FirstPerson)
+        {
+            toolStateManager.visibleMesh.SetActive(isActive);
+            if (isActive)
+            {
+                toolStateManager.armature.SetParent(toolStateManager.cameraManager.firstPersonCam.transform);
+                toolStateManager.armature.localPosition = new Vector3(0f, -3f, 0f);
+                toolStateManager.armature.localRotation = Quaternion.identity;
+            }
+
+            if (!isActive)
+            {
+                toolStateManager.armature.SetParent(toolStateManager.player.transform);
+                toolStateManager.armature.localPosition = Vector3.zero;
+                toolStateManager.armature.localRotation = Quaternion.identity;
+            }
+        }
     }
 }

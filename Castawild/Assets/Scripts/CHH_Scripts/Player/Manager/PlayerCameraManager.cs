@@ -19,12 +19,12 @@ public class PlayerCameraManager : MonoBehaviour
     public bool isAiming = false;
     public ViewType currentView = ViewType.FirstPerson;
 
-    #region Third Person Aim
+    #region Third Person
     [Header("1인칭")]
     public CinemachineCamera firstPersonCam;
     [SerializeField] private Transform firstPersonTarget;
 
-    [SerializeField] private GameObject playerMesh;
+    [SerializeField] private GameObject[] playerMeshes;
 
     public float sensitivity = 1.5f;
     [SerializeField] private float maxXRotation = 80f;
@@ -33,10 +33,9 @@ public class PlayerCameraManager : MonoBehaviour
     private float pitch = 0f;
     public float minPitch = -80f;
     public float maxPitch = 80f;
-
     #endregion
 
-    #region Third Person Aim
+    #region Third Person
     [Header("3인칭")]
     public CinemachineCamera thirdPersonCam;
     [SerializeField] private Transform thirdPersonTarget;
@@ -139,7 +138,10 @@ public class PlayerCameraManager : MonoBehaviour
             if (networkManager.HasInputAuthority)
             {
                 currentView = ViewType.FirstPerson;
-                playerMesh.SetActive(false);
+                foreach (var mesh in playerMeshes)
+                {
+                    mesh.SetActive(false);
+                }
                 firstPersonCam.Priority = 10;
                 thirdPersonCam.Priority = 0;
             }
@@ -153,7 +155,10 @@ public class PlayerCameraManager : MonoBehaviour
 
                 SettingThirdPersonCam();
 
-                playerMesh.SetActive(true);
+                foreach (var mesh in playerMeshes)
+                {
+                    mesh.SetActive(true);
+                }
                 firstPersonCam.Priority = 0;
                 thirdPersonCam.Priority = 10;
             }

@@ -2701,7 +2701,6 @@ MonoBehaviour:
   isAnimationFinished: 0
   toolStateManager: {fileID: 0}
   networkCharacterController: {fileID: 0}
-  canMove: 1
   currentMoveSpeed: 3
   airSpeedMuliplier: 0.7
   walkSpeed: 5
@@ -2788,6 +2787,13 @@ MonoBehaviour:
   isAnimationFinished: 0
   movementManager: {fileID: 0}
   animTrigger: {fileID: 0}
+  armature: {fileID: 7813269517312369915}
+  visibleMesh: {fileID: 3201401248480740544}
+  inVisibleMeshes:
+  - {fileID: 1511078505299715385}
+  - {fileID: 1960706104356853493}
+  - {fileID: 3653424579983766144}
+  - {fileID: 7288379860564303627}
 --- !u!114 &4943324450787485491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2808,6 +2814,7 @@ MonoBehaviour:
   _ComboAttack: 0
   _IsAnimationFinished: 0
   _CanReceiveInput: 0
+  _CanMove: 0
 --- !u!114 &6363259293620697004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3146,7 +3153,12 @@ MonoBehaviour:
   currentView: 1
   firstPersonCam: {fileID: 3849144779001713377}
   firstPersonTarget: {fileID: 3312262715438081692}
-  playerMesh: {fileID: 401308779718830453}
+  playerMeshes:
+  - {fileID: 3201401248480740544}
+  - {fileID: 1511078505299715385}
+  - {fileID: 1960706104356853493}
+  - {fileID: 3653424579983766144}
+  - {fileID: 7288379860564303627}
   sensitivity: 0.7
   maxXRotation: 80
   minXRotation: -80
