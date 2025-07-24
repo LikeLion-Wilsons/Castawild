@@ -2,7 +2,7 @@ using Fusion;
 using UnityEngine;
 
 public enum MoveAnimationState { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump }
-public enum ToolAnimationState { Idle, Aim, FullAim, Use, FullUse }
+public enum ToolAnimationState { Idle, Aim, FullAim, FullUse }
 
 public class PlayerNetworkManager : NetworkBehaviour
 {

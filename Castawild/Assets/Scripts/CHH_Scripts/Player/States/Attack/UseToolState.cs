@@ -14,12 +14,7 @@ public class UseToolState : ToolBaseState
         toolStateManager.networkManager.CanMove = false;
         toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
 
-        if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
-            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullUse;
-
-        else if (toolStateManager.movementManager.currentState != toolStateManager.movementManager.idleState)
-            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Use;
-
+        toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullUse;
         SetActiveArmMesh(true);
     }
 

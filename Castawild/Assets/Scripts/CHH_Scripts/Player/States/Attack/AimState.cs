@@ -41,6 +41,7 @@ public class AimState : ToolBaseState
         else if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
             toolStateManager.player.isAimLocked = false;
+            toolStateManager.cameraManager.MoveCamera(false);
             toolStateManager.ChangeState(toolStateManager.idleState);
         }
     }
