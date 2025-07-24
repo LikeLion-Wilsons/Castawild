@@ -1,6 +1,7 @@
 using Fusion;
 using System.Collections;
 using Unity.Cinemachine;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 public enum ViewType { None, FirstPerson, ThirdPerson }
@@ -13,6 +14,7 @@ public class PlayerCameraManager : MonoBehaviour
     private CinemachineInputAxisController inputAxisController;
     private PlayerNetworkManager networkManager;
     private NetworkCharacterControllerCustom networkCharacterController;
+    private ToolStateManager toolManager;
     private CwPlayer player;
     #endregion
 
@@ -87,6 +89,7 @@ public class PlayerCameraManager : MonoBehaviour
     {
         player = GetComponentInParent<CwPlayer>();
         inputManager = GetComponentInParent<PlayerInputManager>();
+        toolManager = GetComponentInParent<ToolStateManager>();
         orbital = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
         inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
         networkManager = GetComponentInParent<PlayerNetworkManager>();
@@ -119,7 +122,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void HandleViewChange()
     {
-        if (inputManager.viewChangeAction.WasPressedThisFrame())
+        if (inputManager.viewChangeAction.WasPressedThisFrame() && toolManager.currentState == toolManager.idleState)
         {
             ViewChange(currentView == ViewType.FirstPerson ? ViewType.ThirdPerson : ViewType.FirstPerson);
         }
