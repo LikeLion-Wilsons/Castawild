@@ -47,9 +47,11 @@ public class ToolStateManager : BaseStateManager
         switch (networkManager.CurrentToolUseState)
         {
             case ToolAnimationState.Aim:
+                anim.SetInteger("WeaponType", (int)networkManager.CurrentToolType);
                 anim.SetBool("Aiming", true);
                 break;
             case ToolAnimationState.FullAim:
+                anim.SetInteger("WeaponType", (int)networkManager.CurrentToolType);
                 anim.SetBool("FullAiming", true);
                 break;
             case ToolAnimationState.Use:

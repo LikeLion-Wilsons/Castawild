@@ -113,7 +113,7 @@ public class MovementStateManager : BaseStateManager
         }
         if (input.moveValue != Vector2.zero)
         {
-            if (input.IsDown(PlayerNetworkInputData.sprintInput))
+            if (input.IsDown(PlayerNetworkInputData.sprintInput) && jumped)
                 anim.SetBool("Running", true);
             else
                 anim.SetBool("Walking", true);
@@ -174,5 +174,6 @@ public class MovementStateManager : BaseStateManager
     public override void UpdateAnimationFlags()
     {
         base.UpdateAnimationFlags();
+
     }
 }

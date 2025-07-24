@@ -1,5 +1,3 @@
-
-using Test;
 using UnityEngine;
 
 public class UseToolState : ToolBaseState
@@ -13,11 +11,8 @@ public class UseToolState : ToolBaseState
 
     public override void EnterState()
     {
-        if (toolStateManager.networkManager.HoldAttackTool())
-        {
-            toolStateManager.networkManager.CanMove = false;
-            toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
-        }
+        toolStateManager.networkManager.CanMove = false;
+        toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
 
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
             toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullUse;
@@ -25,19 +20,18 @@ public class UseToolState : ToolBaseState
         else if (toolStateManager.movementManager.currentState != toolStateManager.movementManager.idleState)
             toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Use;
 
-        toolStateManager.player.currentAttackType = AttackType.Attack;
         SetActiveArmMesh(true);
     }
 
     public override void UpdateState()
     {
         // 움직이면 상체 레이어만 적용
-        if (toolStateManager.player.currentMoveType != MoveType.Idle)
-            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Use;
-        else if (toolStateManager.player.currentMoveType == MoveType.Idle)
-            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullUse;
+        //if (toolStateManager.player.currentMoveType != MoveType.Idle)
+        //    toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Use;
+        //else if (toolStateManager.player.currentMoveType == MoveType.Idle)
+        //    toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullUse;
 
-        // 곡괭이, 도구는 손 때까지 상태 유지
+        // 곡괭이, 도끼는 손 때까지 상태 유지
         if (CraftingToolActionRelease())
             return;
 
@@ -54,7 +48,7 @@ public class UseToolState : ToolBaseState
 
         if (toolStateManager.networkManager.IsAnimationFinished)
         {
-            if (toolStateManager.input.IsDown(PlayerNetworkInputData.aimInput) && toolStateManager.player.HoldAimTool())
+            if (toolStateManager.input.IsDown(PlayerNetworkInputData.aimInput) && toolStateManager.networkManager.HoldAimTool())
                 toolStateManager.ChangeState(toolStateManager.aimState);
             else
                 toolStateManager.ChangeState(toolStateManager.idleState);
@@ -70,13 +64,11 @@ public class UseToolState : ToolBaseState
 
         comboCount = 1;
         toolStateManager.comboAttack = false;
-
-        toolStateManager.player.currentAttackType = AttackType.None;
     }
 
     private bool CraftingToolActionRelease()
     {
-        if (toolStateManager.player.HoldCraftingTool())
+        if (toolStateManager.networkManager.HoldCraftingTool())
         {
             if (!toolStateManager.input.IsDown(PlayerNetworkInputData.toolUseInput) && toolStateManager.networkManager.IsAnimationFinished)
                 toolStateManager.ChangeState(toolStateManager.idleState);
