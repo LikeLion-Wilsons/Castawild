@@ -9,9 +9,11 @@ namespace Test {
     public const int BUTTON_RIGHT = 4;
     public const int BUTTON_INTERACT = 5;
     public const int BUTTON_INVENTORY = 6;
-    public const int BUTTON_FIRE = 7;
-    public const int BUTTON_FIRE2 = 8;
+    public const int BUTTON_FIRE = 7;//좌클
+    public const int BUTTON_FIRE2 = 8;//우클
+    public const int BUTTON_JUMP = 9;
     
+    public Vector2 mouseDelta;
     public NetworkButtons Buttons;
     public bool IsUp(int button) {
       return Buttons.IsSet(button) == false;
