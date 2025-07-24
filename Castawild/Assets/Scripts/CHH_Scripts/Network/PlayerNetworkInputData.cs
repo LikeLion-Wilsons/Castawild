@@ -12,7 +12,7 @@ public struct PlayerNetworkInputData : INetworkInput
     public const int toolChangedInput = 7; // 테스트용
 
     public Vector3 lookValue;
-    public Vector3 moveValue;
+    public Vector2 moveValue;
     public Vector3 moveDir; // 캐릭터 움직이는 방향
     public Vector3 camForward;
     public ViewType currentView;

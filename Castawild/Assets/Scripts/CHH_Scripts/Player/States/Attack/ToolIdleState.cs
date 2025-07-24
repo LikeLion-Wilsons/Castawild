@@ -20,13 +20,7 @@ public class ToolIdleState : ToolBaseState
         // UseTool
         else if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
         {
-            // 점프상태일 땐 막기
-            if (toolStateManager.player.HoldAttackTool())
-            {
-                if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.jumpState)
-                    return;
-                toolStateManager.movementManager.ChangeIdleState();
-            }
+            toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
             toolStateManager.ChangeState(toolStateManager.useToolState);
         }
     }

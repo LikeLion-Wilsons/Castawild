@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -57,7 +56,7 @@ public class Item_Panel :
 
     public void SetItemSlot()
     {
-        if (item.isNull == false && item.itemID != -1 && item.count != 0)
+        if (item.itemID != -1 && item.count != 0)
         {
             itemData.gameObject.SetActive(true);
             //임시
@@ -116,6 +115,7 @@ public class Item_Panel :
             // 복제 오브젝트 생성
             draggedClone = Instantiate(gameObject, onDragParent);
             var clonePanel = draggedClone.GetComponent<Item_Panel>();
+            clonePanel.inventoryData = this.inventoryData;
 
             // 복제 아이템 설정
             clonePanel.item = new Item
@@ -172,6 +172,7 @@ public class Item_Panel :
                 }
                 else break;
             }
+
             //이동 실패
             if (!droppedOnSlot)
             {
@@ -186,6 +187,9 @@ public class Item_Panel :
                     else
                     {
                         item.count = originalCount;
+                        int index = uiInventory.GetIndex(this);
+                        inventoryData.itemList.Set(index, item);
+                        Destroy(draggedClone);
                         SetItemSlot();
                     }
                 }
@@ -213,7 +217,7 @@ public class Item_Panel :
     public void OnDrop(PointerEventData eventData)
     {
         if (!isInveontoryOpen) return;
-        InventoryItem inventoryitem = eventData.pointerDrag.GetComponent<InventoryItem>();
+
         var droppedObj = eventData.pointerDrag;
         if (droppedObj == null) return;
 
@@ -243,7 +247,9 @@ public class Item_Panel :
                     durability = fromItem.durability
                 };
                 // 원래 아이템에서 수량 차감
-                toItem.count -= droppedPanel.originalCount / 2;
+                fromItem.count -= half;
+                inventoryData.itemList.Set(indexB, fromItem);
+
             }
             else
             {
@@ -264,6 +270,7 @@ public class Item_Panel :
                 {
                     // 같은 아이템이면 합치기
                     toItem.count += fromItem.count;
+                    inventoryData.itemList.Set(indexA, toItem);
                     inventoryData.ThrowItem(indexB);//합쳐지는 아이템 삭제
                     uiInventory.SetItemList();
                     return;

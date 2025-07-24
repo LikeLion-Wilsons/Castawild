@@ -1,5 +1,4 @@
 using UnityEngine;
-using static Unity.VisualScripting.Dependencies.Sqlite.SQLite3;
 
 public class ToolStateManager : BaseStateManager
 {
@@ -13,6 +12,9 @@ public class ToolStateManager : BaseStateManager
     public UseToolState useToolState;
     public AimState aimState;
     #endregion
+
+    public Transform armature;
+    public GameObject visibleMesh;
 
     protected override void Awake()
     {
