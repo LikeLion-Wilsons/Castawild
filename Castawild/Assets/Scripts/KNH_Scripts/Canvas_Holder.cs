@@ -49,7 +49,7 @@ public class Canvas_Holder : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
             uiParts["Inventory"].Toggle();
         }
