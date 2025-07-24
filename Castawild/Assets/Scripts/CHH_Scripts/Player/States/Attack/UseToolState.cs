@@ -98,7 +98,8 @@ public class UseToolState : ToolBaseState
 
     public void SetActiveArmMesh(bool isActive)
     {
-        if (toolStateManager.networkManager.CurrentToolType == ToolType.Fist && toolStateManager.cameraManager.currentView == ViewType.FirstPerson)
+        if (toolStateManager.networkManager.CurrentToolType == ToolType.Fist && toolStateManager.cameraManager.currentView == ViewType.FirstPerson
+            && toolStateManager.networkManager.HasInputAuthority)
         {
             toolStateManager.visibleMesh.SetActive(isActive);
             if (isActive)
