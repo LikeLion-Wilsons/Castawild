@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class UIInventory : UIPart
 {
@@ -57,12 +58,20 @@ public class UIInventory : UIPart
         {
             var item = new Item { itemID = -1, count = 0 };
             items.Add(item);
+            inventoryData.itemList.Set(indexB, item);
             //items.Add(null);
         }
 
         var temp = items[indexA];
         items[indexA] = items[indexB];
         items[indexB] = temp;
+
+        var tempA = items[indexA];
+        var tempB = items[indexB];
+
+        // 교환 후 Set 호출로 Fusion에 알려줌
+        items.Set(indexA, tempA);
+        items.Set(indexB, tempB);
 
         SetItemList();
     }
@@ -71,7 +80,7 @@ public class UIInventory : UIPart
 
     public void SetItemClickAnimation(Item_Panel panel)
     {
-        if (inventoryData.canvasHolder.IsInventoryOpen()) return;
+        if (!inventoryData.canvasHolder.IsInventoryOpen()) return;
         itemClick.gameObject.SetActive(true);
         itemClick.transform.SetParent(panel.transform);
         itemClick.transform.localPosition = Vector2.zero;

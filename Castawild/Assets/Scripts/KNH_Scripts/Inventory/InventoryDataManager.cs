@@ -115,7 +115,7 @@ public class InventoryDataManager : NetworkBehaviour
         //선택된 아이템 버리기
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            ThrowItem(GetSelectedIndex());
+            RPC_ThrowItem(GetSelectedIndex());
         }
 
     }
@@ -124,6 +124,24 @@ public class InventoryDataManager : NetworkBehaviour
     void RPC_UpdateInventoryUI()
     {
         uiInventory.SetItemList();
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SwapItems(int indexA, int indexB)
+    {
+        SwapItems(indexA, indexB);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_ThrowItem(int index)
+    {
+        ThrowItem(index);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetItem(int index, Item item)
+    {
+        itemList.Set(index, item);
     }
 
     public Item_Scriptable GetSeletedItem(bool use)
@@ -178,6 +196,7 @@ public class InventoryDataManager : NetworkBehaviour
                     {
                         RPC_UpdateInventoryUI();
                     }
+
                     return true;
                 }
             }
@@ -191,6 +210,7 @@ public class InventoryDataManager : NetworkBehaviour
                 Item newItem = new Item { itemID = id, count = amount };
                 itemList.Set(i, newItem);
                 onInventoryUpdated?.Invoke();
+
                 if (Object.HasStateAuthority)
                 {
                     RPC_UpdateInventoryUI();
@@ -200,6 +220,29 @@ public class InventoryDataManager : NetworkBehaviour
         }
         return false;
 
+    }
+
+    public void SwapItems(int indexA, int indexB)
+    {
+        if (indexA >= itemList.Count && indexB >= itemList.Count) return;
+        Debug.Log("Swap");
+        // 슬롯 수 부족할 경우 확장
+        while (itemList.Count <= Mathf.Max(indexA, indexB))
+        {
+            var item = new Item { itemID = -1, count = 0 };
+            itemList.Add(item);
+        }
+
+        var tempA = itemList[indexA];
+        var tempB = itemList[indexB];
+
+        itemList.Set(indexA, tempB);
+        itemList.Set(indexB, tempA);
+
+        if (Object.HasStateAuthority)
+        {
+            RPC_UpdateInventoryUI();
+        }
     }
 
     //아이템 버리기
