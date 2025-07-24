@@ -19,12 +19,12 @@ public class PlayerCameraManager : MonoBehaviour
     public bool isAiming = false;
     public ViewType currentView = ViewType.FirstPerson;
 
-    #region Third Person Aim
+    #region Third Person
     [Header("1인칭")]
     public CinemachineCamera firstPersonCam;
     [SerializeField] private Transform firstPersonTarget;
 
-    [SerializeField] private GameObject playerMesh;
+    [SerializeField] private GameObject[] playerMeshes;
 
     public float sensitivity = 1.5f;
     [SerializeField] private float maxXRotation = 80f;
@@ -33,10 +33,9 @@ public class PlayerCameraManager : MonoBehaviour
     private float pitch = 0f;
     public float minPitch = -80f;
     public float maxPitch = 80f;
-
     #endregion
 
-    #region Third Person Aim
+    #region Third Person
     [Header("3인칭")]
     public CinemachineCamera thirdPersonCam;
     [SerializeField] private Transform thirdPersonTarget;
@@ -92,6 +91,7 @@ public class PlayerCameraManager : MonoBehaviour
         inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
         networkManager = GetComponentInParent<PlayerNetworkManager>();
         networkCharacterController = GetComponentInParent<NetworkCharacterControllerCustom>();
+        Camera.main.GetComponent<CinemachineBrain>().DefaultBlend = new(CinemachineBlendDefinition.Styles.Cut, 0f);
     }
 
     private void SubscribeEvents()
@@ -138,7 +138,10 @@ public class PlayerCameraManager : MonoBehaviour
             if (networkManager.HasInputAuthority)
             {
                 currentView = ViewType.FirstPerson;
-                playerMesh.SetActive(false);
+                foreach (var mesh in playerMeshes)
+                {
+                    mesh.SetActive(false);
+                }
                 firstPersonCam.Priority = 10;
                 thirdPersonCam.Priority = 0;
             }
@@ -149,13 +152,32 @@ public class PlayerCameraManager : MonoBehaviour
             if (networkManager.HasInputAuthority)
             {
                 currentView = ViewType.ThirdPerson;
-                playerMesh.SetActive(true);
+
+                SettingThirdPersonCam();
+
+                foreach (var mesh in playerMeshes)
+                {
+                    mesh.SetActive(true);
+                }
                 firstPersonCam.Priority = 0;
                 thirdPersonCam.Priority = 10;
             }
         }
     }
 
+    private void SettingThirdPersonCam()
+    {
+        var transposer = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
+
+        if (transposer != null)
+        {
+            // 플레이어가 바라보는 방향의 각도를 카메라 회전값으로 설정
+            float targetYaw = player.transform.eulerAngles.y;
+            transposer.HorizontalAxis.Value = targetYaw;
+        }
+
+        thirdPersonCam.GetComponent<CinemachineOrbitalFollow>().VerticalAxis.Value = 22f;
+    }
 
     private void UpdateCameraPitch()
     {

@@ -18,7 +18,6 @@ public class MovementStateManager : BaseStateManager
     #endregion
 
     #region Movement
-    [HideInInspector] public bool canMove = true;
     public float currentMoveSpeed;
     public float airSpeedMuliplier = 0.7f;
     public float walkSpeed = 3f;
@@ -112,38 +111,14 @@ public class MovementStateManager : BaseStateManager
                 isTriggerSet = true;
                 break;
         }
+        if (input.moveValue != Vector2.zero)
+        {
+            if (input.IsDown(PlayerNetworkInputData.sprintInput))
+                anim.SetBool("Running", true);
+            else
+                anim.SetBool("Walking", true);
+        }
         anim.SetBool("Falling", !networkCharacterController.Grounded);
-    }
-
-    /// <summary>
-    /// 움직이는 방향
-    /// </summary>
-    public Vector3 GetMoveDir(Vector2 moveInput, bool isLocalPlayer)
-    {
-        if (!canMove)
-            return Vector3.zero;
-
-        Vector3 forward;
-        Vector3 right;
-
-        if (isLocalPlayer && cameraManager.currentView == ViewType.FirstPerson)
-        {
-            forward = transform.forward;
-            right = transform.right;
-        }
-        else
-        {
-            forward = cameraManager.CurrenCam.transform.forward;
-            right = cameraManager.CurrenCam.transform.right;
-        }
-
-        forward.y = 0f;
-        right.y = 0f;
-
-        forward.Normalize();
-        right.Normalize();
-
-        return forward * moveInput.y + right * moveInput.x;
     }
 
     public void RotatePlayer(Vector3 moveDir)
@@ -196,9 +171,8 @@ public class MovementStateManager : BaseStateManager
         }
     }
 
-    public void ChangeIdleState()
+    public override void UpdateAnimationFlags()
     {
-        canMove = false;
-        ChangeState(idleState);
+        base.UpdateAnimationFlags();
     }
 }
