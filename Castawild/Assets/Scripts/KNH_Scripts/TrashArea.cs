@@ -21,19 +21,22 @@ public class TrashArea : MonoBehaviour, IDropHandler
             {
                 Destroy(clonePanel.gameObject);
                 itemPanel.draggedClone = null; // 드래그 종료 처리
-                                               //Destroy(itemPanel);
+                var item = clonePanel.item;
+                inventory.inventoryData.RPC_SetItem(index, item);
+                //Destroy(itemPanel);
             }
         }
         
         else
         {
-            inventory.inventoryData.ThrowItem(index);          // 아이템 제거
+            inventory.inventoryData.RPC_ThrowItem(index);          // 아이템 제거
 
             var item = itemPanel.item;
             item.itemID = -1;
             item.count = 0;
 
             itemPanel.SlotInit(item); // 슬롯 비우기
+            inventory.inventoryData.RPC_SetItem(index, item);
         }
 
         itemPanel.SetItemSlot();             // UI 갱신

@@ -30,7 +30,7 @@ public class UI_Test : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             //if (Canvas_Holder.instance.IsInventoryOpen()) return;
-            InventoryDataManager.Instance.ThrowItem(InventoryDataManager.Instance.GetSelectedIndex());
+            //InventoryDataManager.Instance.ThrowItem(InventoryDataManager.Instance.GetSelectedIndex());
         }
     }
 
