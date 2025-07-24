@@ -10,4 +10,10 @@ public abstract class ToolBaseState : BaseState
         toolStateManager = _toolStateManager;
         inputManager = _inputManager;
     }
+
+    public override void ExitState()
+    {
+        toolStateManager.isAnimationFinished = false;
+        toolStateManager.networkManager.IsAnimationFinished = false;
+    }
 }

@@ -1,4 +1,3 @@
-using Fusion;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,15 +5,16 @@ using UnityEngine.InputSystem;
 public class PlayerInputManager : MonoBehaviour
 {
     #region Input Action
-    [SerializeField] private InputActionAsset inputActions;
+    [SerializeField] private InputActionAsset inputActionsRef;
+    private InputActionAsset inputActions;
 
     private InputAction moveAction;
     private InputAction jumpAction;
     private InputAction crouchAction;
-    public InputAction viewChangeAction;
-    public InputAction lookAction;
-    public InputAction zoomAction;
-    public InputAction aimAction;
+    [HideInInspector] public InputAction viewChangeAction;
+    [HideInInspector] public InputAction lookAction;
+    [HideInInspector] public InputAction zoomAction;
+    private InputAction aimAction;
     private InputAction sprintAction;
     private InputAction toolAction;
 
@@ -31,7 +31,6 @@ public class PlayerInputManager : MonoBehaviour
 
     PlayerCameraManager cameraManager;
     MovementStateManager movementManager;
-    NetworkCharacterControllerCustom networkCharacterController;
 
     private void OnEnable()
     {
@@ -47,12 +46,13 @@ public class PlayerInputManager : MonoBehaviour
     {
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
         movementManager = GetComponent<MovementStateManager>();
-        networkCharacterController = GetComponent<NetworkCharacterControllerCustom>();
         InitInputActions();
     }
 
     private void InitInputActions()
     {
+        inputActions = Instantiate(inputActionsRef);
+
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
         crouchAction = InputSystem.actions.FindAction("Crouch");
@@ -92,6 +92,7 @@ public class PlayerInputManager : MonoBehaviour
         inputData.Buttons.Set(PlayerNetworkInputData.aimInput, aimAction.IsPressed());
         inputData.Buttons.Set(PlayerNetworkInputData.sprintInput, sprintAction.IsPressed());
         inputData.Buttons.Set(PlayerNetworkInputData.toolUseInput, toolAction.IsPressed());
+        inputData.Buttons.Set(PlayerNetworkInputData.toolChangedInput, Input.GetKey(KeyCode.Tab)); // 테스트용 
 
         inputData.moveValue = moveAction.ReadValue<Vector2>();
         inputData = SetMoveDir(inputData);

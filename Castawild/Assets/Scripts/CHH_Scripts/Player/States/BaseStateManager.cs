@@ -1,7 +1,7 @@
 using Fusion;
 using UnityEngine;
 
-public class BaseStateManager : NetworkBehaviour
+public class BaseStateManager : MonoBehaviour
 {
     [HideInInspector] public Animator anim;
     [HideInInspector] public PlayerInputManager inputManager;
@@ -9,10 +9,12 @@ public class BaseStateManager : NetworkBehaviour
     [HideInInspector] public CwPlayer player;
     [HideInInspector] public PlayerNetworkManager networkManager;
 
+    public bool comboAttack;
 
     public PlayerNetworkInputData input { get; private set; }
     public NetworkButtons prevInputButtons;
 
+    public bool isAnimationFinished = false;
     public BaseState currentState;
 
     protected virtual void Awake()
@@ -29,6 +31,11 @@ public class BaseStateManager : NetworkBehaviour
         currentState?.ExitState();
         currentState = newState;
         currentState.EnterState();
+    }
+
+    public virtual void UpdateAnimationFlags()
+    {
+        networkManager.IsAnimationFinished = isAnimationFinished;
     }
 
     public void SetInput(PlayerNetworkInputData inputData) => input = inputData;

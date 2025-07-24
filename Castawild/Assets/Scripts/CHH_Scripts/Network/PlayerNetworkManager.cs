@@ -1,30 +1,23 @@
 using Fusion;
 using UnityEngine;
 
-public enum MoveAnimationType { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump }
+public enum MoveAnimationState { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump }
+public enum ToolAnimationState { Idle, Aim, FullAim, Use, FullUse }
 
 public class PlayerNetworkManager : NetworkBehaviour
 {
-    private PlayerCameraManager cameraManager;
-
-    [Networked] public MoveAnimationType CurrentMoveType { get; set; }
     public bool isSpawned = false;
+    [Networked] public MoveAnimationState CurrentMoveState { get; set; }
+    [Networked] public ToolAnimationState CurrentToolUseState { get; set; }
     [Networked] public Vector2 MoveValue { get; set; }
-
-    void Awake()
-    {
-        cameraManager = GetComponentInChildren<PlayerCameraManager>();
-    }
+    [Networked] public ToolType CurrentToolType { get; set; }
+    [Networked] public bool ComboAttack { get; set; }
+    [Networked] public bool IsAnimationFinished { get; set; }
+    [Networked] public bool CanReceiveInput { get; set; }
 
     public override void Spawned()
     {
         isSpawned = true;
-        if (HasStateAuthority)
-            CurrentMoveType = MoveAnimationType.Idle;
-    }
-
-    public override void FixedUpdateNetwork()
-    {
-        Debug.Log(CurrentMoveType);
+        CurrentToolType = ToolType.Fist;
     }
 }

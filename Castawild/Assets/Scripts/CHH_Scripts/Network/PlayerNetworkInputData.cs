@@ -9,6 +9,7 @@ public struct PlayerNetworkInputData : INetworkInput
     public const int aimInput = 4;
     public const int sprintInput = 5;
     public const int toolUseInput = 6;
+    public const int toolChangedInput = 7; // 테스트용
 
     public Vector3 lookValue;
     public Vector3 moveValue;
