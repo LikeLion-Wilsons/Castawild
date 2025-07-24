@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using Fusion;
@@ -16,7 +15,7 @@ public class NetworkTreeSpawner : NetworkBehaviour
 
     [Header("Spawn Settings")]
 
-    [SerializeField,Tooltip("스폰 최대 횟수")] private int maxSpawnAttempts = 20;
+    [SerializeField, Tooltip("스폰 최대 횟수")] private int maxSpawnAttempts = 20;
     [SerializeField, Tooltip("나무 거리 체크 간격")] private float checkInterval = 5f;
     [SerializeField, Tooltip("revive 지연 시간")] private float reviveDelay = 10f;
 
@@ -29,15 +28,6 @@ public class NetworkTreeSpawner : NetworkBehaviour
     private Dictionary<GameObject, TreeDefinition> prefabToDefinitionMap = new();
     private List<GameObject> loadedPrefabs = new();
     private int nextTreeId = 1; // 유니크 트리 ID 부여용(임시)
-
-    // 트리 죽음 후 리젠을 위한 구조체
-    private class DeadTreeEntry
-    {
-        public YSB_Scripts.NetworkTree tree;
-        public float reviveAtTime;
-    }
-
-    private List<DeadTreeEntry> deadTrees = new();
 
     public override void Spawned()
     {
@@ -112,7 +102,23 @@ public class NetworkTreeSpawner : NetworkBehaviour
         {
             foreach (var setting in terrainSettings)
             {
-                int needed = setting.maxTrees - setting.activeTrees.Count;
+                // setting.activeTrees 리스트에서 살아있는 트리만 카운트
+                int aliveTreesCount = 0;
+                for (int i = setting.activeTrees.Count - 1; i >= 0; i--)
+                {
+                    var treeObj = setting.activeTrees[i];
+                    var tree = treeObj.GetComponent<YSB_Scripts.NetworkTree>();
+                    if (tree == null || !tree.IsAlive())
+                    {
+                        // 죽었거나 null인 트리는 리스트에서 제거
+                        setting.activeTrees.RemoveAt(i);
+                        continue;
+                    }
+                    aliveTreesCount++;
+                }
+
+                int needed = setting.maxTrees - aliveTreesCount;
+
                 for (int i = 0; i < needed; i++)
                 {
                     TrySpawnOneTree(setting);
@@ -203,11 +209,9 @@ public class NetworkTreeSpawner : NetworkBehaviour
             {
                 var tree = obj.GetComponent<YSB_Scripts.NetworkTree>();
                 tree.Init(def, nextTreeId++);
-                tree.OnTreeDied += OnTreeDied;
             }
         );
 
-        // 후입자에게도 보이도록 러너 씬으로 이동
         if (treeObj != null)
         {
             Runner.MoveToRunnerScene(treeObj.gameObject);
@@ -215,39 +219,6 @@ public class NetworkTreeSpawner : NetworkBehaviour
             if (treeObj.HasStateAuthority)
             {
                 setting.activeTrees.Add(treeObj);
-            }
-        }
-    }
-
-    // 트리가 죽었을 때 호출되는 콜백
-    private void OnTreeDied(YSB_Scripts.NetworkTree tree)
-    {
-        // 가시성 관리자에게서 이 나무를 제거하여, 죽어있는 동안 다시 나타나지 않도록 합니다.
-        NetworkObjectVisibilityManager.Instance?.UnregisterObject(tree.Object);
-
-        deadTrees.Add(new DeadTreeEntry
-        {
-            tree = tree,
-            reviveAtTime = Time.time + reviveDelay
-        });
-    }
-
-    // FixedUpdateNetwork에서 리젠 시간 체크 및 복구
-    public override void FixedUpdateNetwork()
-    {
-        if (!HasStateAuthority) return;
-
-        for (int i = deadTrees.Count - 1; i >= 0; i--)
-        {
-            if (Time.time >= deadTrees[i].reviveAtTime)
-            {
-                var entry = deadTrees[i];
-                entry.tree.Revive();
-
-                // 나무가 부활했으므로, 다시 가시성 관리 대상에 포함시킵니다.
-                NetworkObjectVisibilityManager.Instance?.RegisterObject(entry.tree.Object);
-
-                deadTrees.RemoveAt(i);
             }
         }
     }

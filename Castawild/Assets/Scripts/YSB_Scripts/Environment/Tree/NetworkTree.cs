@@ -3,20 +3,29 @@ using UnityEngine;
 
 namespace YSB_Scripts
 {
-    public class NetworkTree : NetworkBehaviour, Test.IInteractable
+    public class NetworkTree : NetworkBehaviour, Test.IInteractable, INetworkVisibilityObject
     {
-        public event System.Action<NetworkTree> OnTreeDied;
-
         //[Networked, OnChangedRender(nameof(OnChangedHealth))]//tree 외형 변화 없으면 굳이 필요 없을지도
         public int Health { get; set; }
+
         [Networked] private int MaxHP { get; set; }
         [Networked] public int TreeId { get; set; } // TreeId는 스폰 시에 할당
+
         private TreeDefinition definition;
 
         [SerializeField] public GameObject visualRoot;
 
         [Networked] private TickTimer reviveTimer { get; set; }
 
+        public bool IsAlive() => Health > 0;
+
+        public bool CanBeVisible() => IsAlive();
+
+        public NetworkObject GetNetworkObject() => Object;
+        public override void Spawned()
+        {
+            NetworkObjectVisibilityManager.Instance?.RegisterObject(this);
+        }
         public void Init(TreeDefinition def, int treeId)
         {
             if (def == null)
@@ -30,13 +39,7 @@ namespace YSB_Scripts
             TreeId = treeId;
         }
 
-        // public override void Spawned()
-        // {
-        //     RefreshVisual();
-        // }
-
-
-        public bool CanInteract() => Health > 0;
+        public bool CanInteract() => IsAlive();
 
         public void Interact(PlayerRef player)
         {
@@ -46,7 +49,7 @@ namespace YSB_Scripts
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         void RPC_RequestDamage(PlayerRef player)
         {
-            if (Health <= 0) return;
+            if (!IsAlive()) return;
 
             Health -= 10;
 
@@ -56,18 +59,18 @@ namespace YSB_Scripts
                 string log = $"Tree[{TreeId}] Health: {Health}/{MaxHP} ({ratio:P})";
                 NetworkLogManager.Instance.Log(log, player);
             }
-
-            if (Health <= 0)
+            else
             {
                 var playerObj = Runner.GetPlayerObject(player);
                 var inven = playerObj.GetComponent<Test.PlayerInventory>();
                 inven.AddItem(definition.dropItemID, definition.dropAmount);
 
-                OnTreeDied?.Invoke(this);
+                // 리젠 타이머 시작
+                reviveTimer = TickTimer.CreateFromSeconds(Runner, 10f);
             }
         }
 
-        public bool CanRevive() => Health <= 0 && reviveTimer.ExpiredOrNotRunning(Runner);
+        public bool CanRevive() => !IsAlive() && reviveTimer.ExpiredOrNotRunning(Runner);
 
         public void Revive()
         {

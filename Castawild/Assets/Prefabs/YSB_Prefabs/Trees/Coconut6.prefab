@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 934542335319136159}
   - component: {fileID: 298317164471834319}
-  - component: {fileID: -3603678181955032444}
   - component: {fileID: 7923129873838452555}
   - component: {fileID: 4973858626686696035}
   - component: {fileID: -5800857443617161371}
@@ -64,18 +63,6 @@ LODGroup:
     renderers:
     - renderer: {fileID: 4694324732190904482}
   m_Enabled: 1
---- !u!114 &-3603678181955032444
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 161643516142887002}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a6f672b1d9842841870274fa0b90c9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7923129873838452555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,7 +94,6 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: -3603678181955032444}
   - {fileID: 7923129873838452555}
   - {fileID: -5800857443617161371}
   ForceRemoteRenderTimeframe: 0
