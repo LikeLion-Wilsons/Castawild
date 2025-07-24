@@ -9,7 +9,7 @@ public class UIInventory : UIPart
     public List<Item_Panel> itemPanels = new List<Item_Panel>();
 
     public GameObject itemClick;
-    private InventoryDataManager inventoryData;
+    public InventoryDataManager inventoryData;
     public void BindToInventoryData(InventoryDataManager data)
     {
         inventoryData = data;
@@ -17,25 +17,16 @@ public class UIInventory : UIPart
         Init();
     }
 
-
-    private void Awake()
-    {
-        //InventoryDataManager.onInventoryUpdated += SetItemList;
-        Init();
-    }
     public void Init()
     {
-
         int itemMaximumValue = content.childCount;
 
-        //SetItemList();
+        SetItemList();
     }
 
     //아이템을 얻을 때 실행
     public void SetItemList()
     {
-
-        Debug.Log("SetItemList");
         var items = inventoryData.itemList;
 
         for (int i = 0; i < itemPanels.Count; i++)
@@ -46,18 +37,11 @@ public class UIInventory : UIPart
                 item = items[i];
             else
             {
-                item.isNull = true;
+                item.itemID = -1;
                 item.count = 0;
             }
-
+            //Debug.Log(i + " : " + items[i].itemID+" " + items[i].count);
             itemPanels[i].SlotInit(item);
-            itemPanels[i].SetItemSlot();
-        }
-    }
-    public void RefreshUI()
-    {
-        for (int i = 0; i < itemPanels.Count; i++)
-        {
             itemPanels[i].SetItemSlot();
         }
     }
@@ -71,7 +55,7 @@ public class UIInventory : UIPart
         // 슬롯 수 부족할 경우 확장
         while (items.Count <= Mathf.Max(indexA, indexB))
         {
-            var item = new Item { isNull = true, count = 0 };
+            var item = new Item { itemID = -1, count = 0 };
             items.Add(item);
             //items.Add(null);
         }
@@ -83,7 +67,7 @@ public class UIInventory : UIPart
         SetItemList();
     }
 
-    
+
 
     public void SetItemClickAnimation(Item_Panel panel)
     {
