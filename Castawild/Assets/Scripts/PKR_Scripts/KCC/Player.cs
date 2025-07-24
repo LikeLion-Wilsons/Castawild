@@ -7,7 +7,6 @@ namespace Test.KCC
     public class Player : NetworkBehaviour
     {
         public SimpleKCC kcc;
-        public PlayerInput input;
         public Transform CameraPivot;
         public Transform CameraHandle;
         [SerializeField] private NicknameUI nicknameUI;
