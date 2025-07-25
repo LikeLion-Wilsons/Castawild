@@ -130,13 +130,20 @@ namespace Test.Shoot
 
 			var hitOptions = HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority;
 
-			if (Runner.LagCompensation.Raycast(previousPosition, direction, distance,
-				    Object.InputAuthority, out var hit, _hitMask, hitOptions) == true)
+			if (Runner.LagCompensation.Raycast(previousPosition, direction, distance, Object.InputAuthority, out var hit, _hitMask, hitOptions))
 			{
 				projectileData.HitPosition = hit.Point;
 				projectileData.FinishTick = tick + Mathf.RoundToInt(_lifeTimeAfterHit / Runner.DeltaTime);
 				
 				//do something with hit.
+                if (hit.Hitbox != null)
+                {
+                    var target = hit.Hitbox.Root.GetComponent<IDamageable>();
+                    if (target != null)
+                    {
+                        target.TakeDamage(50);
+                    }    
+                }
 			}
 		}
 
