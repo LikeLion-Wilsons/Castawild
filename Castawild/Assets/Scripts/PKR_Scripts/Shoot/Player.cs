@@ -77,7 +77,7 @@ namespace Test.Shoot
                 {
                     Debug.Log("Fire1()");
                     var rot = kcc.GetLookRotation(true, false);
-                    _weaponLinear.Fire();
+                    _weaponLinear.Fire(input.camerPivotRotation);
                 }
 
                 if (input.Buttons.WasPressed(_prevInputButtons, NetworkInputData.BUTTON_FIRE2))
