@@ -25,6 +25,13 @@ public class UIInventory : UIPart
         SetItemList();
     }
 
+    public void SetitemSlot(int index, int count, Item item)
+    {
+        var items = inventoryData.itemList;
+        item.count = count;
+        itemPanels[index].SlotInit(item);
+        itemPanels[index].SetItemSlot();
+    }
     //아이템을 얻을 때 실행
     public void SetItemList()
     {
