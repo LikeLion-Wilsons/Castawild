@@ -13,7 +13,7 @@ public class DummyTarget : NetworkBehaviour,IDamageable
     [Networked] private TickTimer _reviveCooldown { get; set; }
 
     [SerializeField] private bool _useLagCompensation;
-    [Networked,OnChangedRender(nameof(OnchangedHealth))] private int health{ get; set; }
+    [Networked, OnChangedRender(nameof(OnchangedHealth))] private int health { get; set; } = 100;
     public static event Action<int> onDamaged;
     private HitboxRoot _hitboxRoot;
 
