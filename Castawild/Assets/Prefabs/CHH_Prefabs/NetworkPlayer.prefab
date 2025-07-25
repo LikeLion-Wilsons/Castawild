@@ -121,7 +121,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TrackerSettings:
     BindingMode: 4
-    PositionDamping: {x: 0, y: 0, z: 0}
+    PositionDamping: {x: 0.5, y: 0.5, z: 0.5}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
@@ -949,8 +949,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2344188678965562170}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.36388546, y: 0.02989633, z: -0.011686487, w: 0.93089044}
-  m_LocalPosition: {x: -0.47155327, y: 9.241736, z: -7.3338723}
+  m_LocalRotation: {x: 0.21346568, y: 0.7667895, z: -0.31761461, w: 0.51535165}
+  m_LocalPosition: {x: -6.5473285, y: 9.531069, z: 2.6706724}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1033,7 +1033,7 @@ MonoBehaviour:
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
-    Value: 3.6789398
+    Value: 112.190674
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -1043,7 +1043,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: 42.70109
+    Value: 45
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
@@ -2748,6 +2748,7 @@ GameObject:
   - component: {fileID: 4022685551630965951}
   - component: {fileID: 5000463041039569134}
   - component: {fileID: 8380833186685685926}
+  - component: {fileID: 8582333994370596099}
   m_Layer: 6
   m_Name: NetworkPlayer
   m_TagString: Player
@@ -2798,6 +2799,7 @@ MonoBehaviour:
   - {fileID: 6363259293620697004}
   - {fileID: 5000463041039569134}
   - {fileID: 8380833186685685926}
+  - {fileID: 8582333994370596099}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &731358021191424698
 MonoBehaviour:
@@ -3056,10 +3058,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   kcc: {fileID: 0}
   gravity: -20
-  jumpImpulse: 20
-  acceleration: 10
+  jumpImpulse: 2.5
   maxSpeed: 2
   rotationSpeed: 15
+--- !u!114 &8582333994370596099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c9401ea77154199921367b63619a253, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7288379860564303627
 GameObject:
   m_ObjectHideFlags: 0
@@ -3374,7 +3387,7 @@ MonoBehaviour:
   - {fileID: 1960706104356853493}
   - {fileID: 3653424579983766144}
   - {fileID: 7288379860564303627}
-  sensitivity: 0.7
+  sensitivity: 0.5
   maxXRotation: 80
   minXRotation: -80
   minPitch: -80

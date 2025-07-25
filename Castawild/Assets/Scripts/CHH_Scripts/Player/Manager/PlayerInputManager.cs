@@ -93,6 +93,7 @@ public class PlayerInputManager : MonoBehaviour
         inputData.Buttons.Set(PlayerNetworkInputData.sprintInput, sprintAction.IsPressed());
         inputData.Buttons.Set(PlayerNetworkInputData.toolUseInput, toolAction.IsPressed());
         inputData.Buttons.Set(PlayerNetworkInputData.toolChangedInput, Input.GetKey(KeyCode.Tab)); // 테스트용 
+        inputData.Buttons.Set(PlayerNetworkInputData.interact, Input.GetKey(KeyCode.E)); // 테스트용 
 
 
         inputData.moveValue = moveAction.ReadValue<Vector2>();

@@ -1,5 +1,6 @@
 using Fusion;
 using Fusion.Addons.SimpleKCC;
+using Test;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -10,7 +11,6 @@ public sealed class KCCPlayerController : NetworkBehaviour
     [Header("Movement")]
     public float gravity = -20f;
     public float jumpImpulse = 3f;
-    public float acceleration = 10f;
     public float maxSpeed = 2f;
     public float rotationSpeed = 15f;
 
@@ -19,6 +19,13 @@ public sealed class KCCPlayerController : NetworkBehaviour
     private PlayerCameraManager cameraManager;
     private PlayerNetworkManager networkManager;
     public bool Grounded => kcc.IsGrounded;
+
+    // interact 테스트용
+    private float _interactRadius = 1f;
+    Collider[] _interactResult = new Collider[5];
+    [Networked] private TickTimer interactTimer { get; set; }
+
+    private NetworkButtons prevInputButtons;
 
     public override void Spawned()
     {
@@ -62,6 +69,10 @@ public sealed class KCCPlayerController : NetworkBehaviour
             toolManager.UpdateAnimationFlags();
             toolManager.ChangeCurrentTool();
 
+            // 테스트용
+            if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interact))
+                TryInteract();
+
             movementManager.SetPrevInputButton(input.Buttons);
             toolManager.SetPrevInputButton(input.Buttons);
 
@@ -69,6 +80,8 @@ public sealed class KCCPlayerController : NetworkBehaviour
 
             Move(input.moveDir);
             Rotate(input);
+
+            prevInputButtons = input.Buttons;
         }
     }
 
@@ -85,17 +98,7 @@ public sealed class KCCPlayerController : NetworkBehaviour
         velocity.y += gravity * Runner.DeltaTime;
 
         // 수평 속도
-        Vector3 horizontalVel = new Vector3(velocity.x, 0f, velocity.z);
-
-        if (direction == Vector3.zero)
-            horizontalVel = Vector3.zero;
-        else
-        {
-            horizontalVel = Vector3.ClampMagnitude(
-                horizontalVel + direction * acceleration * Runner.DeltaTime,
-                maxSpeed
-            );
-        }
+        Vector3 horizontalVel = direction * maxSpeed;
 
         velocity.x = horizontalVel.x;
         velocity.z = horizontalVel.z;
@@ -140,5 +143,27 @@ public sealed class KCCPlayerController : NetworkBehaviour
 
         movementManager.UpdateMoveAnimation(Runner.DeltaTime);
         toolManager.UpdateMoveAnimation();
+    }
+
+    void TryInteract()
+    {
+        Vector3 pos = transform.position + transform.forward * 1.5f;
+        var hits = Runner.GetPhysicsScene()
+            .OverlapSphere(pos, _interactRadius, _interactResult, 1, QueryTriggerInteraction.UseGlobal);
+        if (hits > 0)
+        {
+            for (int i = 0; i < hits && i < _interactResult.Length; i++)
+            {
+                if (_interactResult[i].TryGetComponent<IInteractable>(out var interactable))
+                {
+                    if (interactable.CanInteract())
+                    {
+                        interactable.Interact(Object.InputAuthority);
+                        interactTimer = TickTimer.CreateFromSeconds(Runner, 1f);
+                        break;
+                    }
+                }
+            }
+        }
     }
 }
