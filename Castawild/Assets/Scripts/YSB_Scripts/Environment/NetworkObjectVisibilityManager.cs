@@ -6,10 +6,10 @@ public class NetworkObjectVisibilityManager : NetworkSingleton<NetworkObjectVisi
 {
     private Dictionary<PlayerRef, Transform> playerTransforms = new();
     private List<INetworkVisibilityObject> visibilityObjects = new();
-    
+
     [SerializeField] private float visibleRange = 50f;
     [SerializeField] private float updateInterval = 0.5f;
-    
+
     private float timer = 0f;
 
     public override void Spawned()
@@ -20,9 +20,6 @@ public class NetworkObjectVisibilityManager : NetworkSingleton<NetworkObjectVisi
 
     public void SetPlayerTransform(PlayerRef playerRef, Transform playerTransform)
     {
-        //if (!Runner.IsRunning) return;
-        //if (!IsInitialized) return;
-        
         if (playerTransforms.ContainsKey(playerRef))
             playerTransforms[playerRef] = playerTransform;
         else
@@ -51,16 +48,29 @@ public class NetworkObjectVisibilityManager : NetworkSingleton<NetworkObjectVisi
         if (!playerTransforms.TryGetValue(localPlayer, out Transform playerTransform) || playerTransform == null)
             return;
 
-        foreach (var obj in visibilityObjects)
+        for (int i = visibilityObjects.Count - 1; i >= 0; i--)
         {
-            if (obj?.GetNetworkObject() == null) continue;
+            var obj = visibilityObjects[i];
+            if (obj == null)
+            {
+                visibilityObjects.RemoveAt(i);
+                continue;
+            }
 
             var netObj = obj.GetNetworkObject();
+            var visualRoot = obj.VisualRoot;
+
+            if (netObj == null || visualRoot == null)
+            {
+                visibilityObjects.RemoveAt(i);
+                continue;
+            }
+
             bool canShow = obj.CanBeVisible() &&
                 Vector3.Distance(playerTransform.position, netObj.transform.position) <= visibleRange;
 
-            if (netObj.gameObject.activeSelf != canShow)
-                netObj.gameObject.SetActive(canShow);
+            if (visualRoot.gameObject.activeSelf != canShow)
+                visualRoot.gameObject.SetActive(canShow);
         }
     }
 }

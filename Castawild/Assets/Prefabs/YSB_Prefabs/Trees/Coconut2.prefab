@@ -187,6 +187,8 @@ GameObject:
   - component: {fileID: 3457356439086898031}
   - component: {fileID: 2001544592901520949}
   - component: {fileID: -8260302445626517741}
+  - component: {fileID: -282165680113176637}
+  - component: {fileID: 1472779750104609192}
   m_Layer: 0
   m_Name: Coconut2
   m_TagString: Untagged
@@ -288,6 +290,43 @@ MonoBehaviour:
   SyncParent: 0
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 0
+--- !u!114 &-282165680113176637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7276902029888259892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1541381998, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Guid:
+    RawGuidValue: f6b432ab29364fb0a0b0ab7a44d1e899
+--- !u!136 &1472779750104609192
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7276902029888259892}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.35304177
+  m_Height: 5.077321
+  m_Direction: 1
+  m_Center: {x: 0, y: 2.0386605, z: -0.085710764}
 --- !u!1 &8116378357262777682
 GameObject:
   m_ObjectHideFlags: 0
@@ -384,7 +423,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4907500246536467927}
-  - component: {fileID: 585943445291728204}
   m_Layer: 0
   m_Name: VisualRoot
   m_TagString: Untagged
@@ -410,26 +448,3 @@ Transform:
   - {fileID: 761437122531364807}
   m_Father: {fileID: 2489801981110938898}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &585943445291728204
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8988426388035033497}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.35304177
-  m_Height: 5.077321
-  m_Direction: 1
-  m_Center: {x: 0, y: 2.0386605, z: -0.085710764}

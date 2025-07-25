@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-public abstract class GenericNetworkSpawner<T, U> : NetworkBehaviour
-    where T : NetworkBehaviour, ISpawnable // ISpawnable interface
-    where U : SpawnableDefinition // SpawnableDefinition class
+public abstract class EnvironmentSpawner<T, U> : NetworkBehaviour
+    where T : EnvironmentObject
+    where U : SpawnableDefinition
 {
     [Header("Definitions")]
     [SerializeField] protected List<U> definitions;
@@ -38,7 +38,8 @@ public abstract class GenericNetworkSpawner<T, U> : NetworkBehaviour
             StartCoroutine(InitAndSpawnLoop());
     }
 
-    protected IEnumerator InitAndSpawnLoop()
+    // virtual 키워드 추가
+    protected virtual IEnumerator InitAndSpawnLoop()
     {
         yield return CacheTerrainAlphamaps();
         yield return LoadPrefabs();
@@ -91,7 +92,27 @@ public abstract class GenericNetworkSpawner<T, U> : NetworkBehaviour
         {
             foreach (var setting in terrainSettings)
             {
-                int needed = setting.maxTrees - setting.activeTrees.Count;
+                // 살아있는 객체만 카운트 (EnvironmentObject 기반)
+                int aliveCount = 0;
+                for (int i = setting.activeTrees.Count - 1; i >= 0; i--)
+                {
+                    var obj = setting.activeTrees[i];
+                    if (obj == null)
+                    {
+                        setting.activeTrees.RemoveAt(i);
+                        continue;
+                    }
+
+                    var envObj = obj.GetComponent<T>();
+                    if (envObj == null || !envObj.IsAlive())
+                    {
+                        setting.activeTrees.RemoveAt(i);
+                        continue;
+                    }
+                    aliveCount++;
+                }
+
+                int needed = setting.maxTrees - aliveCount;
                 for (int i = 0; i < needed; i++)
                 {
                     TrySpawnOne(setting);
@@ -144,9 +165,9 @@ public abstract class GenericNetworkSpawner<T, U> : NetworkBehaviour
 
     protected bool IsOverlapping(Vector3 pos, TerrainSpawnSettings setting)
     {
-        foreach (var tree in setting.activeTrees)
+        foreach (var obj in setting.activeTrees)
         {
-            if (Vector3.Distance(tree.transform.position, pos) < setting.minDistanceBetweenTrees)
+            if (Vector3.Distance(obj.transform.position, pos) < setting.minDistanceBetweenTrees)
                 return true;
         }
         return false;
@@ -215,4 +236,3 @@ public abstract class GenericNetworkSpawner<T, U> : NetworkBehaviour
         }
     }
 }
-

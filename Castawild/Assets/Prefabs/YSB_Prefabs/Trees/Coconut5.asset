@@ -12,14 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2956f42caa08d1479169678f0266d32, type: 3}
   m_Name: Coconut5
   m_EditorClassIdentifier: 
-  treeName: Coconut5
   prefabReference:
     m_AssetGUID: 552365f4070b4fc8aac383be43a197ed
     m_SubObjectName: 
     m_SubObjectGUID: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  maxHealth: 100
+  maxHealth: 30
   dropItemID: 0
   dropAmount: 1
   destroySFX: 

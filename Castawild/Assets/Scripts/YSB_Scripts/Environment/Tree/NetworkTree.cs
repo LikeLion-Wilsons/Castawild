@@ -3,51 +3,46 @@ using UnityEngine;
 
 namespace YSB_Scripts
 {
-    public class NetworkTree : NetworkBehaviour, Test.IInteractable, INetworkVisibilityObject
+    public interface IInteractable//나중에 분리
     {
-        //[Networked, OnChangedRender(nameof(OnChangedHealth))]//tree 외형 변화 없으면 굳이 필요 없을지도
-        public int Health { get; set; }
-
-        [Networked] private int MaxHP { get; set; }
-        [Networked] public int TreeId { get; set; } // TreeId는 스폰 시에 할당
-
+        bool CanInteract();
+        void Interact(PlayerRef player);
+    }
+    public class NetworkTree : EnvironmentObject
+    {
+        [SerializeField] private GameObject visualRoot;
         private TreeDefinition definition;
 
-        [SerializeField] public GameObject visualRoot;
+        public override GameObject VisualRoot => visualRoot;
 
-        [Networked] private TickTimer reviveTimer { get; set; }
-
-        public bool IsAlive() => Health > 0;
-
-        public bool CanBeVisible() => IsAlive();
-
-        public NetworkObject GetNetworkObject() => Object;
         public override void Spawned()
         {
+            base.Spawned();
             NetworkObjectVisibilityManager.Instance?.RegisterObject(this);
         }
-        public void Init(TreeDefinition def, int treeId)
+
+        public override void Init(SpawnableDefinition def, int instanceId)
         {
+            base.Init(def, instanceId);
             if (def == null)
             {
                 Debug.LogError("TreeDefinition is null!");
                 return;
             }
-            definition = def;
-            MaxHP = def.maxHealth;
+            definition = def as TreeDefinition;
+            MaxHP = definition.maxHealth;
             Health = MaxHP;
-            TreeId = treeId;
         }
 
-        public bool CanInteract() => IsAlive();
-
-        public void Interact(PlayerRef player)
+        public override void Interact(PlayerRef player)
         {
+            if (!IsAlive()) return;
+
             RPC_RequestDamage(player);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        void RPC_RequestDamage(PlayerRef player)
+        private void RPC_RequestDamage(PlayerRef player)
         {
             if (!IsAlive()) return;
 
@@ -56,7 +51,7 @@ namespace YSB_Scripts
             if (Health > 0)
             {
                 float ratio = MaxHP > 0 ? (float)Health / MaxHP : 0;
-                string log = $"Tree[{TreeId}] Health: {Health}/{MaxHP} ({ratio:P})";
+                string log = $"Tree[{InstanceId}] Health: {Health}/{MaxHP} ({ratio:P})";
                 NetworkLogManager.Instance.Log(log, player);
             }
             else
@@ -65,17 +60,10 @@ namespace YSB_Scripts
                 var inven = playerObj.GetComponent<Test.PlayerInventory>();
                 inven.AddItem(definition.dropItemID, definition.dropAmount);
 
-                // 리젠 타이머 시작
-                reviveTimer = TickTimer.CreateFromSeconds(Runner, 10f);
+                Die();
+
+                ReviveTimer = TickTimer.CreateFromSeconds(Runner, 10f);
             }
-        }
-
-        public bool CanRevive() => !IsAlive() && reviveTimer.ExpiredOrNotRunning(Runner);
-
-        public void Revive()
-        {
-            Health = MaxHP;
-            reviveTimer = TickTimer.CreateFromSeconds(Runner, 10f);
         }
     }
 }
