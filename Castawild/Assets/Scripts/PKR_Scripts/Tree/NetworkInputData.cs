@@ -15,7 +15,6 @@ namespace Test
         public const int BUTTON_FIRE2 = 8;//우클
         public const int BUTTON_JUMP = 9;
 
-        public Quaternion camerPivotRotation;
         public Vector2 mouseDelta;
         public NetworkButtons Buttons;
         public bool IsUp(int button)

@@ -76,14 +76,20 @@ namespace Test.Shoot
                 if (input.Buttons.WasPressed(_prevInputButtons, NetworkInputData.BUTTON_FIRE))
                 {
                     Debug.Log("Fire1()");
-                    var rot = kcc.GetLookRotation(true, false);
-                    _weaponLinear.Fire(input.camerPivotRotation);
+                    var rot = kcc.GetLookRotation();
+                    var q = Quaternion.Euler(rot);
+                    // var q2 = input.camerPivotRotation;
+                    // Debug.Log($"q: {q.eulerAngles}, q2: {q2.eulerAngles}");
+                    //q==q2 동일함.
+                    _weaponLinear.Fire(q * Vector3.forward);
                 }
 
                 if (input.Buttons.WasPressed(_prevInputButtons, NetworkInputData.BUTTON_FIRE2))
                 {
                     Debug.Log("Fire2()");
-                    _weaponParabola.Fire();
+                    var rot = kcc.GetLookRotation();
+                    var q = Quaternion.Euler(rot);
+                    _weaponParabola.Fire(q * Vector3.forward);
                 }
 
 

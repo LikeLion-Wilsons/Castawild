@@ -48,7 +48,6 @@ namespace Test.Shoot
             myInput.Buttons.Set(NetworkInputData.BUTTON_FIRE2, isPressedFire2);
             myInput.Buttons.Set(NetworkInputData.BUTTON_JUMP, isPressedJump);
             myInput.mouseDelta = _mouseDelta;
-            myInput.camerPivotRotation = Camera.main.transform.rotation;
 
             input.Set(myInput);
             _resetInput = true;
