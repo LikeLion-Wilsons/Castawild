@@ -2772,10 +2772,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5133235845606125591}
     m_Modifications:
-    - target: {fileID: 6193791388071682267, guid: 1280f59349254b94f88b9f361c8b13f3, type: 3}
-      propertyPath: target
-      value: 
-      objectReference: {fileID: 8399792717168479333}
+    - target: {fileID: 6538538123131785897, guid: 1280f59349254b94f88b9f361c8b13f3, type: 3}
+      propertyPath: Flags
+      value: 262145
+      objectReference: {fileID: 0}
+    - target: {fileID: 6538538123131785897, guid: 1280f59349254b94f88b9f361c8b13f3, type: 3}
+      propertyPath: SortKey
+      value: 3700767166
+      objectReference: {fileID: 0}
+    - target: {fileID: 6538538123131785897, guid: 1280f59349254b94f88b9f361c8b13f3, type: 3}
+      propertyPath: NetworkedBehaviours.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7099007087491931358, guid: 1280f59349254b94f88b9f361c8b13f3, type: 3}
       propertyPath: m_Name
       value: GameplayView
@@ -3735,17 +3743,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7a4f81b07ce373f439dee69956f894e4, type: 3}
---- !u!114 &8399792717168479333 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 514657360793563356, guid: 7a4f81b07ce373f439dee69956f894e4, type: 3}
-  m_PrefabInstance: {fileID: 8399792717168479330}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 586b953683ba9c54888aa0eec1041c77, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!222 &8681157776969120405
 CanvasRenderer:
   m_ObjectHideFlags: 0
