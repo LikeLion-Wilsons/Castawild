@@ -25,8 +25,6 @@ public class AnimationTrigger : MonoBehaviour
     public void JumpForce()
     {
         movementManager.jumpTriggered = true;
-        Debug.Log("movementManager.jumpTriggered " + movementManager.jumpTriggered);
-
     }
     public void Jumped() => movementManager.isJumping = true;
     public void ReceiveInput() => canReceiveInput = true;
