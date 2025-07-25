@@ -1308,6 +1308,7 @@ GameObject:
   - component: {fileID: 1919559978308039629}
   - component: {fileID: 7126123871793319977}
   - component: {fileID: 6193791388071682267}
+  - component: {fileID: 6538538123131785897}
   m_Layer: 5
   m_Name: GameplayView
   m_TagString: Untagged
@@ -1383,9 +1384,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41a0c429e5104e51b45f8541bd5733d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
   _crosshair: {fileID: 4701911114535932177}
   _hitNumber: {fileID: 111027537793179585}
+--- !u!114 &6538538123131785897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7099007087491931358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 2510536059
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 6193791388071682267}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &7099007087506286817
 GameObject:
   m_ObjectHideFlags: 0

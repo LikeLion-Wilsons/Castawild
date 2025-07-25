@@ -41,7 +41,8 @@ namespace Test.Shoot
 		}
 
 		public override void FixedUpdateNetwork()
-		{
+        {
+            if (HasStateAuthority == false) return;
 			int tick = Runner.Tick;
 
 			for (int i = 0; i < _projectileData.Length; i++)
@@ -141,7 +142,7 @@ namespace Test.Shoot
                     var target = hit.Hitbox.Root.GetComponent<IDamageable>();
                     if (target != null)
                     {
-                        target.TakeDamage(10);
+                        target.TakeDamage(Object.InputAuthority, 10);
                     }    
                 }
                 

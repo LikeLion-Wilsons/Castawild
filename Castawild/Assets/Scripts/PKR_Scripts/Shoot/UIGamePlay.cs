@@ -1,9 +1,10 @@
+using Fusion;
 using System;
 using UnityEngine;
 
 namespace Test.Shoot
 {
-    public class UIGamePlay : MonoBehaviour
+    public class UIGamePlay : NetworkBehaviour
     {
         [SerializeField] private UICrosshair _crosshair;
         [SerializeField] private UIHitNumbers _hitNumber;
@@ -18,7 +19,7 @@ namespace Test.Shoot
             DummyTarget.onDamaged -= OnTargetDamaged;
         }
 
-        private void OnTargetDamaged(int damage)
+        private void OnTargetDamaged(PlayerRef shooter, int damage)
         {
             _crosshair.OnHit();
             _hitNumber.OnHit(damage);
