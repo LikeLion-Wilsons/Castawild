@@ -6,7 +6,6 @@ public class AnimationTrigger : MonoBehaviour
     private CwPlayer player;
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
-    private NetworkCharacterControllerCustom networkCharacterController;
     private PlayerNetworkManager networkManager;
     [HideInInspector] public bool canReceiveInput = false;
     [HideInInspector] public bool canComboAttack = false;
@@ -16,7 +15,6 @@ public class AnimationTrigger : MonoBehaviour
         player = GetComponentInParent<CwPlayer>();
         movementManager = GetComponentInParent<MovementStateManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
-        networkCharacterController = GetComponentInParent<NetworkCharacterControllerCustom>();
         networkManager = GetComponentInParent<PlayerNetworkManager>();
     }
 
@@ -24,8 +22,13 @@ public class AnimationTrigger : MonoBehaviour
     public void ToolAnimationStartTrigger() => toolManager.isAnimationFinished = false;
     public void MoveAnimationFinishTrigger() => movementManager.isAnimationFinished = true;
     public void MoveAnimationStartTrigger() => movementManager.isAnimationFinished = false;
-    public void JumpForce() => networkCharacterController.Jump();
-    public void Jumped() => movementManager.jumped = true;
+    public void JumpForce()
+    {
+        movementManager.jumpTriggered = true;
+        Debug.Log("movementManager.jumpTriggered " + movementManager.jumpTriggered);
+
+    }
+    public void Jumped() => movementManager.isJumping = true;
     public void ReceiveInput() => canReceiveInput = true;
     public void StopReceiveInput()
     {

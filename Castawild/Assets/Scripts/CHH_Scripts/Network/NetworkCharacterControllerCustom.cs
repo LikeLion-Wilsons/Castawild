@@ -1,5 +1,6 @@
 namespace Fusion
 {
+    using Fusion.Addons.SimpleKCC;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
     using Unity.IO.LowLevel.Unsafe;
@@ -49,7 +50,7 @@ namespace Fusion
         public float acceleration = 10.0f;
         public float maxSpeed = 2.0f;
         public float rotationSpeed = 15.0f;
-
+        
         private Tick _initial;
         private CharacterController _controller;
 

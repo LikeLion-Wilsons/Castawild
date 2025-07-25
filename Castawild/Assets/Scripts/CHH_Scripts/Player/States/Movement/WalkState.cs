@@ -1,3 +1,6 @@
+
+using UnityEngine;
+
 public class WalkState : MovementBaseState
 {
     public WalkState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
@@ -15,8 +18,11 @@ public class WalkState : MovementBaseState
     public override void UpdateState()
     {
         // Run
-        if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.player.currentAttackType != AttackType.Aim)
+        if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.toolStateManager.currentState != movementManager.toolStateManager.aimState)
+        {
+            Debug.Log(movementManager.toolStateManager.currentState);
             movementManager.ChangeState(movementManager.runState);
+        }
 
         // Crouch
         else if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.crouchInput))

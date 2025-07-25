@@ -19,9 +19,9 @@ public class JumpState : MovementBaseState
 
     public override void UpdateState()
     {
-        if (movementManager.jumped && movementManager.networkCharacterController.Grounded)
+        if (movementManager.isJumping && movementManager.playerController.Grounded)
         {
-            movementManager.jumped = false;
+            movementManager.isJumping = false;
 
             if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
                 movementManager.ChangeState(movementManager.idleState);

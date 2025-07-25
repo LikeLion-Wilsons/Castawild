@@ -12,7 +12,7 @@ namespace Test.Shoot
         private bool isPressedFire = false;
         private bool isPressedFire2 = false;
         private bool isPressedJump = false;
-        
+
         private bool _resetInput = false;
         public override void Spawned()
         {
@@ -48,7 +48,8 @@ namespace Test.Shoot
             myInput.Buttons.Set(NetworkInputData.BUTTON_FIRE2, isPressedFire2);
             myInput.Buttons.Set(NetworkInputData.BUTTON_JUMP, isPressedJump);
             myInput.mouseDelta = _mouseDelta;
-            
+            myInput.camerPivotRotation = Camera.main.transform.rotation;
+
             input.Set(myInput);
             _resetInput = true;
         }
