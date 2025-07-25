@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -110,6 +111,8 @@ public class Item_Panel :
 
             // 원래 슬롯에 절반 남기기
             item.count -= half;
+            int index = uiInventory.GetIndex(this);
+            inventoryData.RPC_SetItem(uiInventory.GetIndex(this), item);
             SetItemSlot();
 
             // 복제 오브젝트 생성
@@ -188,7 +191,7 @@ public class Item_Panel :
                     {
                         item.count = originalCount;
                         int index = uiInventory.GetIndex(this);
-                        inventoryData.itemList.Set(index, item);
+                        inventoryData.RPC_SetItem(index, item);
                         Destroy(draggedClone);
                         SetItemSlot();
                     }
@@ -247,9 +250,9 @@ public class Item_Panel :
                     durability = fromItem.durability
                 };
                 // 원래 아이템에서 수량 차감
-                fromItem.count -= half;
-                inventoryData.itemList.Set(indexB, fromItem);
-
+                //fromItem.count -= half;
+                inventoryData.RPC_SetItem(indexA, items[indexA]);
+                inventoryData.RPC_SetItem(indexB, fromItem);
             }
             else
             {
@@ -265,12 +268,12 @@ public class Item_Panel :
         {
             if (toItem.itemID != -1)//이동하려는 슬롯이 null이 아닌 경우
             {
-                if (toItem.GetData().itemID == fromItem.GetData().itemID && toItem.count + fromItem.count < 20
+                if (toItem.GetData().itemID == fromItem.GetData().itemID && toItem.count + fromItem.count <= 20
                     && fromItem.GetData().type != Item_Type.Equipment)
                 {
                     // 같은 아이템이면 합치기
                     toItem.count += fromItem.count;
-                    inventoryData.itemList.Set(indexA, toItem);
+                    inventoryData.RPC_SetItem(indexA, toItem);
                     inventoryData.RPC_ThrowItem(indexB);//합쳐지는 아이템 삭제
                     uiInventory.SetItemList();
                     return;
