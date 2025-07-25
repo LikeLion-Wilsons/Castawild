@@ -9,6 +9,8 @@ public class InventoryDataManager : NetworkBehaviour
     [SerializeField] int maxStackCount;//아이템 최대 스택 개수
     public Canvas_Holder canvasHolder;
     private UIInventory uiInventory;
+    private int nextScrollTick = 0;
+    private int scrollCooldownTick = 6; // 0.2초 쿨타임 (60 tick 기준)
     [SerializeField] GameObject playerUIPrefab; // 인스펙터에 연결
     [Networked, Capacity(30)] public NetworkLinkedList<Item> itemList => default;
     public override void Spawned()
@@ -101,16 +103,22 @@ public class InventoryDataManager : NetworkBehaviour
             }
         }
         // 마우스 휠 입력
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-        if (scroll > 0f) // 휠 위로
+
+        if (Runner.Tick >= nextScrollTick)
         {
-            int next = (selectedSlot - 1 + maxSlotCount) % maxSlotCount;
-            ChangeSelectedSlot(next);
-        }
-        else if (scroll < 0f) // 휠 아래로
-        {
-            int next = (selectedSlot + 1) % maxSlotCount;
-            ChangeSelectedSlot(next);
+            float scroll = Input.GetAxisRaw("Mouse ScrollWheel");
+            if (scroll > 0f)
+            {
+                int next = (selectedSlot - 1 + maxSlotCount) % maxSlotCount;
+                ChangeSelectedSlot(next);
+                nextScrollTick = Runner.Tick + scrollCooldownTick;
+            }
+            else if (scroll < 0f)
+            {
+                int next = (selectedSlot + 1) % maxSlotCount;
+                ChangeSelectedSlot(next);
+                nextScrollTick = Runner.Tick + scrollCooldownTick;
+            }
         }
         //선택된 아이템 버리기
         if (Input.GetKeyDown(KeyCode.Q))
@@ -118,6 +126,10 @@ public class InventoryDataManager : NetworkBehaviour
             RPC_ThrowItem(GetSelectedIndex());
         }
 
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            GetItem(0, 1);
+        }
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
@@ -191,7 +203,7 @@ public class InventoryDataManager : NetworkBehaviour
                     item.count += amount;
                     itemList.Set(i, item);
 
-                    onInventoryUpdated?.Invoke();
+                    //onInventoryUpdated?.Invoke();
                     if (Object.HasStateAuthority)
                     {
                         RPC_UpdateInventoryUI();
@@ -209,7 +221,7 @@ public class InventoryDataManager : NetworkBehaviour
             {
                 Item newItem = new Item { itemID = id, count = amount };
                 itemList.Set(i, newItem);
-                onInventoryUpdated?.Invoke();
+                //onInventoryUpdated?.Invoke();
 
                 if (Object.HasStateAuthority)
                 {
