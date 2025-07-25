@@ -9,6 +9,10 @@ namespace Test.Shoot
     public class PlayerInput : NetworkBehaviour, IBeforeUpdate
     {
         private Vector2 _mouseDelta = Vector2.zero;
+        private bool isPressedFire = false;
+        private bool isPressedFire2 = false;
+        private bool isPressedJump = false;
+        
         private bool _resetInput = false;
         public override void Spawned()
         {
@@ -40,9 +44,9 @@ namespace Test.Shoot
             myInput.Buttons.Set(NetworkInputData.BUTTON_BACKWARD, vertical < 0);
             myInput.Buttons.Set(NetworkInputData.BUTTON_RIGHT, horizontal > 0);
             myInput.Buttons.Set(NetworkInputData.BUTTON_LEFT, horizontal < 0);
-            myInput.Buttons.Set(NetworkInputData.BUTTON_FIRE, Input.GetMouseButton(0));//좌클
-            myInput.Buttons.Set(NetworkInputData.BUTTON_FIRE2, Input.GetMouseButton(1));//우클
-            myInput.Buttons.Set(NetworkInputData.BUTTON_JUMP, Input.GetKey(KeyCode.Space));
+            myInput.Buttons.Set(NetworkInputData.BUTTON_FIRE, isPressedFire);
+            myInput.Buttons.Set(NetworkInputData.BUTTON_FIRE2, isPressedFire2);
+            myInput.Buttons.Set(NetworkInputData.BUTTON_JUMP, isPressedJump);
             myInput.mouseDelta = _mouseDelta;
             
             input.Set(myInput);
@@ -64,9 +68,15 @@ namespace Test.Shoot
             {
                 _resetInput = false;
                 _mouseDelta = default;
+                isPressedFire = false;
+                isPressedFire2 = false;
+                isPressedJump = false;
             }
 
             _mouseDelta += new Vector2(-Input.GetAxisRaw("Mouse Y"), Input.GetAxisRaw("Mouse X"));
+            isPressedFire = isPressedFire | Input.GetMouseButtonDown(0);
+            isPressedFire2 = isPressedFire2 | Input.GetMouseButtonDown(1);
+            isPressedJump = isPressedJump | Input.GetKeyDown(KeyCode.Space);
         }
     }
 }
