@@ -5,7 +5,7 @@ public class MovementStateManager : BaseStateManager
 {
     #region Conponent
     [HideInInspector] public ToolStateManager toolStateManager;
-    [HideInInspector] public NetworkCharacterControllerCustom networkCharacterController;
+    [HideInInspector] public KCCPlayerController playerController;
     #endregion
 
     #region States
@@ -42,7 +42,8 @@ public class MovementStateManager : BaseStateManager
     #region Gravity
     public float gravity = -20f;
     public float jumpForce = 10f;
-    [HideInInspector] public bool jumped;
+    [HideInInspector] public bool jumpTriggered;
+    [HideInInspector] public bool isJumping;
     [HideInInspector] public Vector3 velocity;
     #endregion
 
@@ -61,7 +62,7 @@ public class MovementStateManager : BaseStateManager
     private void InitComponents()
     {
         toolStateManager = GetComponent<ToolStateManager>();
-        networkCharacterController = GetComponent<NetworkCharacterControllerCustom>();
+        playerController = GetComponent<KCCPlayerController>();
     }
 
     private void InitStates()
@@ -113,12 +114,12 @@ public class MovementStateManager : BaseStateManager
         }
         if (input.moveValue != Vector2.zero)
         {
-            if (input.IsDown(PlayerNetworkInputData.sprintInput) && jumped)
+            if (input.IsDown(PlayerNetworkInputData.sprintInput) && isJumping)
                 anim.SetBool("Running", true);
             else
                 anim.SetBool("Walking", true);
         }
-        anim.SetBool("Falling", !networkCharacterController.Grounded);
+        anim.SetBool("Falling", !playerController.Grounded);
     }
 
     public void RotatePlayer(Vector3 moveDir)
@@ -127,7 +128,7 @@ public class MovementStateManager : BaseStateManager
             transform.Rotate(Vector3.up * inputManager.lookInput.x * cameraManager.sensitivity);
 
         else if (cameraManager.currentView == ViewType.ThirdPerson &&
-            moveDir.sqrMagnitude > 0.001f && !player.isAimLocked && networkCharacterController.Grounded)
+            moveDir.sqrMagnitude > 0.001f && !player.isAimLocked && playerController.Grounded)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
@@ -139,7 +140,7 @@ public class MovementStateManager : BaseStateManager
     /// </summary>
     public Vector3 Gravity()
     {
-        if (networkCharacterController.Grounded && velocity.y < 0)
+        if (playerController.Grounded && velocity.y < 0)
             velocity.y = -1f;
         else
             velocity.y += gravity * fallMultiplier * Time.fixedDeltaTime;
@@ -174,6 +175,7 @@ public class MovementStateManager : BaseStateManager
     public override void UpdateAnimationFlags()
     {
         base.UpdateAnimationFlags();
-
+        networkManager.JumpTriggered = jumpTriggered;
+        Debug.Log("networkManager.JumpTriggered" + networkManager.JumpTriggered);
     }
 }

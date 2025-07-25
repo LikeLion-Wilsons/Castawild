@@ -949,8 +949,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2344188678965562170}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.19080904, y: 0.0000000013053261, z: -2.5372973e-10, w: 0.9816272}
-  m_LocalPosition: {x: 0, y: 6.206066, z: -9.271838}
+  m_LocalRotation: {x: 0.36388546, y: 0.02989633, z: -0.011686487, w: 0.93089044}
+  m_LocalPosition: {x: -0.47155327, y: 9.241736, z: -7.3338723}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1033,7 +1033,7 @@ MonoBehaviour:
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
-    Value: 0
+    Value: 3.6789398
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -1043,7 +1043,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: 22
+    Value: 42.70109
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
@@ -2739,14 +2739,15 @@ GameObject:
   m_Component:
   - component: {fileID: 6388187669656790763}
   - component: {fileID: 7933685528624486573}
-  - component: {fileID: 8876788245779154075}
   - component: {fileID: 731358021191424698}
   - component: {fileID: 3318766871343913700}
   - component: {fileID: 8225308212403291209}
   - component: {fileID: 230939324335428207}
   - component: {fileID: 4943324450787485491}
   - component: {fileID: 6363259293620697004}
-  - component: {fileID: 4127318726655667768}
+  - component: {fileID: 4022685551630965951}
+  - component: {fileID: 5000463041039569134}
+  - component: {fileID: 8380833186685685926}
   m_Layer: 0
   m_Name: NetworkPlayer
   m_TagString: Untagged
@@ -2795,33 +2796,9 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 4943324450787485491}
   - {fileID: 6363259293620697004}
-  - {fileID: 4127318726655667768}
+  - {fileID: 5000463041039569134}
+  - {fileID: 8380833186685685926}
   ForceRemoteRenderTimeframe: 0
---- !u!143 &8876788245779154075
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7137290088832178523}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 3.54
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1.83, z: 0}
 --- !u!114 &731358021191424698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2852,7 +2829,6 @@ MonoBehaviour:
     tool: {fileID: 1699217156224392113}
   currentToolType: 0
   currentMoveType: 0
-  currentAttackType: 0
   crosshairImage: {fileID: 1305641509968303768}
   throwForce: 10
   throwUpForce: 5
@@ -2878,7 +2854,7 @@ MonoBehaviour:
   comboAttack: 0
   isAnimationFinished: 0
   toolStateManager: {fileID: 0}
-  networkCharacterController: {fileID: 0}
+  playerController: {fileID: 0}
   currentMoveSpeed: 3
   airSpeedMuliplier: 0.7
   walkSpeed: 5
@@ -2897,7 +2873,8 @@ MonoBehaviour:
   fallMultiplier: 1.5
   gravity: -9.81
   jumpForce: 8
-  jumped: 0
+  jumpTriggered: 0
+  isJumping: 0
   velocity: {x: 0, y: 0, z: 0}
   animationLerpSpeed: 10
   isTriggerSet: 0
@@ -2988,6 +2965,7 @@ MonoBehaviour:
   _IsAnimationFinished: 0
   _CanReceiveInput: 0
   _CanMove: 0
+  _JumpTriggered: 0
 --- !u!114 &6363259293620697004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3000,7 +2978,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a655bd9f5eea8b47aabd0434f9ef686, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4127318726655667768
+--- !u!54 &4022685551630965951
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &5000463041039569134
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3009,13 +3014,50 @@ MonoBehaviour:
   m_GameObject: {fileID: 7137290088832178523}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4f3852bc61d9144fb7dbbeac025174f, type: 3}
+  m_Script: {fileID: -1869825851, guid: 977dbcf975465374990f471e1497f563, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _stateAuthorityChangeErrorCorrectionDelta: 0
+  _settings:
+    Shape: 1
+    IsTrigger: 0
+    Radius: 0.61
+    Height: 3.69
+    Extent: 0.1
+    ColliderLayer: 6
+    CollisionLayerMask:
+      serializedVersion: 2
+      m_Bits: 201
+    ProxyInterpolationMode: 0
+    MaxPenetrationSteps: 8
+    CCDRadiusMultiplier: 0.75
+    AntiJitterDistance: {x: 0.025, y: 0.01}
+    CompressNetworkPosition: 0
+    ForcePredictedLookRotation: 0
+    StepHeight: 0.5
+    StepDepth: 0.2
+    StepSpeed: 1
+    StepMinPushBack: 0.5
+    StepGroundCheckRadiusScale: 0.5
+    StepRequireGroundTarget: 0
+    SnapDistance: 0.25
+    SnapSpeed: 4
+--- !u!114 &8380833186685685926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11c9f3b3d94ed8649bfe891ebd8865b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  kcc: {fileID: 0}
   gravity: -20
-  jumpImpulse: 8
-  acceleration: 50
+  jumpImpulse: 20
+  acceleration: 10
   maxSpeed: 2
   rotationSpeed: 15
 --- !u!1 &7288379860564303627

@@ -15,6 +15,7 @@ public class PlayerNetworkManager : NetworkBehaviour
     [Networked] public bool IsAnimationFinished { get; set; }
     [Networked] public bool CanReceiveInput { get; set; }
     [Networked] public bool CanMove { get; set; }
+    [Networked] public bool JumpTriggered { get; set; }
 
     public override void Spawned()
     {
