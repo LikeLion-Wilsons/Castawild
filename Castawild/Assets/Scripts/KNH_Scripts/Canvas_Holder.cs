@@ -52,6 +52,8 @@ public class Canvas_Holder : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             uiParts["Inventory"].Toggle();
+            uiParts["Table"].Toggle();
+
         }
     }
 
