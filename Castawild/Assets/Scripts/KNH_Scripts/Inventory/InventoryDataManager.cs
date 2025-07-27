@@ -1,6 +1,8 @@
 using Fusion;
 using System;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static Unity.Collections.Unicode;
 
 public delegate void OnItemGet();
 
@@ -9,6 +11,7 @@ public class InventoryDataManager : NetworkBehaviour
     [SerializeField] int maxStackCount;//아이템 최대 스택 개수
     public Canvas_Holder canvasHolder;
     private UIInventory uiInventory;
+    [SerializeField] GameObject itemBox;
     private int nextScrollTick = 0;
     private int scrollCooldownTick = 6; // 0.2초 쿨타임 (60 tick 기준)
     [SerializeField] GameObject playerUIPrefab; // 인스펙터에 연결
@@ -159,7 +162,7 @@ public class InventoryDataManager : NetworkBehaviour
     public Item_Scriptable GetSeletedItem(bool use)
     {
         Item_Panel slot = inventorySlots[selectedSlot];
-        if (slot.item.isNull == false)
+        if (slot.item.itemID != -1)
         {
             if (use)
             {
@@ -168,7 +171,7 @@ public class InventoryDataManager : NetworkBehaviour
                 {
                     //null 설정
                     var item = itemList.Get(selectedSlot);
-                    item.isNull = true;
+                    item.itemID = -1;
                     item.count = 0;
                     itemList.Set(selectedSlot, item);
                     //itemList[selectedSlot] = null;
@@ -265,12 +268,20 @@ public class InventoryDataManager : NetworkBehaviour
             if (itemList[index].itemID == -1) return;
             Debug.Log(itemList[index].GetData().name + " 버림!");
             var item = itemList.Get(index);
+
+            var playerObj = Runner.GetPlayerObject(Object.InputAuthority);
+            var box = Runner.Spawn(itemBox, playerObj.transform.position + new Vector3(1,0.5f,1), Quaternion.identity, null, (runner, o) =>
+            {
+                o.GetComponent<DropItem>().Init(item);
+            });
+
             item.itemID = -1;
             item.count = 0;
             itemList.Set(index, item);
             if (Object.HasStateAuthority)
             {
                 RPC_UpdateInventoryUI();
+
             }
         }
     }
@@ -280,7 +291,7 @@ public class InventoryDataManager : NetworkBehaviour
     {
         foreach (var item in itemList)
         {
-            if (item.isNull == false && item.GetData().itemID == id)
+            if (item.itemID != -1 && item.GetData().itemID == id)
                 return true;
         }
         return false;

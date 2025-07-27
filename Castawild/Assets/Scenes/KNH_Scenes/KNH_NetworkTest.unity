@@ -405,6 +405,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxStackCount: 20
   canvasHolder: {fileID: 0}
+  itemBox: {fileID: 0}
   playerUIPrefab: {fileID: 0}
   inventorySlots:
   - {fileID: 0}
