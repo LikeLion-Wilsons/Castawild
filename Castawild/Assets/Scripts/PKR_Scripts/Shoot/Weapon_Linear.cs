@@ -1,181 +1,184 @@
-﻿using Fusion;
+using Fusion;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Test.Shoot
 {
-	public class Weapon_Linear : NetworkBehaviour
-	{
+    public class Weapon_Linear : NetworkBehaviour
+    {
 
         [SerializeField] private Transform _fireTransform;
-        
-		[SerializeField] private float _speed = 50f;
-		[SerializeField] private LayerMask _hitMask;
-		[SerializeField] private float _hitImpulse = 50f;
-		[SerializeField] private float _lifeTime = 4f;
-		[SerializeField] private float _lifeTimeAfterHit = 2f;
-		[SerializeField] private DummyProjectile _dummyProjectilePrefab;
 
-		[Networked] private int _fireCount { get; set; }
-		[Networked, Capacity(64)] private NetworkArray<ProjectileData> _projectileData { get; }
+        [SerializeField] private float _speed = 50f;
+        [SerializeField] private LayerMask _hitMask;
+        [SerializeField] private float _hitImpulse = 50f;
+        [SerializeField] private float _lifeTime = 4f;
+        [SerializeField] private float _lifeTimeAfterHit = 2f;
+        [SerializeField] private DummyProjectile _dummyProjectilePrefab;
 
-		private DummyProjectile[] _projectiles = new DummyProjectile[64];
+        [Networked] private int _fireCount { get; set; }
+        [Networked, Capacity(64)] private NetworkArray<ProjectileData> _projectileData { get; }
 
-		private int _visibleFireCount;
+        private DummyProjectile[] _projectiles = new DummyProjectile[64];
 
-		public void Fire()
-		{
-			_projectileData.Set(_fireCount % _projectileData.Length, new ProjectileData()
-			{
-				FireTick = Runner.Tick,
-				FirePosition = _fireTransform.position,
-				FireVelocity = _fireTransform.forward * _speed,
-				FinishTick = Runner.Tick + Mathf.RoundToInt(_lifeTime / Runner.DeltaTime),
-			});
+        private int _visibleFireCount;
 
-			_fireCount++;
-		}
+        public void Fire(Vector3 dir)
+        {
+            _projectileData.Set(_fireCount % _projectileData.Length, new ProjectileData()
+            {
+                FireTick = Runner.Tick,
+                FirePosition = _fireTransform.position,
+                FireVelocity = dir * _speed,
+                FinishTick = Runner.Tick + Mathf.RoundToInt(_lifeTime / Runner.DeltaTime),
+            });
 
-		public override void Spawned()
-		{
-			_visibleFireCount = _fireCount;
-		}
+            _fireCount++;
+        }
 
-		public override void FixedUpdateNetwork()
+        public override void Spawned()
+        {
+            _visibleFireCount = _fireCount;
+        }
+
+        public override void FixedUpdateNetwork()
         {
             if (HasStateAuthority == false) return;
-			int tick = Runner.Tick;
+            int tick = Runner.Tick;
 
-			for (int i = 0; i < _projectileData.Length; i++)
-			{
-				var data = _projectileData[i];
+            for (int i = 0; i < _projectileData.Length; i++)
+            {
+                var data = _projectileData[i];
 
-				if (data.IsActive == false) continue;
-				if (data.FinishTick <= tick) continue;
+                if (data.IsActive == false) continue;
+                if (data.FinishTick <= tick) continue;
 
-				UpdateProjectile(ref data, tick);
+                UpdateProjectile(ref data, tick);
 
-				_projectileData.Set(i, data);
-			}
-		}
+                _projectileData.Set(i, data);
+            }
+        }
 
-		public override void Render()
-		{
-			if (_visibleFireCount < _fireCount)
-			{
-				PlayFireEffect();
-			}
+        public override void Render()
+        {
+            if (_visibleFireCount < _fireCount)
+            {
+                PlayFireEffect();
+            }
 
-			// Instantiate missing projectile objects
-			for (int i = _visibleFireCount; i < _fireCount; i++)
-			{
-				int index = i % _projectileData.Length;
-				var data = _projectileData[index];
+            // Instantiate missing projectile objects
+            for (int i = _visibleFireCount; i < _fireCount; i++)
+            {
+                int index = i % _projectileData.Length;
+                var data = _projectileData[index];
 
-				var previousProjectile = _projectiles[index];
-				if (previousProjectile != null)
-				{
-					Destroy(previousProjectile.gameObject);
-				}
+                var previousProjectile = _projectiles[index];
+                if (previousProjectile != null)
+                {
+                    Destroy(previousProjectile.gameObject);
+                }
 
-				var projectile = Instantiate(_dummyProjectilePrefab, data.FirePosition, Quaternion.LookRotation(data.FireVelocity));
+                var projectile = Instantiate(_dummyProjectilePrefab, data.FirePosition, Quaternion.LookRotation(data.FireVelocity));
 
-				_projectiles[index] = projectile;
-			}
+                _projectiles[index] = projectile;
+            }
 
-			// For proxies we move projectiles in remote time frame, for input/state authority we use local time frame
-			float renderTime = Object.IsProxy == true ? Runner.RemoteRenderTime : Runner.LocalRenderTime;
-			float floatTick = renderTime / Runner.DeltaTime;
+            // For proxies we move projectiles in remote time frame, for input/state authority we use local time frame
+            float renderTime = Object.IsProxy == true ? Runner.RemoteRenderTime : Runner.LocalRenderTime;
+            float floatTick = renderTime / Runner.DeltaTime;
 
-			// Update projectile visuals
-			for (int i = 0; i < _projectiles.Length; i++)
-			{
-				var projectile = _projectileData[i];
-				var projectileObject = _projectiles[i];
+            // Update projectile visuals
+            // Update projectile visuals
+            for (int i = 0; i < _projectiles.Length; i++)
+            {
+                var projectile = _projectileData[i];
+                var projectileObject = _projectiles[i];
 
-				if (projectile.IsActive == false || projectile.FinishTick < floatTick)
-				{
-					if (projectileObject != null)
-					{
-						Destroy(projectileObject.gameObject);
-					}
+                // 🚨 null 체크 추가
+                if (projectile.IsActive == false || projectile.FinishTick < floatTick || projectileObject == null)
+                {
+                    if (projectileObject != null)
+                    {
+                        Destroy(projectileObject.gameObject);
+                    }
 
-					continue;
-				}
+                    continue;
+                }
 
-				if (projectile.HitPosition != Vector3.zero)
-				{
-					projectileObject.transform.position = projectile.HitPosition;
-					//projectileObject.ShowHitEffect();
-				}
-				else
-				{
-					projectileObject.transform.position = GetMovePosition(ref projectile, floatTick);
-				}
-			}
+                if (projectile.HitPosition != Vector3.zero)
+                {
+                    projectileObject.transform.position = projectile.HitPosition;
+                }
+                else
+                {
+                    projectileObject.transform.position = GetMovePosition(ref projectile, floatTick);
+                }
+            }
 
-			_visibleFireCount = _fireCount;
-		}
 
-		private void UpdateProjectile(ref ProjectileData projectileData, int tick)
-		{
-			if (projectileData.HitPosition != Vector3.zero) return;
-				
+            _visibleFireCount = _fireCount;
+        }
 
-			var previousPosition = GetMovePosition(ref projectileData, tick - 1f);
-			var nextPosition = GetMovePosition(ref projectileData, tick);
+        private void UpdateProjectile(ref ProjectileData projectileData, int tick)
+        {
+            if (projectileData.HitPosition != Vector3.zero) return;
 
-			var direction = nextPosition - previousPosition;
 
-			float distance = direction.magnitude;
-			direction /= distance; // Normalize
+            var previousPosition = GetMovePosition(ref projectileData, tick - 1f);
+            var nextPosition = GetMovePosition(ref projectileData, tick);
 
-			var hitOptions = HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority;
+            var direction = nextPosition - previousPosition;
 
-			if (Runner.LagCompensation.Raycast(previousPosition, direction, distance, Object.InputAuthority, out var hit, _hitMask, hitOptions))
-			{
-				projectileData.HitPosition = hit.Point;
-				projectileData.FinishTick = tick + Mathf.RoundToInt(_lifeTimeAfterHit / Runner.DeltaTime);
-				
-				//do something with hit.
+            float distance = direction.magnitude;
+            direction /= distance; // Normalize
+
+            var hitOptions = HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority;
+
+            if (Runner.LagCompensation.Raycast(previousPosition, direction, distance, Object.InputAuthority, out var hit, _hitMask, hitOptions))
+            {
+                projectileData.HitPosition = hit.Point;
+                projectileData.FinishTick = tick + Mathf.RoundToInt(_lifeTimeAfterHit / Runner.DeltaTime);
+
+                //do something with hit.
                 if (hit.Hitbox != null)
                 {
                     var target = hit.Hitbox.Root.GetComponent<IDamageable>();
                     if (target != null)
                     {
                         target.TakeDamage(Object.InputAuthority, 10);
-                    }    
+                    }
                 }
-                
-			}
-		}
 
-		private Vector3 GetMovePosition(ref ProjectileData data, float currentTick)
-		{
-			float time = (currentTick - data.FireTick) * Runner.DeltaTime;
+            }
+        }
 
-			if (time <= 0f)
-				return data.FirePosition;
+        private Vector3 GetMovePosition(ref ProjectileData data, float currentTick)
+        {
+            float time = (currentTick - data.FireTick) * Runner.DeltaTime;
 
-			//그냥 등속운동.
-			return data.FirePosition + data.FireVelocity * time;
-		}
-		private struct ProjectileData : INetworkStruct
-		{
-			public bool IsActive => FireTick > 0;
+            if (time <= 0f)
+                return data.FirePosition;
 
-			public int FireTick;
-			public int FinishTick;
+            //그냥 등속운동.
+            return data.FirePosition + data.FireVelocity * time;
+        }
+        private struct ProjectileData : INetworkStruct
+        {
+            public bool IsActive => FireTick > 0;
 
-			public Vector3 FirePosition;
-			public Vector3 FireVelocity;
+            public int FireTick;
+            public int FinishTick;
 
-			public Vector3 HitPosition { get; set; }
-		}
+            public Vector3 FirePosition;
+            public Vector3 FireVelocity;
+
+            public Vector3 HitPosition { get; set; }
+        }
         private void PlayFireEffect()
         {
             //play sound.
             //play particle.
             //...
         }
-	}
+    }
 }

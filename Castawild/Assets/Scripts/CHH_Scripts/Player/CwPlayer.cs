@@ -30,7 +30,6 @@ public class CwPlayer : MonoBehaviour
     public Dictionary<ToolType, Tool> tools;
     public ToolType currentToolType;
     public MoveType currentMoveType;
-    public AttackType currentAttackType;
 
     public GameObject crosshairImage;
     public float throwForce = 10f;
@@ -72,15 +71,6 @@ public class CwPlayer : MonoBehaviour
     }
 
     /// <summary>
-    /// 무기 바꿀 때 호출
-    /// </summary>
-    public void SetWeapon(ToolType weaponType)
-    {
-        currentToolType = weaponType;
-        anim.SetInteger("WeaponType", (int)currentToolType);
-    }
-
-    /// <summary>
     /// 공격시 호출
     /// </summary>
     public void ApplyTool()
@@ -109,21 +99,5 @@ public class CwPlayer : MonoBehaviour
     {
         string key = currentToolType.ToString();
         return holdTools.FirstOrDefault(t => t.toolName == key)?.tool;
-    }
-
-    /// <summary>
-    /// 조준가능한 도구인지 확인
-    /// </summary>
-    public bool HoldAimTool() => currentToolType == ToolType.Bow || currentToolType == ToolType.Throw;
-
-    /// <summary>
-    /// 곡괭이/도끼 들고있는지 확인
-    /// </summary>
-    public bool HoldCraftingTool()
-    {
-        if (currentToolType == ToolType.Axe || currentToolType == ToolType.Pickaxe)
-            return true;
-        else
-            return false;
     }
 }

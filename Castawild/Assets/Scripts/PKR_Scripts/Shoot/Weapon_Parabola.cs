@@ -22,13 +22,13 @@ namespace Test.Shoot
 
 		private int _visibleFireCount;
 
-		public void Fire()
+		public void Fire(Vector3 dir)
 		{
 			_projectileData.Set(_fireCount % _projectileData.Length, new ProjectileData()
 			{
 				FireTick = Runner.Tick,
 				FirePosition = _fireTransform.position,
-				FireVelocity = _fireTransform.forward * _speed,
+				FireVelocity = dir * _speed,
 				FinishTick = Runner.Tick + Mathf.RoundToInt(_lifeTime / Runner.DeltaTime),
 			});
 
