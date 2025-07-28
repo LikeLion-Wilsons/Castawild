@@ -1,8 +1,6 @@
 using Fusion;
 using System;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static Unity.Collections.Unicode;
 
 public delegate void OnItemGet();
 
@@ -11,6 +9,7 @@ public class InventoryDataManager : NetworkBehaviour
     [SerializeField] int maxStackCount;//아이템 최대 스택 개수
     public Canvas_Holder canvasHolder;
     private UIInventory uiInventory;
+    private UITable uiTable;
     [SerializeField] GameObject itemBox;
     private int nextScrollTick = 0;
     private int scrollCooldownTick = 6; // 0.2초 쿨타임 (60 tick 기준)
@@ -39,6 +38,8 @@ public class InventoryDataManager : NetworkBehaviour
             uiCanvas.transform.SetParent(null); // 루트로 이동
             uiInventory = uiCanvas.GetComponentInChildren<UIInventory>();
             uiInventory.BindToInventoryData(this);
+            uiTable = uiCanvas.GetComponentInChildren<UITable>();
+            uiTable.BindToInventoryData(this);
 
             canvasHolder = uiCanvas.GetComponent<Canvas_Holder>();
 
@@ -132,6 +133,10 @@ public class InventoryDataManager : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             GetItem(0, 1);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            GetItem(1, 1);
         }
     }
 
@@ -286,15 +291,34 @@ public class InventoryDataManager : NetworkBehaviour
         }
     }
 
-    // 아이템 소지 여부 확인
-    public bool HaveItem(int id)
+    public void UseItem(int index,int count)
+    {
+        if (index >= 0 && index < itemList.Count)
+        {
+            if (itemList[index].itemID == -1) return;
+            Debug.Log(itemList[index].GetData().name + " 사용!");
+            var item = itemList.Get(index);
+
+            item.count -= count;
+            if(item.count <= 0) item.itemID = -1;
+            itemList.Set(index, item);
+            if (Object.HasStateAuthority)
+            {
+                RPC_UpdateInventoryUI();
+
+            }
+        }
+    }
+
+    // 아이템 소지 수량 확인
+    public int GetItemCount(int id)
     {
         foreach (var item in itemList)
         {
             if (item.itemID != -1 && item.GetData().itemID == id)
-                return true;
+                return item.count;
         }
-        return false;
+        return 0;
     }
 
     public NetworkLinkedList<Item> GetItemList()

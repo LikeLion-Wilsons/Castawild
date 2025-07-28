@@ -222,5 +222,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 6046791975512607958}
+  ingredientPanel: {fileID: 2321720959767342005, guid: 88bf39e7599b99e45b766eb671909b89, type: 3}
   itemName: {fileID: 0}
   itemDesc: {fileID: 0}
+  canvasHolder: {fileID: 0}

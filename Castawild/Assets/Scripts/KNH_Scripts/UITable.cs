@@ -2,12 +2,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UITable : MonoBehaviour
+public class UITable : UIPart
 {
-    [SerializeField] List<Button> craftableItems = new List<Button>();
     [SerializeField] GameObject button;
     [SerializeField] Transform parent;
+    public Item_Scriptable selectedItem;
     public GameObject descPanel;
+    public GameObject craftButton;
+    public InventoryDataManager inventoryData;
+    public bool canCreate = true;
+
+    public void BindToInventoryData(InventoryDataManager data)
+    {
+        inventoryData = data;
+    }
 
     void Start()
     {
@@ -24,8 +32,21 @@ public class UITable : MonoBehaviour
         }
     }
 
-    void Update()
+    public void Craft()
     {
-        
+        if (canCreate)
+        {
+            craftButton.GetComponent<Image>().color = Color.green;
+            inventoryData.GetItem(selectedItem.itemID, 1);
+            for(int i=0;i< selectedItem.ingredient.Count; i++)
+            {
+                inventoryData.UseItem(selectedItem.ingredient[i].itemID, selectedItem.ingredientCount[i]);
+            }
+
+        }
+        else
+        {
+            craftButton.GetComponent<Image>().color = Color.red;
+        }
     }
 }

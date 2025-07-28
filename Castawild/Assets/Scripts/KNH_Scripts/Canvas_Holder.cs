@@ -5,6 +5,7 @@ public class Canvas_Holder : MonoBehaviour
 {
     public GameObject hotBarUI;
     public GameObject inventoryUI;
+    public GameObject tableUI;
     private void Awake()
     {
     }
