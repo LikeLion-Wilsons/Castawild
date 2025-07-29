@@ -68,7 +68,7 @@ public class InventoryDataManager : NetworkBehaviour
 
     public Item_Panel[] inventorySlots;
     public GameObject inventoryItemPrefab;
-    int selectedSlot = -1;
+    int selectedSlot = 0;
     int maxSlotCount = 9; // 총 슬롯 수
     public static InventoryDataManager Instance { get; set; }
 
@@ -93,7 +93,7 @@ public class InventoryDataManager : NetworkBehaviour
 
     private void Start()
     {
-        //ChangeSelectedSlot(0);
+        ChangeSelectedSlot(0);
     }
 
     public override void FixedUpdateNetwork()
@@ -144,6 +144,7 @@ public class InventoryDataManager : NetworkBehaviour
     void RPC_UpdateInventoryUI()
     {
         uiInventory.SetItemList();
+        uiTable.GetComponent<UITable>().SetTableUI();
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -211,9 +212,9 @@ public class InventoryDataManager : NetworkBehaviour
                     item.count += amount;
                     itemList.Set(i, item);
 
-                    //onInventoryUpdated?.Invoke();
                     if (Object.HasStateAuthority)
                     {
+                        //onInventoryUpdated?.Invoke();
                         RPC_UpdateInventoryUI();
                     }
 
@@ -229,10 +230,10 @@ public class InventoryDataManager : NetworkBehaviour
             {
                 Item newItem = new Item { itemID = id, count = amount };
                 itemList.Set(i, newItem);
-                //onInventoryUpdated?.Invoke();
 
                 if (Object.HasStateAuthority)
                 {
+                    //onInventoryUpdated?.Invoke();
                     RPC_UpdateInventoryUI();
                 }
                 return true;
@@ -261,6 +262,7 @@ public class InventoryDataManager : NetworkBehaviour
 
         if (Object.HasStateAuthority)
         {
+            //onInventoryUpdated?.Invoke();
             RPC_UpdateInventoryUI();
         }
     }
@@ -275,7 +277,7 @@ public class InventoryDataManager : NetworkBehaviour
             var item = itemList.Get(index);
 
             var playerObj = Runner.GetPlayerObject(Object.InputAuthority);
-            var box = Runner.Spawn(itemBox, playerObj.transform.position + new Vector3(1,0.5f,1), Quaternion.identity, null, (runner, o) =>
+            var box = Runner.Spawn(itemBox, playerObj.transform.position + new Vector3(1, 0.5f, 1), Quaternion.identity, null, (runner, o) =>
             {
                 o.GetComponent<DropItem>().Init(item);
             });
@@ -285,13 +287,13 @@ public class InventoryDataManager : NetworkBehaviour
             itemList.Set(index, item);
             if (Object.HasStateAuthority)
             {
+                //onInventoryUpdated?.Invoke();
                 RPC_UpdateInventoryUI();
-
             }
         }
     }
 
-    public void UseItem(int index,int count)
+    public void UseItem(int index, int count)
     {
         if (index >= 0 && index < itemList.Count)
         {
@@ -300,12 +302,12 @@ public class InventoryDataManager : NetworkBehaviour
             var item = itemList.Get(index);
 
             item.count -= count;
-            if(item.count <= 0) item.itemID = -1;
+            if (item.count <= 0) item.itemID = -1;
             itemList.Set(index, item);
             if (Object.HasStateAuthority)
             {
+                //onInventoryUpdated?.Invoke();
                 RPC_UpdateInventoryUI();
-
             }
         }
     }
@@ -329,5 +331,10 @@ public class InventoryDataManager : NetworkBehaviour
     public int GetSelectedIndex()
     {
         return selectedSlot;
+    }
+
+    public int GetSelectedItemID()
+    {
+        return itemList[selectedSlot].itemID;
     }
 }

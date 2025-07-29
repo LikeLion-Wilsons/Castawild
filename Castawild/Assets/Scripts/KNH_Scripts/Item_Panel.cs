@@ -48,7 +48,8 @@ public class Item_Panel :
     }
     void Update()
     {
-        isInveontoryOpen = inventoryData.canvasHolder.IsInventoryOpen();
+        if (inventoryData != null)
+            isInveontoryOpen = inventoryData.canvasHolder.IsInventoryOpen();
     }
     public void SlotInit(Item _item)
     {
@@ -144,7 +145,7 @@ public class Item_Panel :
     public void OnDrag(PointerEventData eventData)
     {
         if (!isInveontoryOpen) return;
-        if ( item.itemID == -1) return;
+        if (item.itemID == -1) return;
         if (isRightMouseDrag && draggedClone != null)
         {
             draggedClone.GetComponent<RectTransform>().position = eventData.position;

@@ -226,3 +226,4 @@ MonoBehaviour:
   itemName: {fileID: 0}
   itemDesc: {fileID: 0}
   canvasHolder: {fileID: 0}
+  inventoryData: {fileID: 0}

@@ -3170,7 +3170,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1514235105144904388}
   m_HandleRect: {fileID: 6886025332259635258}
   m_Direction: 2
-  m_Value: -0.0000012207031
+  m_Value: 0
   m_Size: 0.8333333
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4401,7 +4401,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 50.000053}
+  m_AnchoredPosition: {x: 0, y: 49.99998}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1531450813167747468
@@ -4966,6 +4966,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 2219645135694983475, guid: 69cd407d276eee54f9775841afeeedfb, type: 3}
   parent: {fileID: 503825063060841399}
+  ingredientPanel: {fileID: 2321720959767342005, guid: 88bf39e7599b99e45b766eb671909b89, type: 3}
+  itemName: {fileID: 384748910613495637}
+  itemDesc: {fileID: 6731598543139169745}
   selectedItem: {fileID: 0}
   descPanel: {fileID: 3500878525303188716}
   craftButton: {fileID: 7220333180158895844}
