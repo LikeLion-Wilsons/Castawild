@@ -7,7 +7,7 @@ public class MovementStateManager : BaseStateManager
 {
     #region Conponent
     [HideInInspector] public ToolStateManager toolStateManager;
-    [HideInInspector] public KCCPlayerController playerController;
+    [HideInInspector] public PlayerController playerController;
     #endregion
 
     #region States
@@ -70,7 +70,7 @@ public class MovementStateManager : BaseStateManager
     private void InitComponents()
     {
         toolStateManager = GetComponent<ToolStateManager>();
-        playerController = GetComponent<KCCPlayerController>();
+        playerController = GetComponent<PlayerController>();
     }
 
     private void InitStates()

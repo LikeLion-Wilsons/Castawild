@@ -1,6 +1,4 @@
 
-using Fusion;
-using UnityEngine;
 
 public abstract class ToolBaseState : BaseState
 {

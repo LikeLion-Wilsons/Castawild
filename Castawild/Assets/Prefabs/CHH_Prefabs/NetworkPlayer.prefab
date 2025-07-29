@@ -4201,12 +4201,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7137290088832178523}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 11c9f3b3d94ed8649bfe891ebd8865b1, type: 3}
+  m_Script: {fileID: 11500000, guid: 3fa03644ea1a7e14f92fb7ac4e9cad82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  kcc: {fileID: 0}
+  kcc: {fileID: 5000463041039569134}
   gravity: -20
-  jumpImpulse: 2.5
+  jumpImpulse: 3
   maxSpeed: 2
   rotationSpeed: 15
   interactHeight: 10

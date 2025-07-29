@@ -1,7 +1,5 @@
-using Fusion;
 using System.Collections;
 using Unity.Cinemachine;
-//using UnityEditor.EditorTools;
 using UnityEngine;
 
 public enum ViewType { None, FirstPerson, ThirdPerson }
@@ -9,7 +7,7 @@ public enum ViewType { None, FirstPerson, ThirdPerson }
 public class PlayerCameraManager : MonoBehaviour
 {
     #region Components
-    private KCCPlayerController playerController;
+    private PlayerController playerController;
     private PlayerInputManager inputManager;
     private CinemachineOrbitalFollow orbital;
     private CinemachineInputAxisController inputAxisController;
@@ -87,7 +85,7 @@ public class PlayerCameraManager : MonoBehaviour
     private void InitComponents()
     {
         player = GetComponentInParent<CwPlayer>();
-        playerController = GetComponentInParent<KCCPlayerController>();
+        playerController = GetComponentInParent<PlayerController>();
         inputManager = GetComponentInParent<PlayerInputManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
         orbital = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();

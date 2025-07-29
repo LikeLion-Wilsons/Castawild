@@ -4,7 +4,7 @@ using Test;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public sealed class KCCPlayerController : NetworkBehaviour
+public sealed class PlayerController : NetworkBehaviour
 {
     public SimpleKCC kcc;
     private MovementStateManager movementManager;
