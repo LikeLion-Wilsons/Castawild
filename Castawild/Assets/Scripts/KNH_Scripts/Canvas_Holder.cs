@@ -5,6 +5,7 @@ public class Canvas_Holder : MonoBehaviour
 {
     public GameObject hotBarUI;
     public GameObject inventoryUI;
+    public GameObject tableUI;
     private void Awake()
     {
     }
@@ -52,6 +53,8 @@ public class Canvas_Holder : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             uiParts["Inventory"].Toggle();
+            uiParts["Table"].Toggle();
+
         }
     }
 
