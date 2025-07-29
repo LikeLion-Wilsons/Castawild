@@ -58,7 +58,8 @@ public class UIInventory : UIPart
         {
             var item = new Item { itemID = -1, count = 0 };
             items.Add(item);
-            inventoryData.itemList.Set(indexB, item);
+
+            inventoryData.RPC_SetItem(indexB, item);
             //items.Add(null);
         }
 
@@ -70,8 +71,10 @@ public class UIInventory : UIPart
         var tempB = items[indexB];
 
         // 교환 후 Set 호출로 Fusion에 알려줌
-        items.Set(indexA, tempA);
-        items.Set(indexB, tempB);
+        inventoryData.RPC_SetItem(indexA, tempA);
+        inventoryData.RPC_SetItem(indexB, tempB);
+        //items.Set(indexA, tempA);
+        //items.Set(indexB, tempB);
 
         SetItemList();
     }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2058133930875297629}
   - component: {fileID: 5603037497418768945}
   - component: {fileID: 1375023960599895753}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 466570318983867667}
   - component: {fileID: 6490422106455965077}
   - component: {fileID: 7722801265534492694}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -184,7 +184,7 @@ GameObject:
   - component: {fileID: 8754558769573357708}
   - component: {fileID: 2167960536172491003}
   - component: {fileID: 527608792025107976}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -288,7 +288,7 @@ GameObject:
   - component: {fileID: 3110313533062124929}
   - component: {fileID: 813339125806917870}
   - component: {fileID: 8145432303921854057}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ShootPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -333,6 +333,7 @@ MonoBehaviour:
   - {fileID: 4584254975303138026}
   - {fileID: 813339125806917870}
   - {fileID: 8145432303921854057}
+  - {fileID: 5496453017936529104}
   - {fileID: 5316883424629830642}
   - {fileID: 6969993019786586357}
   ForceRemoteRenderTimeframe: 0
@@ -450,7 +451,7 @@ GameObject:
   - component: {fileID: 770795608154799692}
   - component: {fileID: 4724570447948974004}
   - component: {fileID: 6665580980044089491}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: NickNameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -599,7 +600,7 @@ GameObject:
   - component: {fileID: 7846410910216813358}
   - component: {fileID: 5316883424629830642}
   - component: {fileID: 6969993019786586357}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -615,7 +616,7 @@ Transform:
   m_GameObject: {fileID: 6591166084074267104}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1.2}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -673,7 +674,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5955512642838598667}
-  m_Layer: 0
+  - component: {fileID: 5496453017936529104}
+  m_Layer: 6
   m_Name: CameraPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -697,6 +699,23 @@ Transform:
   - {fileID: 7266734096863820911}
   m_Father: {fileID: 879164153245518596}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5496453017936529104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6702174254348106270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &7219186307607576223
 GameObject:
   m_ObjectHideFlags: 0
@@ -706,7 +725,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7266734096863820911}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: CameraHandle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -737,7 +756,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8574172416609597610}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}

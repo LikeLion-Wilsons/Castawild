@@ -22,13 +22,13 @@ namespace Test.Shoot
 
 		private int _visibleFireCount;
 
-		public void Fire()
+		public void Fire(Vector3 dir)
 		{
 			_projectileData.Set(_fireCount % _projectileData.Length, new ProjectileData()
 			{
 				FireTick = Runner.Tick,
 				FirePosition = _fireTransform.position,
-				FireVelocity = _fireTransform.forward * _speed,
+				FireVelocity = dir * _speed,
 				FinishTick = Runner.Tick + Mathf.RoundToInt(_lifeTime / Runner.DeltaTime),
 			});
 
@@ -41,7 +41,8 @@ namespace Test.Shoot
 		}
 
 		public override void FixedUpdateNetwork()
-		{
+        {
+            if (HasStateAuthority == false) return;
 			int tick = Runner.Tick;
 
 			for (int i = 0; i < _projectileData.Length; i++)
@@ -141,7 +142,7 @@ namespace Test.Shoot
                     var target = hit.Hitbox.Root.GetComponent<IDamageable>();
                     if (target != null)
                     {
-                        target.TakeDamage(50);
+                        target.TakeDamage(Object.InputAuthority, 50);
                     }    
                 }
 			}

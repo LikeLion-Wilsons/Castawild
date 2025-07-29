@@ -10,23 +10,26 @@ namespace Test.Shoot
         public SimpleKCC kcc;
         public Transform CameraPivot;
         public Transform CameraHandle;
-        
+
         [SerializeField] private NicknameUI nicknameUI;
         [SerializeField] private Weapon_Linear _weaponLinear;
         [SerializeField] private Weapon_Parabola _weaponParabola;
         [SerializeField] private Transform _visual;
-        
-        [Header("Movement")] 
-        public float MoveSpeed = 10.0f;
+
+        [Header("Movement")] public float MoveSpeed = 10.0f;
         public float JumpImpulse = 10.0f;
         public float Gravity = -20.0f;
         public float GroundAcceleration = 55.0f;
         public float GroundDeceleration = 25.0f;
         public float AirAcceleration = 25.0f;
         public float AirDeceleration = 1.3f;
-        [Networked, OnChangedRender(nameof(OnChangedNickname))] private string nickname { get; set; }
+
+        [Networked, OnChangedRender(nameof(OnChangedNickname))]
+        private string nickname { get; set; }
+
         [Networked] private Vector3 _moveVelocity { get; set; }
         private NetworkButtons _prevInputButtons;
+
         public void Init()
         {
             //spawned 되기전에 초기화작업.
@@ -42,26 +45,26 @@ namespace Test.Shoot
 
             //다른플레이어 닉네임 refresh.
             OnChangedNickname();
-            
-            
+
+
             kcc.SetGravity(Gravity);
-            
+
             // Disable visual for local player
             var renderers = _visual.GetComponentsInChildren<MeshRenderer>();
             for (int i = 0; i < renderers.Length; i++)
             {
-                renderers[i].shadowCastingMode = HasInputAuthority ? ShadowCastingMode.ShadowsOnly : ShadowCastingMode.On;
+                renderers[i].shadowCastingMode =
+                    HasInputAuthority ? ShadowCastingMode.ShadowsOnly : ShadowCastingMode.On;
             }
         }
 
 
         public override void FixedUpdateNetwork()
         {
-            if (HasStateAuthority == false) return;
             if (GetInput<NetworkInputData>(out var input))
             {
                 kcc.AddLookRotation(input.mouseDelta);
-                
+
                 var dir = default(Vector3);
 
                 if (input.IsDown(NetworkInputData.BUTTON_RIGHT)) dir += Vector3.right;
@@ -69,24 +72,30 @@ namespace Test.Shoot
 
                 if (input.IsDown(NetworkInputData.BUTTON_FORWARD)) dir += Vector3.forward;
                 else if (input.IsDown(NetworkInputData.BUTTON_BACKWARD)) dir += Vector3.back;
-                
+
                 if (input.Buttons.WasPressed(_prevInputButtons, NetworkInputData.BUTTON_FIRE))
                 {
                     Debug.Log("Fire1()");
-                    _weaponLinear.Fire();
+                    var rot = kcc.GetLookRotation();
+                    var q = Quaternion.Euler(rot);
+                    // var q2 = input.camerPivotRotation;
+                    // Debug.Log($"q: {q.eulerAngles}, q2: {q2.eulerAngles}");
+                    //q==q2 동일함.
+                    _weaponLinear.Fire(q * Vector3.forward);
                 }
-                
+
                 if (input.Buttons.WasPressed(_prevInputButtons, NetworkInputData.BUTTON_FIRE2))
                 {
                     Debug.Log("Fire2()");
-                    _weaponParabola.Fire();
+                    var rot = kcc.GetLookRotation();
+                    var q = Quaternion.Euler(rot);
+                    _weaponParabola.Fire(q * Vector3.forward);
                 }
 
-                
 
                 //시선기준 입력방향.
                 Vector3 inputDir = kcc.TransformRotation * dir;
-                
+
                 //입력방향에 따른 속도.
                 Vector3 desiredMoveVelocity = inputDir * MoveSpeed;
 
@@ -109,19 +118,19 @@ namespace Test.Shoot
 
                 //현재속도에서 목표속도 보간.
                 _moveVelocity = Vector3.Lerp(_moveVelocity, desiredMoveVelocity, acceleration * Runner.DeltaTime);
-                
-                
+
+
                 //점프키 입력.
                 float jumpImpulse = 0f;
-                if (input.WasPressed(_prevInputButtons,NetworkInputData.BUTTON_JUMP) && kcc.IsGrounded)
+                if (input.WasPressed(_prevInputButtons, NetworkInputData.BUTTON_JUMP) && kcc.IsGrounded)
                 {
                     jumpImpulse = JumpImpulse;
                 }
 
                 //속도에 따라 이동.
                 kcc.Move(_moveVelocity, jumpImpulse);
-                
-                
+
+
                 _prevInputButtons = input.Buttons;
             }
         }

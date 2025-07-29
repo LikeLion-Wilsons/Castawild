@@ -4,7 +4,7 @@ using UnityEngine;
 
 interface IDamageable
 {
-    void TakeDamage(int damage);
+    void TakeDamage(PlayerRef player, int damage);
 
 }
 public class DummyTarget : NetworkBehaviour,IDamageable
@@ -13,8 +13,8 @@ public class DummyTarget : NetworkBehaviour,IDamageable
     [Networked] private TickTimer _reviveCooldown { get; set; }
 
     [SerializeField] private bool _useLagCompensation;
-    [Networked,OnChangedRender(nameof(OnchangedHealth))] private int health{ get; set; }
-    public static event Action<int> onDamaged;
+    [Networked, OnChangedRender(nameof(OnchangedHealth))] private int health { get; set; } = 100;
+    public static event Action<PlayerRef,int> onDamaged;
     private HitboxRoot _hitboxRoot;
 
     private Collider _collider;
@@ -51,7 +51,7 @@ public class DummyTarget : NetworkBehaviour,IDamageable
             {
                 health = 100;
                 _reviveCooldown = default;
-                transform.localScale = Vector3.one;
+                
             }
             else if (_reviveCooldown.IsRunning == false)
             {
@@ -60,12 +60,26 @@ public class DummyTarget : NetworkBehaviour,IDamageable
             }
         }
     }
+    public override void Render()
+    {
+        transform.localScale = IsAlive() ? Vector3.one : Vector3.zero;
+    }
 
-
-    public void TakeDamage(int damage)
+    public void TakeDamage(PlayerRef player, int damage)
     {
         health -= damage;
-        onDamaged?.Invoke(damage);
+        RPC_Request(player, damage);
+    }
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    void RPC_Request(PlayerRef player, int damage)
+    {
+        RPC_Broadcast(player, damage);
+    }
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_Broadcast(PlayerRef player, int message)
+    {
+        if (Runner.LocalPlayer != player) return;
+        onDamaged?.Invoke(player, message);
     }
 
     void OnchangedHealth()

@@ -18,10 +18,12 @@ public class AimState : ToolBaseState
         else
             toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullAim;
 
+        if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.runState)
+            toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.walkState);
+
         toolStateManager.cameraManager.MoveCamera(true);
 
         toolStateManager.player.crosshairImage.SetActive(true);
-        toolStateManager.player.currentAttackType = AttackType.Aim;
     }
 
     public override void UpdateState()
@@ -39,6 +41,7 @@ public class AimState : ToolBaseState
         else if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
             toolStateManager.player.isAimLocked = false;
+            toolStateManager.cameraManager.MoveCamera(false);
             toolStateManager.ChangeState(toolStateManager.idleState);
         }
     }
@@ -58,7 +61,6 @@ public class AimState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
-        toolStateManager.player.currentAttackType = AttackType.None;
         toolStateManager.player.crosshairImage.SetActive(false);
     }
 

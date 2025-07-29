@@ -41,34 +41,25 @@ public class ToolStateManager : BaseStateManager
     {
         anim.SetBool("Aiming", false);
         anim.SetBool("FullAiming", false);
-        anim.SetBool("UseTool", false);
         anim.SetBool("FullUseTool", false);
 
         switch (networkManager.CurrentToolUseState)
         {
             case ToolAnimationState.Aim:
+                anim.SetInteger("WeaponType", (int)networkManager.CurrentToolType);
                 anim.SetBool("Aiming", true);
                 break;
             case ToolAnimationState.FullAim:
-                anim.SetBool("FullAiming", true);
-                break;
-            case ToolAnimationState.Use:
                 anim.SetInteger("WeaponType", (int)networkManager.CurrentToolType);
-                anim.SetBool("UseTool", true);
+                anim.SetBool("FullAiming", true);
                 break;
             case ToolAnimationState.FullUse:
                 anim.SetInteger("WeaponType", (int)networkManager.CurrentToolType);
                 anim.SetBool("FullUseTool", true);
                 break;
         }
-        anim.SetBool("ComboAttack", networkManager.ComboAttack);
 
-        if (input.IsUp(PlayerNetworkInputData.aimInput))
-        {
-            anim.SetBool("Aiming", false);
-            anim.SetBool("FullAiming", false);
-            cameraManager.MoveCamera(false);
-        }
+        anim.SetBool("ComboAttack", networkManager.ComboAttack);
     }
 
     // 테스트용
