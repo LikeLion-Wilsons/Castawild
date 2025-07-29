@@ -160,6 +160,18 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_UseItem(int index, int count)
+    {
+        UseItem(index,count);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_GetItem(int itemId, int count)
+    {
+        GetItem(itemId, count);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_SetItem(int index, Item item)
     {
         itemList.Set(index, item);

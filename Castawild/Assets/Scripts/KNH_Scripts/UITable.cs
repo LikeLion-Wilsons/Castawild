@@ -1,7 +1,9 @@
+using Fusion;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static Unity.Collections.Unicode;
 
 public class UITable : UIPart
 {
@@ -43,14 +45,15 @@ public class UITable : UIPart
         if(canCreate) craftButton.GetComponent<Image>().color = Color.green;
         else craftButton.GetComponent<Image>().color = Color.red;
     }
+
     public void Craft()
     {
         if (canCreate)
         {
-            inventoryData.GetItem(selectedItem.itemID, 1);
+            inventoryData.RPC_GetItem(selectedItem.itemID, 1);
             for(int i=0;i< selectedItem.ingredient.Count; i++)
             {
-                inventoryData.UseItem(selectedItem.ingredient[i].itemID, selectedItem.ingredientCount[i]);
+                inventoryData.RPC_UseItem(selectedItem.ingredient[i].itemID, selectedItem.ingredientCount[i]);
             }
 
         }
