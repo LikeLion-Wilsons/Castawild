@@ -7,6 +7,10 @@ using UnityEngine;
 public sealed class KCCPlayerController : NetworkBehaviour
 {
     public SimpleKCC kcc;
+    private MovementStateManager movementManager;
+    private ToolStateManager toolManager;
+    private PlayerCameraManager cameraManager;
+    private PlayerNetworkManager networkManager;
 
     [Header("Movement")]
     public float gravity = -20f;
@@ -14,10 +18,13 @@ public sealed class KCCPlayerController : NetworkBehaviour
     public float maxSpeed = 2f;
     public float rotationSpeed = 15f;
 
-    private MovementStateManager movementManager;
-    private ToolStateManager toolManager;
-    private PlayerCameraManager cameraManager;
-    private PlayerNetworkManager networkManager;
+    [Header("Interact")]
+    [SerializeField] private float interactHeight = 10f;
+    [SerializeField] private Transform thirdPersonInteractPos;
+    [SerializeField] private float interactRadius = 1f;
+    [SerializeField] private LayerMask interactLayer;
+    [SerializeField] private CanvasGroup hitPerformedUI;
+
     public bool Grounded => kcc.IsGrounded;
 
     // interact 테스트용
@@ -70,8 +77,9 @@ public sealed class KCCPlayerController : NetworkBehaviour
             toolManager.ChangeCurrentTool();
 
             // 테스트용
-            if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interact))
-                TryInteract();
+            //if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interact))
+            //    TryInteract();
+            TestTryOverlap(input.currentView);
 
             movementManager.SetPrevInputButton(input.Buttons);
             toolManager.SetPrevInputButton(input.Buttons);
@@ -164,6 +172,60 @@ public sealed class KCCPlayerController : NetworkBehaviour
                     }
                 }
             }
+        }
+    }
+
+    private void TestTryOverlap(ViewType currentView)
+    {
+        Camera cam = Camera.main;
+
+        Vector3 origin = (currentView == ViewType.FirstPerson) ? cam.transform.position : thirdPersonInteractPos.position;
+        Vector3 point1 = origin + cam.transform.forward * interactHeight;
+        Vector3 point2 = origin;
+
+        int hitCount = Runner.GetPhysicsScene().
+            OverlapCapsule(point1, point2, interactRadius, _interactResult, interactLayer, QueryTriggerInteraction.UseGlobal);
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            var interact = _interactResult[i];
+            if (interact.TryGetComponent<TestInteractable>(out var interactable))
+            {
+                Debug.Log("Interactable Object Detected");
+                if (interactable.InteractableType == InteractableType.Tree || interactable.InteractableType == InteractableType.Stone)
+                    hitPerformedUI.alpha = 1f;
+            }
+            else
+                hitPerformedUI.alpha = 0f;
+        }
+
+        Debug.DrawLine(point1, point2, Color.green, 1f);
+
+        DebugDrawCircle(point1, cam.transform.forward, interactRadius, Color.green);
+        DebugDrawCircle(point2, cam.transform.forward, interactRadius, Color.green);
+    }
+
+    void DebugDrawCircle(Vector3 center, Vector3 normal, float radius, Color color, int segments = 20)
+    {
+        normal.Normalize();
+
+        Vector3 basis1 = Vector3.Cross(normal, Vector3.up);
+        if (basis1 == Vector3.zero)
+            basis1 = Vector3.Cross(normal, Vector3.right);
+        basis1.Normalize();
+        Vector3 basis2 = Vector3.Cross(normal, basis1);
+
+        float angleStep = 360f / segments;
+
+        for (int i = 0; i < segments; i++)
+        {
+            float angle0 = Mathf.Deg2Rad * (i * angleStep);
+            float angle1 = Mathf.Deg2Rad * ((i + 1) * angleStep);
+
+            Vector3 point0 = center + radius * (Mathf.Cos(angle0) * basis1 + Mathf.Sin(angle0) * basis2);
+            Vector3 point1 = center + radius * (Mathf.Cos(angle1) * basis1 + Mathf.Sin(angle1) * basis2);
+
+            Debug.DrawLine(point0, point1, color, 1f);
         }
     }
 }

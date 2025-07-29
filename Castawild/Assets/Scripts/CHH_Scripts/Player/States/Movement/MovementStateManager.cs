@@ -176,6 +176,5 @@ public class MovementStateManager : BaseStateManager
     {
         base.UpdateAnimationFlags();
         networkManager.JumpTriggered = jumpTriggered;
-        Debug.Log("networkManager.JumpTriggered" + networkManager.JumpTriggered);
     }
 }

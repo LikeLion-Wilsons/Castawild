@@ -24,6 +24,7 @@ public class CwPlayer : MonoBehaviour
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public MovementStateManager movementManager;
     [HideInInspector] public ToolStateManager toolStateManager;
+    [HideInInspector] public PlayerCameraManager cameraManager;
 
     // 테스트용
     public List<HoldTool> holdTools = new List<HoldTool>();
@@ -53,6 +54,7 @@ public class CwPlayer : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
         inputManager = GetComponent<PlayerInputManager>();
         toolStateManager = GetComponent<ToolStateManager>();
+        cameraManager = GetComponent<PlayerCameraManager>();
     }
 
     private void InitTools()

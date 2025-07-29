@@ -19,10 +19,7 @@ public class WalkState : MovementBaseState
     {
         // Run
         if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.toolStateManager.currentState != movementManager.toolStateManager.aimState)
-        {
-            Debug.Log(movementManager.toolStateManager.currentState);
             movementManager.ChangeState(movementManager.runState);
-        }
 
         // Crouch
         else if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.crouchInput))
