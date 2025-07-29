@@ -70,7 +70,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 90, y: 90}
+  m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &736511783106249916
 CanvasRenderer:
@@ -202,7 +202,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1761656847675650478
 RectTransform:
   m_ObjectHideFlags: 0
@@ -223,7 +223,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 90, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1868389166578477949
 CanvasRenderer:
@@ -246,7 +246,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 0.2735849, g: 0.2735849, b: 0.2735849, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -297,7 +297,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -4.2, y: 63.7}
+  m_AnchoredPosition: {x: -4.200001, y: 52.7}
   m_SizeDelta: {x: 93.7319, y: 24.5881}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &8274189137648228268
@@ -339,7 +339,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -420,7 +420,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6173961994937164185
 RectTransform:
   m_ObjectHideFlags: 0
@@ -462,7 +462,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.16037738, g: 0.15810789, b: 0.15810789, a: 0.50980395}
+  m_Color: {r: 0.3018868, g: 0.3018868, b: 0.3018868, a: 0.3254902}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -500,7 +500,7 @@ MonoBehaviour:
   inventory: {fileID: 0}
   image: {fileID: 695216775382904445}
   selectedColor: {r: 0.036712356, g: 0.7075472, b: 0.036712356, a: 0.5294118}
-  notSelectedColor: {r: 0.4056604, g: 0.4056604, b: 0.4056604, a: 0.76862746}
+  notSelectedColor: {r: 0.4056604, g: 0.4056604, b: 0.4056604, a: 0.38431373}
   item_icon: {fileID: 1351514211392362751}
   itemCountText: {fileID: 6112187857808343133}
   durabilityBar: {fileID: 1069641077678254244}

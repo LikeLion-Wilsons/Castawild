@@ -48,7 +48,8 @@ public class Item_Panel :
     }
     void Update()
     {
-        isInveontoryOpen = inventoryData.canvasHolder.IsInventoryOpen();
+        if (inventoryData != null)
+            isInveontoryOpen = inventoryData.canvasHolder.IsInventoryOpen();
     }
     public void SlotInit(Item _item)
     {
@@ -83,13 +84,13 @@ public class Item_Panel :
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (item.isNull == true || item.itemID == -1) return;
+        if (item.itemID == -1) return;
         uiInventory.SetItemClickAnimation(this);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (item.isNull == true || item.itemID == -1) return;
+        if (item.itemID == -1) return;
         if (uiInventory.itemClick.activeSelf == true)
             uiInventory.itemClick.SetActive(false);
     }
@@ -100,7 +101,7 @@ public class Item_Panel :
 
         originalAnchoredPos = rectTransform.anchoredPosition;
         originalParent = transform.parent;
-        if (item.isNull == true || item.itemID == -1) return;
+        if (item.itemID == -1) return;
         //우클릭 여부 저장
         isRightMouseDrag = Input.GetMouseButton(1);
 
@@ -144,7 +145,7 @@ public class Item_Panel :
     public void OnDrag(PointerEventData eventData)
     {
         if (!isInveontoryOpen) return;
-        if (item.isNull == true || item.itemID == -1) return;
+        if (item.itemID == -1) return;
         if (isRightMouseDrag && draggedClone != null)
         {
             draggedClone.GetComponent<RectTransform>().position = eventData.position;
