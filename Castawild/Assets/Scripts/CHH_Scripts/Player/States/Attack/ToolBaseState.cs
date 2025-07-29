@@ -1,4 +1,5 @@
 
+using Fusion;
 using UnityEngine;
 
 public abstract class ToolBaseState : BaseState
@@ -13,7 +14,6 @@ public abstract class ToolBaseState : BaseState
 
     public override void ExitState()
     {
-        toolStateManager.isAnimationFinished = false;
-        toolStateManager.networkManager.IsAnimationFinished = false;
+        toolStateManager.IsAnimationFinished = false;
     }
 }

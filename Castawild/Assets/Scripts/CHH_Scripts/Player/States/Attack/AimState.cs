@@ -14,9 +14,9 @@ public class AimState : ToolBaseState
         toolStateManager.player.isAimLocked = true;
 
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
-            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Aim;
+            toolStateManager.CurrentToolUseState = ToolAnimationState.Aim;
         else
-            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullAim;
+            toolStateManager.CurrentToolUseState = ToolAnimationState.FullAim;
 
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.runState)
             toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.walkState);
@@ -31,9 +31,9 @@ public class AimState : ToolBaseState
         RotatePlayer();
 
         if (toolStateManager.player.currentMoveType != MoveType.Idle)
-            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Aim;
+            toolStateManager.CurrentToolUseState = ToolAnimationState.Aim;
         else if (toolStateManager.player.currentMoveType == MoveType.Idle)
-            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullAim;
+            toolStateManager.CurrentToolUseState = ToolAnimationState.FullAim;
 
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
             toolStateManager.ChangeState(toolStateManager.useToolState);

@@ -681,6 +681,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canReceiveInput: 0
   canComboAttack: 0
+  _ComboAttack: 0
+  _IsAnimationFinished: 0
+  _CanReceiveInput: 0
 --- !u!1 &1017937576476777739
 GameObject:
   m_ObjectHideFlags: 0
@@ -3904,7 +3907,6 @@ GameObject:
   - component: {fileID: 3318766871343913700}
   - component: {fileID: 8225308212403291209}
   - component: {fileID: 230939324335428207}
-  - component: {fileID: 4943324450787485491}
   - component: {fileID: 6363259293620697004}
   - component: {fileID: 4022685551630965951}
   - component: {fileID: 5000463041039569134}
@@ -3957,11 +3959,13 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 4943324450787485491}
+  - {fileID: 3318766871343913700}
+  - {fileID: 230939324335428207}
   - {fileID: 6363259293620697004}
   - {fileID: 5000463041039569134}
   - {fileID: 8380833186685685926}
   - {fileID: 8582333994370596099}
+  - {fileID: 6538707269868563790}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &731358021191424698
 MonoBehaviour:
@@ -4015,9 +4019,7 @@ MonoBehaviour:
   inputManager: {fileID: 8225308212403291209}
   cameraManager: {fileID: 0}
   player: {fileID: 0}
-  networkManager: {fileID: 0}
-  comboAttack: 0
-  isAnimationFinished: 0
+  _IsAnimationFinished: 0
   toolStateManager: {fileID: 0}
   playerController: {fileID: 0}
   currentMoveSpeed: 3
@@ -4038,11 +4040,14 @@ MonoBehaviour:
   fallMultiplier: 1.5
   gravity: -9.81
   jumpForce: 8
-  jumpTriggered: 0
   isJumping: 0
   velocity: {x: 0, y: 0, z: 0}
   animationLerpSpeed: 10
   isTriggerSet: 0
+  _CurrentMoveState: 0
+  _JumpTriggered: 0
+  _CanMove: 0
+  _MoveValue: {x: 0, y: 0}
 --- !u!114 &8225308212403291209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4102,35 +4107,15 @@ MonoBehaviour:
   inputManager: {fileID: 0}
   cameraManager: {fileID: 0}
   player: {fileID: 0}
-  networkManager: {fileID: 0}
-  comboAttack: 0
-  isAnimationFinished: 0
+  _IsAnimationFinished: 0
   movementManager: {fileID: 0}
   animTrigger: {fileID: 0}
   armature: {fileID: 7813269517312369915}
   visibleMesh: {fileID: 3201401248480740544}
---- !u!114 &4943324450787485491
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7137290088832178523}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbf3efdcb2b6c8d4f948344dd00cf44e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isSpawned: 0
-  _CurrentMoveState: 0
-  _CurrentToolUseState: 0
-  _MoveValue: {x: 0, y: 0}
-  _CurrentToolType: 0
   _ComboAttack: 0
-  _IsAnimationFinished: 0
   _CanReceiveInput: 0
-  _CanMove: 0
-  _JumpTriggered: 0
+  _CurrentToolUseState: 0
+  _CurrentToolType: 0
 --- !u!114 &6363259293620697004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4229,7 +4214,7 @@ MonoBehaviour:
   interactRadius: 1
   interactLayer:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 0
   hitPerformedUI: {fileID: 5834989498880808298}
 --- !u!114 &8582333994370596099
 MonoBehaviour:

@@ -9,10 +9,10 @@ public enum ViewType { None, FirstPerson, ThirdPerson }
 public class PlayerCameraManager : MonoBehaviour
 {
     #region Components
+    private KCCPlayerController playerController;
     private PlayerInputManager inputManager;
     private CinemachineOrbitalFollow orbital;
     private CinemachineInputAxisController inputAxisController;
-    private PlayerNetworkManager networkManager;
     private ToolStateManager toolManager;
     private CwPlayer player;
     #endregion
@@ -87,11 +87,11 @@ public class PlayerCameraManager : MonoBehaviour
     private void InitComponents()
     {
         player = GetComponentInParent<CwPlayer>();
+        playerController = GetComponentInParent<KCCPlayerController>();
         inputManager = GetComponentInParent<PlayerInputManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
         orbital = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
         inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
-        networkManager = GetComponentInParent<PlayerNetworkManager>();
         Camera.main.GetComponent<CinemachineBrain>().DefaultBlend = new(CinemachineBlendDefinition.Styles.Cut, 0f);
     }
 
@@ -136,7 +136,7 @@ public class PlayerCameraManager : MonoBehaviour
     {
         if (viewType == ViewType.FirstPerson)
         {
-            if (networkManager.HasInputAuthority)
+            if (playerController.HasInputAuthority)
             {
                 currentView = ViewType.FirstPerson;
                 foreach (var mesh in playerMeshes)
@@ -150,7 +150,7 @@ public class PlayerCameraManager : MonoBehaviour
 
         else if (viewType == ViewType.ThirdPerson)
         {
-            if (networkManager.HasInputAuthority)
+            if (playerController.HasInputAuthority)
             {
                 currentView = ViewType.ThirdPerson;
 

@@ -7,14 +7,14 @@ public class ToolIdleState : ToolBaseState
 
     public override void EnterState()
     {
-        toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Idle;
+        toolStateManager.CurrentToolUseState = ToolAnimationState.Idle;
     }
 
     public override void UpdateState()
     {
         // Aim
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.aimInput)
-            && toolStateManager.networkManager.HoldAimTool())
+            && toolStateManager.HoldAimTool())
             toolStateManager.ChangeState(toolStateManager.aimState);
 
         // UseTool

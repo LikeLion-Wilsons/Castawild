@@ -1,40 +1,44 @@
 using Fusion;
 using UnityEngine;
 
-public class AnimationTrigger : MonoBehaviour
+public class AnimationTrigger : NetworkBehaviour
 {
     private CwPlayer player;
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
-    private PlayerNetworkManager networkManager;
     [HideInInspector] public bool canReceiveInput = false;
     [HideInInspector] public bool canComboAttack = false;
+
+    #region Network
+    [Networked] public bool ComboAttack { get; set; }
+    [Networked] public bool IsAnimationFinished { get; set; }
+    [Networked] public bool CanReceiveInput { get; set; }
+    #endregion
 
     private void Awake()
     {
         player = GetComponentInParent<CwPlayer>();
         movementManager = GetComponentInParent<MovementStateManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
-        networkManager = GetComponentInParent<PlayerNetworkManager>();
     }
 
-    public void ToolAnimationFinishTrigger() => toolManager.isAnimationFinished = true;
-    public void ToolAnimationStartTrigger() => toolManager.isAnimationFinished = false;
-    public void MoveAnimationFinishTrigger() => movementManager.isAnimationFinished = true;
-    public void MoveAnimationStartTrigger() => movementManager.isAnimationFinished = false;
-    public void JumpForce()
-    {
-        movementManager.jumpTriggered = true;
-    }
+    public void ToolAnimationFinishTrigger() => toolManager.IsAnimationFinished = true;
+    public void ToolAnimationStartTrigger() => toolManager.IsAnimationFinished = false;
+    public void MoveAnimationFinishTrigger() => movementManager.IsAnimationFinished = true;
+    public void MoveAnimationStartTrigger() => movementManager.IsAnimationFinished = false;
+    public void JumpForce() => movementManager.JumpTriggered = true;
+
     public void Jumped() => movementManager.isJumping = true;
     public void ReceiveInput() => canReceiveInput = true;
     public void StopReceiveInput()
     {
         if (canComboAttack)
-            toolManager.comboAttack = true;
+            toolManager.ComboAttack = true;
         canComboAttack = false;
         canReceiveInput = false;
     }
 
     public void ApplyTool() => player.ApplyTool();
+
+
 }

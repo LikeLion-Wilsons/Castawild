@@ -10,7 +10,6 @@ public sealed class KCCPlayerController : NetworkBehaviour
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
     private PlayerCameraManager cameraManager;
-    private PlayerNetworkManager networkManager;
 
     [Header("Movement")]
     public float gravity = -20f;
@@ -52,19 +51,14 @@ public sealed class KCCPlayerController : NetworkBehaviour
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
         if (!HasInputAuthority)
             cameraManager.SetNetworkCamera();
-
-        networkManager = GetComponent<PlayerNetworkManager>();
     }
 
     public override void FixedUpdateNetwork()
     {
-        if (!networkManager.isSpawned)
-            return;
-
         if (GetInput<PlayerNetworkInputData>(out var input))
         {
             // 속도 조절
-            maxSpeed = networkManager.CanMove ? movementManager.currentMoveSpeed : 0f;
+            maxSpeed = movementManager.CanMove ? movementManager.currentMoveSpeed : 0f;
 
             movementManager.SetInput(input);
             toolManager.SetInput(input);
@@ -72,19 +66,14 @@ public sealed class KCCPlayerController : NetworkBehaviour
             movementManager.currentState.UpdateState();
             toolManager.currentState.UpdateState();
 
-            movementManager.UpdateAnimationFlags();
-            toolManager.UpdateAnimationFlags();
             toolManager.ChangeCurrentTool();
 
-            // 테스트용
-            //if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interact))
-            //    TryInteract();
             TestTryOverlap(input.currentView);
 
             movementManager.SetPrevInputButton(input.Buttons);
             toolManager.SetPrevInputButton(input.Buttons);
 
-            networkManager.MoveValue = input.moveValue;
+            movementManager.MoveValue = input.moveValue;
 
             Move(input.moveDir);
             Rotate(input);
@@ -113,11 +102,10 @@ public sealed class KCCPlayerController : NetworkBehaviour
 
         // 점프
         float jump = 0f;
-        if (networkManager.JumpTriggered)
+        if (movementManager.JumpTriggered)
         {
-            Debug.Log("KCC.JumpTriggered" + networkManager.JumpTriggered);
-            movementManager.jumpTriggered = false;
-            networkManager.JumpTriggered = false;
+            Debug.Log("KCC.JumpTriggered" + movementManager.JumpTriggered);
+            movementManager.JumpTriggered = false;
             jump = jumpImpulse;
         }
 
@@ -145,9 +133,6 @@ public sealed class KCCPlayerController : NetworkBehaviour
     public override void Render()
     {
         kcc.Render();
-
-        if (!networkManager.isSpawned)
-            return;
 
         movementManager.UpdateMoveAnimation(Runner.DeltaTime);
         toolManager.UpdateMoveAnimation();
