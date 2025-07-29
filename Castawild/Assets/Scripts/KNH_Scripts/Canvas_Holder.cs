@@ -6,6 +6,8 @@ public class Canvas_Holder : MonoBehaviour
     public GameObject hotBarUI;
     public GameObject inventoryUI;
     public GameObject tableUI;
+
+    public bool isDragging = false;
     private void Awake()
     {
     }

@@ -162,7 +162,7 @@ public class InventoryDataManager : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_UseItem(int index, int count)
     {
-        UseItem(index,count);
+        UseItem(index, count);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -305,34 +305,55 @@ public class InventoryDataManager : NetworkBehaviour
         }
     }
 
-    public void UseItem(int index, int count)
+    public void UseItem(int id, int count)
     {
-        if (index >= 0 && index < itemList.Count)
+        for (int i = 0; i < itemList.Count; i++)
         {
-            if (itemList[index].itemID == -1) return;
-            Debug.Log(itemList[index].GetData().name + " 사용!");
-            var item = itemList.Get(index);
-
-            item.count -= count;
-            if (item.count <= 0) item.itemID = -1;
-            itemList.Set(index, item);
-            if (Object.HasStateAuthority)
+            if (itemList[i].itemID == id)
             {
-                //onInventoryUpdated?.Invoke();
-                RPC_UpdateInventoryUI();
+                var item = itemList.Get(i);
+                if (item.count - count >= 0)
+                {
+                    item.count -= count;
+                    itemList.Set(i, item);
+                    break;
+                }
+                else
+                {
+                    count -= item.count;
+                    item.count = 0;
+                    itemList.Set(i, item);
+                }
+
             }
         }
+        if (Object.HasStateAuthority)
+        {
+            RPC_UpdateInventoryUI();
+        }
+        //if (index >= 0 && index < itemList.Count)
+        //{
+        //    if (itemList[index].itemID == -1) return;
+        //    Debug.Log(itemList[index].GetData().name + " 사용!");
+        //    var item = itemList.Get(index);
+
+        //    item.count -= count;
+        //    if (item.count <= 0) item.itemID = -1;
+        //    itemList.Set(index, item);
+
+        //}
     }
 
     // 아이템 소지 수량 확인
     public int GetItemCount(int id)
     {
+        int count = 0;
         foreach (var item in itemList)
         {
             if (item.itemID != -1 && item.GetData().itemID == id)
-                return item.count;
+                count += item.count;
         }
-        return 0;
+        return count;
     }
 
     public NetworkLinkedList<Item> GetItemList()

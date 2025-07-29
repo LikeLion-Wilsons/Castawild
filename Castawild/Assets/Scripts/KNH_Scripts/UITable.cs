@@ -48,6 +48,8 @@ public class UITable : UIPart
 
     public void Craft()
     {
+        if (inventoryData.canvasHolder.isDragging == true) return;//드래그 중에 제작 불가
+
         if (canCreate)
         {
             inventoryData.RPC_GetItem(selectedItem.itemID, 1);
@@ -61,6 +63,8 @@ public class UITable : UIPart
 
     public void SetTableUI()
     {
+        if (inventoryData.canvasHolder.isDragging == true) return;
+
         if (selectedItem == null) return;
         //텍스트 설정
         itemName.GetComponent<TextMeshProUGUI>().text = selectedItem.itemName;
