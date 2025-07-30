@@ -2,6 +2,7 @@ using Fusion;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 // 테스트용
 [System.Serializable]
@@ -11,11 +12,14 @@ public class HoldTool
     public GameObject tool;
 }
 
+[System.Serializable]
+public enum InteractableType { None, Tree, Stone, Box, Campfire }
+
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
 public enum AttackType { None, Aim, Attack }
 
-public class CwPlayer : NetworkBehaviour
+public class Player : NetworkBehaviour
 {
     public PlayerData playerData;
 
@@ -29,7 +33,6 @@ public class CwPlayer : NetworkBehaviour
     #endregion
 
     #region Throw
-    public GameObject crosshairImage;
     public float throwForce = 10f;
     public float throwUpForce = 5f;
     #endregion
@@ -40,11 +43,15 @@ public class CwPlayer : NetworkBehaviour
     private GameObject currentEquippedTool = null;
     #endregion
 
-    public InventoryDataManager inventory;
-    [HideInInspector] public bool isAimLocked = false;
+    #region UI
+    public Image crosshairImage;
+    [SerializeField] private Sprite originImage;
+    [SerializeField] private Sprite axeImage;
+    [SerializeField] private Sprite pickaxeImage;
+    #endregion
 
-    // 테스트용
-    public List<HoldTool> holdTools = new List<HoldTool>();
+    [HideInInspector] public InventoryDataManager inventory;
+    [HideInInspector] public bool isAimLocked = false;
 
     private void Awake()
     {
@@ -97,12 +104,10 @@ public class CwPlayer : NetworkBehaviour
         {
             newToolGameObject.SetActive(true);
             currentEquippedTool = newToolGameObject;
-            Debug.Log($"Equipped: {toolIdx}");
         }
         else
-        {
-            Debug.LogWarning($"Tool with ItemID '{toolIdx}' not found in the dictionary.");
-        }
+            Debug.LogWarning($"{toolIdx} 인덱스 없음");
+
         toolStateManager.ChangeCurrentTool(toolIdx);
     }
 
@@ -115,7 +120,26 @@ public class CwPlayer : NetworkBehaviour
         {
             currentEquippedTool.SetActive(false);
             currentEquippedTool = null;
-            Debug.Log("Tool unequipped.");
+        }
+    }
+
+    public void ChangeCrosshairUI(InteractableType type = InteractableType.None)
+    {
+        switch (type)
+        {
+            case InteractableType.Tree:
+                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
+                crosshairImage.sprite = axeImage;
+                break;
+            case InteractableType.Stone:
+                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
+                crosshairImage.sprite = pickaxeImage;
+                break;
+            case InteractableType.None:
+            default:
+                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(10f, 10f);
+                crosshairImage.sprite = originImage;
+                break;
         }
     }
 }

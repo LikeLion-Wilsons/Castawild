@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class AnimationTrigger : MonoBehaviour
 {
-    private CwPlayer player;
+    private Player player;
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
     [HideInInspector] public bool canReceiveInput = false;
@@ -11,7 +11,7 @@ public class AnimationTrigger : MonoBehaviour
 
     private void Awake()
     {
-        player = GetComponentInParent<CwPlayer>();
+        player = GetComponentInParent<Player>();
         movementManager = GetComponentInParent<MovementStateManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
     }

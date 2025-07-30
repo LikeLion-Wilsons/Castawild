@@ -12,7 +12,7 @@ public class PlayerCameraManager : MonoBehaviour
     private CinemachineOrbitalFollow orbital;
     private CinemachineInputAxisController inputAxisController;
     private ToolStateManager toolManager;
-    private CwPlayer player;
+    private Player player;
     #endregion
 
     public bool isAiming = false;
@@ -84,7 +84,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void InitComponents()
     {
-        player = GetComponentInParent<CwPlayer>();
+        player = GetComponentInParent<Player>();
         playerController = GetComponentInParent<PlayerController>();
         inputManager = GetComponentInParent<PlayerInputManager>();
         toolManager = GetComponentInParent<ToolStateManager>();

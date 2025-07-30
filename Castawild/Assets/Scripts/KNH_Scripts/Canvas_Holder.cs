@@ -8,7 +8,7 @@ public class Canvas_Holder : MonoBehaviour
     public GameObject tableUI;
 
     // 수정한 부분
-    public CwPlayer player;
+    public Player player;
 
     private void Awake()
     {
@@ -66,6 +66,12 @@ public class Canvas_Holder : MonoBehaviour
     public bool IsInventoryOpen()
     {
         return uiParts.ContainsKey("Inventory") && uiParts["Inventory"].IsOpen();
+    }
+
+    // 수정한 부분
+    public bool IsInventoryTableOpen()
+    {
+        return uiParts.ContainsKey("Inventory") && uiParts["Inventory"].IsOpen() || uiParts.ContainsKey("Table") && uiParts["Table"].IsOpen();
     }
 
     public bool AnyUIOpen()

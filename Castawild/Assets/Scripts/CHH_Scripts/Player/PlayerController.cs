@@ -2,11 +2,13 @@ using Fusion;
 using Fusion.Addons.SimpleKCC;
 using Test;
 using UnityEngine;
+using UnityEngine.UI;
 
 [DisallowMultipleComponent]
 public sealed class PlayerController : NetworkBehaviour
 {
     public SimpleKCC kcc;
+    private Player player;
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
     private PlayerCameraManager cameraManager;
@@ -22,7 +24,6 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private Transform thirdPersonInteractPos;
     [SerializeField] private float interactRadius = 1f;
     [SerializeField] private LayerMask interactLayer;
-    [SerializeField] private CanvasGroup hitPerformedUI;
 
     public bool Grounded => kcc.IsGrounded;
 
@@ -42,6 +43,7 @@ public sealed class PlayerController : NetworkBehaviour
     {
         kcc = GetComponent<SimpleKCC>();
 
+        player = GetComponent<Player>();
         movementManager = GetComponent<MovementStateManager>();
         movementManager.ChangeState(movementManager.idleState);
 
@@ -169,18 +171,20 @@ public sealed class PlayerController : NetworkBehaviour
         int hitCount = Runner.GetPhysicsScene().
             OverlapCapsule(point1, point2, interactRadius, _interactResult, interactLayer, QueryTriggerInteraction.UseGlobal);
 
-        for (int i = 0; i < hitCount; i++)
+        if (hitCount > 0)
         {
-            var interact = _interactResult[i];
-            if (interact.TryGetComponent<TestInteractable>(out var interactable))
+            for (int i = 0; i < hitCount; i++)
             {
-                Debug.Log("Interactable Object Detected");
-                if (interactable.InteractableType == InteractableType.Tree || interactable.InteractableType == InteractableType.Stone)
-                    hitPerformedUI.alpha = 1f;
+                var interact = _interactResult[i];
+                if (interact.TryGetComponent<TestInteractable>(out var interactable))
+                {
+                    Debug.Log("Interactable Object Detected");
+                    player.ChangeCrosshairUI(interactable.InteractableType);
+                }
             }
-            else
-                hitPerformedUI.alpha = 0f;
         }
+        else
+            player.ChangeCrosshairUI();
 
         Debug.DrawLine(point1, point2, Color.green, 1f);
 

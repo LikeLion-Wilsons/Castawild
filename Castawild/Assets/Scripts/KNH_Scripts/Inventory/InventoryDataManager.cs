@@ -17,7 +17,7 @@ public class InventoryDataManager : NetworkBehaviour
     [Networked, Capacity(30)] public NetworkLinkedList<Item> itemList => default;
 
     // 수정한 부분
-    private CwPlayer player;
+    private Player player;
 
     public override void Spawned()
     {
@@ -49,7 +49,7 @@ public class InventoryDataManager : NetworkBehaviour
             uiTable.BindToInventoryData(this);
 
             canvasHolder = uiCanvas.GetComponent<Canvas_Holder>();
-            player = GetComponent<CwPlayer>();
+            player = GetComponent<Player>();
             canvasHolder.player = player;
 
             int i = 0;

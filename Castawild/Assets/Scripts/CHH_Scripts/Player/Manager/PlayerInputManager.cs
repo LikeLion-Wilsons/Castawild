@@ -30,7 +30,7 @@ public class PlayerInputManager : MonoBehaviour
 
     private PlayerCameraManager cameraManager;
     private MovementStateManager movementManager;
-    private CwPlayer player;
+    private Player player;
 
     private void OnEnable()
     {
@@ -46,7 +46,7 @@ public class PlayerInputManager : MonoBehaviour
     {
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
         movementManager = GetComponent<MovementStateManager>();
-        player = GetComponent<CwPlayer>();
+        player = GetComponent<Player>();
         InitInputActions();
     }
 
@@ -72,7 +72,7 @@ public class PlayerInputManager : MonoBehaviour
             UnlockCursor();
 
         // Game 창이 포커스된 상태에서 클릭 시 커서 잠금
-        if (!isCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame && !player.inventory.canvasHolder.AnyUIOpen())
+        if (!isCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame && !player.inventory.canvasHolder.IsInventoryTableOpen())
             LockCursor();
 
         // ESC 눌렀을 때 해제

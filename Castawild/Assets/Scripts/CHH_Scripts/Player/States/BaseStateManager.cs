@@ -6,7 +6,7 @@ public class BaseStateManager : NetworkBehaviour
     [HideInInspector] public Animator anim;
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public PlayerCameraManager cameraManager;
-    [HideInInspector] public CwPlayer player;
+    [HideInInspector] public Player player;
 
     public PlayerNetworkInputData input { get; private set; }
     public NetworkButtons prevInputButtons;
@@ -20,7 +20,7 @@ public class BaseStateManager : NetworkBehaviour
         anim = GetComponentInChildren<Animator>();
         inputManager = GetComponent<PlayerInputManager>();
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
-        player = GetComponent<CwPlayer>();
+        player = GetComponent<Player>();
     }
 
     public void ChangeState(BaseState newState)

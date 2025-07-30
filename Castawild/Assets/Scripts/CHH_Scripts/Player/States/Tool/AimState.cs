@@ -23,14 +23,14 @@ public class AimState : ToolBaseState
 
         toolStateManager.cameraManager.MoveCamera(true);
 
-        toolStateManager.player.crosshairImage.SetActive(true);
+        toolStateManager.player.crosshairImage.gameObject.SetActive(true);
     }
 
     public override void UpdateState()
     {
         RotatePlayer();
 
-        if (toolStateManager.movementManager. currentMoveType != MoveType.Idle)
+        if (toolStateManager.movementManager.currentMoveType != MoveType.Idle)
             toolStateManager.CurrentToolUseState = ToolAnimationState.Aim;
         else if (toolStateManager.movementManager.currentMoveType == MoveType.Idle)
             toolStateManager.CurrentToolUseState = ToolAnimationState.FullAim;
@@ -61,7 +61,7 @@ public class AimState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
-        toolStateManager.player.crosshairImage.SetActive(false);
+        toolStateManager.player.crosshairImage.gameObject.SetActive(false);
     }
 
     private void LookForward()
