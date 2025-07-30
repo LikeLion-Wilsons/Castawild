@@ -9,7 +9,7 @@ public class RunState : MovementBaseState
     {
         movementManager.CurrentMoveState = MoveAnimationState.Run;
         movementManager.currentMoveSpeed = movementManager.runSpeed;
-        movementManager.player.currentMoveType = MoveType.Run;
+        movementManager.currentMoveType = MoveType.Run;
     }
 
     public override void UpdateState()

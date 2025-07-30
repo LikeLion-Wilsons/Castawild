@@ -1,6 +1,7 @@
 using Fusion;
 using UnityEngine;
 
+public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife, Smash }
 public enum ToolAnimationState { Idle, Aim, FullAim, FullUse }
 public class ToolStateManager : BaseStateManager
 {
@@ -76,27 +77,36 @@ public class ToolStateManager : BaseStateManager
         anim.SetBool("ComboAttack", ComboAttack);
     }
 
-    // 테스트용
-    public void ChangeCurrentTool()
+    // 400:짱돌 401:방망이 402:횃불 403:돌도끼 404:돌작살 405:돌곡괭이
+    public void ChangeCurrentTool(int toolIdx)
     {
-        if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.toolChangedInput))
+        switch (toolIdx)
         {
-            int first = 1;
-            int last = System.Enum.GetValues(typeof(ToolType)).Length - 1;
-
-            int next = (int)CurrentToolType + 1;
-
-            if (next > last)
-                next = first;
-
-            CurrentToolType = (ToolType)next;
+            case 400: // 400:짱돌 
+                CurrentToolType = ToolType.Fist;
+                break;
+            case 401: // 방망이
+                CurrentToolType = ToolType.Sword;
+                break;
+            case 402: // 횃불
+                CurrentToolType = ToolType.Sword;
+                break;
+            case 403: // 돌도끼
+                CurrentToolType = ToolType.Axe;
+                break;
+            case 404: // 돌작살
+                CurrentToolType = ToolType.Spear;
+                break;
+            case 405: // 돌곡괭이
+                CurrentToolType = ToolType.Pickaxe;
+                break;
         }
     }
 
     /// <summary>
     /// 공격 무기 들고있는지 확인
     /// </summary>
-    public bool HoldTool()
+    public bool HoldAttackTool()
     {
         if (CurrentToolType == ToolType.Throw || CurrentToolType == ToolType.Fist || CurrentToolType == ToolType.Spear || CurrentToolType == ToolType.Sword)
             return true;

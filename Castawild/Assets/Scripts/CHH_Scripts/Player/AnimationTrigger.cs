@@ -1,19 +1,13 @@
 using Fusion;
 using UnityEngine;
 
-public class AnimationTrigger : NetworkBehaviour
+public class AnimationTrigger : MonoBehaviour
 {
     private CwPlayer player;
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
     [HideInInspector] public bool canReceiveInput = false;
     [HideInInspector] public bool canComboAttack = false;
-
-    #region Network
-    [Networked] public bool ComboAttack { get; set; }
-    [Networked] public bool IsAnimationFinished { get; set; }
-    [Networked] public bool CanReceiveInput { get; set; }
-    #endregion
 
     private void Awake()
     {
@@ -37,8 +31,4 @@ public class AnimationTrigger : NetworkBehaviour
         canComboAttack = false;
         canReceiveInput = false;
     }
-
-    public void ApplyTool() => player.ApplyTool();
-
-
 }

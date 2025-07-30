@@ -17,6 +17,7 @@ public class MovementStateManager : BaseStateManager
     public RunState runState;
     public JumpState jumpState;
     public CrouchState crouchState;
+    public MoveType currentMoveType;
     #endregion
 
     #region Movement

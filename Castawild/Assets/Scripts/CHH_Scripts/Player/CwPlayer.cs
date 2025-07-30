@@ -1,3 +1,4 @@
+using Fusion;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,36 +12,39 @@ public class HoldTool
 }
 
 // 테스트용
-public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife }
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
 public enum AttackType { None, Aim, Attack }
 
-public class CwPlayer : MonoBehaviour
+public class CwPlayer : NetworkBehaviour
 {
-    // 나중에 HideInInspector로 바꾸기
-    /*[HideInInspector] */
-    public Animator anim;
+    public PlayerData playerData;
+
+    #region Components
+    [HideInInspector] public Animator anim;
     [HideInInspector] public Rigidbody rigid;
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public MovementStateManager movementManager;
     [HideInInspector] public ToolStateManager toolStateManager;
     [HideInInspector] public PlayerCameraManager cameraManager;
+    #endregion
 
-    // 테스트용
-    public List<HoldTool> holdTools = new List<HoldTool>();
-    public Dictionary<ToolType, Tool> tools;
-    public ToolType currentToolType;
-    public MoveType currentMoveType;
-
+    #region Throw
     public GameObject crosshairImage;
     public float throwForce = 10f;
     public float throwUpForce = 5f;
+    #endregion
 
+    #region Tool
+    [SerializeField] private Transform tools;
+    private Dictionary<int, GameObject> toolDict = new Dictionary<int, GameObject>();
+    private GameObject currentEquippedTool = null;
+    #endregion
+
+    public InventoryDataManager inventory;
     [HideInInspector] public bool isAimLocked = false;
 
-    public PlayerData playerData;
-
-    static public CwPlayer instance;
+    // 테스트용
+    public List<HoldTool> holdTools = new List<HoldTool>();
 
     private void Awake()
     {
@@ -55,51 +59,63 @@ public class CwPlayer : MonoBehaviour
         inputManager = GetComponent<PlayerInputManager>();
         toolStateManager = GetComponent<ToolStateManager>();
         cameraManager = GetComponent<PlayerCameraManager>();
+        inventory = GetComponent<InventoryDataManager>();
     }
 
     private void InitTools()
     {
-        tools = new Dictionary<ToolType, Tool>
+        foreach (Transform tool in tools)
         {
-            { ToolType.Fist, new Fist(this) },
-            { ToolType.Throw, new Throw(this) },
-            { ToolType.Spear, new Spear(this) },
-            { ToolType.Sword, new Sword(this) },
-            { ToolType.Bow, new Bow(this) },
-            { ToolType.Axe, new Axe(this) },
-            { ToolType.Pickaxe, new Pickaxe(this) },
-            { ToolType.Knife, new Knife(this) }
-        };
+            ItemInfo itemInfo = tool.GetComponent<ItemInfo>();
+            if (itemInfo != null)
+            {
+                if (!toolDict.ContainsKey(itemInfo.itemID))
+                {
+                    toolDict.Add(itemInfo.itemID, tool.gameObject);
+                    tool.gameObject.SetActive(false);
+                }
+            }
+        }
     }
 
     /// <summary>
-    /// 공격시 호출
+    /// 도구 장착
     /// </summary>
-    public void ApplyTool()
+    public void EquipTool(int toolIdx)
     {
-        if (tools.TryGetValue(currentToolType, out Tool currentTool))
-            currentTool.ApplyTool();
-    }
+        // 장비 인덱스 아니면 리턴
+        if (toolIdx < 400)
+            return;
 
-    // 테스트용
-    private void OnValidate()
-    {
-        foreach (var holdTool in holdTools)
+        if (currentEquippedTool != null)
         {
-            if (holdTool.tool != null)
-                holdTool.tool.SetActive(false);
+            currentEquippedTool.SetActive(false);
+            currentEquippedTool = null;
         }
 
-        GameObject toolObject = GetHoldToolObject();
-        toolObject?.SetActive(true);
+        if (toolDict.TryGetValue(toolIdx, out GameObject newToolGameObject))
+        {
+            newToolGameObject.SetActive(true);
+            currentEquippedTool = newToolGameObject;
+            Debug.Log($"Equipped: {toolIdx}");
+        }
+        else
+        {
+            Debug.LogWarning($"Tool with ItemID '{toolIdx}' not found in the dictionary.");
+        }
+        toolStateManager.ChangeCurrentTool(toolIdx);
     }
 
     /// <summary>
-    /// 들고있는 도구 가져오기
+    /// 도구 해제
     /// </summary>
-    public GameObject GetHoldToolObject()
+    public void UnequipCurrentTool()
     {
-        string key = currentToolType.ToString();
-        return holdTools.FirstOrDefault(t => t.toolName == key)?.tool;
+        if (currentEquippedTool != null)
+        {
+            currentEquippedTool.SetActive(false);
+            currentEquippedTool = null;
+            Debug.Log("Tool unequipped.");
+        }
     }
 }

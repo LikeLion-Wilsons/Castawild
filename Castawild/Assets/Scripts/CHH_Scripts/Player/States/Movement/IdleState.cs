@@ -9,7 +9,7 @@ public class IdleState : MovementBaseState
     public override void EnterState()
     {
         movementManager.CurrentMoveState = MoveAnimationState.Idle;
-        movementManager.player.currentMoveType = MoveType.Idle;
+        movementManager.currentMoveType = MoveType.Idle;
     }
 
     public override void UpdateState()

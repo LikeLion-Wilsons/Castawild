@@ -10,7 +10,7 @@ public class CrouchState : MovementBaseState
     {
         movementManager.CurrentMoveState = MoveAnimationState.CrouchIdle;
         movementManager.currentMoveSpeed = movementManager.crouchSpeed;
-        movementManager.player.currentMoveType = MoveType.Crouch;
+        movementManager.currentMoveType = MoveType.Crouch;
     }
 
     public override void UpdateState()

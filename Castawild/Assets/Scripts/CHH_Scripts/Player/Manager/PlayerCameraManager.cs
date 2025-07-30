@@ -113,7 +113,7 @@ public class PlayerCameraManager : MonoBehaviour
     {
         HandleViewChange();
         UpdateCameraPitch();
-        ZoomCamera();
+        //ZoomCamera();
     }
 
     private void HandleViewChange()

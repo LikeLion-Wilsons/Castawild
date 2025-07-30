@@ -66,8 +66,6 @@ public sealed class PlayerController : NetworkBehaviour
             movementManager.currentState.UpdateState();
             toolManager.currentState.UpdateState();
 
-            toolManager.ChangeCurrentTool();
-
             TestTryOverlap(input.currentView);
 
             movementManager.SetPrevInputButton(input.Buttons);

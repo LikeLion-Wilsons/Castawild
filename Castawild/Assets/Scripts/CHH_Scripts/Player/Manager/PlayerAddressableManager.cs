@@ -17,7 +17,6 @@ public class PlayerAddressableManager : MonoBehaviour
         playerArmature.InstantiateAsync().Completed += (_playerArmature) =>
         {
             GameObject armature = _playerArmature.Result;
-            armature.transform.SetParent(CwPlayer.instance.transform);
             armature.transform.localPosition = Vector3.zero;
             armature.transform.localRotation = Quaternion.identity;
         };

@@ -30,9 +30,9 @@ public class AimState : ToolBaseState
     {
         RotatePlayer();
 
-        if (toolStateManager.player.currentMoveType != MoveType.Idle)
+        if (toolStateManager.movementManager. currentMoveType != MoveType.Idle)
             toolStateManager.CurrentToolUseState = ToolAnimationState.Aim;
-        else if (toolStateManager.player.currentMoveType == MoveType.Idle)
+        else if (toolStateManager.movementManager.currentMoveType == MoveType.Idle)
             toolStateManager.CurrentToolUseState = ToolAnimationState.FullAim;
 
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
