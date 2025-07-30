@@ -18,7 +18,7 @@ public class ThrowObject : MonoBehaviour
         //}
     }
 
-    public void Throw(CwPlayer player)
+    public void Throw(Player player)
     {
         if (GetComponent<Rigidbody>() != null)
             return;

@@ -10,19 +10,16 @@ public class WalkState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.networkManager.CurrentMoveState = MoveAnimationState.Walk;
+        movementManager.CurrentMoveState = MoveAnimationState.Walk;
         movementManager.currentMoveSpeed = movementManager.walkSpeed;
-        movementManager.player.currentMoveType = MoveType.Walk;
+        movementManager.currentMoveType = MoveType.Walk;
     }
 
     public override void UpdateState()
     {
         // Run
         if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.toolStateManager.currentState != movementManager.toolStateManager.aimState)
-        {
-            Debug.Log(movementManager.toolStateManager.currentState);
             movementManager.ChangeState(movementManager.runState);
-        }
 
         // Crouch
         else if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.crouchInput))

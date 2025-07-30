@@ -1,7 +1,5 @@
-using Fusion;
 using System.Collections;
 using Unity.Cinemachine;
-using UnityEditor.EditorTools;
 using UnityEngine;
 
 public enum ViewType { None, FirstPerson, ThirdPerson }
@@ -9,12 +7,12 @@ public enum ViewType { None, FirstPerson, ThirdPerson }
 public class PlayerCameraManager : MonoBehaviour
 {
     #region Components
+    private PlayerController playerController;
     private PlayerInputManager inputManager;
     private CinemachineOrbitalFollow orbital;
     private CinemachineInputAxisController inputAxisController;
-    private PlayerNetworkManager networkManager;
     private ToolStateManager toolManager;
-    private CwPlayer player;
+    private Player player;
     #endregion
 
     public bool isAiming = false;
@@ -86,12 +84,12 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void InitComponents()
     {
-        player = GetComponentInParent<CwPlayer>();
+        player = GetComponentInParent<Player>();
+        playerController = GetComponentInParent<PlayerController>();
         inputManager = GetComponentInParent<PlayerInputManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
         orbital = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
         inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
-        networkManager = GetComponentInParent<PlayerNetworkManager>();
         Camera.main.GetComponent<CinemachineBrain>().DefaultBlend = new(CinemachineBlendDefinition.Styles.Cut, 0f);
     }
 
@@ -115,7 +113,7 @@ public class PlayerCameraManager : MonoBehaviour
     {
         HandleViewChange();
         UpdateCameraPitch();
-        ZoomCamera();
+        //ZoomCamera();
     }
 
     private void HandleViewChange()
@@ -136,7 +134,7 @@ public class PlayerCameraManager : MonoBehaviour
     {
         if (viewType == ViewType.FirstPerson)
         {
-            if (networkManager.HasInputAuthority)
+            if (playerController.HasInputAuthority)
             {
                 currentView = ViewType.FirstPerson;
                 foreach (var mesh in playerMeshes)
@@ -150,7 +148,7 @@ public class PlayerCameraManager : MonoBehaviour
 
         else if (viewType == ViewType.ThirdPerson)
         {
-            if (networkManager.HasInputAuthority)
+            if (playerController.HasInputAuthority)
             {
                 currentView = ViewType.ThirdPerson;
 
