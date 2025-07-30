@@ -14,11 +14,12 @@ public class ToolIdleState : ToolBaseState
     {
         // Aim
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.aimInput)
-            && toolStateManager.HoldAimTool())
+            && toolStateManager.HoldAimTool() && !toolStateManager.player.IsInventoryTableOpen())
             toolStateManager.ChangeState(toolStateManager.aimState);
 
         // UseTool
-        else if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
+        else if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput)
+            && !toolStateManager.player.IsInventoryTableOpen())
         {
             toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
             toolStateManager.ChangeState(toolStateManager.useToolState);

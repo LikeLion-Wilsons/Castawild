@@ -72,7 +72,7 @@ public class PlayerInputManager : MonoBehaviour
             UnlockCursor();
 
         // Game 창이 포커스된 상태에서 클릭 시 커서 잠금
-        if (!isCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame && !player.inventory.canvasHolder.IsInventoryTableOpen())
+        if (!isCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame && !player.IsInventoryTableOpen())
             LockCursor();
 
         // ESC 눌렀을 때 해제

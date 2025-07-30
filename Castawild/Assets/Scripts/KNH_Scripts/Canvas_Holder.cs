@@ -69,6 +69,8 @@ public class Canvas_Holder : MonoBehaviour
     }
 
     // 수정한 부분
+    // 이걸로 이동이나 도구사용할 수 있는지 판단하고있어서
+    // 나중에 esc UI 추가되면 여기에도 내용 추가 부탁드립니다 !
     public bool IsInventoryTableOpen()
     {
         return uiParts.ContainsKey("Inventory") && uiParts["Inventory"].IsOpen() || uiParts.ContainsKey("Table") && uiParts["Table"].IsOpen();
