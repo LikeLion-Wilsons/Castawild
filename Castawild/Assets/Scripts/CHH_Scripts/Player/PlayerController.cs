@@ -24,13 +24,11 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private Transform thirdPersonInteractPos;
     [SerializeField] private float interactRadius = 1f;
     [SerializeField] private LayerMask interactLayer;
+    [HideInInspector] public TestInteractable currentInteractObject;
 
     public bool Grounded => kcc.IsGrounded;
 
-    // interact 테스트용
-    private float _interactRadius = 1f;
     Collider[] _interactResult = new Collider[5];
-    [Networked] private TickTimer interactTimer { get; set; }
 
     private NetworkButtons prevInputButtons;
 
@@ -138,28 +136,6 @@ public sealed class PlayerController : NetworkBehaviour
         toolManager.UpdateMoveAnimation();
     }
 
-    void TryInteract()
-    {
-        Vector3 pos = transform.position + transform.forward * 1.5f;
-        var hits = Runner.GetPhysicsScene()
-            .OverlapSphere(pos, _interactRadius, _interactResult, 1, QueryTriggerInteraction.UseGlobal);
-        if (hits > 0)
-        {
-            for (int i = 0; i < hits && i < _interactResult.Length; i++)
-            {
-                if (_interactResult[i].TryGetComponent<IInteractable>(out var interactable))
-                {
-                    if (interactable.CanInteract())
-                    {
-                        interactable.Interact(Object.InputAuthority);
-                        interactTimer = TickTimer.CreateFromSeconds(Runner, 1f);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
     private void TestTryOverlap(ViewType currentView)
     {
         Camera cam = Camera.main;
@@ -176,11 +152,18 @@ public sealed class PlayerController : NetworkBehaviour
             for (int i = 0; i < hitCount; i++)
             {
                 var interact = _interactResult[i];
-                if (interact.TryGetComponent<TestInteractable>(out var interactable))
+                if (_interactResult[i].TryGetComponent<TestInteractable>(out var interactable))
                 {
-                    Debug.Log("Interactable Object Detected");
-                    player.ChangeCrosshairUI(interactable.InteractableType);
+                    if (interactable.CanInteract())
+                    {
+                        player.ChangeCrosshairUI(interactable.interactableType);
+
+                        currentInteractObject = interactable;
+                        break;
+                    }
                 }
+                else
+                    currentInteractObject = null;
             }
         }
         else
@@ -192,7 +175,7 @@ public sealed class PlayerController : NetworkBehaviour
         DebugDrawCircle(point2, cam.transform.forward, interactRadius, Color.green);
     }
 
-    void DebugDrawCircle(Vector3 center, Vector3 normal, float radius, Color color, int segments = 20)
+    private void DebugDrawCircle(Vector3 center, Vector3 normal, float radius, Color color, int segments = 20)
     {
         normal.Normalize();
 
@@ -213,6 +196,22 @@ public sealed class PlayerController : NetworkBehaviour
             Vector3 point1 = center + radius * (Mathf.Cos(angle1) * basis1 + Mathf.Sin(angle1) * basis2);
 
             Debug.DrawLine(point0, point1, color, 1f);
+        }
+    }
+
+    public void Interact()
+    {
+        if (currentInteractObject.interactableType == InteractableType.Tree)
+        {
+            int att = player.GetToolAtt("Axe");
+            Debug.Log("Player Att : " + att);
+            currentInteractObject?.Interact(Object.InputAuthority, att);
+        }
+        else if (currentInteractObject.interactableType == InteractableType.Stone)
+        {
+            int att = player.GetToolAtt("Pickaxe");
+            Debug.Log("Player Att : " + att);
+            currentInteractObject?.Interact(Object.InputAuthority, att);
         }
     }
 }

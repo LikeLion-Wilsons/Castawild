@@ -4,6 +4,7 @@ using UnityEngine;
 public class AnimationTrigger : MonoBehaviour
 {
     private Player player;
+    private PlayerController playercontroller;
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
     [HideInInspector] public bool canReceiveInput = false;
@@ -12,6 +13,7 @@ public class AnimationTrigger : MonoBehaviour
     private void Awake()
     {
         player = GetComponentInParent<Player>();
+        playercontroller = GetComponentInParent<PlayerController>();
         movementManager = GetComponentInParent<MovementStateManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
     }
@@ -31,4 +33,6 @@ public class AnimationTrigger : MonoBehaviour
         canComboAttack = false;
         canReceiveInput = false;
     }
+
+    public void Interact() => playercontroller.Interact();
 }

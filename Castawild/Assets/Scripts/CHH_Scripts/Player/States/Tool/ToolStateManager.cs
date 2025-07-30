@@ -20,6 +20,7 @@ public class ToolStateManager : BaseStateManager
     public GameObject visibleMesh;
 
     #region Network
+    [Networked] public bool Interact { get; set; }
     [Networked] public bool ComboAttack { get; set; }
     [Networked] public bool CanReceiveInput { get; set; }
     [Networked] public ToolAnimationState CurrentToolUseState { get; set; }
