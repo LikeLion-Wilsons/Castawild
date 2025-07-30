@@ -72,7 +72,7 @@ public class PlayerInputManager : MonoBehaviour
             UnlockCursor();
 
         // Game 창이 포커스된 상태에서 클릭 시 커서 잠금
-        if (!isCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame && !player.inventory.canvasHolder.IsInventoryTableOpen())
+        if (!isCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame && !player.IsInventoryTableOpen())
             LockCursor();
 
         // ESC 눌렀을 때 해제
@@ -111,9 +111,6 @@ public class PlayerInputManager : MonoBehaviour
         inputData.Buttons.Set(PlayerNetworkInputData.aimInput, aimAction.IsPressed());
         inputData.Buttons.Set(PlayerNetworkInputData.sprintInput, sprintAction.IsPressed());
         inputData.Buttons.Set(PlayerNetworkInputData.toolUseInput, toolAction.IsPressed());
-        //inputData.Buttons.Set(PlayerNetworkInputData.toolChangedInput, Input.GetKey(KeyCode.Tab)); // 테스트용 
-        inputData.Buttons.Set(PlayerNetworkInputData.interact, Input.GetKey(KeyCode.E)); // 테스트용 
-
 
         inputData.moveValue = moveAction.ReadValue<Vector2>();
         inputData = SetMoveDir(inputData);
