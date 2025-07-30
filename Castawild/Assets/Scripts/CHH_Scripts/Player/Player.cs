@@ -1,16 +1,7 @@
 using Fusion;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-
-// 테스트용
-[System.Serializable]
-public class HoldTool
-{
-    public string toolName;
-    public GameObject tool;
-}
 
 [System.Serializable]
 public enum InteractableType { None, Tree, Stone, Box, Campfire }
@@ -43,11 +34,12 @@ public class Player : NetworkBehaviour
     private GameObject currentEquippedTool = null;
     #endregion
 
-    #region UI
+    #region Interact
     public Image crosshairImage;
     [SerializeField] private Sprite originImage;
     [SerializeField] private Sprite axeImage;
     [SerializeField] private Sprite pickaxeImage;
+    public bool canInteract;
     #endregion
 
     [HideInInspector] public InventoryDataManager inventory;
@@ -76,9 +68,9 @@ public class Player : NetworkBehaviour
             ItemInfo itemInfo = tool.GetComponent<ItemInfo>();
             if (itemInfo != null)
             {
-                if (!toolDict.ContainsKey(itemInfo.itemID))
+                if (!toolDict.ContainsKey(itemInfo.ItemID))
                 {
-                    toolDict.Add(itemInfo.itemID, tool.gameObject);
+                    toolDict.Add(itemInfo.ItemID, tool.gameObject);
                     tool.gameObject.SetActive(false);
                 }
             }
@@ -121,6 +113,7 @@ public class Player : NetworkBehaviour
             currentEquippedTool.SetActive(false);
             currentEquippedTool = null;
         }
+        toolStateManager.ChangeCurrentTool();
     }
 
     public void ChangeCrosshairUI(InteractableType type = InteractableType.None)
@@ -130,10 +123,12 @@ public class Player : NetworkBehaviour
             case InteractableType.Tree:
                 crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
                 crosshairImage.sprite = axeImage;
+                canInteract = true;
                 break;
             case InteractableType.Stone:
                 crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
                 crosshairImage.sprite = pickaxeImage;
+                canInteract = true;
                 break;
             case InteractableType.None:
             default:
@@ -141,5 +136,21 @@ public class Player : NetworkBehaviour
                 crosshairImage.sprite = originImage;
                 break;
         }
+    }
+
+    public bool IsInventoryTableOpen() => inventory.canvasHolder.IsInventoryTableOpen();
+    public int GetToolAtt(string toolName)
+    {
+        if (currentEquippedTool == null)
+            return playerData.attack;
+
+        ItemInfo itemInfo = currentEquippedTool.GetComponent<ItemInfo>();
+
+        if (itemInfo.ToolName.Contains(toolName))
+            return playerData.attack + itemInfo.Att;
+        else if (itemInfo.ItemID > 400)
+            return playerData.attack + 2;
+        else
+            return playerData.attack;
     }
 }

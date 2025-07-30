@@ -4,14 +4,14 @@ using UnityEngine;
 public class AnimationTrigger : MonoBehaviour
 {
     private Player player;
+    private PlayerController playercontroller;
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
-    [HideInInspector] public bool canReceiveInput = false;
-    [HideInInspector] public bool canComboAttack = false;
 
     private void Awake()
     {
         player = GetComponentInParent<Player>();
+        playercontroller = GetComponentInParent<PlayerController>();
         movementManager = GetComponentInParent<MovementStateManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
     }
@@ -23,12 +23,14 @@ public class AnimationTrigger : MonoBehaviour
     public void JumpForce() => movementManager.JumpTriggered = true;
 
     public void Jumped() => movementManager.isJumping = true;
-    public void ReceiveInput() => canReceiveInput = true;
+    public void ReceiveInput() => toolManager.CanReceiveInput = true;
     public void StopReceiveInput()
     {
-        if (canComboAttack)
+        if (toolManager.CanComboAttack)
             toolManager.ComboAttack = true;
-        canComboAttack = false;
-        canReceiveInput = false;
+        toolManager.CanComboAttack = false;
+        toolManager.CanReceiveInput = false;
     }
+
+    public void Interact() => playercontroller.Interact();
 }
