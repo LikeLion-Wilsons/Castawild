@@ -113,6 +113,7 @@ public class Player : NetworkBehaviour
             currentEquippedTool.SetActive(false);
             currentEquippedTool = null;
         }
+        toolStateManager.ChangeCurrentTool();
     }
 
     public void ChangeCrosshairUI(InteractableType type = InteractableType.None)
@@ -140,6 +141,9 @@ public class Player : NetworkBehaviour
     public bool IsInventoryTableOpen() => inventory.canvasHolder.IsInventoryTableOpen();
     public int GetToolAtt(string toolName)
     {
+        if (currentEquippedTool == null)
+            return playerData.attack;
+
         ItemInfo itemInfo = currentEquippedTool.GetComponent<ItemInfo>();
 
         if (itemInfo.ToolName.Contains(toolName))

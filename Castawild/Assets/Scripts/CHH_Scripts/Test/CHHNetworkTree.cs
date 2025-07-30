@@ -44,8 +44,8 @@ public class CHHNetworkTree : TestInteractable
         {
             //막타 플레이어에게 아이템지급.
             var playerObj = Runner.GetPlayerObject(player);
-            var inven = playerObj.GetComponent<Test.PlayerInventory>();
-            inven.AddItem(1000, 1);
+            var inven = playerObj.GetComponent<InventoryDataManager>();
+            inven.GetItem(0, 1);
             reviveTimer = TickTimer.CreateFromSeconds(Runner, 2f);
         }
     }

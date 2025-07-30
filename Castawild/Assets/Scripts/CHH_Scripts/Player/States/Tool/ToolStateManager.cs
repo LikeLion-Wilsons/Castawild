@@ -21,6 +21,7 @@ public class ToolStateManager : BaseStateManager
 
     #region Network
     [Networked] public bool Interact { get; set; }
+    [Networked] public bool CanComboAttack { get; set; }
     [Networked] public bool ComboAttack { get; set; }
     [Networked] public bool CanReceiveInput { get; set; }
     [Networked] public ToolAnimationState CurrentToolUseState { get; set; }
@@ -79,13 +80,10 @@ public class ToolStateManager : BaseStateManager
     }
 
     // 400:짱돌 401:방망이 402:횃불 403:돌도끼 404:돌작살 405:돌곡괭이
-    public void ChangeCurrentTool(int toolIdx)
+    public void ChangeCurrentTool(int toolIdx = -1)
     {
         switch (toolIdx)
         {
-            case 400: // 400:짱돌 
-                CurrentToolType = ToolType.Fist;
-                break;
             case 401: // 방망이
                 CurrentToolType = ToolType.Sword;
                 break;
@@ -100,6 +98,10 @@ public class ToolStateManager : BaseStateManager
                 break;
             case 405: // 돌곡괭이
                 CurrentToolType = ToolType.Pickaxe;
+                break;
+            case 400: // 400:짱돌 
+            default:
+                CurrentToolType = ToolType.Fist;
                 break;
         }
     }

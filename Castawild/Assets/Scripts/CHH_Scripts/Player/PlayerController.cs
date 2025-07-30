@@ -157,17 +157,17 @@ public sealed class PlayerController : NetworkBehaviour
                     if (interactable.CanInteract())
                     {
                         player.ChangeCrosshairUI(interactable.interactableType);
-
                         currentInteractObject = interactable;
                         break;
                     }
                 }
-                else
-                    currentInteractObject = null;
             }
         }
         else
+        {
+            currentInteractObject = null;
             player.ChangeCrosshairUI();
+        }
 
         Debug.DrawLine(point1, point2, Color.green, 1f);
 
@@ -201,13 +201,15 @@ public sealed class PlayerController : NetworkBehaviour
 
     public void Interact()
     {
-        if (currentInteractObject.interactableType == InteractableType.Tree)
+        if (currentInteractObject == null)
+            return;
+        if (currentInteractObject.interactableType == InteractableType.Tree && currentInteractObject.CanInteract())
         {
             int att = player.GetToolAtt("Axe");
             Debug.Log("Player Att : " + att);
             currentInteractObject?.Interact(Object.InputAuthority, att);
         }
-        else if (currentInteractObject.interactableType == InteractableType.Stone)
+        else if (currentInteractObject.interactableType == InteractableType.Stone && currentInteractObject.CanInteract())
         {
             int att = player.GetToolAtt("Pickaxe");
             Debug.Log("Player Att : " + att);

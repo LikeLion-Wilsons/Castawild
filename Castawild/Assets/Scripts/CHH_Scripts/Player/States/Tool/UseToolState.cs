@@ -20,12 +20,6 @@ public class UseToolState : ToolBaseState
 
     public override void UpdateState()
     {
-        // 움직이면 상체 레이어만 적용
-        //if (toolStateManager.player.currentMoveType != MoveType.Idle)
-        //    toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Use;
-        //else if (toolStateManager.player.currentMoveType == MoveType.Idle)
-        //    toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullUse;
-
         // 곡괭이, 도끼는 손 때까지 상태 유지
         if (CraftingToolActionRelease())
             return;
@@ -33,10 +27,10 @@ public class UseToolState : ToolBaseState
         // 콤보 어택
         if (toolStateManager.input.IsDown(PlayerNetworkInputData.toolUseInput))
         {
-            if (ComboAttack() && comboCount == 1)
+            if (CanComboAttack() && comboCount == 1)
             {
                 comboCount++;
-                toolStateManager.animTrigger.canComboAttack = true;
+                toolStateManager.CanComboAttack = true;
                 return;
             }
         }
@@ -72,7 +66,7 @@ public class UseToolState : ToolBaseState
         return false;
     }
 
-    private bool ComboAttack()
+    private bool CanComboAttack()
     {
         ToolType type = toolStateManager.CurrentToolType;
 
