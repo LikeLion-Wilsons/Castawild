@@ -1,11 +1,13 @@
 using Fusion;
 using UnityEngine;
 
+public enum MoveAnimationState { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump }
+
 public class MovementStateManager : BaseStateManager
 {
     #region Conponent
     [HideInInspector] public ToolStateManager toolStateManager;
-    [HideInInspector] public KCCPlayerController playerController;
+    [HideInInspector] public PlayerController playerController;
     #endregion
 
     #region States
@@ -15,6 +17,7 @@ public class MovementStateManager : BaseStateManager
     public RunState runState;
     public JumpState jumpState;
     public CrouchState crouchState;
+    public MoveType currentMoveType;
     #endregion
 
     #region Movement
@@ -42,7 +45,6 @@ public class MovementStateManager : BaseStateManager
     #region Gravity
     public float gravity = -20f;
     public float jumpForce = 10f;
-    [HideInInspector] public bool jumpTriggered;
     [HideInInspector] public bool isJumping;
     [HideInInspector] public Vector3 velocity;
     #endregion
@@ -50,6 +52,13 @@ public class MovementStateManager : BaseStateManager
     #region Animation
     [SerializeField] private float animationLerpSpeed = 10f;
     public bool isTriggerSet = false;
+    #endregion
+
+    #region Network
+    [Networked] public MoveAnimationState CurrentMoveState { get; set; }
+    [Networked] public bool JumpTriggered { get; set; }
+    [Networked] public bool CanMove { get; set; }
+    [Networked] public Vector2 MoveValue { get; set; }
     #endregion
 
     protected override void Awake()
@@ -62,7 +71,7 @@ public class MovementStateManager : BaseStateManager
     private void InitComponents()
     {
         toolStateManager = GetComponent<ToolStateManager>();
-        playerController = GetComponent<KCCPlayerController>();
+        playerController = GetComponent<PlayerController>();
     }
 
     private void InitStates()
@@ -72,21 +81,23 @@ public class MovementStateManager : BaseStateManager
         runState = new RunState(this, inputManager);
         crouchState = new CrouchState(this, inputManager);
         jumpState = new JumpState(this, inputManager);
-
+    }
+    public override void Spawned()
+    {
         ChangeState(idleState);
     }
 
     public void UpdateMoveAnimation(float deltaTime)
     {
-        anim.SetFloat("Horizontal", networkManager.MoveValue.x, 0.1f, deltaTime);
-        anim.SetFloat("Vertical", networkManager.MoveValue.y, 0.1f, deltaTime);
+        anim.SetFloat("Horizontal", MoveValue.x, 0.1f, deltaTime);
+        anim.SetFloat("Vertical", MoveValue.y, 0.1f, deltaTime);
 
         anim.SetBool("Walking", false);
         anim.SetBool("Running", false);
         anim.SetBool("Crouching", false);
         anim.SetBool("Falling", false);
 
-        switch (networkManager.CurrentMoveState)
+        switch (CurrentMoveState)
         {
             case MoveAnimationState.Walk:
                 anim.SetBool("Walking", true);
@@ -172,10 +183,4 @@ public class MovementStateManager : BaseStateManager
         }
     }
 
-    public override void UpdateAnimationFlags()
-    {
-        base.UpdateAnimationFlags();
-        networkManager.JumpTriggered = jumpTriggered;
-        Debug.Log("networkManager.JumpTriggered" + networkManager.JumpTriggered);
-    }
 }

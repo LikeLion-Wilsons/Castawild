@@ -6,9 +6,14 @@ public class Canvas_Holder : MonoBehaviour
     public GameObject hotBarUI;
     public GameObject inventoryUI;
     public GameObject tableUI;
+
+    // 수정한 부분
+    public Player player;
+
     private void Awake()
     {
     }
+
 
     [SerializeField] UIPart[] parts;
     private Dictionary<string, UIPart> uiParts = new Dictionary<string, UIPart>();
@@ -16,7 +21,7 @@ public class Canvas_Holder : MonoBehaviour
     {
         if (uiParts.ContainsKey(uiName))
         {
-            uiParts[uiName].Open();
+            uiParts[uiName].Open(player.inputManager);
         }
         else Debug.LogWarning($"UI {uiName} not found.");
     }
@@ -25,7 +30,7 @@ public class Canvas_Holder : MonoBehaviour
     {
         if (uiParts.ContainsKey(uiName))
         {
-            uiParts[uiName].Close();
+            uiParts[uiName].Close(player.inputManager);
         }
     }
 
@@ -33,7 +38,7 @@ public class Canvas_Holder : MonoBehaviour
     {
         foreach (var part in uiParts.Values)
         {
-            part.Close();
+            part.Close(player.inputManager);
         }
     }
 
@@ -52,8 +57,8 @@ public class Canvas_Holder : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            uiParts["Inventory"].Toggle();
-            uiParts["Table"].Toggle();
+            uiParts["Inventory"].Toggle(player.inputManager);
+            uiParts["Table"].Toggle(player.inputManager);
 
         }
     }
@@ -61,6 +66,12 @@ public class Canvas_Holder : MonoBehaviour
     public bool IsInventoryOpen()
     {
         return uiParts.ContainsKey("Inventory") && uiParts["Inventory"].IsOpen();
+    }
+
+    // 수정한 부분
+    public bool IsInventoryTableOpen()
+    {
+        return uiParts.ContainsKey("Inventory") && uiParts["Inventory"].IsOpen() || uiParts.ContainsKey("Table") && uiParts["Table"].IsOpen();
     }
 
     public bool AnyUIOpen()

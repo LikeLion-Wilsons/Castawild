@@ -11,10 +11,10 @@ public class UseToolState : ToolBaseState
 
     public override void EnterState()
     {
-        toolStateManager.networkManager.CanMove = false;
+        toolStateManager.movementManager.CanMove = false;
         toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
 
-        toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullUse;
+        toolStateManager.CurrentToolUseState = ToolAnimationState.FullUse;
         SetActiveArmMesh(true);
     }
 
@@ -41,9 +41,9 @@ public class UseToolState : ToolBaseState
             }
         }
 
-        if (toolStateManager.networkManager.IsAnimationFinished)
+        if (toolStateManager.IsAnimationFinished)
         {
-            if (toolStateManager.input.IsDown(PlayerNetworkInputData.aimInput) && toolStateManager.networkManager.HoldAimTool())
+            if (toolStateManager.input.IsDown(PlayerNetworkInputData.aimInput) && toolStateManager.HoldAimTool())
                 toolStateManager.ChangeState(toolStateManager.aimState);
             else
                 toolStateManager.ChangeState(toolStateManager.idleState);
@@ -54,18 +54,18 @@ public class UseToolState : ToolBaseState
     {
         base.ExitState();
         SetActiveArmMesh(false);
-        toolStateManager.networkManager.CanMove = true;
+        toolStateManager.movementManager.CanMove = true;
         toolStateManager.player.isAimLocked = false;
 
         comboCount = 1;
-        toolStateManager.comboAttack = false;
+        toolStateManager.ComboAttack = false;
     }
 
     private bool CraftingToolActionRelease()
     {
-        if (toolStateManager.networkManager.HoldCraftingTool())
+        if (toolStateManager.HoldCraftingTool())
         {
-            if (!toolStateManager.input.IsDown(PlayerNetworkInputData.toolUseInput) && toolStateManager.networkManager.IsAnimationFinished)
+            if (!toolStateManager.input.IsDown(PlayerNetworkInputData.toolUseInput) && toolStateManager.IsAnimationFinished)
                 toolStateManager.ChangeState(toolStateManager.idleState);
             return true;
         }
@@ -74,19 +74,19 @@ public class UseToolState : ToolBaseState
 
     private bool ComboAttack()
     {
-        ToolType type = toolStateManager.networkManager.CurrentToolType;
+        ToolType type = toolStateManager.CurrentToolType;
 
         bool isMelee = type == ToolType.Sword || type == ToolType.Fist;
         bool pressed = toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput);
-        bool canCombo = toolStateManager.networkManager.CanReceiveInput;
+        bool canCombo = toolStateManager.CanReceiveInput;
 
         return isMelee && pressed && canCombo;
     }
 
     public void SetActiveArmMesh(bool isActive)
     {
-        if (toolStateManager.networkManager.CurrentToolType == ToolType.Fist && toolStateManager.cameraManager.currentView == ViewType.FirstPerson
-            && toolStateManager.networkManager.HasInputAuthority)
+        if (toolStateManager.CurrentToolType == ToolType.Fist && toolStateManager.cameraManager.currentView == ViewType.FirstPerson
+            && toolStateManager.HasInputAuthority)
         {
             toolStateManager.visibleMesh.SetActive(isActive);
             if (isActive)

@@ -14,26 +14,26 @@ public class AimState : ToolBaseState
         toolStateManager.player.isAimLocked = true;
 
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
-            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Aim;
+            toolStateManager.CurrentToolUseState = ToolAnimationState.Aim;
         else
-            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullAim;
+            toolStateManager.CurrentToolUseState = ToolAnimationState.FullAim;
 
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.runState)
             toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.walkState);
 
         toolStateManager.cameraManager.MoveCamera(true);
 
-        toolStateManager.player.crosshairImage.SetActive(true);
+        toolStateManager.player.crosshairImage.gameObject.SetActive(true);
     }
 
     public override void UpdateState()
     {
         RotatePlayer();
 
-        if (toolStateManager.player.currentMoveType != MoveType.Idle)
-            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.Aim;
-        else if (toolStateManager.player.currentMoveType == MoveType.Idle)
-            toolStateManager.networkManager.CurrentToolUseState = ToolAnimationState.FullAim;
+        if (toolStateManager.movementManager.currentMoveType != MoveType.Idle)
+            toolStateManager.CurrentToolUseState = ToolAnimationState.Aim;
+        else if (toolStateManager.movementManager.currentMoveType == MoveType.Idle)
+            toolStateManager.CurrentToolUseState = ToolAnimationState.FullAim;
 
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
             toolStateManager.ChangeState(toolStateManager.useToolState);
@@ -61,7 +61,7 @@ public class AimState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
-        toolStateManager.player.crosshairImage.SetActive(false);
+        toolStateManager.player.crosshairImage.gameObject.SetActive(false);
     }
 
     private void LookForward()

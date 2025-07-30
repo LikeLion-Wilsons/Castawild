@@ -15,8 +15,15 @@ public class InventoryDataManager : NetworkBehaviour
     private int scrollCooldownTick = 6; // 0.2초 쿨타임 (60 tick 기준)
     [SerializeField] GameObject playerUIPrefab; // 인스펙터에 연결
     [Networked, Capacity(30)] public NetworkLinkedList<Item> itemList => default;
+
+    // 수정한 부분
+    private Player player;
+
     public override void Spawned()
     {
+        // 수정한 부분
+        ChangeSelectedSlot(0);
+
         if (Object.HasStateAuthority)
         {
             while (itemList.Count < 29)
@@ -42,6 +49,8 @@ public class InventoryDataManager : NetworkBehaviour
             uiTable.BindToInventoryData(this);
 
             canvasHolder = uiCanvas.GetComponent<Canvas_Holder>();
+            player = GetComponent<Player>();
+            canvasHolder.player = player;
 
             int i = 0;
             while (i < 9)
@@ -76,13 +85,21 @@ public class InventoryDataManager : NetworkBehaviour
     {
         if (Object.HasInputAuthority)
         {
-            if (canvasHolder.IsInventoryOpen()) return;
+            // 수정한 부분
+            if (canvasHolder == null || canvasHolder.IsInventoryOpen())
+                return;
             if (selectedSlot >= 0)
             {
                 inventorySlots[selectedSlot].Deselect();
             }
             inventorySlots[newValue].Select();
             selectedSlot = newValue;
+
+            // 수정한 부분
+            if (inventorySlots[selectedSlot].IsEmpty())
+                player.UnequipCurrentTool();
+            else
+                player.EquipTool(itemList[selectedSlot].itemID);
         }
     }
 
@@ -90,10 +107,10 @@ public class InventoryDataManager : NetworkBehaviour
     public event Action onInventoryUpdated;//기존에 있던 아이템이 추가될 때
 
 
-
     private void Start()
     {
-        ChangeSelectedSlot(0);
+        // 수정한 부분
+        // ChangeSelectedSlot(0);
     }
 
     public override void FixedUpdateNetwork()
@@ -162,7 +179,7 @@ public class InventoryDataManager : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_UseItem(int index, int count)
     {
-        UseItem(index,count);
+        UseItem(index, count);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]

@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class UIStats : MonoBehaviour
 {
-    [SerializeField] CwPlayer player;
+    [SerializeField] Player player;
     [SerializeField] Image hungerBar;//허기
     [SerializeField] Image thirstBar;//목마름
     [SerializeField] Image satiationBar;//만족감

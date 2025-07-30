@@ -2,11 +2,16 @@ using Fusion;
 using Fusion.Addons.SimpleKCC;
 using Test;
 using UnityEngine;
+using UnityEngine.UI;
 
 [DisallowMultipleComponent]
-public sealed class KCCPlayerController : NetworkBehaviour
+public sealed class PlayerController : NetworkBehaviour
 {
     public SimpleKCC kcc;
+    private Player player;
+    private MovementStateManager movementManager;
+    private ToolStateManager toolManager;
+    private PlayerCameraManager cameraManager;
 
     [Header("Movement")]
     public float gravity = -20f;
@@ -14,10 +19,12 @@ public sealed class KCCPlayerController : NetworkBehaviour
     public float maxSpeed = 2f;
     public float rotationSpeed = 15f;
 
-    private MovementStateManager movementManager;
-    private ToolStateManager toolManager;
-    private PlayerCameraManager cameraManager;
-    private PlayerNetworkManager networkManager;
+    [Header("Interact")]
+    [SerializeField] private float interactHeight = 10f;
+    [SerializeField] private Transform thirdPersonInteractPos;
+    [SerializeField] private float interactRadius = 1f;
+    [SerializeField] private LayerMask interactLayer;
+
     public bool Grounded => kcc.IsGrounded;
 
     // interact 테스트용
@@ -36,6 +43,7 @@ public sealed class KCCPlayerController : NetworkBehaviour
     {
         kcc = GetComponent<SimpleKCC>();
 
+        player = GetComponent<Player>();
         movementManager = GetComponent<MovementStateManager>();
         movementManager.ChangeState(movementManager.idleState);
 
@@ -45,19 +53,14 @@ public sealed class KCCPlayerController : NetworkBehaviour
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
         if (!HasInputAuthority)
             cameraManager.SetNetworkCamera();
-
-        networkManager = GetComponent<PlayerNetworkManager>();
     }
 
     public override void FixedUpdateNetwork()
     {
-        if (!networkManager.isSpawned)
-            return;
-
         if (GetInput<PlayerNetworkInputData>(out var input))
         {
             // 속도 조절
-            maxSpeed = networkManager.CanMove ? movementManager.currentMoveSpeed : 0f;
+            maxSpeed = movementManager.CanMove ? movementManager.currentMoveSpeed : 0f;
 
             movementManager.SetInput(input);
             toolManager.SetInput(input);
@@ -65,18 +68,12 @@ public sealed class KCCPlayerController : NetworkBehaviour
             movementManager.currentState.UpdateState();
             toolManager.currentState.UpdateState();
 
-            movementManager.UpdateAnimationFlags();
-            toolManager.UpdateAnimationFlags();
-            toolManager.ChangeCurrentTool();
-
-            // 테스트용
-            if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interact))
-                TryInteract();
+            TestTryOverlap(input.currentView);
 
             movementManager.SetPrevInputButton(input.Buttons);
             toolManager.SetPrevInputButton(input.Buttons);
 
-            networkManager.MoveValue = input.moveValue;
+            movementManager.MoveValue = input.moveValue;
 
             Move(input.moveDir);
             Rotate(input);
@@ -105,11 +102,10 @@ public sealed class KCCPlayerController : NetworkBehaviour
 
         // 점프
         float jump = 0f;
-        if (networkManager.JumpTriggered)
+        if (movementManager.JumpTriggered)
         {
-            Debug.Log("KCC.JumpTriggered" + networkManager.JumpTriggered);
-            movementManager.jumpTriggered = false;
-            networkManager.JumpTriggered = false;
+            Debug.Log("KCC.JumpTriggered" + movementManager.JumpTriggered);
+            movementManager.JumpTriggered = false;
             jump = jumpImpulse;
         }
 
@@ -138,9 +134,6 @@ public sealed class KCCPlayerController : NetworkBehaviour
     {
         kcc.Render();
 
-        if (!networkManager.isSpawned)
-            return;
-
         movementManager.UpdateMoveAnimation(Runner.DeltaTime);
         toolManager.UpdateMoveAnimation();
     }
@@ -164,6 +157,62 @@ public sealed class KCCPlayerController : NetworkBehaviour
                     }
                 }
             }
+        }
+    }
+
+    private void TestTryOverlap(ViewType currentView)
+    {
+        Camera cam = Camera.main;
+
+        Vector3 origin = (currentView == ViewType.FirstPerson) ? cam.transform.position : thirdPersonInteractPos.position;
+        Vector3 point1 = origin + cam.transform.forward * interactHeight;
+        Vector3 point2 = origin;
+
+        int hitCount = Runner.GetPhysicsScene().
+            OverlapCapsule(point1, point2, interactRadius, _interactResult, interactLayer, QueryTriggerInteraction.UseGlobal);
+
+        if (hitCount > 0)
+        {
+            for (int i = 0; i < hitCount; i++)
+            {
+                var interact = _interactResult[i];
+                if (interact.TryGetComponent<TestInteractable>(out var interactable))
+                {
+                    Debug.Log("Interactable Object Detected");
+                    player.ChangeCrosshairUI(interactable.InteractableType);
+                }
+            }
+        }
+        else
+            player.ChangeCrosshairUI();
+
+        Debug.DrawLine(point1, point2, Color.green, 1f);
+
+        DebugDrawCircle(point1, cam.transform.forward, interactRadius, Color.green);
+        DebugDrawCircle(point2, cam.transform.forward, interactRadius, Color.green);
+    }
+
+    void DebugDrawCircle(Vector3 center, Vector3 normal, float radius, Color color, int segments = 20)
+    {
+        normal.Normalize();
+
+        Vector3 basis1 = Vector3.Cross(normal, Vector3.up);
+        if (basis1 == Vector3.zero)
+            basis1 = Vector3.Cross(normal, Vector3.right);
+        basis1.Normalize();
+        Vector3 basis2 = Vector3.Cross(normal, basis1);
+
+        float angleStep = 360f / segments;
+
+        for (int i = 0; i < segments; i++)
+        {
+            float angle0 = Mathf.Deg2Rad * (i * angleStep);
+            float angle1 = Mathf.Deg2Rad * ((i + 1) * angleStep);
+
+            Vector3 point0 = center + radius * (Mathf.Cos(angle0) * basis1 + Mathf.Sin(angle0) * basis2);
+            Vector3 point1 = center + radius * (Mathf.Cos(angle1) * basis1 + Mathf.Sin(angle1) * basis2);
+
+            Debug.DrawLine(point0, point1, color, 1f);
         }
     }
 }
