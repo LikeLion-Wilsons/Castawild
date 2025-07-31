@@ -9,6 +9,7 @@ public class Bed : InteractableObject
     private void Awake()
     {
         interactableType = InteractableType.Bed;
+        isPlaceable = true;
     }
 
     public override bool CanInteract() => CanSleep;

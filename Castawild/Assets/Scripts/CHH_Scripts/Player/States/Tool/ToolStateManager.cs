@@ -1,8 +1,8 @@
 using Fusion;
 using UnityEngine;
 
-public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife, Smash }
-public enum ToolAnimationState { Idle, Aim, FullAim, FullUse }
+public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife, Smash, Placeable }
+public enum ToolAnimationState { Idle, Aim, FullAim, FullUse, Carry }
 public class ToolStateManager : BaseStateManager
 {
     #region Components
@@ -14,6 +14,7 @@ public class ToolStateManager : BaseStateManager
     public ToolIdleState idleState;
     public UseToolState useToolState;
     public AimState aimState;
+    public CarryState carryState;
     #endregion
 
     public Transform armature;
@@ -47,7 +48,9 @@ public class ToolStateManager : BaseStateManager
         idleState = new ToolIdleState(this, inputManager);
         useToolState = new UseToolState(this, inputManager);
         aimState = new AimState(this, inputManager);
+        carryState = new CarryState(this, inputManager);
     }
+
     public override void Spawned()
     {
         ChangeState(idleState);
@@ -59,6 +62,7 @@ public class ToolStateManager : BaseStateManager
         anim.SetBool("Aiming", false);
         anim.SetBool("FullAiming", false);
         anim.SetBool("FullUseTool", false);
+        anim.SetBool("Carrying", false);
 
         switch (CurrentToolUseState)
         {
@@ -74,6 +78,9 @@ public class ToolStateManager : BaseStateManager
                 anim.SetInteger("WeaponType", (int)CurrentToolType);
                 anim.SetBool("FullUseTool", true);
                 break;
+            case ToolAnimationState.Carry:
+                anim.SetBool("Carrying", true);
+                break;
         }
 
         anim.SetBool("ComboAttack", ComboAttack);
@@ -82,6 +89,13 @@ public class ToolStateManager : BaseStateManager
     // 400:짱돌 401:방망이 402:횃불 403:돌도끼 404:돌작살 405:돌곡괭이
     public void ChangeCurrentTool(int toolIdx = -1)
     {
+        if (toolIdx >= 300 && toolIdx < 400)
+        {
+            CurrentToolType = ToolType.Placeable;
+            ChangeState(carryState);
+            return;
+        }
+
         switch (toolIdx)
         {
             case 401: // 방망이

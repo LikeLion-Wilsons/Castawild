@@ -173,6 +173,17 @@ public sealed class PlayerController : NetworkBehaviour
                     player.interactableUI.alpha = 1f;
                     player.interactableText.text = interactableObject.text;
 
+                    // 설치가능한 오브젝트
+                    if (interactableObject.isPlaceable)
+                    {
+                        player.placeableUI.alpha = 1f;
+                        if (interactableObject.CanInteract()
+                            && input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
+                        {
+                            // 제거하고 템창에 넣는 로직 추가하기
+                        }
+                    }
+
                     if (interactableObject.CanInteract()
                         && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
                     {

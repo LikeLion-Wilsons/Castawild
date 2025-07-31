@@ -39,6 +39,7 @@ public class Player : NetworkBehaviour
     [SerializeField] private Sprite pickaxeImage;
     public CanvasGroup interactableUI;
     public TextMeshProUGUI interactableText;
+    public CanvasGroup placeableUI;
     [Networked, HideInInspector] public Bed CurrentBed { get; set; }
     #endregion
 
@@ -139,16 +140,18 @@ public class Player : NetworkBehaviour
         }
     }
 
-    public bool CanMoving()
-    {
-        return inventory.canvasHolder.IsInventoryTableOpen();
-    }
-
     public bool IsInventoryTableOpen()
     {
         if (inventory == null || inventory.canvasHolder == null)
             return false;
         return inventory.canvasHolder.IsInventoryTableOpen();
+    }
+
+    public bool CanUseTool()
+    {
+        if (inventory == null || inventory.canvasHolder == null)
+            return false;
+        return !inventory.canvasHolder.IsInventoryTableOpen() && CanAct;
     }
 
     /// <summary>

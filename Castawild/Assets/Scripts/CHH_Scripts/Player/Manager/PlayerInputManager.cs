@@ -18,6 +18,7 @@ public class PlayerInputManager : MonoBehaviour
     private InputAction sprintAction;
     private InputAction toolAction;
     private InputAction interactAction;
+    private InputAction removeAction;
 
     [HideInInspector] public Vector2 lookInput;
     [HideInInspector] public Vector2 zoomInput;
@@ -65,6 +66,7 @@ public class PlayerInputManager : MonoBehaviour
         aimAction = InputSystem.actions.FindAction("Aim");
         toolAction = InputSystem.actions.FindAction("Attack");
         interactAction = InputSystem.actions.FindAction("Interact");
+        removeAction = InputSystem.actions.FindAction("Remove");
     }
 
     private void Update()
@@ -114,6 +116,7 @@ public class PlayerInputManager : MonoBehaviour
         inputData.Buttons.Set(PlayerNetworkInputData.sprintInput, sprintAction.IsPressed());
         inputData.Buttons.Set(PlayerNetworkInputData.toolUseInput, toolAction.IsPressed());
         inputData.Buttons.Set(PlayerNetworkInputData.interactInput, interactAction.IsPressed());
+        inputData.Buttons.Set(PlayerNetworkInputData.removeInput, removeAction.IsPressed());
 
         inputData.moveValue = moveAction.ReadValue<Vector2>();
         inputData = SetMoveDir(inputData);
