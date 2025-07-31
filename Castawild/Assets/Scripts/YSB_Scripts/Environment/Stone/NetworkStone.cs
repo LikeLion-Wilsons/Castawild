@@ -5,7 +5,6 @@ namespace YSB_Scripts
 {
     public class NetworkStone : EnvironmentObject
     {
-        [SerializeField] private GameObject visualRoot;
         private StoneDefinition definition;
         public override void Spawned()
         {
