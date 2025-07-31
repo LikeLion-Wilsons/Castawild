@@ -48,8 +48,14 @@ public class Player : NetworkBehaviour
 
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isAimLocked = false;
+    [HideInInspector] public bool isSpawned;
 
     [HideInInspector] public ItemType currentItemType;
+
+    override public void Spawned()
+    {
+        isSpawned = true;
+    }
 
     private void Awake()
     {

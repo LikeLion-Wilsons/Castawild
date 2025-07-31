@@ -113,7 +113,6 @@ public sealed class PlayerController : NetworkBehaviour
         float jump = 0f;
         if (movementManager.JumpTriggered)
         {
-            Debug.Log("KCC.JumpTriggered" + movementManager.JumpTriggered);
             movementManager.JumpTriggered = false;
             jump = jumpImpulse;
         }

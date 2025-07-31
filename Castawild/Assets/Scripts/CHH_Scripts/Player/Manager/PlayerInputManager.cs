@@ -71,6 +71,9 @@ public class PlayerInputManager : MonoBehaviour
 
     private void Update()
     {
+        if (!player.isSpawned)
+            return;
+
         // 게임 포커스가 사라지면 커서 해제
         if (!Application.isFocused && isCursorLocked)
             UnlockCursor();

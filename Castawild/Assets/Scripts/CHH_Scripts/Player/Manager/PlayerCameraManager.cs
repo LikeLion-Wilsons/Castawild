@@ -115,6 +115,9 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void Update()
     {
+        if (!player.HasInputAuthority || !player || !player.isSpawned)
+            return;
+
         HandleViewChange();
         UpdateCameraPitch();
         //ZoomCamera();
@@ -122,6 +125,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void HandleViewChange()
     {
+        string name = transform.parent.name;
         if (inputManager.viewChangeAction.WasPressedThisFrame()
             && (toolManager.currentState == toolManager.idleState || toolManager.currentState == toolManager.carryState))
         {
