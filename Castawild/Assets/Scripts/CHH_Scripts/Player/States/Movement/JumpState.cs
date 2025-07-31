@@ -9,6 +9,8 @@ public class JumpState : MovementBaseState
 
     public override void EnterState()
     {
+        movementManager.JumpTriggered = true;
+
         if (movementManager.previousState == movementManager.idleState)
             movementManager.CurrentMoveState = MoveAnimationState.IdleJump;
 

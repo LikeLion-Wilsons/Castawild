@@ -11,7 +11,8 @@ public class UseToolState : ToolBaseState
 
     public override void EnterState()
     {
-        toolStateManager.movementManager.CanMove = false;
+        if (toolStateManager.HasInputAuthority)
+            toolStateManager.movementManager.RPC_RequestCanMove(false);
         toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
 
         toolStateManager.CurrentToolUseState = ToolAnimationState.FullUse;
@@ -48,7 +49,9 @@ public class UseToolState : ToolBaseState
     {
         base.ExitState();
         SetActiveArmMesh(false);
-        toolStateManager.movementManager.CanMove = true;
+
+        if (toolStateManager.HasInputAuthority)
+            toolStateManager.movementManager.RPC_RequestCanMove(true);
         toolStateManager.player.isAimLocked = false;
 
         comboCount = 1;

@@ -20,8 +20,6 @@ public class AnimationTrigger : MonoBehaviour
     public void ToolAnimationStartTrigger() => toolManager.IsAnimationFinished = false;
     public void MoveAnimationFinishTrigger() => movementManager.IsAnimationFinished = true;
     public void MoveAnimationStartTrigger() => movementManager.IsAnimationFinished = false;
-    public void JumpForce() => movementManager.JumpTriggered = true;
-
     public void Jumped() => movementManager.isJumping = true;
     public void ReceiveInput() => toolManager.CanReceiveInput = true;
     public void StopReceiveInput()

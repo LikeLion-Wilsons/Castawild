@@ -58,7 +58,7 @@ public class MovementStateManager : BaseStateManager
     #region Network
     [Networked] public MoveAnimationState CurrentMoveState { get; set; }
     [Networked] public bool JumpTriggered { get; set; }
-    [Networked] public bool CanMove { get; set; }
+    [Networked] public bool CanMove { get; private set; }
     [Networked] public Vector2 MoveValue { get; set; }
     #endregion
 
@@ -146,19 +146,6 @@ public class MovementStateManager : BaseStateManager
             anim.SetBool("Falling", !playerController.Grounded);
     }
 
-    /// <summary>
-    /// 중력 적용
-    /// </summary>
-    public Vector3 Gravity()
-    {
-        if (playerController.Grounded && velocity.y < 0)
-            velocity.y = -1f;
-        else
-            velocity.y += gravity * fallMultiplier * Time.fixedDeltaTime;
-
-        return velocity;
-    }
-
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -181,5 +168,11 @@ public class MovementStateManager : BaseStateManager
             walkSpeed -= value;
             runSpeed -= value;
         }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestCanMove(bool value)
+    {
+            CanMove = value;
     }
 }

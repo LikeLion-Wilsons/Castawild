@@ -91,7 +91,9 @@ public class PlayerInputManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         isCursorLocked = true;
-        movementManager.CanMove = true;
+
+        if (movementManager.HasInputAuthority)
+            movementManager.RPC_RequestCanMove(true);
 
         cursorLocked?.Invoke();
     }
@@ -101,7 +103,9 @@ public class PlayerInputManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         isCursorLocked = false;
-        movementManager.CanMove = false;
+
+        if (movementManager.HasInputAuthority)
+            movementManager.RPC_RequestCanMove(false);
 
         cursorUnLocked?.Invoke();
     }
@@ -129,7 +133,6 @@ public class PlayerInputManager : MonoBehaviour
 
     private PlayerNetworkInputData SetMoveDir(PlayerNetworkInputData inputData)
     {
-        Debug.Log(isCursorLocked);
         if (isCursorLocked && movementManager.CanMove)
         {
             Vector3 forward = Vector3.zero;
