@@ -23,7 +23,7 @@ public class ToolStateManager : BaseStateManager
     #endregion
 
     public Transform armature;
-    public GameObject visibleMesh;
+    [SerializeField] private GameObject armMesh;
 
     #region Network
     [Networked] public bool CanComboAttack { get; set; }
@@ -163,4 +163,16 @@ public class ToolStateManager : BaseStateManager
     /// 조준가능한 도구인지 확인
     /// </summary>
     public bool HoldAimTool() => CurrentToolType == ToolType.Bow || CurrentToolType == ToolType.Throw;
+
+    public void ArmVisibleChanged(bool isVisible)
+    {
+        if (HasStateAuthority)
+        {
+            Debug.Log(isVisible);
+            RPC_ArmVisibleChanged(isVisible);
+        }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ArmVisibleChanged(bool isVisible) => armMesh.SetActive(isVisible);
 }

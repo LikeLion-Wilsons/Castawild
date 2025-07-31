@@ -80,10 +80,11 @@ public class UseToolState : ToolBaseState
 
     public void SetActiveArmMesh(bool isActive)
     {
+        toolStateManager.ArmVisibleChanged(isActive);
+
         if (toolStateManager.CurrentToolType == ToolType.Fist && toolStateManager.cameraManager.currentView == ViewType.FirstPerson
             && toolStateManager.HasInputAuthority)
         {
-            toolStateManager.visibleMesh.SetActive(isActive);
             if (isActive)
             {
                 toolStateManager.armature.SetParent(toolStateManager.cameraManager.firstPersonCam.transform);
