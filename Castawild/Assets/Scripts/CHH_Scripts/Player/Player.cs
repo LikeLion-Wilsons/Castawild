@@ -48,6 +48,8 @@ public class Player : NetworkBehaviour
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isAimLocked = false;
 
+    [HideInInspector] public int currentItemIdx;
+
     private void Awake()
     {
         InitComponents();
@@ -84,40 +86,42 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 도구 장착
     /// </summary>
-    public void EquipTool(int toolIdx)
+    public void ApplySelectedItem(int itemIdx)
     {
-        // 장비 인덱스 아니면 리턴
-        if (toolIdx < 400)
-            return;
+        currentItemIdx = itemIdx;
 
-        if (currentEquippedTool != null)
+        // 도구일 경우 장착
+        if (itemIdx >= 400)
         {
-            currentEquippedTool.SetActive(false);
-            currentEquippedTool = null;
+            if (currentEquippedTool != null)
+            {
+                currentEquippedTool.SetActive(false);
+                currentEquippedTool = null;
+            }
+
+            if (toolDict.TryGetValue(itemIdx, out GameObject newToolGameObject))
+            {
+                newToolGameObject.SetActive(true);
+                currentEquippedTool = newToolGameObject;
+            }
+            else
+                Debug.LogWarning($"{itemIdx} 인덱스 없음");
         }
 
-        if (toolDict.TryGetValue(toolIdx, out GameObject newToolGameObject))
-        {
-            newToolGameObject.SetActive(true);
-            currentEquippedTool = newToolGameObject;
-        }
-        else
-            Debug.LogWarning($"{toolIdx} 인덱스 없음");
-
-        toolStateManager.ChangeCurrentTool(toolIdx);
+        toolStateManager.ChangeSelectedItem(itemIdx);
     }
 
     /// <summary>
     /// 도구 해제
     /// </summary>
-    public void UnequipCurrentTool()
+    public void RemoveSelectedItem()
     {
         if (currentEquippedTool != null)
         {
             currentEquippedTool.SetActive(false);
             currentEquippedTool = null;
         }
-        toolStateManager.ChangeCurrentTool();
+        toolStateManager.ChangeSelectedItem();
     }
 
     public void ChangeCrosshairUI(InteractableType type = InteractableType.None)

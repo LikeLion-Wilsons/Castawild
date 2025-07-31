@@ -70,7 +70,13 @@ public sealed class PlayerController : NetworkBehaviour
             toolManager.SetPrevInputButton(input.Buttons);
 
             if (!player.CanAct)
+            {
+                // 중력만 적용해서 return
+                Vector3 velocity = kcc.RealVelocity;
+                velocity.y += gravity * Runner.DeltaTime;
+                kcc.Move(velocity);
                 return;
+            }
 
             TestTryOverlap(input);
 
@@ -184,6 +190,7 @@ public sealed class PlayerController : NetworkBehaviour
                         }
                     }
 
+
                     if (interactableObject.CanInteract()
                         && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
                     {
@@ -194,6 +201,7 @@ public sealed class PlayerController : NetworkBehaviour
         }
         else
         {
+            player.placeableUI.alpha = 0f;
             player.interactableUI.alpha = 0f;
             currentInteractObject = null;
             player.ChangeCrosshairUI();

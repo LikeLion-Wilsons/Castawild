@@ -1,4 +1,6 @@
 
+using UnityEngine;
+
 public class IdleState : MovementBaseState
 {
     public IdleState(MovementStateManager _movementManager, PlayerInputManager _inputManager)

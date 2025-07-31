@@ -34,6 +34,8 @@ public class PlayerCameraManager : MonoBehaviour
     private float yaw = 0f;
     public float minPitch = -80f;
     public float maxPitch = 80f;
+    [SerializeField] private float minYaw = -90f;
+    [SerializeField] private float maxYaw = 90f;
     #endregion
 
     #region Third Person
@@ -190,7 +192,10 @@ public class PlayerCameraManager : MonoBehaviour
 
         // 자고있을 때 좌우회전 추가
         if (!player.CanAct)
+        {
             yaw += inputManager.lookInput.x * sensitivity;
+            yaw = Mathf.Clamp(yaw, minYaw, maxYaw);
+        }
         else if (player.CanAct && yaw != 0f)
             yaw = 0f;
 

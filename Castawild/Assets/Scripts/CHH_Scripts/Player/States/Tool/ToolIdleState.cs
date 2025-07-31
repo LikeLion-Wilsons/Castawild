@@ -22,6 +22,14 @@ public class ToolIdleState : ToolBaseState
             && toolStateManager.player.CanUseTool())
         {
             toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
+
+            // 음식 들고있을 땐 먹기 - 나중에 제대로 고치기
+            if (toolStateManager.player.currentItemIdx > 999)
+            {
+                toolStateManager.ChangeState(toolStateManager.eatState);
+                return;
+            }
+
             toolStateManager.ChangeState(toolStateManager.useToolState);
         }
     }

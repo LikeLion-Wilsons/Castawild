@@ -10,7 +10,7 @@ public struct PlayerNetworkInputData : INetworkInput
     public const int sprintInput = 5;
     public const int toolUseInput = 6;
     public const int interactInput = 7;
-    public const int removeInput = 7;
+    public const int removeInput = 8;
 
     public Vector3 lookValue;
     public Vector2 moveValue;

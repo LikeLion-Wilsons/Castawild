@@ -129,6 +129,7 @@ public class MovementStateManager : BaseStateManager
                 anim.SetBool("Sleeping", true);
                 break;
         }
+
         if (input.moveValue != Vector2.zero)
         {
             if (input.IsDown(PlayerNetworkInputData.sprintInput) && isJumping)

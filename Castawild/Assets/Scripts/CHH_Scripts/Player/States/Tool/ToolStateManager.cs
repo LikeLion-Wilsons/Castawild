@@ -1,8 +1,12 @@
 using Fusion;
 using UnityEngine;
 
-public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife, Smash, Placeable }
-public enum ToolAnimationState { Idle, Aim, FullAim, FullUse, Carry }
+// 현재 들고있는 무기
+public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife, Smash }
+
+// 재생해야할 애니메이션 상태
+public enum ToolAnimationState { Idle, Aim, FullAim, FullUse, Carry, Eat, Drink }
+
 public class ToolStateManager : BaseStateManager
 {
     #region Components
@@ -15,6 +19,7 @@ public class ToolStateManager : BaseStateManager
     public UseToolState useToolState;
     public AimState aimState;
     public CarryState carryState;
+    public EatState eatState;
     #endregion
 
     public Transform armature;
@@ -49,6 +54,7 @@ public class ToolStateManager : BaseStateManager
         useToolState = new UseToolState(this, inputManager);
         aimState = new AimState(this, inputManager);
         carryState = new CarryState(this, inputManager);
+        eatState = new EatState(this, inputManager);
     }
 
     public override void Spawned()
@@ -63,6 +69,8 @@ public class ToolStateManager : BaseStateManager
         anim.SetBool("FullAiming", false);
         anim.SetBool("FullUseTool", false);
         anim.SetBool("Carrying", false);
+        anim.SetBool("Eating", false);
+        anim.SetBool("Drinking", false);
 
         switch (CurrentToolUseState)
         {
@@ -81,22 +89,28 @@ public class ToolStateManager : BaseStateManager
             case ToolAnimationState.Carry:
                 anim.SetBool("Carrying", true);
                 break;
+            case ToolAnimationState.Eat:
+                anim.SetBool("Eating", true);
+                break;
+            case ToolAnimationState.Drink:
+                anim.SetBool("Drinking", true);
+                break;
         }
 
         anim.SetBool("ComboAttack", ComboAttack);
     }
 
     // 400:짱돌 401:방망이 402:횃불 403:돌도끼 404:돌작살 405:돌곡괭이
-    public void ChangeCurrentTool(int toolIdx = -1)
+    public void ChangeSelectedItem(int itemIdx = -1)
     {
-        if (toolIdx >= 300 && toolIdx < 400)
+        // 설치가능한 아이템
+        if (itemIdx >= 300 && itemIdx < 400)
         {
-            CurrentToolType = ToolType.Placeable;
             ChangeState(carryState);
             return;
         }
 
-        switch (toolIdx)
+        switch (itemIdx)
         {
             case 401: // 방망이
                 CurrentToolType = ToolType.Sword;
