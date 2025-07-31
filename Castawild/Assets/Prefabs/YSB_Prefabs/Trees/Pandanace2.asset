@@ -12,14 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2956f42caa08d1479169678f0266d32, type: 3}
   m_Name: Pandanace2
   m_EditorClassIdentifier: 
-  treeName: Pandanace2
   prefabReference:
     m_AssetGUID: a1681f2c6482435aa351534ad2219738
     m_SubObjectName: 
     m_SubObjectGUID: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  maxHealth: 100
+  maxHealth: 30
   dropItemID: 0
   dropAmount: 1
   destroySFX: 
