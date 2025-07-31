@@ -34,6 +34,8 @@ public class ToolStateManager : BaseStateManager
     [Networked] public ToolType CurrentToolType { get; set; }
     #endregion
 
+    public bool isTriggerSet = false;
+
     protected override void Awake()
     {
         base.Awake();
@@ -69,8 +71,6 @@ public class ToolStateManager : BaseStateManager
         anim.SetBool("FullAiming", false);
         anim.SetBool("FullUseTool", false);
         anim.SetBool("Carrying", false);
-        anim.SetBool("Eating", false);
-        anim.SetBool("Drinking", false);
 
         switch (CurrentToolUseState)
         {
@@ -90,10 +90,14 @@ public class ToolStateManager : BaseStateManager
                 anim.SetBool("Carrying", true);
                 break;
             case ToolAnimationState.Eat:
-                anim.SetBool("Eating", true);
+                if (!isTriggerSet)
+                    anim.SetTrigger("Eating");
+                isTriggerSet = true;
                 break;
             case ToolAnimationState.Drink:
-                anim.SetBool("Drinking", true);
+                if (!isTriggerSet)
+                    anim.SetTrigger("Drinking");
+                isTriggerSet = true;
                 break;
         }
 
