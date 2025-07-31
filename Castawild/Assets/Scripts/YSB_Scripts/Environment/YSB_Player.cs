@@ -92,11 +92,11 @@ public class YSB_Player : NetworkBehaviour
         {
             for (int i = 0; i < hits && i < _interactResult.Length; i++)
             {
-                if (_interactResult[i].TryGetComponent<YSB_Scripts.IInteractable>(out var interactable))
+                if (_interactResult[i].TryGetComponent<IInteractable>(out var interactable))
                 {
                     if (interactable.CanInteract())
                     {
-                        interactable.Interact(Object.InputAuthority);
+                        //interactable.Interact(Object.InputAuthority);
                         interactTimer = TickTimer.CreateFromSeconds(Runner, 1f);
                         break;
                     }

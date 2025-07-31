@@ -1,11 +1,12 @@
-using Fusion;
 using UnityEngine;
+using Fusion;
 
 namespace YSB_Scripts
 {
-    public class NetworkTree : EnvironmentObject
+    public class NetworkStone : EnvironmentObject
     {
-        private TreeDefinition definition;
+        [SerializeField] private GameObject visualRoot;
+        private StoneDefinition definition;
         public override void Spawned()
         {
             base.Spawned();
@@ -17,10 +18,10 @@ namespace YSB_Scripts
             base.Init(def, instanceId);
             if (def == null)
             {
-                Debug.LogError("TreeDefinition is null!");
+                Debug.LogError("StoneDefinition is null!");
                 return;
             }
-            definition = def as TreeDefinition;
+            definition = def as StoneDefinition;
             MaxHP = definition.maxHealth;
             Health = MaxHP;
         }

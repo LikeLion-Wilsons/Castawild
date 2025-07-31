@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7317712941260793675}
   - component: {fileID: 97994903201919719}
   - component: {fileID: 7767257077858660261}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Coconut4_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 7165968901927379062}
   - component: {fileID: 6128385356169408163}
   - component: {fileID: 9169278691879890658}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Coconut4_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -183,7 +183,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3890072763182827806}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: VisualRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -219,7 +219,7 @@ GameObject:
   - component: {fileID: 6005750258039353731}
   - component: {fileID: 2872128608106366779}
   - component: {fileID: 7896154550768372706}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Coconut4_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -308,9 +308,8 @@ GameObject:
   - component: {fileID: 8893256660837799672}
   - component: {fileID: 1802169340126820929}
   - component: {fileID: -1303494910127945527}
-  - component: {fileID: 4844183382400077208}
   - component: {fileID: 6893099736074559005}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Coconut4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -372,7 +371,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 971352eea68afe14e965ec568800bb03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _TreeId: 0
+  interactableType: 1
   visualRoot: {fileID: 3310079846114568731}
 --- !u!114 &1802169340126820929
 MonoBehaviour:
@@ -411,20 +410,6 @@ MonoBehaviour:
   SyncParent: 0
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 0
---- !u!114 &4844183382400077208
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5756220563767573700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1541381998, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Guid:
-    RawGuidValue: 2f3e9539bda247f49c4d64b142c4bbae
 --- !u!136 &6893099736074559005
 CapsuleCollider:
   m_ObjectHideFlags: 0

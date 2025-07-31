@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 818165054393195202}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: VisualRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 3550234414826201151}
   - component: {fileID: -2932382964224354444}
   - component: {fileID: 6694845653441070672}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Coconut1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -110,7 +110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 971352eea68afe14e965ec568800bb03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _TreeId: 0
+  interactableType: 1
   visualRoot: {fileID: 1057274572752878765}
 --- !u!114 &3550234414826201151
 MonoBehaviour:
@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 114086688545874985}
   - component: {fileID: 1192650870387133398}
   - component: {fileID: 7335228672870143713}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Coconut1_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -270,7 +270,7 @@ GameObject:
   - component: {fileID: 2803460464497988324}
   - component: {fileID: 3947444945211637261}
   - component: {fileID: 8691263528879483364}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Coconut1_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -357,7 +357,7 @@ GameObject:
   - component: {fileID: 1981109348874157750}
   - component: {fileID: 167032786668481497}
   - component: {fileID: 5918821982054127879}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Coconut1_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

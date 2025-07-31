@@ -13,9 +13,8 @@ GameObject:
   - component: {fileID: 7923129873838452555}
   - component: {fileID: 4973858626686696035}
   - component: {fileID: -5800857443617161371}
-  - component: {fileID: 4569167701063038928}
   - component: {fileID: 3077692829822952699}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Coconut6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -77,7 +76,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 971352eea68afe14e965ec568800bb03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _TreeId: 0
+  interactableType: 1
   visualRoot: {fileID: 7578240401573347610}
 --- !u!114 &4973858626686696035
 MonoBehaviour:
@@ -116,20 +115,6 @@ MonoBehaviour:
   SyncParent: 0
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 0
---- !u!114 &4569167701063038928
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 161643516142887002}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1541381998, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Guid:
-    RawGuidValue: 0500c9cc85014f5f9807902c10469a4e
 --- !u!136 &3077692829822952699
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -164,7 +149,7 @@ GameObject:
   - component: {fileID: 2713926323549930569}
   - component: {fileID: 1012354930177947411}
   - component: {fileID: 1473170042099923538}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Coconut6_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -251,7 +236,7 @@ GameObject:
   - component: {fileID: 2788011340195573822}
   - component: {fileID: 6464894419886040661}
   - component: {fileID: 4694324732190904482}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Coconut6_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -336,7 +321,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7343636605319604954}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: VisualRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -372,7 +357,7 @@ GameObject:
   - component: {fileID: 7721859931545876463}
   - component: {fileID: 8011444115894365543}
   - component: {fileID: 4484930964789089940}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Coconut6_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
