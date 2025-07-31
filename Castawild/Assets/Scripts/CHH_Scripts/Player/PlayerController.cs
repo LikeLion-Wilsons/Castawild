@@ -69,6 +69,8 @@ public sealed class PlayerController : NetworkBehaviour
             movementManager.SetPrevInputButton(input.Buttons);
             toolManager.SetPrevInputButton(input.Buttons);
 
+            TestTryOverlap(input);
+
             if (!player.CanAct)
             {
                 // 중력만 적용해서 return
@@ -77,8 +79,6 @@ public sealed class PlayerController : NetworkBehaviour
                 kcc.Move(velocity);
                 return;
             }
-
-            TestTryOverlap(input);
 
             movementManager.MoveValue = input.moveValue;
 
@@ -189,7 +189,6 @@ public sealed class PlayerController : NetworkBehaviour
                             // 제거하고 템창에 넣는 로직 추가하기
                         }
                     }
-
 
                     if (interactableObject.CanInteract()
                         && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))

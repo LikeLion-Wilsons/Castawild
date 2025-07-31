@@ -19,11 +19,13 @@ public class Bed : InteractableObject
         CanSleep = false;
 
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
+
+        PlayerController playerController = playerObj.GetComponent<PlayerController>();
+        playerController.kcc.SetPosition(sleepPos.position);
+
         Player player = playerObj.GetComponent<Player>();
         player.CurrentBed = this;
         player.movementManager.ChangeState(player.movementManager.sleepState);
-
-        player.transform.position = sleepPos.position;
     }
 
     public void FinishSleep() => CanSleep = true;

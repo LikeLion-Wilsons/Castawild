@@ -91,8 +91,12 @@ public class MovementStateManager : BaseStateManager
 
     public void UpdateMoveAnimation(float deltaTime)
     {
-        anim.SetFloat("Horizontal", MoveValue.x, 0.1f, deltaTime);
-        anim.SetFloat("Vertical", MoveValue.y, 0.1f, deltaTime);
+        Debug.Log(CurrentMoveState);
+        if (player.CanAct)
+        {
+            anim.SetFloat("Horizontal", MoveValue.x, 0.1f, deltaTime);
+            anim.SetFloat("Vertical", MoveValue.y, 0.1f, deltaTime);
+        }
 
         anim.SetBool("Walking", false);
         anim.SetBool("Running", false);
@@ -130,14 +134,16 @@ public class MovementStateManager : BaseStateManager
                 break;
         }
 
-        if (input.moveValue != Vector2.zero)
+        // 이 부분 없으면 착지할 때 애니메이션 전환 이상함
+        if (input.moveValue != Vector2.zero && player.CanAct)
         {
             if (input.IsDown(PlayerNetworkInputData.sprintInput) && isJumping)
                 anim.SetBool("Running", true);
             else
                 anim.SetBool("Walking", true);
         }
-        anim.SetBool("Falling", !playerController.Grounded);
+        if (player.CanAct)
+            anim.SetBool("Falling", !playerController.Grounded);
     }
 
     /// <summary>
