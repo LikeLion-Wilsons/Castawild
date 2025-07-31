@@ -1,8 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using Test;
-
-public class NetworkTreeSpawner : EnvironmentSpawner<YSB_Scripts.NetworkTree, TreeDefinition>
+public class NetworkStoneSpawner : EnvironmentSpawner<YSB_Scripts.NetworkStone, StoneDefinition>
 {
     [SerializeField, Tooltip("트리 프리팹 최대 풀 개수. 0이면 무한, -1이면 풀링 안 함")]
     private int maxPoolCountPerPrefab = 500;

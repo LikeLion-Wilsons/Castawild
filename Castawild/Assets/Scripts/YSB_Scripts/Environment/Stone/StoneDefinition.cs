@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-[CreateAssetMenu(menuName = "Stone/StoneDefinition")]
+[CreateAssetMenu(menuName = "ScriptableObjects/StoneDefinition")]
 public class StoneDefinition : SpawnableDefinition
 {
     // [Header("Prefab (Addressables)")]
