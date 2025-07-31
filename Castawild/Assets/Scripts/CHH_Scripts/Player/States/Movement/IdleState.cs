@@ -17,7 +17,7 @@ public class IdleState : MovementBaseState
     public override void UpdateState()
     {
         // Move
-        if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput) && movementManager.CanMove)
+        if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput) && movementManager.player.CanMoving())
         {
             if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.toolStateManager.currentState != movementManager.toolStateManager.aimState)
                 movementManager.ChangeState(movementManager.runState);

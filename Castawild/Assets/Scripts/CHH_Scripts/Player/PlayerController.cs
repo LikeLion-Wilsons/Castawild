@@ -58,7 +58,7 @@ public sealed class PlayerController : NetworkBehaviour
         if (GetInput<PlayerNetworkInputData>(out var input))
         {
             // 속도 조절
-            maxSpeed = movementManager.CanMove ? movementManager.currentMoveSpeed : 0f;
+            maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
             maxSpeed = movementManager.currentMoveSpeed;
 
             movementManager.SetInput(input);
@@ -72,7 +72,7 @@ public sealed class PlayerController : NetworkBehaviour
 
             TestTryOverlap(input);
 
-            if (!player.CanAct && HasStateAuthority)
+            if (!player.CanMove && HasStateAuthority)
             {
                 // 중력만 적용해서 return
                 Vector3 velocity = kcc.RealVelocity;

@@ -44,7 +44,9 @@ public class Player : NetworkBehaviour
     [Networked, HideInInspector] public Bed CurrentBed { get; set; }
     #endregion
 
-    [Networked, HideInInspector] public bool CanAct { get; set; } = true;
+    [Networked] public bool CanMove { get; set; } = true;
+    [Networked] public bool IsUIOpen { get; set; }
+    [Networked] public bool IsCursorLocked { get; set; }
 
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isAimLocked = false;
@@ -163,18 +165,9 @@ public class Player : NetworkBehaviour
         }
     }
 
-    public bool IsUIOpen()
-    {
-        if (inventory == null || inventory.canvasHolder == null)
-            return false;
-        return inventory.canvasHolder.IsInventoryTableOpen();
-    }
-
     public bool CanUseTool()
     {
-        if (inventory == null || inventory.canvasHolder == null)
-            return false;
-        return !inventory.canvasHolder.IsInventoryTableOpen() && CanAct;
+        return !IsUIOpen && CanMove;
     }
 
     /// <summary>
@@ -199,11 +192,23 @@ public class Player : NetworkBehaviour
     {
         CurrentBed.FinishSleep();
         CurrentBed = null;
-        CanAct = true;
+        CanMove = true;
     }
 
-    public bool CanMove()
+    public bool CanMoving()
     {
-        return true;
+        return CanMove && IsCursorLocked;
+    }
+
+    public void SetCursorLocked(bool isLocked)
+    {
+        if (HasInputAuthority)
+            RPC_CursorLocked(isLocked);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_CursorLocked(bool isLocked)
+    {
+        IsCursorLocked = isLocked;
     }
 }

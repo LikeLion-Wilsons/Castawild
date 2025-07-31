@@ -1,3 +1,4 @@
+using Fusion;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -25,7 +26,6 @@ public class PlayerInputManager : MonoBehaviour
     #endregion
 
     #region Cursor
-    [HideInInspector] public bool isCursorLocked = true;
     public Action cursorLocked;
     public Action cursorUnLocked;
     #endregion 
@@ -71,19 +71,19 @@ public class PlayerInputManager : MonoBehaviour
 
     private void Update()
     {
-        if (!player.isSpawned)
+        if (!player.isSpawned || !player.HasInputAuthority)
             return;
 
         // 게임 포커스가 사라지면 커서 해제
-        if (!Application.isFocused && isCursorLocked)
+        if (!Application.isFocused && player.IsCursorLocked)
             UnlockCursor();
 
         // Game 창이 포커스된 상태에서 클릭 시 커서 잠금
-        if (!isCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame && !player.IsUIOpen())
+        if (!player.IsCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame && !player.IsUIOpen)
             LockCursor();
 
         // ESC 눌렀을 때 해제
-        if (isCursorLocked && Keyboard.current.escapeKey.wasPressedThisFrame && !player.IsUIOpen())
+        if (player.IsCursorLocked && Keyboard.current.escapeKey.wasPressedThisFrame && !player.IsUIOpen)
             UnlockCursor();
 
         HandleCameraInput();
@@ -93,10 +93,7 @@ public class PlayerInputManager : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        isCursorLocked = true;
-
-        if (movementManager.HasInputAuthority)
-            movementManager.RPC_RequestCanMove(true);
+        player.SetCursorLocked(true);
 
         cursorLocked?.Invoke();
     }
@@ -105,10 +102,7 @@ public class PlayerInputManager : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        isCursorLocked = false;
-
-        if (movementManager.HasInputAuthority)
-            movementManager.RPC_RequestCanMove(false);
+        player.SetCursorLocked(false);
 
         cursorUnLocked?.Invoke();
     }
@@ -136,7 +130,7 @@ public class PlayerInputManager : MonoBehaviour
 
     private PlayerNetworkInputData SetMoveDir(PlayerNetworkInputData inputData)
     {
-        if (isCursorLocked && movementManager.CanMove)
+        if (player.CanMoving())
         {
             Vector3 forward = Vector3.zero;
             Vector3 right = Vector3.zero;

@@ -125,7 +125,6 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void HandleViewChange()
     {
-        string name = transform.parent.name;
         if (inputManager.viewChangeAction.WasPressedThisFrame()
             && (toolManager.currentState == toolManager.idleState || toolManager.currentState == toolManager.carryState))
         {
@@ -189,19 +188,19 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void UpdateCameraPitch()
     {
-        if (currentView == ViewType.ThirdPerson || !inputManager.isCursorLocked)
+        if (currentView == ViewType.ThirdPerson || !player.IsCursorLocked)
             return;
 
         pitch -= inputManager.lookInput.y * sensitivity;
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         // 자고있을 때 좌우회전 추가
-        if (!player.CanAct)
+        if (!player.CanMoving())
         {
             yaw += inputManager.lookInput.x * sensitivity;
             yaw = Mathf.Clamp(yaw, minYaw, maxYaw);
         }
-        else if (player.CanAct && yaw != 0f)
+        else if (player.CanMoving() && yaw != 0f)
             yaw = 0f;
 
         firstPersonCam.transform.localEulerAngles = new Vector3(pitch, yaw, 0f);
