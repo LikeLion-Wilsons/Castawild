@@ -18,18 +18,20 @@ public class PlayerCameraManager : MonoBehaviour
     public bool isAiming = false;
     public ViewType currentView = ViewType.FirstPerson;
 
-    #region Third Person
+    #region First Person
     [Header("1인칭")]
     public CinemachineCamera firstPersonCam;
     [SerializeField] private Transform firstPersonTarget;
 
     [SerializeField] private GameObject[] playerMeshes;
+    [SerializeField] private GameObject playerHead;
 
     public float sensitivity = 1.5f;
     [SerializeField] private float maxXRotation = 80f;
     [SerializeField] private float minXRotation = -80f;
 
     private float pitch = 0f;
+    private float yaw = 0f;
     public float minPitch = -80f;
     public float maxPitch = 80f;
     #endregion
@@ -186,7 +188,13 @@ public class PlayerCameraManager : MonoBehaviour
         pitch -= inputManager.lookInput.y * sensitivity;
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
-        firstPersonCam.transform.localEulerAngles = new Vector3(pitch, 0f, 0f);
+        // 자고있을 때 좌우회전 추가
+        if (!player.CanAct)
+            yaw += inputManager.lookInput.x * sensitivity;
+        else if (player.CanAct && yaw != 0f)
+            yaw = 0f;
+
+        firstPersonCam.transform.localEulerAngles = new Vector3(pitch, yaw, 0f);
     }
 
     private void ZoomCamera()
@@ -242,5 +250,19 @@ public class PlayerCameraManager : MonoBehaviour
         }
 
         thirdPersonTarget.localPosition = targetPos;
+    }
+
+    public void SleepCamera(bool isSleep)
+    {
+        if (isSleep)
+        {
+            firstPersonCam.Follow = playerHead.transform;
+            firstPersonCam.LookAt = playerHead.transform;
+        }
+        else
+        {
+            firstPersonCam.Follow = firstPersonTarget;
+            firstPersonCam.LookAt = firstPersonTarget;
+        }
     }
 }

@@ -1,0 +1,11 @@
+using Fusion;
+
+[System.Serializable]
+public enum InteractableType { None, Tree, Stone, Bed, Box, Campfire }
+public abstract class InteractableObject : NetworkBehaviour
+{
+    public InteractableType interactableType;
+    public string text;
+    abstract public bool CanInteract();
+    abstract public void Interact(PlayerRef playerRef);
+}

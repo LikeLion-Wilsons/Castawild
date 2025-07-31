@@ -1,10 +1,8 @@
 using Fusion;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
-[System.Serializable]
-public enum InteractableType { None, Tree, Stone, Box, Campfire }
 
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
@@ -39,8 +37,12 @@ public class Player : NetworkBehaviour
     [SerializeField] private Sprite originImage;
     [SerializeField] private Sprite axeImage;
     [SerializeField] private Sprite pickaxeImage;
-    public bool canInteract;
+    public CanvasGroup interactableUI;
+    public TextMeshProUGUI interactableText;
+    [Networked, HideInInspector] public Bed CurrentBed { get; set; }
     #endregion
+
+    [Networked, HideInInspector] public bool CanAct { get; set; } = true;
 
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isAimLocked = false;
@@ -56,6 +58,7 @@ public class Player : NetworkBehaviour
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
         inputManager = GetComponent<PlayerInputManager>();
+        movementManager = GetComponent<MovementStateManager>();
         toolStateManager = GetComponent<ToolStateManager>();
         cameraManager = GetComponent<PlayerCameraManager>();
         inventory = GetComponent<InventoryDataManager>();
@@ -123,12 +126,10 @@ public class Player : NetworkBehaviour
             case InteractableType.Tree:
                 crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
                 crosshairImage.sprite = axeImage;
-                canInteract = true;
                 break;
             case InteractableType.Stone:
                 crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
                 crosshairImage.sprite = pickaxeImage;
-                canInteract = true;
                 break;
             case InteractableType.None:
             default:
@@ -138,7 +139,21 @@ public class Player : NetworkBehaviour
         }
     }
 
-    public bool IsInventoryTableOpen() => inventory.canvasHolder.IsInventoryTableOpen();
+    public bool CanMoving()
+    {
+        return inventory.canvasHolder.IsInventoryTableOpen();
+    }
+
+    public bool IsInventoryTableOpen()
+    {
+        if (inventory == null || inventory.canvasHolder == null)
+            return false;
+        return inventory.canvasHolder.IsInventoryTableOpen();
+    }
+
+    /// <summary>
+    /// 현재 들고있는 도구 + 플레이어 공격력
+    /// </summary>
     public int GetToolAtt(string toolName)
     {
         if (currentEquippedTool == null)
@@ -152,5 +167,12 @@ public class Player : NetworkBehaviour
             return playerData.attack + 2;
         else
             return playerData.attack;
+    }
+
+    public void FinishSleep()
+    {
+        CurrentBed.FinishSleep();
+        CurrentBed = null;
+        CanAct = true;
     }
 }

@@ -33,4 +33,5 @@ public class AnimationTrigger : MonoBehaviour
     }
 
     public void Interact() => playercontroller.Interact();
+    public void FinishSleep() => player.FinishSleep();
 }

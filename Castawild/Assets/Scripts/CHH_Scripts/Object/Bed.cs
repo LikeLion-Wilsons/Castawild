@@ -1,0 +1,29 @@
+using Fusion;
+using UnityEngine;
+
+public class Bed : InteractableObject
+{
+    [Networked] private bool CanSleep { get; set; } = true;
+    [SerializeField] private Transform sleepPos;
+
+    private void Awake()
+    {
+        interactableType = InteractableType.Bed;
+    }
+
+    public override bool CanInteract() => CanSleep;
+
+    public override void Interact(PlayerRef playerRef)
+    {
+        CanSleep = false;
+
+        NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
+        Player player = playerObj.GetComponent<Player>();
+        player.CurrentBed = this;
+        player.movementManager.ChangeState(player.movementManager.sleepState);
+
+        player.transform.position = sleepPos.position;
+    }
+
+    public void FinishSleep() => CanSleep = true;
+}
