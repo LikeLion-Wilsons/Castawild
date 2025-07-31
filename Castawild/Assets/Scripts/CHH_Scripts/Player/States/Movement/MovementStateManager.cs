@@ -84,6 +84,7 @@ public class MovementStateManager : BaseStateManager
         jumpState = new JumpState(this, inputManager);
         sleepState = new SleepState(this, inputManager);
     }
+
     public override void Spawned()
     {
         ChangeState(idleState);
@@ -91,7 +92,6 @@ public class MovementStateManager : BaseStateManager
 
     public void UpdateMoveAnimation(float deltaTime)
     {
-        Debug.Log(CurrentMoveState);
         if (player.CanAct)
         {
             anim.SetFloat("Horizontal", MoveValue.x, 0.1f, deltaTime);

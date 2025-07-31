@@ -59,6 +59,7 @@ public sealed class PlayerController : NetworkBehaviour
         {
             // 속도 조절
             maxSpeed = movementManager.CanMove ? movementManager.currentMoveSpeed : 0f;
+            maxSpeed = movementManager.currentMoveSpeed;
 
             movementManager.SetInput(input);
             toolManager.SetInput(input);

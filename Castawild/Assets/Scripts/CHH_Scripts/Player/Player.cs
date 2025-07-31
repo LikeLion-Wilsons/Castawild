@@ -157,7 +157,7 @@ public class Player : NetworkBehaviour
         }
     }
 
-    public bool IsInventoryTableOpen()
+    public bool IsUIOpen()
     {
         if (inventory == null || inventory.canvasHolder == null)
             return false;
@@ -194,5 +194,10 @@ public class Player : NetworkBehaviour
         CurrentBed.FinishSleep();
         CurrentBed = null;
         CanAct = true;
+    }
+
+    public bool CanMove()
+    {
+        return true;
     }
 }

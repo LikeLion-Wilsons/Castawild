@@ -25,7 +25,7 @@ public class PlayerInputManager : MonoBehaviour
     #endregion
 
     #region Cursor
-    [HideInInspector] public bool isCursorLocked = false;
+    [HideInInspector] public bool isCursorLocked = true;
     public Action cursorLocked;
     public Action cursorUnLocked;
     #endregion 
@@ -76,11 +76,11 @@ public class PlayerInputManager : MonoBehaviour
             UnlockCursor();
 
         // Game 창이 포커스된 상태에서 클릭 시 커서 잠금
-        if (!isCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame && !player.IsInventoryTableOpen())
+        if (!isCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame && !player.IsUIOpen())
             LockCursor();
 
         // ESC 눌렀을 때 해제
-        if (isCursorLocked && Keyboard.current.escapeKey.wasPressedThisFrame)
+        if (isCursorLocked && Keyboard.current.escapeKey.wasPressedThisFrame && !player.IsUIOpen())
             UnlockCursor();
 
         HandleCameraInput();
@@ -91,6 +91,7 @@ public class PlayerInputManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         isCursorLocked = true;
+        movementManager.CanMove = true;
 
         cursorLocked?.Invoke();
     }
@@ -100,6 +101,7 @@ public class PlayerInputManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         isCursorLocked = false;
+        movementManager.CanMove = false;
 
         cursorUnLocked?.Invoke();
     }
@@ -127,7 +129,8 @@ public class PlayerInputManager : MonoBehaviour
 
     private PlayerNetworkInputData SetMoveDir(PlayerNetworkInputData inputData)
     {
-        if (isCursorLocked)
+        Debug.Log(isCursorLocked);
+        if (isCursorLocked && movementManager.CanMove)
         {
             Vector3 forward = Vector3.zero;
             Vector3 right = Vector3.zero;
@@ -161,8 +164,6 @@ public class PlayerInputManager : MonoBehaviour
 
         return inputData;
     }
-
-
 
     private void HandleCameraInput()
     {
