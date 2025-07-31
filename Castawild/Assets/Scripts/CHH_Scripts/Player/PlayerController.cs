@@ -24,7 +24,7 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private Transform thirdPersonInteractPos;
     [SerializeField] private float interactRadius = 1f;
     [SerializeField] private LayerMask interactLayer;
-    [HideInInspector] public TestInteractable currentInteractObject;
+    [HideInInspector] public EnvironmentObject currentInteractObject;
 
     public bool Grounded => kcc.IsGrounded;
 
@@ -59,6 +59,7 @@ public sealed class PlayerController : NetworkBehaviour
         {
             // 속도 조절
             maxSpeed = movementManager.CanMove ? movementManager.currentMoveSpeed : 0f;
+            maxSpeed = movementManager.currentMoveSpeed;
 
             movementManager.SetInput(input);
             toolManager.SetInput(input);
@@ -66,10 +67,19 @@ public sealed class PlayerController : NetworkBehaviour
             movementManager.currentState.UpdateState();
             toolManager.currentState.UpdateState();
 
-            TestTryOverlap(input.currentView);
-
             movementManager.SetPrevInputButton(input.Buttons);
             toolManager.SetPrevInputButton(input.Buttons);
+
+            TestTryOverlap(input);
+
+            if (!player.CanAct)
+            {
+                // 중력만 적용해서 return
+                Vector3 velocity = kcc.RealVelocity;
+                velocity.y += gravity * Runner.DeltaTime;
+                kcc.Move(velocity);
+                return;
+            }
 
             movementManager.MoveValue = input.moveValue;
 
@@ -136,11 +146,11 @@ public sealed class PlayerController : NetworkBehaviour
         toolManager.UpdateMoveAnimation();
     }
 
-    private void TestTryOverlap(ViewType currentView)
+    private void TestTryOverlap(PlayerNetworkInputData input)
     {
         Camera cam = Camera.main;
 
-        Vector3 origin = (currentView == ViewType.FirstPerson) ? cam.transform.position : thirdPersonInteractPos.position;
+        Vector3 origin = (input.currentView == ViewType.FirstPerson) ? cam.transform.position : thirdPersonInteractPos.position;
         Vector3 point1 = origin + cam.transform.forward * interactHeight;
         Vector3 point2 = origin;
 
@@ -152,7 +162,9 @@ public sealed class PlayerController : NetworkBehaviour
             for (int i = 0; i < hitCount; i++)
             {
                 var interact = _interactResult[i];
-                if (_interactResult[i].TryGetComponent<TestInteractable>(out var interactable))
+
+                // 돌 / 나무
+                if (_interactResult[i].TryGetComponent<EnvironmentObject>(out var interactable))
                 {
                     if (interactable.CanInteract())
                     {
@@ -161,10 +173,36 @@ public sealed class PlayerController : NetworkBehaviour
                         break;
                     }
                 }
+
+                // 다른 오브젝트 
+                else if (_interactResult[i].TryGetComponent<InteractableObject>(out var interactableObject))
+                {
+                    player.interactableUI.alpha = 1f;
+                    player.interactableText.text = interactableObject.text;
+
+                    // 설치가능한 오브젝트
+                    if (interactableObject.isPlaceable)
+                    {
+                        player.placeableUI.alpha = 1f;
+                        if (interactableObject.CanInteract()
+                            && input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
+                        {
+                            // 제거하고 템창에 넣는 로직 추가하기
+                        }
+                    }
+
+                    if (interactableObject.CanInteract()
+                        && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
+                    {
+                        interactableObject.Interact(Object.InputAuthority);
+                    }
+                }
             }
         }
         else
         {
+            player.placeableUI.alpha = 0f;
+            player.interactableUI.alpha = 0f;
             currentInteractObject = null;
             player.ChangeCrosshairUI();
         }

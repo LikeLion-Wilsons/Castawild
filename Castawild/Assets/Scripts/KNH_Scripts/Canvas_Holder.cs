@@ -51,6 +51,9 @@ public class Canvas_Holder : MonoBehaviour
             uiParts.Add(part.name, part);
         }
 
+        // 수정한 부분
+        uiParts["Inventory"].Toggle(player.inputManager);
+        uiParts["Table"].Toggle(player.inputManager);
     }
 
     void Update()

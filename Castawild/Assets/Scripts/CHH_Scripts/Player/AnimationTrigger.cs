@@ -33,4 +33,6 @@ public class AnimationTrigger : MonoBehaviour
     }
 
     public void Interact() => playercontroller.Interact();
+    public void FinishSleep() => player.FinishSleep();
+    public void FinishEat() => toolManager.IsAnimationFinished = true;
 }

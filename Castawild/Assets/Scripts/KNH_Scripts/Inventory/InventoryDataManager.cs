@@ -97,9 +97,9 @@ public class InventoryDataManager : NetworkBehaviour
 
             // 수정한 부분
             if (inventorySlots[selectedSlot].IsEmpty())
-                player.UnequipCurrentTool();
+                player.RemoveSelectedItem();
             else
-                player.EquipTool(itemList[selectedSlot].itemID);
+                player.ApplySelectedItem(itemList[selectedSlot].itemID);
         }
     }
 

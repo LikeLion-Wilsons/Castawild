@@ -1,7 +1,7 @@
 using Fusion;
 using UnityEngine;
 
-public enum MoveAnimationState { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump }
+public enum MoveAnimationState { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump, Sleep }
 
 public class MovementStateManager : BaseStateManager
 {
@@ -17,6 +17,7 @@ public class MovementStateManager : BaseStateManager
     public RunState runState;
     public JumpState jumpState;
     public CrouchState crouchState;
+    public SleepState sleepState;
     public MoveType currentMoveType;
     #endregion
 
@@ -81,7 +82,9 @@ public class MovementStateManager : BaseStateManager
         runState = new RunState(this, inputManager);
         crouchState = new CrouchState(this, inputManager);
         jumpState = new JumpState(this, inputManager);
+        sleepState = new SleepState(this, inputManager);
     }
+
     public override void Spawned()
     {
         ChangeState(idleState);
@@ -89,13 +92,17 @@ public class MovementStateManager : BaseStateManager
 
     public void UpdateMoveAnimation(float deltaTime)
     {
-        anim.SetFloat("Horizontal", MoveValue.x, 0.1f, deltaTime);
-        anim.SetFloat("Vertical", MoveValue.y, 0.1f, deltaTime);
+        if (player.CanAct)
+        {
+            anim.SetFloat("Horizontal", MoveValue.x, 0.1f, deltaTime);
+            anim.SetFloat("Vertical", MoveValue.y, 0.1f, deltaTime);
+        }
 
         anim.SetBool("Walking", false);
         anim.SetBool("Running", false);
         anim.SetBool("Crouching", false);
         anim.SetBool("Falling", false);
+        anim.SetBool("Sleeping", false);
 
         switch (CurrentMoveState)
         {
@@ -122,28 +129,21 @@ public class MovementStateManager : BaseStateManager
                     anim.SetTrigger("RunJump");
                 isTriggerSet = true;
                 break;
+            case MoveAnimationState.Sleep:
+                anim.SetBool("Sleeping", true);
+                break;
         }
-        if (input.moveValue != Vector2.zero)
+
+        // 이 부분 없으면 착지할 때 애니메이션 전환 이상함
+        if (input.moveValue != Vector2.zero && player.CanAct)
         {
             if (input.IsDown(PlayerNetworkInputData.sprintInput) && isJumping)
                 anim.SetBool("Running", true);
             else
                 anim.SetBool("Walking", true);
         }
-        anim.SetBool("Falling", !playerController.Grounded);
-    }
-
-    public void RotatePlayer(Vector3 moveDir)
-    {
-        if (cameraManager.currentView == ViewType.FirstPerson && inputManager.isCursorLocked)
-            transform.Rotate(Vector3.up * inputManager.lookInput.x * cameraManager.sensitivity);
-
-        else if (cameraManager.currentView == ViewType.ThirdPerson &&
-            moveDir.sqrMagnitude > 0.001f && !player.isAimLocked && playerController.Grounded)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(moveDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
-        }
+        if (player.CanAct)
+            anim.SetBool("Falling", !playerController.Grounded);
     }
 
     /// <summary>
@@ -182,5 +182,4 @@ public class MovementStateManager : BaseStateManager
             runSpeed -= value;
         }
     }
-
 }

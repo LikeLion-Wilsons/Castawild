@@ -1,8 +1,12 @@
 using Fusion;
 using UnityEngine;
 
+// 현재 들고있는 무기
 public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife, Smash }
-public enum ToolAnimationState { Idle, Aim, FullAim, FullUse }
+
+// 재생해야할 애니메이션 상태
+public enum ToolAnimationState { Idle, Aim, FullAim, FullUse, Carry, Eat, Drink }
+
 public class ToolStateManager : BaseStateManager
 {
     #region Components
@@ -14,6 +18,8 @@ public class ToolStateManager : BaseStateManager
     public ToolIdleState idleState;
     public UseToolState useToolState;
     public AimState aimState;
+    public CarryState carryState;
+    public EatState eatState;
     #endregion
 
     public Transform armature;
@@ -27,6 +33,8 @@ public class ToolStateManager : BaseStateManager
     [Networked] public ToolAnimationState CurrentToolUseState { get; set; }
     [Networked] public ToolType CurrentToolType { get; set; }
     #endregion
+
+    public bool isTriggerSet = false;
 
     protected override void Awake()
     {
@@ -47,7 +55,10 @@ public class ToolStateManager : BaseStateManager
         idleState = new ToolIdleState(this, inputManager);
         useToolState = new UseToolState(this, inputManager);
         aimState = new AimState(this, inputManager);
+        carryState = new CarryState(this, inputManager);
+        eatState = new EatState(this, inputManager);
     }
+
     public override void Spawned()
     {
         ChangeState(idleState);
@@ -59,6 +70,7 @@ public class ToolStateManager : BaseStateManager
         anim.SetBool("Aiming", false);
         anim.SetBool("FullAiming", false);
         anim.SetBool("FullUseTool", false);
+        anim.SetBool("Carrying", false);
 
         switch (CurrentToolUseState)
         {
@@ -74,15 +86,35 @@ public class ToolStateManager : BaseStateManager
                 anim.SetInteger("WeaponType", (int)CurrentToolType);
                 anim.SetBool("FullUseTool", true);
                 break;
+            case ToolAnimationState.Carry:
+                anim.SetBool("Carrying", true);
+                break;
+            case ToolAnimationState.Eat:
+                if (!isTriggerSet)
+                    anim.SetTrigger("Eating");
+                isTriggerSet = true;
+                break;
+            case ToolAnimationState.Drink:
+                if (!isTriggerSet)
+                    anim.SetTrigger("Drinking");
+                isTriggerSet = true;
+                break;
         }
 
         anim.SetBool("ComboAttack", ComboAttack);
     }
 
     // 400:짱돌 401:방망이 402:횃불 403:돌도끼 404:돌작살 405:돌곡괭이
-    public void ChangeCurrentTool(int toolIdx = -1)
+    public void ChangeSelectedItem(int itemIdx = -1)
     {
-        switch (toolIdx)
+        // 설치가능한 아이템 
+        if (itemIdx >= 300 && itemIdx < 400)
+        {
+            ChangeState(carryState);
+            return;
+        }
+
+        switch (itemIdx)
         {
             case 401: // 방망이
                 CurrentToolType = ToolType.Sword;
