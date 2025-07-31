@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-[CreateAssetMenu(menuName = "Tree/TreeDefinition")]
+[CreateAssetMenu(menuName = "ScriptableObjects/TreeDefinition")]
 public class TreeDefinition : SpawnableDefinition
 {
     // [Header("Prefab (Addressables)")]
