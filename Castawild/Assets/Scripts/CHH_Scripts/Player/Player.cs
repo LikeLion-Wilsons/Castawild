@@ -7,6 +7,7 @@ using UnityEngine.UI;
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
 public enum AttackType { None, Aim, Attack }
+public enum ItemType { None, Tool, Food, Drink, Placeable }
 
 public class Player : NetworkBehaviour
 {
@@ -48,7 +49,7 @@ public class Player : NetworkBehaviour
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isAimLocked = false;
 
-    [HideInInspector] public int currentItemIdx;
+    [HideInInspector] public ItemType currentItemType;
 
     private void Awake()
     {
@@ -88,10 +89,10 @@ public class Player : NetworkBehaviour
     /// </summary>
     public void ApplySelectedItem(int itemIdx)
     {
-        currentItemIdx = itemIdx;
+        SetCurrentItemType(itemIdx);
 
         // 도구일 경우 장착
-        if (itemIdx >= 400)
+        if (currentItemType == ItemType.Tool)
         {
             if (currentEquippedTool != null)
             {
@@ -109,6 +110,18 @@ public class Player : NetworkBehaviour
         }
 
         toolStateManager.ChangeSelectedItem(itemIdx);
+    }
+
+    private void SetCurrentItemType(int _currentItemIdx)
+    {
+        if (_currentItemIdx < 50)
+            currentItemType = ItemType.Drink;
+        else if (_currentItemIdx < 100)
+            currentItemType = ItemType.Food;
+        else if (_currentItemIdx >= 300 && _currentItemIdx < 400)
+            currentItemType = ItemType.Placeable;
+        else if (_currentItemIdx >= 400)
+            currentItemType = ItemType.Tool;
     }
 
     /// <summary>

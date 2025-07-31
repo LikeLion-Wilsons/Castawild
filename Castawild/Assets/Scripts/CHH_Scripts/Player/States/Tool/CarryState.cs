@@ -14,6 +14,8 @@ public class CarryState : ToolBaseState
 
     public override void UpdateState()
     {
+        if (toolStateManager.player.currentItemType != ItemType.Placeable)
+            toolStateManager.ChangeState(toolStateManager.idleState);
     }
 
     public override void ExitState()

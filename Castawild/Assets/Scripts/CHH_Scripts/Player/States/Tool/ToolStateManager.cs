@@ -107,7 +107,7 @@ public class ToolStateManager : BaseStateManager
     // 400:짱돌 401:방망이 402:횃불 403:돌도끼 404:돌작살 405:돌곡괭이
     public void ChangeSelectedItem(int itemIdx = -1)
     {
-        // 설치가능한 아이템
+        // 설치가능한 아이템 
         if (itemIdx >= 300 && itemIdx < 400)
         {
             ChangeState(carryState);
