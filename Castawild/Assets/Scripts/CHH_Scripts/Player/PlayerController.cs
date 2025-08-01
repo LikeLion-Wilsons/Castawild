@@ -58,7 +58,6 @@ public sealed class PlayerController : NetworkBehaviour
         if (GetInput<PlayerNetworkInputData>(out var input) && HasStateAuthority)
         {
             maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
-            maxSpeed = movementManager.currentMoveSpeed;
 
             movementManager.SetInput(input);
             toolManager.SetInput(input);
@@ -79,19 +78,17 @@ public sealed class PlayerController : NetworkBehaviour
                 return;
             }
 
-            if (HasInputAuthority)
-                TestTryOverlap(input);
+            TestTryOverlap(input);
 
             if (!player.CanMove)
                 return;
 
             movementManager.MoveValue = input.moveValue;
-
             Move(input.moveDir);
-            Rotate(input);
 
             prevInputButtons = input.Buttons;
         }
+        Rotate(input);
     }
 
     public void Move(Vector3 direction)
