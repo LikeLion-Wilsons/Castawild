@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 public class ToolIdleState : ToolBaseState
 {
     public ToolIdleState(ToolStateManager _toolStateManager, PlayerInputManager _inputManager)
@@ -23,7 +25,7 @@ public class ToolIdleState : ToolBaseState
         {
             toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
 
-            // 음식 들고있을 땐 먹기 - 나중에 인덱스 제대로 고치기
+            // 음식 들고있을 땐 먹기
             if (toolStateManager.player.currentItemType == ItemType.Food || toolStateManager.player.currentItemType == ItemType.Drink)
             {
                 toolStateManager.ChangeState(toolStateManager.eatState);
