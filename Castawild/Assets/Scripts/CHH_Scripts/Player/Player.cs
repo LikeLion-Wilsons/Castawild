@@ -194,6 +194,10 @@ public class Player : NetworkBehaviour
 
     public bool CanUseTool() => !IsUIOpen && CanMove;
 
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_IsUIOpen(bool isOpen) => IsUIOpen = isOpen;
+
     /// <summary>
     /// 현재 들고있는 도구 + 플레이어 공격력
     /// </summary>

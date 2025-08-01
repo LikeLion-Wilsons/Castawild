@@ -65,9 +65,9 @@ public class Canvas_Holder : MonoBehaviour
 
             // 수정한 부분
             if (uiParts["Inventory"].IsOpen())
-                player.IsUIOpen = true;
+                player.RPC_IsUIOpen(true);
             else
-                player.IsUIOpen = false;
+                player.RPC_IsUIOpen(false);
         }
     }
 
