@@ -52,8 +52,8 @@ public class Canvas_Holder : MonoBehaviour
         }
 
         // 수정한 부분
-        uiParts["Inventory"].Toggle(player.inputManager);
-        uiParts["Table"].Toggle(player.inputManager);
+        uiParts["Inventory"].Toggle();
+        uiParts["Table"].Toggle();
     }
 
     void Update()
@@ -63,20 +63,17 @@ public class Canvas_Holder : MonoBehaviour
             uiParts["Inventory"].Toggle(player.inputManager);
             uiParts["Table"].Toggle(player.inputManager);
 
+            // 수정한 부분
+            if (uiParts["Inventory"].IsOpen())
+                player.IsUIOpen = true;
+            else
+                player.IsUIOpen = false;
         }
     }
 
     public bool IsInventoryOpen()
     {
         return uiParts.ContainsKey("Inventory") && uiParts["Inventory"].IsOpen();
-    }
-
-    // 수정한 부분
-    // 이걸로 이동이나 도구사용할 수 있는지 판단하고있어서
-    // 나중에 esc UI 추가되면 여기에도 내용 추가 부탁드립니다 !
-    public bool IsInventoryTableOpen()
-    {
-        return uiParts.ContainsKey("Inventory") && uiParts["Inventory"].IsOpen() || uiParts.ContainsKey("Table") && uiParts["Table"].IsOpen();
     }
 
     public bool AnyUIOpen()

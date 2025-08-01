@@ -7,7 +7,6 @@ public class MovementStateManager : BaseStateManager
 {
     #region Conponent
     [HideInInspector] public ToolStateManager toolStateManager;
-    [HideInInspector] public PlayerController playerController;
     #endregion
 
     #region States
@@ -58,7 +57,6 @@ public class MovementStateManager : BaseStateManager
     #region Network
     [Networked] public MoveAnimationState CurrentMoveState { get; set; }
     [Networked] public bool JumpTriggered { get; set; }
-    [Networked] public bool CanMove { get; set; }
     [Networked] public Vector2 MoveValue { get; set; }
     #endregion
 
@@ -92,7 +90,7 @@ public class MovementStateManager : BaseStateManager
 
     public void UpdateMoveAnimation(float deltaTime)
     {
-        if (player.CanAct)
+        if (player.CanMoving())
         {
             anim.SetFloat("Horizontal", MoveValue.x, 0.1f, deltaTime);
             anim.SetFloat("Vertical", MoveValue.y, 0.1f, deltaTime);
@@ -134,29 +132,18 @@ public class MovementStateManager : BaseStateManager
                 break;
         }
 
-        // 이 부분 없으면 착지할 때 애니메이션 전환 이상함
-        if (input.moveValue != Vector2.zero && player.CanAct)
+        if (player.CanMoving())
         {
-            if (input.IsDown(PlayerNetworkInputData.sprintInput) && isJumping)
-                anim.SetBool("Running", true);
-            else
-                anim.SetBool("Walking", true);
+            // 이 부분 없으면 착지할 때 애니메이션 전환 이상함
+            if (input.moveValue != Vector2.zero)
+            {
+                if (input.IsDown(PlayerNetworkInputData.sprintInput) && isJumping)
+                    anim.SetBool("Running", true);
+                else
+                    anim.SetBool("Walking", true);
+            }
         }
-        if (player.CanAct)
-            anim.SetBool("Falling", !playerController.Grounded);
-    }
-
-    /// <summary>
-    /// 중력 적용
-    /// </summary>
-    public Vector3 Gravity()
-    {
-        if (playerController.Grounded && velocity.y < 0)
-            velocity.y = -1f;
-        else
-            velocity.y += gravity * fallMultiplier * Time.fixedDeltaTime;
-
-        return velocity;
+        anim.SetBool("Falling", !playerController.Grounded);
     }
 
     private void OnDrawGizmos()

@@ -10,7 +10,8 @@ public class SleepState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.player.CanAct = false;
+        movementManager.player.PlayerStop();
+
         movementManager.CurrentMoveState = MoveAnimationState.Sleep;
         movementManager.currentMoveType = MoveType.Idle;
 

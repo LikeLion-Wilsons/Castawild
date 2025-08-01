@@ -11,7 +11,7 @@ public class UseToolState : ToolBaseState
 
     public override void EnterState()
     {
-        toolStateManager.movementManager.CanMove = false;
+        toolStateManager.player.PlayerStop();
         toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
 
         toolStateManager.CurrentToolUseState = ToolAnimationState.FullUse;
@@ -48,7 +48,8 @@ public class UseToolState : ToolBaseState
     {
         base.ExitState();
         SetActiveArmMesh(false);
-        toolStateManager.movementManager.CanMove = true;
+
+        toolStateManager.player.CanMove = true;
         toolStateManager.player.isAimLocked = false;
 
         comboCount = 1;
@@ -79,10 +80,11 @@ public class UseToolState : ToolBaseState
 
     public void SetActiveArmMesh(bool isActive)
     {
+        toolStateManager.ArmVisibleChanged(isActive);
+
         if (toolStateManager.CurrentToolType == ToolType.Fist && toolStateManager.cameraManager.currentView == ViewType.FirstPerson
             && toolStateManager.HasInputAuthority)
         {
-            toolStateManager.visibleMesh.SetActive(isActive);
             if (isActive)
             {
                 toolStateManager.armature.SetParent(toolStateManager.cameraManager.firstPersonCam.transform);

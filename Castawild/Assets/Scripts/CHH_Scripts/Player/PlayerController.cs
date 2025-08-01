@@ -26,7 +26,7 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private LayerMask interactLayer;
     [HideInInspector] public EnvironmentObject currentInteractObject;
 
-    public bool Grounded => kcc.IsGrounded;
+    [Networked] public bool Grounded { get; set; }
 
     Collider[] _interactResult = new Collider[5];
 
@@ -58,7 +58,9 @@ public sealed class PlayerController : NetworkBehaviour
         if (GetInput<PlayerNetworkInputData>(out var input))
         {
             // 속도 조절
-            maxSpeed = movementManager.CanMove ? movementManager.currentMoveSpeed : 0f;
+            if (!HasInputAuthority)
+                Debug.Log(player.CanMoving());
+            maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
             maxSpeed = movementManager.currentMoveSpeed;
 
             movementManager.SetInput(input);
@@ -72,12 +74,13 @@ public sealed class PlayerController : NetworkBehaviour
 
             TestTryOverlap(input);
 
-            if (!player.CanAct)
+            if (!player.CanMove && HasStateAuthority)
             {
                 // 중력만 적용해서 return
                 Vector3 velocity = kcc.RealVelocity;
                 velocity.y += gravity * Runner.DeltaTime;
                 kcc.Move(velocity);
+                Grounded = kcc.IsGrounded;
                 return;
             }
 
@@ -112,7 +115,6 @@ public sealed class PlayerController : NetworkBehaviour
         float jump = 0f;
         if (movementManager.JumpTriggered)
         {
-            Debug.Log("KCC.JumpTriggered" + movementManager.JumpTriggered);
             movementManager.JumpTriggered = false;
             jump = jumpImpulse;
         }
@@ -121,7 +123,11 @@ public sealed class PlayerController : NetworkBehaviour
         // 첫 번재 인자 : 이동 벡터(속도) -> moveDir * speed, 중력 포함해서 넣기
         // 두 번째 인자 : y축 점프 힘 -> 점프 눌렀을 때만 값넣기, 아니면 0
         // Move 함수의 ManualFixedUpdate 내부에서 DeltaTime 곱하기 때문에 여기서는 곱하지 말기
-        kcc.Move(velocity, jump);
+        if (HasStateAuthority)
+        {
+            kcc.Move(velocity, jump);
+            Grounded = kcc.IsGrounded;
+        }
     }
 
     private void Rotate(PlayerNetworkInputData input)
