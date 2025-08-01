@@ -7,6 +7,7 @@ public class Canvas_Holder : MonoBehaviour
     public GameObject inventoryUI;
     public GameObject tableUI;
 
+    public bool isDragging = false;
     // 수정한 부분
     public Player player;
 
