@@ -166,12 +166,9 @@ public class ToolStateManager : BaseStateManager
 
     public void ArmVisibleChanged(bool isVisible)
     {
-        if (HasStateAuthority && cameraManager.currentView == ViewType.FirstPerson)
+        if (HasInputAuthority && cameraManager.currentView == ViewType.FirstPerson)
         {
-            RPC_ArmVisibleChanged(isVisible);
+            armMesh.SetActive(isVisible);
         }
     }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ArmVisibleChanged(bool isVisible) => armMesh.SetActive(isVisible);
 }
