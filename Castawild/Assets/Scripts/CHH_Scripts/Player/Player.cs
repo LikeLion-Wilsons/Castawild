@@ -145,11 +145,12 @@ public class Player : NetworkBehaviour
 
     private void SetCurrentItemType(int _currentItemIdx)
     {
+        Debug.Log(_currentItemIdx);
         // 50 ~ 59 : Drink
         if (_currentItemIdx >= 50 && _currentItemIdx < 60)
             currentItemType = ItemType.Drink;
         // 60 ~ 69 : Food
-        if (_currentItemIdx >= 60 && _currentItemIdx < 70)
+        else if (_currentItemIdx >= 60 && _currentItemIdx < 70)
             currentItemType = ItemType.Food;
         // 300 ~ 400 : Placeable
         else if (_currentItemIdx >= 300 && _currentItemIdx < 400)
@@ -159,6 +160,7 @@ public class Player : NetworkBehaviour
             currentItemType = ItemType.Tool;
         else
             currentItemType = ItemType.Default;
+        Debug.Log(currentItemType);
     }
 
     /// <summary>
