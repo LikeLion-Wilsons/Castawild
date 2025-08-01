@@ -15,7 +15,7 @@ public class EatState : ToolBaseState
         if (toolStateManager.player.currentItemType == ItemType.Drink)
             toolStateManager.CurrentToolUseState = ToolAnimationState.Drink;
 
-        toolStateManager.player.PlayerStop();
+        toolStateManager.player.StopPlayer();
     }
 
     public override void UpdateState()

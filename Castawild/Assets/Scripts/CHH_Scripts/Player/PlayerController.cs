@@ -55,9 +55,8 @@ public sealed class PlayerController : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (GetInput<PlayerNetworkInputData>(out var input))
+        if (GetInput<PlayerNetworkInputData>(out var input) && HasStateAuthority)
         {
-            // 속도 조절
             maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
             maxSpeed = movementManager.currentMoveSpeed;
 
@@ -70,9 +69,7 @@ public sealed class PlayerController : NetworkBehaviour
             movementManager.SetPrevInputButton(input.Buttons);
             toolManager.SetPrevInputButton(input.Buttons);
 
-            TestTryOverlap(input);
-
-            if (!player.CanMove && HasStateAuthority)
+            if (!player.CanMove)
             {
                 // 중력만 적용해서 return
                 Vector3 velocity = kcc.RealVelocity;
@@ -81,6 +78,12 @@ public sealed class PlayerController : NetworkBehaviour
                 Grounded = kcc.IsGrounded;
                 return;
             }
+
+            if (HasInputAuthority)
+                TestTryOverlap(input);
+
+            if (!player.CanMove)
+                return;
 
             movementManager.MoveValue = input.moveValue;
 

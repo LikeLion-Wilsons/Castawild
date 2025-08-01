@@ -41,7 +41,7 @@ public class Player : NetworkBehaviour
     public CanvasGroup interactableUI;
     public TextMeshProUGUI interactableText;
     public CanvasGroup placeableUI;
-    [Networked, HideInInspector] public Bed CurrentBed { get; set; }
+    [Networked, HideInInspector] public NetworkId CurrentBedID { get; set; }
     #endregion
 
     [Networked] public bool CanMove { get; set; } = true;
@@ -127,22 +127,6 @@ public class Player : NetworkBehaviour
         toolStateManager.ChangeSelectedItem(itemIdx);
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    private void RPC_EquipmentTool(int itemIdx = -1)
-    {
-        foreach (var tool in toolDict)
-        {
-            if (tool.Value != null)
-                tool.Value.SetActive(false);
-        }
-
-        if (itemIdx == -1)
-            return;
-
-        if (toolDict.TryGetValue(itemIdx, out GameObject currentToolGameObject))
-            currentToolGameObject.SetActive(true);
-    }
-
     private void SetCurrentItemType(int _currentItemIdx)
     {
         Debug.Log(_currentItemIdx);
@@ -194,11 +178,12 @@ public class Player : NetworkBehaviour
         }
     }
 
-    public bool CanUseTool() => !IsUIOpen && CanMove;
-
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_IsUIOpen(bool isOpen) => IsUIOpen = isOpen;
+    public bool CanUseTool()
+    {
+        if (!HasInputAuthority)
+            Debug.Log("UI Open : " + IsUIOpen + "  CanMove : " + CanMove);
+        return !IsUIOpen && CanMove;
+    }
 
     /// <summary>
     /// 현재 들고있는 도구 + 플레이어 공격력
@@ -218,9 +203,15 @@ public class Player : NetworkBehaviour
 
     public void FinishSleep()
     {
-        CurrentBed.FinishSleep();
-        CurrentBed = null;
-        CanMove = true;
+        if (HasStateAuthority)
+        {
+            NetworkObject bedObj = Runner.FindObject(CurrentBedID);
+            Bed bed = bedObj?.GetComponent<Bed>();
+
+            bed.FinishSleep();
+            CurrentBedID = default;
+            CanMove = true;
+        }
     }
 
     public bool CanMoving() => CanMove && IsCursorLocked;
@@ -231,14 +222,12 @@ public class Player : NetworkBehaviour
             RPC_CursorLocked(isLocked);
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_CursorLocked(bool isLocked) => IsCursorLocked = isLocked;
-
-    public void PlayerStop()
+    public void StopPlayer()
     {
         CanMove = false;
         playerController.kcc.Move(Vector3.zero);
     }
+
 
     private void SetCurrentTool(ToolInfo toolInfo = null)
     {
@@ -254,4 +243,26 @@ public class Player : NetworkBehaviour
         CurrentToolName = toolInfo.ToolName;
         CurrentToolAtt = toolInfo.Att;
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    private void RPC_EquipmentTool(int itemIdx = -1)
+    {
+        foreach (var tool in toolDict)
+        {
+            if (tool.Value != null)
+                tool.Value.SetActive(false);
+        }
+
+        if (itemIdx == -1)
+            return;
+
+        if (toolDict.TryGetValue(itemIdx, out GameObject currentToolGameObject))
+            currentToolGameObject.SetActive(true);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_IsUIOpen(bool isOpen) => IsUIOpen = isOpen;
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_CursorLocked(bool isLocked) => IsCursorLocked = isLocked;
 }

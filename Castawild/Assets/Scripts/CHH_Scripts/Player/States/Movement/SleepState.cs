@@ -10,7 +10,7 @@ public class SleepState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.player.PlayerStop();
+        movementManager.player.StopPlayer();
 
         movementManager.CurrentMoveState = MoveAnimationState.Sleep;
         movementManager.currentMoveType = MoveType.Idle;
@@ -18,18 +18,25 @@ public class SleepState : MovementBaseState
         movementManager.player.interactableUI.alpha = 1f;
         movementManager.player.interactableText.text = "Wake Up";
 
-        movementManager.cameraManager.SleepCamera(true);
+        movementManager.CanWakeUp = false;
+
+        if (movementManager.HasInputAuthority)
+            movementManager.cameraManager.SleepCamera(true);
     }
 
     public override void UpdateState()
     {
-        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.interactInput))
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.interactInput) && movementManager.CanWakeUp)
+        {
             movementManager.ChangeState(movementManager.idleState);
+        }
     }
 
     public override void ExitState()
     {
         movementManager.player.interactableUI.alpha = 0f;
-        movementManager.cameraManager.SleepCamera(false);
+
+        if (movementManager.HasInputAuthority)
+            movementManager.cameraManager.SleepCamera(false);
     }
 }
