@@ -11,7 +11,7 @@ public class UseToolState : ToolBaseState
 
     public override void EnterState()
     {
-        toolStateManager.player.CanMove = false;
+        toolStateManager.player.PlayerStop();
         toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
 
         toolStateManager.CurrentToolUseState = ToolAnimationState.FullUse;

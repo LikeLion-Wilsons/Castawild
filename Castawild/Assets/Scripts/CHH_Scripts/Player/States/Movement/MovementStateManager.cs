@@ -7,7 +7,6 @@ public class MovementStateManager : BaseStateManager
 {
     #region Conponent
     [HideInInspector] public ToolStateManager toolStateManager;
-    [HideInInspector] public PlayerController playerController;
     #endregion
 
     #region States

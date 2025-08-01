@@ -16,6 +16,7 @@ public class Player : NetworkBehaviour
     #region Components
     [HideInInspector] public Animator anim;
     [HideInInspector] public Rigidbody rigid;
+    [HideInInspector] public PlayerController playerController;
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public MovementStateManager movementManager;
     [HideInInspector] public ToolStateManager toolStateManager;
@@ -69,6 +70,7 @@ public class Player : NetworkBehaviour
     {
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
+        playerController = GetComponent<PlayerController>();
         inputManager = GetComponent<PlayerInputManager>();
         movementManager = GetComponent<MovementStateManager>();
         toolStateManager = GetComponent<ToolStateManager>();
@@ -210,5 +212,11 @@ public class Player : NetworkBehaviour
     public void RPC_CursorLocked(bool isLocked)
     {
         IsCursorLocked = isLocked;
+    }
+
+    public void PlayerStop()
+    {
+        CanMove = false;
+        playerController.kcc.Move(Vector3.zero);
     }
 }

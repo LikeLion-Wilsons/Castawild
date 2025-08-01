@@ -166,9 +166,8 @@ public class ToolStateManager : BaseStateManager
 
     public void ArmVisibleChanged(bool isVisible)
     {
-        if (HasStateAuthority)
+        if (HasStateAuthority && cameraManager.currentView == ViewType.FirstPerson)
         {
-            Debug.Log(isVisible);
             RPC_ArmVisibleChanged(isVisible);
         }
     }
