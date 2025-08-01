@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5143457990509495179}
   - component: {fileID: 1432222567946644581}
   m_Layer: 5
-  m_Name: E
+  m_Name: X
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -836,7 +836,7 @@ GameObject:
   - component: {fileID: 8929993156395405201}
   - component: {fileID: 5992495127351868379}
   m_Layer: 5
-  m_Name: Text
+  m_Name: Remove
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3449,6 +3449,7 @@ MonoBehaviour:
   playerData: {fileID: 11400000, guid: 643df4f9e15c3f445a30530c009e87cf, type: 2}
   anim: {fileID: 0}
   rigid: {fileID: 0}
+  playerController: {fileID: 0}
   inputManager: {fileID: 0}
   movementManager: {fileID: 0}
   toolStateManager: {fileID: 0}
@@ -3463,10 +3464,14 @@ MonoBehaviour:
   interactableUI: {fileID: 4835231499433151479}
   interactableText: {fileID: 4697920596943624128}
   placeableUI: {fileID: 3262131317510922916}
-  _CurrentBed: {fileID: 0}
+  _CurrentBedID:
+    Raw: 0
   _CanMove: 1
   _IsUIOpen: 0
   _IsCursorLocked: 0
+  _CurrentToolName: 
+  _CurrentToolAtt: 0
+  _CurrentToolID: 0
   inventory: {fileID: 0}
   isAimLocked: 0
   isSpawned: 0
@@ -3512,9 +3517,9 @@ MonoBehaviour:
   inputManager: {fileID: 8225308212403291209}
   cameraManager: {fileID: 0}
   player: {fileID: 0}
+  playerController: {fileID: 0}
   _IsAnimationFinished: 0
   toolStateManager: {fileID: 0}
-  playerController: {fileID: 0}
   currentMoveType: 0
   currentMoveSpeed: 3
   airSpeedMuliplier: 0.7
@@ -3540,6 +3545,7 @@ MonoBehaviour:
   isTriggerSet: 0
   _CurrentMoveState: 0
   _JumpTriggered: 0
+  _CanWakeUp: 0
   _MoveValue: {x: 0, y: 0}
 --- !u!114 &8225308212403291209
 MonoBehaviour:
@@ -3599,6 +3605,7 @@ MonoBehaviour:
   inputManager: {fileID: 0}
   cameraManager: {fileID: 0}
   player: {fileID: 0}
+  playerController: {fileID: 0}
   _IsAnimationFinished: 0
   movementManager: {fileID: 0}
   animTrigger: {fileID: 0}
@@ -3609,7 +3616,6 @@ MonoBehaviour:
   _CanReceiveInput: 0
   _CurrentToolUseState: 0
   _CurrentToolType: 0
-  _IsArmVisible: 0
   isTriggerSet: 0
 --- !u!114 &6363259293620697004
 MonoBehaviour:
@@ -3960,7 +3966,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -475}
+  m_AnchoredPosition: {x: 0, y: -328}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &3262131317510922916
@@ -3971,7 +3977,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7618445089719929074}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0

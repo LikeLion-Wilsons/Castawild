@@ -55,11 +55,9 @@ public sealed class PlayerController : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (GetInput<PlayerNetworkInputData>(out var input))
+        if (GetInput<PlayerNetworkInputData>(out var input) && HasStateAuthority)
         {
-            // 속도 조절
             maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
-            maxSpeed = movementManager.currentMoveSpeed;
 
             movementManager.SetInput(input);
             toolManager.SetInput(input);
@@ -70,9 +68,7 @@ public sealed class PlayerController : NetworkBehaviour
             movementManager.SetPrevInputButton(input.Buttons);
             toolManager.SetPrevInputButton(input.Buttons);
 
-            TestTryOverlap(input);
-
-            if (!player.CanMove && HasStateAuthority)
+            if (!player.CanMove)
             {
                 // 중력만 적용해서 return
                 Vector3 velocity = kcc.RealVelocity;
@@ -82,13 +78,17 @@ public sealed class PlayerController : NetworkBehaviour
                 return;
             }
 
-            movementManager.MoveValue = input.moveValue;
+            TestTryOverlap(input);
 
+            if (!player.CanMove)
+                return;
+
+            movementManager.MoveValue = input.moveValue;
             Move(input.moveDir);
-            Rotate(input);
 
             prevInputButtons = input.Buttons;
         }
+        Rotate(input);
     }
 
     public void Move(Vector3 direction)
@@ -172,7 +172,7 @@ public sealed class PlayerController : NetworkBehaviour
                 {
                     if (interactable.CanInteract())
                     {
-                        player.ChangeCrosshairUI(interactable.interactableType);
+                        player.RPC_InteractUI(interactable.interactableType);
                         currentInteractObject = interactable;
                         break;
                     }
@@ -181,13 +181,12 @@ public sealed class PlayerController : NetworkBehaviour
                 // 다른 오브젝트 
                 else if (_interactResult[i].TryGetComponent<InteractableObject>(out var interactableObject))
                 {
-                    player.interactableUI.alpha = 1f;
+                    player.RPC_InteractUI(interactableObject.interactableType);
                     player.interactableText.text = interactableObject.text;
 
                     // 설치가능한 오브젝트
                     if (interactableObject.isPlaceable)
                     {
-                        player.placeableUI.alpha = 1f;
                         if (interactableObject.CanInteract()
                             && input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
                         {
@@ -205,10 +204,8 @@ public sealed class PlayerController : NetworkBehaviour
         }
         else
         {
-            player.placeableUI.alpha = 0f;
-            player.interactableUI.alpha = 0f;
+            player.RPC_InteractUI();
             currentInteractObject = null;
-            player.ChangeCrosshairUI();
         }
 
         Debug.DrawLine(point1, point2, Color.green, 1f);

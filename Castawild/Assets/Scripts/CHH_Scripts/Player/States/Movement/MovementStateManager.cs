@@ -57,6 +57,7 @@ public class MovementStateManager : BaseStateManager
     #region Network
     [Networked] public MoveAnimationState CurrentMoveState { get; set; }
     [Networked] public bool JumpTriggered { get; set; }
+    [Networked] public bool CanWakeUp { get; set; }
     [Networked] public Vector2 MoveValue { get; set; }
     #endregion
 

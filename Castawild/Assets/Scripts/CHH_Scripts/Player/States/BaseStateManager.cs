@@ -34,11 +34,4 @@ public class BaseStateManager : NetworkBehaviour
 
     public void SetInput(PlayerNetworkInputData inputData) => input = inputData;
     public void SetPrevInputButton(NetworkButtons _prevInputButtons) => prevInputButtons = _prevInputButtons;
-
-    //[Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    //public void RPC_SetAnimationFinished(bool isFinished)
-    //{
-    //    IsAnimationFinished = isFinished;
-    //    Debug.Log($"애니메이션 완료 상태: {isFinished}");
-    //}
 }

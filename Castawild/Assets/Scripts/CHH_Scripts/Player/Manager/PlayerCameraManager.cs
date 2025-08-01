@@ -186,6 +186,7 @@ public class PlayerCameraManager : MonoBehaviour
         thirdPersonCam.GetComponent<CinemachineOrbitalFollow>().VerticalAxis.Value = 22f;
     }
 
+    // 카메라 상하각도 조절
     private void UpdateCameraPitch()
     {
         if (currentView == ViewType.ThirdPerson || !player.IsCursorLocked)
