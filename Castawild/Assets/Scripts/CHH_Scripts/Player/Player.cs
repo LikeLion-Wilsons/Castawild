@@ -31,7 +31,6 @@ public class Player : NetworkBehaviour
     #region Tool
     [SerializeField] private Transform tools;
     private Dictionary<int, GameObject> toolDict = new Dictionary<int, GameObject>();
-    private GameObject currentEquippedTool = null;
     #endregion
 
     #region Interact
@@ -48,6 +47,11 @@ public class Player : NetworkBehaviour
     [Networked] public bool CanMove { get; set; } = true;
     [Networked] public bool IsUIOpen { get; set; }
     [Networked] public bool IsCursorLocked { get; set; }
+
+    [Networked] public int EquippedToolIndex { get; set; }
+    [Networked] public string CurrentToolName { get; set; }
+    [Networked] public int CurrentToolAtt { get; set; }
+    [Networked] public int CurrentToolID { get; set; }
 
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isAimLocked = false;
@@ -82,7 +86,7 @@ public class Player : NetworkBehaviour
     {
         foreach (Transform tool in tools)
         {
-            ItemInfo itemInfo = tool.GetComponent<ItemInfo>();
+            ToolInfo itemInfo = tool.GetComponent<ToolInfo>();
             if (itemInfo != null)
             {
                 if (!toolDict.ContainsKey(itemInfo.ItemID))
@@ -104,33 +108,53 @@ public class Player : NetworkBehaviour
         // 도구일 경우 장착
         if (currentItemType == ItemType.Tool)
         {
-            if (currentEquippedTool != null)
+            if (toolDict.TryGetValue(itemIdx, out GameObject currentToolGameObject))
             {
-                currentEquippedTool.SetActive(false);
-                currentEquippedTool = null;
-            }
-
-            if (toolDict.TryGetValue(itemIdx, out GameObject newToolGameObject))
-            {
-                newToolGameObject.SetActive(true);
-                currentEquippedTool = newToolGameObject;
+                if (HasInputAuthority)
+                    RPC_EquipmentTool(itemIdx);
+                SetCurrentTool(currentToolGameObject.GetComponent<ToolInfo>());
             }
             else
                 Debug.LogWarning($"{itemIdx} 인덱스 없음");
+        }
+        else if (currentItemType != ItemType.Tool)
+        {
+            SetCurrentTool();
+            if (HasInputAuthority)
+                RPC_EquipmentTool();
         }
 
         toolStateManager.ChangeSelectedItem(itemIdx);
     }
 
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    private void RPC_EquipmentTool(int itemIdx = -1)
+    {
+        EquippedToolIndex = itemIdx;
+        UpdateEquippedTool();
+    }
+
+    private void UpdateEquippedTool()
+    {
+        foreach (var kvp in toolDict)
+        {
+            if (kvp.Value != null)
+                kvp.Value.SetActive(false);
+        }
+
+        if (toolDict.TryGetValue(EquippedToolIndex, out GameObject currentToolGameObject))
+            currentToolGameObject.SetActive(true);
+    }
+
     private void SetCurrentItemType(int _currentItemIdx)
     {
-        if (_currentItemIdx < 50)
-            currentItemType = ItemType.Drink;
-        else if (_currentItemIdx < 100)
-            currentItemType = ItemType.Food;
-        else if (_currentItemIdx >= 300 && _currentItemIdx < 400)
-            currentItemType = ItemType.Placeable;
-        else if (_currentItemIdx >= 400)
+        //if (_currentItemIdx < 50)
+        //    currentItemType = ItemType.Drink;
+        //else if (_currentItemIdx < 100)
+        //    currentItemType = ItemType.Food;
+        //else if (_currentItemIdx >= 300 && _currentItemIdx < 400)
+        //    currentItemType = ItemType.Placeable;
+        if (_currentItemIdx >= 400)
             currentItemType = ItemType.Tool;
     }
 
@@ -139,11 +163,9 @@ public class Player : NetworkBehaviour
     /// </summary>
     public void RemoveSelectedItem()
     {
-        if (currentEquippedTool != null)
-        {
-            currentEquippedTool.SetActive(false);
-            currentEquippedTool = null;
-        }
+        RPC_EquipmentTool();
+        SetCurrentTool();
+
         toolStateManager.ChangeSelectedItem();
     }
 
@@ -167,24 +189,19 @@ public class Player : NetworkBehaviour
         }
     }
 
-    public bool CanUseTool()
-    {
-        return !IsUIOpen && CanMove;
-    }
+    public bool CanUseTool() => !IsUIOpen && CanMove;
 
     /// <summary>
     /// 현재 들고있는 도구 + 플레이어 공격력
     /// </summary>
     public int GetToolAtt(string toolName)
     {
-        if (currentEquippedTool == null)
+        if (CurrentToolName == string.Empty)
             return playerData.attack;
 
-        ItemInfo itemInfo = currentEquippedTool.GetComponent<ItemInfo>();
-
-        if (itemInfo.ToolName.Contains(toolName))
-            return playerData.attack + itemInfo.Att;
-        else if (itemInfo.ItemID > 400)
+        if (CurrentToolName.Contains(toolName))
+            return playerData.attack + CurrentToolAtt;
+        else if (CurrentToolID > 400)
             return playerData.attack + 2;
         else
             return playerData.attack;
@@ -197,10 +214,7 @@ public class Player : NetworkBehaviour
         CanMove = true;
     }
 
-    public bool CanMoving()
-    {
-        return CanMove && IsCursorLocked;
-    }
+    public bool CanMoving() => CanMove && IsCursorLocked;
 
     public void SetCursorLocked(bool isLocked)
     {
@@ -209,14 +223,26 @@ public class Player : NetworkBehaviour
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_CursorLocked(bool isLocked)
-    {
-        IsCursorLocked = isLocked;
-    }
+    public void RPC_CursorLocked(bool isLocked) => IsCursorLocked = isLocked;
 
     public void PlayerStop()
     {
         CanMove = false;
         playerController.kcc.Move(Vector3.zero);
+    }
+
+    private void SetCurrentTool(ToolInfo toolInfo = null)
+    {
+        if (toolInfo == null)
+        {
+            CurrentToolID = -1;
+            CurrentToolName = string.Empty;
+            CurrentToolAtt = 0;
+            return;
+        }
+
+        CurrentToolID = toolInfo.ItemID;
+        CurrentToolName = toolInfo.ToolName;
+        CurrentToolAtt = toolInfo.Att;
     }
 }
