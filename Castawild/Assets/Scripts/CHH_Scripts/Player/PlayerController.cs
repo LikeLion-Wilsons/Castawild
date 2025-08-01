@@ -58,8 +58,6 @@ public sealed class PlayerController : NetworkBehaviour
         if (GetInput<PlayerNetworkInputData>(out var input))
         {
             // 속도 조절
-            if (!HasInputAuthority)
-                Debug.Log(player.CanMoving());
             maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
             maxSpeed = movementManager.currentMoveSpeed;
 

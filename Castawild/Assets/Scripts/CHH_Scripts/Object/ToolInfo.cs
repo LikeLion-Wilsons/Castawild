@@ -6,7 +6,7 @@ using UnityEngine;
 // 403 : 돌 도끼
 // 404 : 돌 작살
 // 405 : 돌 곡괭이
-public class ItemInfo : MonoBehaviour
+public class ToolInfo : MonoBehaviour
 {
     [SerializeField] private string toolName;
     [SerializeField] private int itemID;
