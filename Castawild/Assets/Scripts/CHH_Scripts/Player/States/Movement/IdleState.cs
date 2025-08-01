@@ -1,4 +1,6 @@
 
+using UnityEngine;
+
 public class IdleState : MovementBaseState
 {
     public IdleState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
@@ -8,15 +10,14 @@ public class IdleState : MovementBaseState
 
     public override void EnterState()
     {
-        if (movementManager.networkManager.isSpawned)
-            movementManager.networkManager.CurrentMoveState = MoveAnimationState.Idle;
-        movementManager.player.currentMoveType = MoveType.Idle;
+        movementManager.CurrentMoveState = MoveAnimationState.Idle;
+        movementManager.currentMoveType = MoveType.Idle;
     }
 
     public override void UpdateState()
     {
         // Move
-        if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput) && movementManager.networkManager.CanMove)
+        if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput) && movementManager.player.CanMoving())
         {
             if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.toolStateManager.currentState != movementManager.toolStateManager.aimState)
                 movementManager.ChangeState(movementManager.runState);

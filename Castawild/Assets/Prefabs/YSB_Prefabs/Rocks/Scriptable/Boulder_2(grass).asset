@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 150fa38f6982c2144ab944828f0dcdc3, type: 3}
+  m_Name: Boulder_2(grass)
+  m_EditorClassIdentifier: 
+  prefabReference:
+    m_AssetGUID: 9b2deb785f7041c4f84dd9276745a09b
+    m_SubObjectName: 
+    m_SubObjectGUID: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  maxHealth: 100
+  dropItemID: 0
+  dropAmount: 1
+  destroySFX: 
+  destroyVFX: 

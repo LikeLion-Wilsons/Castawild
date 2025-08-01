@@ -332,5 +332,9 @@ public class Item_Panel :
             inventoryData.RPC_SwapItems(indexA, indexB);
         }
     }
+    public bool IsEmpty()
+    {
+        return item.itemID == -1 || item.count <= 0;
+    }
 }
 

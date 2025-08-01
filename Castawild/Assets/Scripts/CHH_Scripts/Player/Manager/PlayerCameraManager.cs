@@ -1,7 +1,5 @@
-using Fusion;
 using System.Collections;
 using Unity.Cinemachine;
-//using UnityEditor.EditorTools;
 using UnityEngine;
 
 public enum ViewType { None, FirstPerson, ThirdPerson }
@@ -9,31 +7,35 @@ public enum ViewType { None, FirstPerson, ThirdPerson }
 public class PlayerCameraManager : MonoBehaviour
 {
     #region Components
+    private PlayerController playerController;
     private PlayerInputManager inputManager;
     private CinemachineOrbitalFollow orbital;
     private CinemachineInputAxisController inputAxisController;
-    private PlayerNetworkManager networkManager;
     private ToolStateManager toolManager;
-    private CwPlayer player;
+    private Player player;
     #endregion
 
     public bool isAiming = false;
     public ViewType currentView = ViewType.FirstPerson;
 
-    #region Third Person
+    #region First Person
     [Header("1인칭")]
     public CinemachineCamera firstPersonCam;
     [SerializeField] private Transform firstPersonTarget;
 
     [SerializeField] private GameObject[] playerMeshes;
+    [SerializeField] private GameObject playerHead;
 
     public float sensitivity = 1.5f;
     [SerializeField] private float maxXRotation = 80f;
     [SerializeField] private float minXRotation = -80f;
 
     private float pitch = 0f;
+    private float yaw = 0f;
     public float minPitch = -80f;
     public float maxPitch = 80f;
+    [SerializeField] private float minYaw = -90f;
+    [SerializeField] private float maxYaw = 90f;
     #endregion
 
     #region Third Person
@@ -86,12 +88,12 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void InitComponents()
     {
-        player = GetComponentInParent<CwPlayer>();
+        player = GetComponentInParent<Player>();
+        playerController = GetComponentInParent<PlayerController>();
         inputManager = GetComponentInParent<PlayerInputManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
         orbital = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
         inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
-        networkManager = GetComponentInParent<PlayerNetworkManager>();
         Camera.main.GetComponent<CinemachineBrain>().DefaultBlend = new(CinemachineBlendDefinition.Styles.Cut, 0f);
     }
 
@@ -113,14 +115,18 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void Update()
     {
+        if (!player.HasInputAuthority || !player || !player.isSpawned)
+            return;
+
         HandleViewChange();
         UpdateCameraPitch();
-        ZoomCamera();
+        //ZoomCamera();
     }
 
     private void HandleViewChange()
     {
-        if (inputManager.viewChangeAction.WasPressedThisFrame() && toolManager.currentState == toolManager.idleState)
+        if (inputManager.viewChangeAction.WasPressedThisFrame()
+            && (toolManager.currentState == toolManager.idleState || toolManager.currentState == toolManager.carryState))
         {
             ViewChange(currentView == ViewType.FirstPerson ? ViewType.ThirdPerson : ViewType.FirstPerson);
         }
@@ -136,7 +142,7 @@ public class PlayerCameraManager : MonoBehaviour
     {
         if (viewType == ViewType.FirstPerson)
         {
-            if (networkManager.HasInputAuthority)
+            if (playerController.HasInputAuthority)
             {
                 currentView = ViewType.FirstPerson;
                 foreach (var mesh in playerMeshes)
@@ -150,7 +156,7 @@ public class PlayerCameraManager : MonoBehaviour
 
         else if (viewType == ViewType.ThirdPerson)
         {
-            if (networkManager.HasInputAuthority)
+            if (playerController.HasInputAuthority)
             {
                 currentView = ViewType.ThirdPerson;
 
@@ -182,13 +188,22 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void UpdateCameraPitch()
     {
-        if (currentView == ViewType.ThirdPerson || !inputManager.isCursorLocked)
+        if (currentView == ViewType.ThirdPerson || !player.IsCursorLocked)
             return;
 
         pitch -= inputManager.lookInput.y * sensitivity;
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
-        firstPersonCam.transform.localEulerAngles = new Vector3(pitch, 0f, 0f);
+        // 자고있을 때 좌우회전 추가
+        if (!player.CanMoving())
+        {
+            yaw += inputManager.lookInput.x * sensitivity;
+            yaw = Mathf.Clamp(yaw, minYaw, maxYaw);
+        }
+        else if (player.CanMoving() && yaw != 0f)
+            yaw = 0f;
+
+        firstPersonCam.transform.localEulerAngles = new Vector3(pitch, yaw, 0f);
     }
 
     private void ZoomCamera()
@@ -244,5 +259,19 @@ public class PlayerCameraManager : MonoBehaviour
         }
 
         thirdPersonTarget.localPosition = targetPos;
+    }
+
+    public void SleepCamera(bool isSleep)
+    {
+        if (isSleep)
+        {
+            firstPersonCam.Follow = playerHead.transform;
+            firstPersonCam.LookAt = playerHead.transform;
+        }
+        else
+        {
+            firstPersonCam.Follow = firstPersonTarget;
+            firstPersonCam.LookAt = firstPersonTarget;
+        }
     }
 }

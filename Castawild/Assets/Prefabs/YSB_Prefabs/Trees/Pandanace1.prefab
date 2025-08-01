@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3545051963789050057}
   - component: {fileID: 1828118689739657163}
   - component: {fileID: 1177490955347195842}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Pandanace1_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 3675069426824139660}
   - component: {fileID: 3233372015164172665}
   - component: {fileID: 5115383963912571388}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Pandanace1_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -184,11 +184,11 @@ GameObject:
   m_Component:
   - component: {fileID: 7484381453325555763}
   - component: {fileID: 4960077781854839542}
-  - component: {fileID: 1882720880389078673}
   - component: {fileID: 6089377397551816743}
   - component: {fileID: 4926783167410525722}
   - component: {fileID: -2652594294217927794}
-  m_Layer: 0
+  - component: {fileID: 2542347673400954198}
+  m_Layer: 8
   m_Name: Pandanace1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -242,18 +242,6 @@ LODGroup:
     renderers:
     - renderer: {fileID: 8484708634755946196}
   m_Enabled: 1
---- !u!114 &1882720880389078673
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1778812408909486491}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a6f672b1d9842841870274fa0b90c9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &6089377397551816743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -266,7 +254,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 971352eea68afe14e965ec568800bb03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _TreeId: 0
+  interactableType: 1
   visualRoot: {fileID: 8683473795628248164}
 --- !u!114 &4926783167410525722
 MonoBehaviour:
@@ -285,7 +273,6 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 1882720880389078673}
   - {fileID: 6089377397551816743}
   - {fileID: -2652594294217927794}
   ForceRemoteRenderTimeframe: 0
@@ -306,6 +293,29 @@ MonoBehaviour:
   SyncParent: 0
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 0
+--- !u!136 &2542347673400954198
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1778812408909486491}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.4670816
+  m_Height: 5.6670933
+  m_Direction: 1
+  m_Center: {x: 0.03027767, y: 2.4524088, z: 0.025161743}
 --- !u!1 &7163280511770030046
 GameObject:
   m_ObjectHideFlags: 0
@@ -317,7 +327,7 @@ GameObject:
   - component: {fileID: 3333744634041432884}
   - component: {fileID: 4650203634195511617}
   - component: {fileID: 8484708634755946196}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Pandanace1_LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -403,7 +413,7 @@ GameObject:
   - component: {fileID: 1002873698224734280}
   - component: {fileID: 8938392109471867342}
   - component: {fileID: 5686717525595834400}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Pandanace1_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -488,8 +498,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7084899947030106256}
-  - component: {fileID: 2257344242897639636}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: VisualRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -515,26 +524,3 @@ Transform:
   - {fileID: 3333744634041432884}
   m_Father: {fileID: 7484381453325555763}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &2257344242897639636
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8683473795628248164}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.4670816
-  m_Height: 5.6670933
-  m_Direction: 1
-  m_Center: {x: 0.03027767, y: 2.4524088, z: 0.025161743}

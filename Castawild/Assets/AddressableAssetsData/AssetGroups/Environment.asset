@@ -1,0 +1,173 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Environment
+  m_EditorClassIdentifier: 
+  m_GroupName: Environment
+  m_GUID: 6f0de8fb4fdfd2245ad5be2b8342cb73
+  m_SerializeEntries:
+  - m_GUID: 0500c9cc85014f5f9807902c10469a4e
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Coconut6.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0d0bc282e15ea3044b1df23fc727fe58
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_1(grass).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0efe0228db997b244acb450f44b9c492
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_1(sand).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 123030b58ee31e248aeaf1501ca8b4c8
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_7(grass).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 19216f88adc74159be81e2dbbe0eea71
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Coconut3.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1c7d78b8e2214f74f92a3f7122dd44f4
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_8(sand).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e9b16296b36aa64a8978632471574ab
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_8(grass).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 24dbc355980beef4f992a133117e0942
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_7(sand).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2f3e9539bda247f49c4d64b142c4bbae
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Coconut4.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3116fe56d90a4e4bb3c63be2c7ca6068
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Coconut1.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3fae6382d6462084fa13b8e1c06b6d44
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_6(sand).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 552365f4070b4fc8aac383be43a197ed
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Coconut5.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5a6a743e93c13e446abdda01eb4dcb1f
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_5(sand).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 74e6c38884f728e45b4d9cb8d73d8c5b
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_4(sand).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7aaac59005ffdc04bbe1e6abc5525fd4
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_3(grass).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a7d7fcdbb174de18edc0b968e8dab51
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Pandanace1.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b2deb785f7041c4f84dd9276745a09b
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_2(grass).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a1681f2c6482435aa351534ad2219738
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Pandanace2.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae3148562bb2358449a19568d09bb70c
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_6(grass).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b37217f3db029374699eb3659d0af18e
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_4(grass).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c38822ca7c6f73241975bbeff6049de4
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_2(sand).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d6de07b6226a44d49af4fcaa7c722418
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Pandanace3.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: da460a2c708aa694dbb4dbad5a95ec7f
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_3(sand).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f6b432ab29364fb0a0b0ab7a44d1e899
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Coconut2.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f91710fdf753731478908a2b78a04d4f
+    m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_5(grass).prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: b4ac3e4228df9544f927583c15ed8e13, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: ab3ed5e2820a6cd4aaa07831ae5c4435, type: 2}
+    - {fileID: 11400000, guid: 801aef06831b4254aae9c5c5f363ddbd, type: 2}
