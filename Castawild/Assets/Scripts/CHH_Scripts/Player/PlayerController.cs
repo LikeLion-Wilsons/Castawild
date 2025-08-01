@@ -172,7 +172,7 @@ public sealed class PlayerController : NetworkBehaviour
                 {
                     if (interactable.CanInteract())
                     {
-                        player.ChangeCrosshairUI(interactable.interactableType);
+                        player.RPC_InteractUI(interactable.interactableType);
                         currentInteractObject = interactable;
                         break;
                     }
@@ -181,13 +181,12 @@ public sealed class PlayerController : NetworkBehaviour
                 // 다른 오브젝트 
                 else if (_interactResult[i].TryGetComponent<InteractableObject>(out var interactableObject))
                 {
-                    player.interactableUI.alpha = 1f;
+                    player.RPC_InteractUI(interactableObject.interactableType);
                     player.interactableText.text = interactableObject.text;
 
                     // 설치가능한 오브젝트
                     if (interactableObject.isPlaceable)
                     {
-                        player.placeableUI.alpha = 1f;
                         if (interactableObject.CanInteract()
                             && input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
                         {
@@ -205,10 +204,8 @@ public sealed class PlayerController : NetworkBehaviour
         }
         else
         {
-            player.placeableUI.alpha = 0f;
-            player.interactableUI.alpha = 0f;
+            player.RPC_InteractUI();
             currentInteractObject = null;
-            player.ChangeCrosshairUI();
         }
 
         Debug.DrawLine(point1, point2, Color.green, 1f);

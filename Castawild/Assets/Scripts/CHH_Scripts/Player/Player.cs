@@ -129,7 +129,6 @@ public class Player : NetworkBehaviour
 
     private void SetCurrentItemType(int _currentItemIdx)
     {
-        Debug.Log(_currentItemIdx);
         // 50 ~ 59 : Drink
         if (_currentItemIdx >= 50 && _currentItemIdx < 60)
             currentItemType = ItemType.Drink;
@@ -228,7 +227,6 @@ public class Player : NetworkBehaviour
         playerController.kcc.Move(Vector3.zero);
     }
 
-
     private void SetCurrentTool(ToolInfo toolInfo = null)
     {
         if (toolInfo == null)
@@ -265,4 +263,25 @@ public class Player : NetworkBehaviour
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_CursorLocked(bool isLocked) => IsCursorLocked = isLocked;
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_InteractUI(InteractableType interactableType = InteractableType.None)
+    {
+        // 나무/돌은 조준점만
+        if (interactableType == InteractableType.None || interactableType == InteractableType.Tree || interactableType == InteractableType.Stone)
+        {
+            placeableUI.alpha = 0f;
+            interactableUI.alpha = 0f;
+            ChangeCrosshairUI(interactableType);
+            return;
+        }
+
+        // Placeable
+        else if (interactableType != InteractableType.Item)
+            placeableUI.alpha = 1f;
+
+        interactableUI.alpha = 1f;
+
+        ChangeCrosshairUI(interactableType);
+    }
 }

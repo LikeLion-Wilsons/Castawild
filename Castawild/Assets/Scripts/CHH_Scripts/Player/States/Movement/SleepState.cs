@@ -15,7 +15,8 @@ public class SleepState : MovementBaseState
         movementManager.CurrentMoveState = MoveAnimationState.Sleep;
         movementManager.currentMoveType = MoveType.Idle;
 
-        movementManager.player.interactableUI.alpha = 1f;
+        if (movementManager.HasInputAuthority)
+            movementManager.player.interactableUI.alpha = 1f;
         movementManager.player.interactableText.text = "Wake Up";
 
         movementManager.CanWakeUp = false;
@@ -34,7 +35,8 @@ public class SleepState : MovementBaseState
 
     public override void ExitState()
     {
-        movementManager.player.interactableUI.alpha = 0f;
+        if (movementManager.HasInputAuthority)
+            movementManager.player.interactableUI.alpha = 0f;
 
         if (movementManager.HasInputAuthority)
             movementManager.cameraManager.SleepCamera(false);
