@@ -18,7 +18,7 @@ namespace Test
 
             var playerObj = Runner.Spawn(PlayerPrefab, spawnPosition, Quaternion.identity, playerRef, (runner, o) =>
             {
-                o.GetComponent<Player>().Init();
+                //o.GetComponent<Player>().Init();
             });
             Runner.SetPlayerObject(playerRef, playerObj);
         }

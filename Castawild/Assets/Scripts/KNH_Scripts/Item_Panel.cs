@@ -42,6 +42,15 @@ public class Item_Panel :
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
         uiInventory = inventory.GetComponent<UIInventory>();
+        Canvas_Holder.OnUIActive+= OnUIActive;
+    }
+
+    void OnUIActive(bool active)
+    {
+        if (active == false && inventoryData.canvasHolder.isDragging)
+        {
+            ForceCancelDrag();
+        }
     }
     public void BindToInventoryData(InventoryDataManager data)
     {
@@ -83,7 +92,6 @@ public class Item_Panel :
             rectTransform.anchoredPosition = originalAnchoredPos;
         }
         isRightMouseDrag = false;
-        inventoryData.canvasHolder.isDragging = false;
         canvasGroup.blocksRaycasts = true;
         SetItemSlot();
         uiInventory.SetItemList();
