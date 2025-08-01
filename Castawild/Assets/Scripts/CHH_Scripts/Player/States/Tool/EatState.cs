@@ -28,5 +28,6 @@ public class EatState : ToolBaseState
     {
         base.ExitState();
         toolStateManager.player.CanMove = true;
+        toolStateManager.isTriggerSet = false;
     }
 }
