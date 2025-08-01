@@ -13,18 +13,17 @@ MonoBehaviour:
   m_Name: Rabbit Data
   m_EditorClassIdentifier: 
   characterName: Rabbit
-  maxHp: 0
-  armor: 0
-  attack: 0
-  moveSpeed: 0
-  age: 0
-  size: 0
-  weight: 0
-  detectionRadius: 0
-  fleeThreshold: 0
-  wanderInterval: 0
-  attackRange: 0
-  attackCooldown: 0
-  isAggressive: 0
-  isFleeing: 0
-  canBeHarvested: 0
+  maxHp: 10
+  currentHp: 10
+  armor: 1
+  attack: 1
+  moveSpeed: 1
+  maxDetectionRadius: 10
+  minDetectionRadius: 5
+  attackRange: 1
+  attackCooldown: 1
+  canBeHarvested: 1
+  alertTime: 2
+  idleRadius: 10
+  escapeRadius: 20
+  escapeSpeed: 5

@@ -3,19 +3,19 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "AnimalData", menuName = "ScriptableObjects/AnimalData", order = 3)]
 public class AnimalData : CharacterData
 {
-    public float age;               // ³ªÀÌ (ÃßÈÄ °¡Ãà ½Ã½ºÅÛ »ı±â¸é È°¿ë°¡´É¼º ÀÖÀ½
-    public float size;              // Å©±â (ºÎ»ê¹° »ı¼º ½Ã È°¿ë °¡´É¼º ÀÖÀ½)
-    public float weight;            // ¹«°Ô (ºÎ»ê¹° »ı¼º ½Ã È°¿ë °¡´É¼º ÀÖÀ½)
-    public float detectionRadius;    // °¨Áö °Å¸®
-    public float fleeThreshold;      // Ã¼·ÂÀÌ ¸î % ÀÌÇÏÀÏ ¶§ µµ¸Á?
-    public float wanderInterval;     // À¯ÈŞ »óÅÂ ÀÌµ¿ ÁÖ±â 
-    public float attackRange;        // °ø°İ ¹üÀ§
-    public float attackCooldown;     // °ø°İ ÄğÅ¸ÀÓ 
-    public bool isAggressive;        // ¼±°ø ¿©ºÎ
-    public bool isFleeing;           // µµ¸Á ¿©ºÎ
-    public bool canBeHarvested;     // Á×Àº ÈÄ ÇØÃ¼ °¡´É ¿©ºÎ
     public enum SpawnType
-    { 
+    {
         beach, forest, river, mountain
     }
+
+    public float maxDetectionRadius;    // ìµœëŒ€ ê°ì§€ ê±°ë¦¬
+    public float minDetectionRadius;    // ìµœì†Œ ê°ì§€ ê±°ë¦¬
+    public float attackRange;        // ê³µê²© ë²”ìœ„
+    public float attackCooldown;     // ê³µê²© ì¿¨íƒ€ì„ 
+    public bool canBeHarvested;     // ì£½ì€ í›„ í•´ì²´ ê°€ëŠ¥ ì—¬ë¶€
+    public float alertTime;               // ê²½ê³„ ì‹œê°„ 
+    public float idleRadius;      // Idle ì´ë™ ë°˜ê²½ 
+    public float escapeRadius;      // ë„ë§ ì´ë™ ë°˜ê²½  
+    public float escapeSpeed;      // ë„ë§ ì†ë„
+    public SpawnType spawnType;
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
- 
+using UnityEngine.AI;
+
 /// <summary>
 /// 플레이어의 상태를 나타내는 클래스 
 /// </summary>
@@ -8,15 +9,11 @@ public class AnimalState
     #region Components // Animal의 인스펙터에 있는 컴포넌트들
     protected AnimalStateMachine stateMachine;
     protected AnimalAnim animalAnim; 
-    protected CwAnimal animalObject;    
-    protected Rigidbody2D rb;
+    protected CwAnimal animalObject;     
     #endregion
 
     #region Variables // 상태를 나타내는 변수들
-    private string animBoolName;
-    protected float xInput;
-    protected float yInput;   
-
+    private string animBoolName;  
     protected float stateTimer;
     protected bool triggerCalled;
     #endregion  
@@ -27,19 +24,16 @@ public class AnimalState
         this.stateMachine = _stateMachine;
         this.animalObject = _animalObject;
         this.animBoolName = _animBoolName;
-    } 
+    }  
 
     public virtual void Enter()
     {
-        animalAnim.anim.SetBool(animBoolName, true);
-        rb = animalAnim.rb;
+        animalAnim.anim.SetBool(animBoolName, true); 
         triggerCalled = false; 
     }
 
     public virtual void Update()
-    {
-        //stateTimer -= Time.deltaTime; 
-        animalAnim.anim.SetFloat("yVelocity", rb.linearVelocityY); 
+    { 
     }
 
     public virtual void Exit()
@@ -54,6 +48,5 @@ public class AnimalState
     {
         triggerCalled = true;
     }
-
 
 }

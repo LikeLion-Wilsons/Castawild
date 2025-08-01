@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.AI;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using static AnimalData;
 
@@ -8,28 +9,119 @@ using static AnimalData;
 /// </summary>
 public class CwAnimal : CwCharacter
 {
-    // Animal 전용 필드 추가
-    // 추후 선공몹 비선공몹으로 다시 나눌 예정
+    // Animal 전용 필드 추가 
     #region Animal Info  
     [Header("Animal Info")]
-    [SerializeField] private float age;               // 나이 (추후 가축 시스템 생기면 활용가능성 있음
-    [SerializeField] private float size;              // 크기 (부산물 생성 시 활용 가능성 있음)
-    [SerializeField] private float weight;            // 무게 (부산물 생성 시 활용 가능성 있음)
-    [SerializeField] public float detectionRadius;    // 감지 거리
-    [SerializeField] public float fleeThreshold;      // 체력이 몇 % 이하일 때 도망?
-    [SerializeField] public float wanderInterval;     // 유휴 상태 이동 주기 
-    [SerializeField] public float attackRange;        // 공격 범위
-    [SerializeField] public float attackCooldown;     // 공격 쿨타임 
-    [SerializeField] public SpawnType spawnType;      // 스폰 타입 (비치, 숲, 강, 산 등)
-    [SerializeField] public bool isAggressive;        // 선공 여부
-    [SerializeField] public bool isFleeing;           // 도망 여부
-    [SerializeField] public bool canBeHarvested;     // 죽은 후 해체 가능 여부 
-    #endregion 
+    [SerializeField] protected SpawnType spawnType;
+    [SerializeField] protected float maxDetectionRadius;
+    [SerializeField] protected float minDetectionRadius;
+    [SerializeField] protected float attackRange;
+    [SerializeField] protected float attackCooldown;
+    [SerializeField] protected bool canBeHarvested;
+    [SerializeField] protected float alertTime;
+    [SerializeField] protected float idleRadius;
+    [SerializeField] protected float escapeRadius;
+    [SerializeField] protected float escapeSpeed;
+    [SerializeField] protected LayerMask playerLayer;
+    [SerializeField] protected LayerMask obstacleLayer;
 
-    protected override void CharacterInitialize<T>(T data)  
+    #endregion
+
+    #region// Setters and Getters
+    public SpawnType SpawnType
     {
-        base.CharacterInitialize<T>(data);
-        //Animal 전용 필드 추가 
+        get => spawnType;
+        set => spawnType = value;
+    }
+
+    public float MaxDetectionRadius
+    {
+        get => maxDetectionRadius;
+        set => maxDetectionRadius = value;
+    }
+
+    public float MinDetectionRadius
+    {
+        get => minDetectionRadius;
+        set => minDetectionRadius = value;
+    }
+
+    public float AttackRange
+    {
+        get => attackRange;
+        set => attackRange = value;
+    }
+
+    public float AttackCooldown
+    {
+        get => attackCooldown;
+        set => attackCooldown = value;
+    }
+
+    public bool CanBeHarvested
+    {
+        get => canBeHarvested;
+        set => canBeHarvested = value;
+    }
+
+    public float AlertTime
+    {
+        get => alertTime;
+        set => alertTime = value;
+    }
+
+    public float IdleRadius
+    {
+        get => idleRadius;
+        set => idleRadius = value;
+    }
+
+    public float EscapeRadius
+    {
+        get => escapeRadius;
+        set => escapeRadius = value;
+    }
+
+    public float EscapeSpeed
+    {
+        get => escapeSpeed;
+        set => escapeSpeed = value;
+    }
+
+    public LayerMask PlayerLayer
+    {
+        get => playerLayer;
+        set => playerLayer = value;
+    }
+
+    public LayerMask ObstacleLayer
+    {
+        get => obstacleLayer;
+        set => obstacleLayer = value;
+    }
+    #endregion
+
+    public override void Initialize(CharacterData baseData)
+    {
+        base.Initialize(baseData);
+
+        if (baseData is AnimalData data)
+        {
+            SpawnType = data.spawnType;
+            MaxDetectionRadius = data.maxDetectionRadius;
+            MinDetectionRadius = data.minDetectionRadius;
+            AttackRange = data.attackRange;
+            AttackCooldown = data.attackCooldown;
+            CanBeHarvested = data.canBeHarvested;
+            AlertTime = data.alertTime;
+            IdleRadius = data.idleRadius;
+            EscapeRadius = data.escapeRadius;
+            EscapeSpeed = data.escapeSpeed; 
+        }
+        else
+        {
+            Debug.LogWarning($"잘못된 데이터 타입: {baseData.GetType().Name}, AnimalData 필요");
+        }
     }
 
     protected override void Awake()
@@ -46,7 +138,7 @@ public class CwAnimal : CwCharacter
 
         if (handle.Status == AsyncOperationStatus.Succeeded)
         {
-            CharacterInitialize(handle.Result);
+            Initialize(handle.Result);
         }
         else
         {
@@ -60,13 +152,61 @@ public class CwAnimal : CwCharacter
     }
 
     protected override void Die()
-    {
-
+    { 
     }
 
     protected override void StatusEffect()
+    { 
+    }
+    /// <summary>    
+    /// [동물 공통 기능] 플레이어 감지 
+    /// 플레이어가 감지되면 거리를 반환하고, 감지되지 않으면 null 반환
+    /// </summary>
+    public virtual float? IsPlayerDetection()
     {
+        Collider[] targets = Physics.OverlapSphere(transform.position, maxDetectionRadius, playerLayer);
 
+        foreach (Collider target in targets)
+        {
+            Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
+            float distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
+             
+            if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleLayer))
+            {
+                return distanceToTarget;
+            }
+        } 
+        return null;
+    }
+
+    /// <summary>
+    /// 감지 범위 표시
+    /// </summary>
+    private void OnDrawGizmosSelected()
+    {
+        // [탐지범위] Gizmos 
+        Gizmos.color = new Color(1f, 0f, 0f, 0.3f);
+        Gizmos.DrawSphere(transform.position, maxDetectionRadius);
+         
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, maxDetectionRadius);
+    }
+
+    /// <summary>
+    /// [동물 공통 기능] 랜덤 위치 이동기능
+    /// </summary>
+    public virtual Vector3 RandomNavSphere(Vector3 origin, float minDist, float maxDist, int layermask)
+    {
+        Vector3 randDirection = Random.insideUnitSphere.normalized;
+        float randomDistance = Random.Range(minDist, maxDist);
+        randDirection *= randomDistance;
+        randDirection += origin;
+        NavMeshHit navHit;
+
+        if (NavMesh.SamplePosition(randDirection, out navHit, maxDist, layermask))
+            return navHit.position;
+        else
+            return origin; // 실패 시 제자리
     }
 }
 

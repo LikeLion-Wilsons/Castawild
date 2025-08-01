@@ -11,12 +11,12 @@ public abstract class CwCharacter : MonoBehaviour
 
     #region Character Info  
     [Header("Character Info")]
-    [SerializeField] private string characterName; //캐릭터 식별자
-    [SerializeField] private float maxHp; //최대체력
-    [SerializeField] private float currentHp; //현재 체력
-    [SerializeField] private float armor; //방어력
-    [SerializeField] private float attack; //공격력 
-    [SerializeField] private float moveSpeed; //이동속도 
+    [SerializeField] protected string characterName; //캐릭터 식별자
+    [SerializeField] protected float maxHp; //최대체력
+    [SerializeField] protected float currentHp; //현재 체력
+    [SerializeField] protected float armor; //방어력
+    [SerializeField] protected float attack; //공격력 
+    [SerializeField] protected float moveSpeed; //이동속도 
     [SerializeField] protected string AddrPath;
     #endregion
 
@@ -79,30 +79,15 @@ public abstract class CwCharacter : MonoBehaviour
 
     /// <summary>    
     /// 최초 생성시 데이터 동기화 함수 
-    /// </summary>
-    /// <typeparam name="T">스크립터블 오브젝트 타입</typeparam>
-    /// <param name="data"> 참조받을 스크립터블 오브젝트 </param>    
-    protected virtual void CharacterInitialize<T>(T data) where T : CharacterData
+    /// </summary>   
+    public virtual void Initialize(CharacterData data)
     {
         CharacterName = data.characterName;
         MaxHp = data.maxHp;
         Armor = data.armor;
         Attack = data.attack;
         MoveSpeed = data.moveSpeed;
-    }
-
-    // 오버로드: 자식 ScriptableObject 타입도 지원
-    protected virtual void CharacterInitialize<TBase, TDerived>(TDerived data)
-        where TBase : CharacterData
-        where TDerived : TBase
-    {
-        CharacterInitialize<TBase>(data); // 기본 CharacterData 필드 초기화
-
-        // 자식 데이터의 추가 필드가 있다면 여기서 처리 (예시)
-        // var derivedData = data as TDerived;
-        // if (derivedData != null) { ... }
-    }
-
+    } 
     protected virtual void Awake()
     { 
         AddrPath = "Assets/Scriptable Objects/Default Character Data.asset";
@@ -117,7 +102,7 @@ public abstract class CwCharacter : MonoBehaviour
 
         if (handle.Status == AsyncOperationStatus.Succeeded)
         {
-            CharacterInitialize(handle.Result);
+            Initialize(handle.Result);
 
             // 로딩 후 Addressables 해제
             Addressables.Release(handle);
