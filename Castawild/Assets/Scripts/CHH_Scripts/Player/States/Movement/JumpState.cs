@@ -9,23 +9,25 @@ public class JumpState : MovementBaseState
 
     public override void EnterState()
     {
+        movementManager.JumpTriggered = true;
+
         if (movementManager.previousState == movementManager.idleState)
-            movementManager.anim.SetTrigger("IdleJump");
+            movementManager.CurrentMoveState = MoveAnimationState.IdleJump;
 
         else if (movementManager.previousState == movementManager.walkState
             || movementManager.previousState == movementManager.runState)
-            movementManager.anim.SetTrigger("RunJump");
+            movementManager.CurrentMoveState = MoveAnimationState.RunJump;
     }
 
     public override void UpdateState()
     {
-        if (movementManager.jumped && movementManager.IsGrounded())
+        if (movementManager.isJumping && movementManager.playerController.Grounded)
         {
-            movementManager.jumped = false;
+            movementManager.isJumping = false;
 
-            if (!inputManager.MoveInputDectected())
+            if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
                 movementManager.ChangeState(movementManager.idleState);
-            else if (inputManager.MoveInputDectected() && inputManager.sprintAction.IsPressed())
+            else if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput))
                 movementManager.ChangeState(movementManager.runState);
             else
                 movementManager.ChangeState(movementManager.walkState);
@@ -35,5 +37,6 @@ public class JumpState : MovementBaseState
     public override void ExitState()
     {
         movementManager.canJump = true;
+        movementManager.isTriggerSet = false;
     }
 }

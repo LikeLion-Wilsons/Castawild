@@ -7,32 +7,40 @@ public enum ViewType { None, FirstPerson, ThirdPerson }
 public class PlayerCameraManager : MonoBehaviour
 {
     #region Components
+    private PlayerController playerController;
     private PlayerInputManager inputManager;
     private CinemachineOrbitalFollow orbital;
     private CinemachineInputAxisController inputAxisController;
-    private CwPlayer player;
+    private ToolStateManager toolManager;
+    private Player player;
     #endregion
 
     public bool isAiming = false;
+    public ViewType currentView = ViewType.FirstPerson;
 
-    #region Third Person Aim
+    #region First Person
     [Header("1인칭")]
-    [SerializeField] private CinemachineCamera firstPersonCam;
+    public CinemachineCamera firstPersonCam;
     [SerializeField] private Transform firstPersonTarget;
 
-    [SerializeField] private GameObject playerMesh;
-    public ViewType currentView { get; private set; }
+    [SerializeField] private GameObject[] playerMeshes;
+    [SerializeField] private GameObject playerHead;
 
     public float sensitivity = 1.5f;
     [SerializeField] private float maxXRotation = 80f;
     [SerializeField] private float minXRotation = -80f;
-    private float xRotation = 0f;
 
+    private float pitch = 0f;
+    private float yaw = 0f;
+    public float minPitch = -80f;
+    public float maxPitch = 80f;
+    [SerializeField] private float minYaw = -90f;
+    [SerializeField] private float maxYaw = 90f;
     #endregion
 
-    #region Third Person Aim
+    #region Third Person
     [Header("3인칭")]
-    [SerializeField] private CinemachineCamera thirdPersonCam;
+    public CinemachineCamera thirdPersonCam;
     [SerializeField] private Transform thirdPersonTarget;
     [SerializeField] private Transform thirdPerson_AimTargetPos;
     [SerializeField] private float thirdPerson_AimFov;
@@ -71,15 +79,22 @@ public class PlayerCameraManager : MonoBehaviour
         InitComponents();
         InitVariables();
         SubscribeEvents();
-        HandleViewChanged(ViewType.ThirdPerson);
+    }
+
+    private void Start()
+    {
+        ViewChange(ViewType.FirstPerson);
     }
 
     private void InitComponents()
     {
-        player = GetComponentInParent<CwPlayer>();
+        player = GetComponentInParent<Player>();
+        playerController = GetComponentInParent<PlayerController>();
         inputManager = GetComponentInParent<PlayerInputManager>();
+        toolManager = GetComponentInParent<ToolStateManager>();
         orbital = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
         inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
+        Camera.main.GetComponent<CinemachineBrain>().DefaultBlend = new(CinemachineBlendDefinition.Styles.Cut, 0f);
     }
 
     private void SubscribeEvents()
@@ -100,50 +115,96 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void Update()
     {
-        inputManager.HandleCameraInput();
-        RotateCamera();
-        ViewChange();
-        ZoomCamera();
-    }
-
-    public void RotateCamera()
-    {
-        if (currentView == ViewType.ThirdPerson || !inputManager.isCursorLocked)
+        if (!player.HasInputAuthority || !player || !player.isSpawned)
             return;
 
-        xRotation -= inputManager.lookInput.y * sensitivity;
-        xRotation = Mathf.Clamp(xRotation, minXRotation, maxXRotation);
-        firstPersonCam.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        HandleViewChange();
+        UpdateCameraPitch();
+        //ZoomCamera();
     }
 
-    private void ViewChange()
+    private void HandleViewChange()
     {
-        if (inputManager.viewChangeAction.WasPressedThisFrame())
+        if (inputManager.viewChangeAction.WasPressedThisFrame()
+            && (toolManager.currentState == toolManager.idleState || toolManager.currentState == toolManager.carryState))
         {
-            if (currentView == ViewType.FirstPerson)
-                HandleViewChanged(ViewType.ThirdPerson);
-            else if (currentView == ViewType.ThirdPerson)
-                HandleViewChanged(ViewType.FirstPerson);
+            ViewChange(currentView == ViewType.FirstPerson ? ViewType.ThirdPerson : ViewType.FirstPerson);
         }
     }
 
-    private void HandleViewChanged(ViewType viewType)
+    public void SetNetworkCamera()
+    {
+        firstPersonCam.Priority = 1;
+        thirdPersonCam.Priority = 0;
+    }
+
+    public void ViewChange(ViewType viewType)
     {
         if (viewType == ViewType.FirstPerson)
         {
-            currentView = ViewType.FirstPerson;
-            playerMesh.SetActive(false);
-            firstPersonCam.Priority = 1;
-            thirdPersonCam.Priority = 0;
+            if (playerController.HasInputAuthority)
+            {
+                currentView = ViewType.FirstPerson;
+                foreach (var mesh in playerMeshes)
+                {
+                    mesh.SetActive(false);
+                }
+                firstPersonCam.Priority = 10;
+                thirdPersonCam.Priority = 0;
+            }
         }
 
         else if (viewType == ViewType.ThirdPerson)
         {
-            currentView = ViewType.ThirdPerson;
-            playerMesh.SetActive(true);
-            firstPersonCam.Priority = 0;
-            thirdPersonCam.Priority = 1;
+            if (playerController.HasInputAuthority)
+            {
+                currentView = ViewType.ThirdPerson;
+
+                SettingThirdPersonCam();
+
+                foreach (var mesh in playerMeshes)
+                {
+                    mesh.SetActive(true);
+                }
+                firstPersonCam.Priority = 0;
+                thirdPersonCam.Priority = 10;
+            }
         }
+    }
+
+    private void SettingThirdPersonCam()
+    {
+        var transposer = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
+
+        if (transposer != null)
+        {
+            // 플레이어가 바라보는 방향의 각도를 카메라 회전값으로 설정
+            float targetYaw = player.transform.eulerAngles.y;
+            transposer.HorizontalAxis.Value = targetYaw;
+        }
+
+        thirdPersonCam.GetComponent<CinemachineOrbitalFollow>().VerticalAxis.Value = 22f;
+    }
+
+    // 카메라 상하각도 조절
+    private void UpdateCameraPitch()
+    {
+        if (currentView == ViewType.ThirdPerson || !player.IsCursorLocked)
+            return;
+
+        pitch -= inputManager.lookInput.y * sensitivity;
+        pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
+
+        // 자고있을 때 좌우회전 추가
+        if (!player.CanMoving())
+        {
+            yaw += inputManager.lookInput.x * sensitivity;
+            yaw = Mathf.Clamp(yaw, minYaw, maxYaw);
+        }
+        else if (player.CanMoving() && yaw != 0f)
+            yaw = 0f;
+
+        firstPersonCam.transform.localEulerAngles = new Vector3(pitch, yaw, 0f);
     }
 
     private void ZoomCamera()
@@ -199,5 +260,19 @@ public class PlayerCameraManager : MonoBehaviour
         }
 
         thirdPersonTarget.localPosition = targetPos;
+    }
+
+    public void SleepCamera(bool isSleep)
+    {
+        if (isSleep)
+        {
+            firstPersonCam.Follow = playerHead.transform;
+            firstPersonCam.LookAt = playerHead.transform;
+        }
+        else
+        {
+            firstPersonCam.Follow = firstPersonTarget;
+            firstPersonCam.LookAt = firstPersonTarget;
+        }
     }
 }

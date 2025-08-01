@@ -1,10 +1,12 @@
+using Fusion;
 using UnityEngine;
+
+public enum MoveAnimationState { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump, Sleep }
 
 public class MovementStateManager : BaseStateManager
 {
     #region Conponent
     [HideInInspector] public ToolStateManager toolStateManager;
-    //[SerializeField] private CharacterController controller;
     #endregion
 
     #region States
@@ -14,18 +16,22 @@ public class MovementStateManager : BaseStateManager
     public RunState runState;
     public JumpState jumpState;
     public CrouchState crouchState;
+    public SleepState sleepState;
+    public MoveType currentMoveType;
     #endregion
 
     #region Movement
-    [HideInInspector] public bool canMove = true;
     public float currentMoveSpeed;
     public float airSpeedMuliplier = 0.7f;
     public float walkSpeed = 3f;
     public float runSpeed = 7f;
     public float crouchSpeed = 2f;
     public float rotationSpeed = 10f;
-    [HideInInspector] public Vector3 dir;
     [HideInInspector] public bool canJump = true;
+
+    public float sensitivity = 1.5f;
+    public float maxXRotation = 80f;
+    public float minXRotation = -80f;
     #endregion
 
     #region GoundCheck
@@ -39,28 +45,33 @@ public class MovementStateManager : BaseStateManager
     #region Gravity
     public float gravity = -20f;
     public float jumpForce = 10f;
-    [HideInInspector] public bool jumped;
+    [HideInInspector] public bool isJumping;
     [HideInInspector] public Vector3 velocity;
     #endregion
 
     #region Animation
     [SerializeField] private float animationLerpSpeed = 10f;
-    private float currentHorizontal;
-    private float currentVertical;
+    public bool isTriggerSet = false;
+    #endregion
+
+    #region Network
+    [Networked] public MoveAnimationState CurrentMoveState { get; set; }
+    [Networked] public bool JumpTriggered { get; set; }
+    [Networked] public bool CanWakeUp { get; set; }
+    [Networked] public Vector2 MoveValue { get; set; }
     #endregion
 
     protected override void Awake()
     {
         base.Awake();
-
         InitComponents();
         InitStates();
     }
 
     private void InitComponents()
     {
-        //controller = GetComponent<CharacterController>();
         toolStateManager = GetComponent<ToolStateManager>();
+        playerController = GetComponent<PlayerController>();
     }
 
     private void InitStates()
@@ -70,105 +81,70 @@ public class MovementStateManager : BaseStateManager
         runState = new RunState(this, inputManager);
         crouchState = new CrouchState(this, inputManager);
         jumpState = new JumpState(this, inputManager);
+        sleepState = new SleepState(this, inputManager);
+    }
 
+    public override void Spawned()
+    {
         ChangeState(idleState);
     }
 
-    private void Update()
+    public void UpdateMoveAnimation(float deltaTime)
     {
-        UpdateMoveAnimation();
-        currentState.UpdateState();
-    }
-
-    private void UpdateMoveAnimation()
-    {
-        currentHorizontal = Mathf.Lerp(currentHorizontal, inputManager.horizontalInput, Time.deltaTime * animationLerpSpeed);
-        currentVertical = Mathf.Lerp(currentVertical, inputManager.verticalInput, Time.deltaTime * animationLerpSpeed);
-
-        anim.SetFloat("Horizontal", currentHorizontal);
-        anim.SetFloat("Vertical", currentVertical);
-        anim.SetBool("Falling", !IsGrounded());
-    }
-
-
-
-
-    public float sensitivity = 1.5f;
-    public float maxXRotation = 80f;
-    public float minXRotation = -80f;
-
-    private float xRotation = 0f;
-    /// <summary>
-    /// 움직이는 방향
-    /// </summary>
-    public Vector3 GetMoveDir(bool hasInputAuthority)
-    {
-        if (!canMove)
-            return Vector3.zero;
-
-        Vector3 forward;
-        Vector3 right;
-
-        if (cameraManager.currentView == ViewType.FirstPerson && hasInputAuthority)
+        if (player.CanMoving())
         {
-            forward = transform.forward;
-            right = transform.right;
-        }
-        else
-        {
-            forward = cameraManager.CurrenCam.transform.forward;
-            right = cameraManager.CurrenCam.transform.right;
+            anim.SetFloat("Horizontal", MoveValue.x, 0.1f, deltaTime);
+            anim.SetFloat("Vertical", MoveValue.y, 0.1f, deltaTime);
         }
 
-        forward.y = 0f;
-        right.y = 0f;
+        anim.SetBool("Walking", false);
+        anim.SetBool("Running", false);
+        anim.SetBool("Crouching", false);
+        anim.SetBool("Falling", false);
+        anim.SetBool("Sleeping", false);
 
-        forward.Normalize();
-        right.Normalize();
-
-        dir = forward * inputManager.moveInput.y + right * inputManager.moveInput.x;
-
-        if ((hasInputAuthority && cameraManager.currentView == ViewType.ThirdPerson)
-            || !hasInputAuthority)
-            RotateToward(dir);
-
-        else if (hasInputAuthority && cameraManager.currentView == ViewType.FirstPerson && inputManager.isCursorLocked)
-            transform.Rotate(Vector3.up * inputManager.lookInput.x * cameraManager.sensitivity);
-
-        return dir;
-    }
-
-    private void RotateToward(Vector3 moveDir)
-    {
-        if (moveDir.sqrMagnitude > 0.001f && !player.isAimLocked && IsGrounded())
+        switch (CurrentMoveState)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(moveDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+            case MoveAnimationState.Walk:
+                anim.SetBool("Walking", true);
+                break;
+            case MoveAnimationState.Run:
+                anim.SetBool("Running", true);
+                break;
+            case MoveAnimationState.CrouchIdle:
+                anim.SetBool("Crouching", true);
+                break;
+            case MoveAnimationState.CrouchWalk:
+                anim.SetBool("Crouching", true);
+                anim.SetBool("Walking", true);
+                break;
+            case MoveAnimationState.IdleJump:
+                if (!isTriggerSet)
+                    anim.SetTrigger("IdleJump");
+                isTriggerSet = true;
+                break;
+            case MoveAnimationState.RunJump:
+                if (!isTriggerSet)
+                    anim.SetTrigger("RunJump");
+                isTriggerSet = true;
+                break;
+            case MoveAnimationState.Sleep:
+                anim.SetBool("Sleeping", true);
+                break;
         }
-    }
 
-    /// <summary>
-    /// 중력 적용
-    /// </summary>
-    public Vector3 Gravity()
-    {
-        if (IsGrounded() && velocity.y < 0)
-            velocity.y = -1f;
-        else
-            velocity.y += gravity * fallMultiplier * Time.fixedDeltaTime;
-
-        return velocity;
-    }
-
-    /// <summary>
-    /// 땅 체크
-    /// </summary>
-    public bool IsGrounded()
-    {
-        spherePos = new Vector3(transform.position.x, transform.position.y - groundYOffset, transform.position.z);
-        if (Physics.CheckSphere(spherePos, groundCheckRadius, groundMask))
-            return true;
-        return false;
+        if (player.CanMoving())
+        {
+            // 이 부분 없으면 착지할 때 애니메이션 전환 이상함
+            if (input.moveValue != Vector2.zero)
+            {
+                if (input.IsDown(PlayerNetworkInputData.sprintInput) && isJumping)
+                    anim.SetBool("Running", true);
+                else
+                    anim.SetBool("Walking", true);
+            }
+        }
+        anim.SetBool("Falling", !playerController.Grounded);
     }
 
     private void OnDrawGizmos()
@@ -193,11 +169,5 @@ public class MovementStateManager : BaseStateManager
             walkSpeed -= value;
             runSpeed -= value;
         }
-    }
-
-    public void ChangeIdleState()
-    {
-        canMove = false;
-        ChangeState(idleState);
     }
 }

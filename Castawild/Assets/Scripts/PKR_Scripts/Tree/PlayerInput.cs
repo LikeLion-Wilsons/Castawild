@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
@@ -11,11 +11,11 @@ namespace Test
         public override void Spawned()
         {
             if (HasInputAuthority == false) return;
-                
+
             var networkEvents = Runner.GetComponent<NetworkEvents>();
             networkEvents.OnInput.AddListener(OnInput);
         }
-        
+
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
             if (runner == null) return;
@@ -26,8 +26,8 @@ namespace Test
                 networkEvents.OnInput.RemoveListener(OnInput);
             }
         }
-        
-        
+
+
         public void OnInput(NetworkRunner runner, NetworkInput input)
         {
             var myInput = new NetworkInputData();
@@ -44,6 +44,5 @@ namespace Test
 
             input.Set(myInput);
         }
-
     }
 }

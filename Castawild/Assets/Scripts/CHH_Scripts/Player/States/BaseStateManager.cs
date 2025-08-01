@@ -1,20 +1,28 @@
+using Fusion;
 using UnityEngine;
 
-public class BaseStateManager : MonoBehaviour
+public class BaseStateManager : NetworkBehaviour
 {
     [HideInInspector] public Animator anim;
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public PlayerCameraManager cameraManager;
-    [HideInInspector] public CwPlayer player;
+    [HideInInspector] public Player player;
+    [HideInInspector] public PlayerController playerController;
+
+    public PlayerNetworkInputData input { get; private set; }
+    public NetworkButtons prevInputButtons;
 
     public BaseState currentState;
+
+    [Networked] public bool IsAnimationFinished { get; set; }
 
     protected virtual void Awake()
     {
         anim = GetComponentInChildren<Animator>();
         inputManager = GetComponent<PlayerInputManager>();
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
-        player = GetComponent<CwPlayer>();
+        player = GetComponent<Player>();
+        playerController = GetComponent<PlayerController>();
     }
 
     public void ChangeState(BaseState newState)
@@ -23,4 +31,7 @@ public class BaseStateManager : MonoBehaviour
         currentState = newState;
         currentState.EnterState();
     }
+
+    public void SetInput(PlayerNetworkInputData inputData) => input = inputData;
+    public void SetPrevInputButton(NetworkButtons _prevInputButtons) => prevInputButtons = _prevInputButtons;
 }

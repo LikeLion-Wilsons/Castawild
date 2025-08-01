@@ -1,31 +1,36 @@
+using Fusion;
 using UnityEngine;
 
 public class AnimationTrigger : MonoBehaviour
 {
-    private CwPlayer player;
+    private Player player;
+    private PlayerController playercontroller;
     private MovementStateManager movementManager;
-    [HideInInspector] public bool isAnimationFinished = false;
-    [HideInInspector] public bool canReceiveInput = false;
-    [HideInInspector] public bool canComboAttack = false;
+    private ToolStateManager toolManager;
 
     private void Awake()
     {
-        player = GetComponentInParent<CwPlayer>();
+        player = GetComponentInParent<Player>();
+        playercontroller = GetComponentInParent<PlayerController>();
         movementManager = GetComponentInParent<MovementStateManager>();
+        toolManager = GetComponentInParent<ToolStateManager>();
     }
 
-    public void AnimationFinishTrigger() => isAnimationFinished = true;
-    public void AnimationStartTrigger() => isAnimationFinished = false;
-    public void JumpForce() => movementManager.velocity.y += movementManager.jumpForce;
-    public void Jumped() => movementManager.jumped = true;
-    public void ReceiveInput() => canReceiveInput = true;
+    public void ToolAnimationFinishTrigger() => toolManager.IsAnimationFinished = true;
+    public void ToolAnimationStartTrigger() => toolManager.IsAnimationFinished = false;
+    public void MoveAnimationFinishTrigger() => movementManager.IsAnimationFinished = true;
+    public void MoveAnimationStartTrigger() => movementManager.IsAnimationFinished = false;
+    public void Jumped() => movementManager.isJumping = true;
+    public void ReceiveInput() => toolManager.CanReceiveInput = true;
     public void StopReceiveInput()
     {
-        if (canComboAttack)
-            movementManager.anim.SetBool("ComboAttack", true);
-        canComboAttack = false;
-        canReceiveInput = false;
+        if (toolManager.CanComboAttack)
+            toolManager.ComboAttack = true;
+        toolManager.CanComboAttack = false;
+        toolManager.CanReceiveInput = false;
     }
 
-    public void ApplyTool() => player.ApplyTool();
+    public void Interact() => playercontroller.Interact();
+    public void FinishSleep() => player.FinishSleep();
+    public void CanWakeUp() => movementManager.CanWakeUp = true;
 }

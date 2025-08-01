@@ -7,23 +7,27 @@ public class RunState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.anim.SetBool("Running", true);
+        movementManager.CurrentMoveState = MoveAnimationState.Run;
         movementManager.currentMoveSpeed = movementManager.runSpeed;
-        movementManager.player.currentMoveType = MoveType.Run;
+        movementManager.currentMoveType = MoveType.Run;
     }
 
     public override void UpdateState()
     {
         // Walk
-        if (movementManager.inputManager.sprintAction.WasReleasedThisFrame())
+        if (movementManager.input.IsUp(PlayerNetworkInputData.sprintInput))
             movementManager.ChangeState(movementManager.walkState);
 
         // Idle
-        else if (!inputManager.MoveInputDectected())
+        else if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
             movementManager.ChangeState(movementManager.idleState);
 
+        // Crouch
+        else if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.crouchInput))
+            movementManager.ChangeState(movementManager.crouchState);
+
         // Jump
-        if (inputManager.jumpAction.WasPressedThisFrame() && movementManager.canJump)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.canJump)
         {
             movementManager.canJump = false;
             movementManager.previousState = this;
@@ -33,6 +37,5 @@ public class RunState : MovementBaseState
 
     public override void ExitState()
     {
-        movementManager.anim.SetBool("Running", false);
     }
 }

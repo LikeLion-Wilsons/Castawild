@@ -1,15 +1,21 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Canvas_Holder : MonoBehaviour
 {
-    public static Canvas_Holder instance = null;
     public GameObject hotBarUI;
     public GameObject inventoryUI;
+    public GameObject tableUI;
+
+    public bool isDragging = false;
+    // 수정한 부분
+    public Player player;
+
     private void Awake()
     {
-        if (instance == null) instance = this;
     }
+
 
     [SerializeField] UIPart[] parts;
     private Dictionary<string, UIPart> uiParts = new Dictionary<string, UIPart>();
@@ -17,7 +23,7 @@ public class Canvas_Holder : MonoBehaviour
     {
         if (uiParts.ContainsKey(uiName))
         {
-            uiParts[uiName].Open();
+            uiParts[uiName].Open(player.inputManager);
         }
         else Debug.LogWarning($"UI {uiName} not found.");
     }
@@ -26,7 +32,7 @@ public class Canvas_Holder : MonoBehaviour
     {
         if (uiParts.ContainsKey(uiName))
         {
-            uiParts[uiName].Close();
+            uiParts[uiName].Close(player.inputManager);
         }
     }
 
@@ -34,7 +40,7 @@ public class Canvas_Holder : MonoBehaviour
     {
         foreach (var part in uiParts.Values)
         {
-            part.Close();
+            part.Close(player.inputManager);
         }
     }
 
@@ -47,13 +53,25 @@ public class Canvas_Holder : MonoBehaviour
             uiParts.Add(part.name, part);
         }
 
+        // 수정한 부분
+        uiParts["Inventory"].Toggle();
+        uiParts["Table"].Toggle();
     }
-
+    public static event Action<bool> OnUIActive;
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
-            uiParts["Inventory"].Toggle();
+            uiParts["Inventory"].Toggle(player.inputManager);
+            uiParts["Table"].Toggle(player.inputManager);
+
+            // 수정한 부분
+            if (uiParts["Inventory"].IsOpen())
+                player.RPC_IsUIOpen(true);
+            else
+                player.RPC_IsUIOpen(false);
+			
+			OnUIActive.Invoke(uiParts["Inventory"].IsOpen());
         }
     }
 

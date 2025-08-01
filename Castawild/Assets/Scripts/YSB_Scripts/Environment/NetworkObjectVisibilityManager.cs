@@ -4,72 +4,73 @@ using UnityEngine;
 
 public class NetworkObjectVisibilityManager : NetworkSingleton<NetworkObjectVisibilityManager>
 {
-    [SerializeField, Tooltip("플레이어 가시 범위")] private float visibleRange = 50f;
-    [SerializeField, Tooltip("갱신 주기(초)")] private float updateInterval = 0.5f;
+    private Dictionary<PlayerRef, Transform> playerTransforms = new();
+    private List<INetworkVisibilityObject> visibilityObjects = new();
 
-    private Transform playerTransform;
-    private List<NetworkObject> managedObjects = new List<NetworkObject>();
+    [SerializeField] private float visibleRange = 50f;
+    [SerializeField] private float updateInterval = 0.5f;
+
     private float timer = 0f;
 
-    public void SetPlayerTransform(Transform player)
+    public override void Spawned()
     {
-        playerTransform = player;
+        base.Spawned();
+        Debug.Log($"[Spawned] VisibilityManager instance: {NetworkObjectVisibilityManager.Instance}");
     }
 
-    public void RegisterObject(NetworkObject obj)
+    public void SetPlayerTransform(PlayerRef playerRef, Transform playerTransform)
     {
-        if (!managedObjects.Contains(obj))
-            managedObjects.Add(obj);
+        if (playerTransforms.ContainsKey(playerRef))
+            playerTransforms[playerRef] = playerTransform;
+        else
+            playerTransforms.Add(playerRef, playerTransform);
     }
 
-    public void UnregisterObject(NetworkObject obj)
+    public void RegisterObject(INetworkVisibilityObject obj)
     {
-        if (managedObjects.Contains(obj))
-            managedObjects.Remove(obj);
+        if (!visibilityObjects.Contains(obj))
+        {
+            visibilityObjects.Add(obj);
+        }
     }
 
     public override void FixedUpdateNetwork()
     {
-        //if (!Object.HasInputAuthority) return;
-
-        if (playerTransform == null)
-        {
-            TryAutoSetPlayerTransform();
-            if (playerTransform == null) return;
-        }
+        if (!Runner.IsRunning)
+            return;
 
         timer += Runner.DeltaTime;
         if (timer < updateInterval) return;
-
         timer = 0f;
 
-        foreach (var obj in managedObjects)
+        PlayerRef localPlayer = Runner.LocalPlayer;
+
+        if (!playerTransforms.TryGetValue(localPlayer, out Transform playerTransform) || playerTransform == null)
+            return;
+
+        for (int i = visibilityObjects.Count - 1; i >= 0; i--)
         {
-            if (obj == null) continue;
-
-            float dist = Vector3.Distance(playerTransform.position, obj.transform.position);
-            bool shouldBeVisible = dist <= visibleRange;
-
-            if (obj.gameObject.activeSelf != shouldBeVisible)
+            var obj = visibilityObjects[i];
+            if (obj == null)
             {
-                obj.gameObject.SetActive(shouldBeVisible);
+                visibilityObjects.RemoveAt(i);
+                continue;
             }
+
+            var netObj = obj.GetNetworkObject();
+            var visualRoot = obj.VisualRoot;
+
+            if (netObj == null || visualRoot == null)
+            {
+                visibilityObjects.RemoveAt(i);
+                continue;
+            }
+
+            bool canShow = obj.CanBeVisible() &&
+                Vector3.Distance(playerTransform.position, netObj.transform.position) <= visibleRange;
+
+            if (visualRoot.gameObject.activeSelf != canShow)
+                visualRoot.gameObject.SetActive(canShow);
         }
     }
-
-    private void TryAutoSetPlayerTransform()
-    {
-        Debug.Log("[VisibilityManager] TryAutoSetPlayerTransform 호출됨");
-        foreach (var obj in FindObjectsOfType<NetworkObject>())
-        {
-            Debug.Log($"[VisibilityManager] NetworkObject 발견: {obj.name}, HasInputAuthority={obj.HasInputAuthority}");
-            if (obj.HasInputAuthority)
-            {
-                playerTransform = obj.transform;
-                Debug.Log($"[VisibilityManager] 자동으로 플레이어 연결됨: {playerTransform.name}");
-                break;
-            }
-        }
-    }
-
 }

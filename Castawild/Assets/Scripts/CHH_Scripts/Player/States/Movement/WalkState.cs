@@ -1,3 +1,6 @@
+
+using UnityEngine;
+
 public class WalkState : MovementBaseState
 {
     public WalkState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
@@ -7,27 +10,27 @@ public class WalkState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.anim.SetBool("Walking", true);
+        movementManager.CurrentMoveState = MoveAnimationState.Walk;
         movementManager.currentMoveSpeed = movementManager.walkSpeed;
-        movementManager.player.currentMoveType = MoveType.Walk;
+        movementManager.currentMoveType = MoveType.Walk;
     }
 
     public override void UpdateState()
     {
         // Run
-        if (movementManager.inputManager.sprintAction.IsPressed() && movementManager.player.currentAttackType != AttackType.Aim)
+        if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.toolStateManager.currentState != movementManager.toolStateManager.aimState)
             movementManager.ChangeState(movementManager.runState);
 
         // Crouch
-        else if (movementManager.inputManager.crouchAction.WasPressedThisFrame())
+        else if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.crouchInput))
             movementManager.ChangeState(movementManager.crouchState);
 
         // Idle
-        else if (!inputManager.MoveInputDectected())
+        else if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
             movementManager.ChangeState(movementManager.idleState);
 
         // Jump
-        if (inputManager.jumpAction.WasPressedThisFrame() && movementManager.canJump)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.canJump)
         {
             movementManager.canJump = false;
             movementManager.previousState = this;
@@ -37,6 +40,5 @@ public class WalkState : MovementBaseState
 
     public override void ExitState()
     {
-        movementManager.anim.SetBool("Walking", false);
     }
 }

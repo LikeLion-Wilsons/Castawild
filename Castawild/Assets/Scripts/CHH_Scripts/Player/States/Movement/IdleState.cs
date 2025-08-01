@@ -1,4 +1,5 @@
-using Unity.VisualScripting;
+
+using UnityEngine;
 
 public class IdleState : MovementBaseState
 {
@@ -9,26 +10,27 @@ public class IdleState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.player.currentMoveType = MoveType.Idle;
+        movementManager.CurrentMoveState = MoveAnimationState.Idle;
+        movementManager.currentMoveType = MoveType.Idle;
     }
 
     public override void UpdateState()
     {
         // Move
-        if (movementManager.inputManager.MoveInputDectected() && movementManager.canMove)
+        if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput) && movementManager.player.CanMoving())
         {
-            if (movementManager.inputManager.sprintAction.IsPressed() && movementManager.player.currentAttackType != AttackType.Aim)
+            if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.toolStateManager.currentState != movementManager.toolStateManager.aimState)
                 movementManager.ChangeState(movementManager.runState);
             else
                 movementManager.ChangeState(movementManager.walkState);
         }
 
         // Crouch
-        if (movementManager.inputManager.crouchAction.WasPressedThisFrame())
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.crouchInput))
             movementManager.ChangeState(movementManager.crouchState);
 
         // Jump
-        if (inputManager.jumpAction.WasPressedThisFrame() && movementManager.canJump)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.canJump)
         {
             movementManager.canJump = false;
             movementManager.previousState = this;

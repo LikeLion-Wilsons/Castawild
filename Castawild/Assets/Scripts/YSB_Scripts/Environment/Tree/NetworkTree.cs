@@ -3,89 +3,58 @@ using UnityEngine;
 
 namespace YSB_Scripts
 {
-    public class NetworkTree : NetworkBehaviour, Test.IInteractable
+    public class NetworkTree : EnvironmentObject
     {
-        public event System.Action<NetworkTree> OnTreeDied;
-
-        [Networked, OnChangedRender(nameof(OnChangedHealth))]//tree 외형 변화 없으면 굳이 필요 없을지도
-        public int Health { get; set; }
-        [Networked] private int MaxHP { get; set; }
-        [Networked] public int TreeId { get; set; } // TreeId는 스폰 시에 할당
         private TreeDefinition definition;
-
-        [SerializeField] public GameObject visualRoot;
-
-        [Networked] private TickTimer reviveTimer { get; set; }
-
-        public void Init(TreeDefinition def, int treeId)
+        public override void Spawned()
         {
+            base.Spawned();
+            NetworkObjectVisibilityManager.Instance?.RegisterObject(this);
+        }
+
+        public override void Init(SpawnableDefinition def, int instanceId)
+        {
+            base.Init(def, instanceId);
             if (def == null)
             {
                 Debug.LogError("TreeDefinition is null!");
                 return;
             }
-            definition = def;
-            MaxHP = def.maxHealth;
+            definition = def as TreeDefinition;
+            MaxHP = definition.maxHealth;
             Health = MaxHP;
-            TreeId = treeId;
         }
 
-        public override void Spawned()
+        public override void Interact(PlayerRef player, int att)
         {
-            RefreshVisual();
-        }
+            if (!IsAlive()) return;
 
-
-        public bool CanInteract() => Health > 0;
-
-        public void Interact(PlayerRef player)
-        {
-            RPC_RequestDamage(player);
+            RPC_RequestDamage(player, att);
         }
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        void RPC_RequestDamage(PlayerRef player)
+        private void RPC_RequestDamage(PlayerRef player, int att)
         {
-            if (Health <= 0) return;
+            if (!IsAlive()) return;
 
-            Health -= 10;
+            Health -= att;
 
             if (Health > 0)
             {
                 float ratio = MaxHP > 0 ? (float)Health / MaxHP : 0;
-                string log = $"Tree[{TreeId}] Health: {Health}/{MaxHP} ({ratio:P})";
+                string log = $"Tree[{InstanceId}] Health: {Health}/{MaxHP} ({ratio:P})";
                 NetworkLogManager.Instance.Log(log, player);
             }
-
-            if (Health <= 0)
+            else
             {
                 var playerObj = Runner.GetPlayerObject(player);
-                var inven = playerObj.GetComponent<Test.PlayerInventory>();
-                inven.AddItem(definition.dropItemID, definition.dropAmount);
+                var inven = playerObj.GetComponent<InventoryDataManager>();
+                inven.GetItem(0, 1);
 
-                OnTreeDied?.Invoke(this);
+                Die();
+
+                ReviveTimer = TickTimer.CreateFromSeconds(Runner, 10f);
             }
-        }
-
-        public bool CanRevive() => Health <= 0 && reviveTimer.ExpiredOrNotRunning(Runner);
-
-        public void Revive()
-        {
-            Health = MaxHP;
-            reviveTimer = TickTimer.CreateFromSeconds(Runner, 10f);
-        }
-
-        void OnChangedHealth()//tree 외형 변화 없으면 굳이 필요 없을지도
-        {
-            RefreshVisual();
-        }
-
-        void RefreshVisual()
-        {
-            if (visualRoot == null) return;
-
-            bool isAlive = Health > 0;
-            visualRoot.SetActive(isAlive);
         }
     }
 }
