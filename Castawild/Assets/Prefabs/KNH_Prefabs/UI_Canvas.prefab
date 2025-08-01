@@ -2803,7 +2803,7 @@ MonoBehaviour:
   hotBarUI: {fileID: 233261468776329381}
   inventoryUI: {fileID: 862843738221293036}
   tableUI: {fileID: 5968180590557479756}
-  player: {fileID: 0}
+  isDragging: 0
   parts: []
   ui_Part_Parent: {fileID: 8740063373338327921}
 --- !u!1 &2897719330056352808
@@ -3171,8 +3171,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1514235105144904388}
   m_HandleRect: {fileID: 6886025332259635258}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.8333333
+  m_Value: -0.000010986329
+  m_Size: 0.833312
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4402,7 +4402,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 49.999973}
+  m_AnchoredPosition: {x: 0, y: 50.000523}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1531450813167747468
@@ -7266,7 +7266,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -7403,7 +7403,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -7677,7 +7677,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -7814,7 +7814,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -8225,7 +8225,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -8499,7 +8499,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -8636,7 +8636,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -8773,7 +8773,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -8910,7 +8910,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -9188,7 +9188,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -9462,7 +9462,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -9736,7 +9736,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -9873,7 +9873,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -10010,7 +10010,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -10147,7 +10147,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -10284,7 +10284,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -10562,7 +10562,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -10699,7 +10699,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -10836,7 +10836,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
@@ -10973,7 +10973,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
-      objectReference: {fileID: 1224698396080860649}
+      objectReference: {fileID: 1264945639900986408}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 

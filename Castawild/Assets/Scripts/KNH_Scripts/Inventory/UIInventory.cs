@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Test;
 
 public class UIInventory : UIPart
 {
@@ -11,6 +12,7 @@ public class UIInventory : UIPart
 
     public GameObject itemClick;
     public InventoryDataManager inventoryData;
+
     public void BindToInventoryData(InventoryDataManager data)
     {
         inventoryData = data;
@@ -85,8 +87,6 @@ public class UIInventory : UIPart
 
         SetItemList();
     }
-
-
 
     public void SetItemClickAnimation(Item_Panel panel)
     {
