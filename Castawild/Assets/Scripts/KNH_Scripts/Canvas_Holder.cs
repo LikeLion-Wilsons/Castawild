@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -56,7 +57,7 @@ public class Canvas_Holder : MonoBehaviour
         uiParts["Inventory"].Toggle();
         uiParts["Table"].Toggle();
     }
-
+    public static event Action<bool> OnUIActive;
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Tab))
@@ -69,6 +70,8 @@ public class Canvas_Holder : MonoBehaviour
                 player.IsUIOpen = true;
             else
                 player.IsUIOpen = false;
+            
+            OnUIActive.Invoke(player.IsUIOpen);
         }
     }
 
