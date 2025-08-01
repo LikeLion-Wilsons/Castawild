@@ -7,7 +7,7 @@ using UnityEngine.UI;
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
 public enum AttackType { None, Aim, Attack }
-public enum ItemType { None, Tool, Food, Drink, Placeable }
+public enum ItemType { None, Default, Tool, Food, Drink, Placeable }
 
 public class Player : NetworkBehaviour
 {
@@ -48,7 +48,6 @@ public class Player : NetworkBehaviour
     [Networked] public bool IsUIOpen { get; set; }
     [Networked] public bool IsCursorLocked { get; set; }
 
-    [Networked] public int EquippedToolIndex { get; set; }
     [Networked] public string CurrentToolName { get; set; }
     [Networked] public int CurrentToolAtt { get; set; }
     [Networked] public int CurrentToolID { get; set; }
@@ -62,12 +61,12 @@ public class Player : NetworkBehaviour
     override public void Spawned()
     {
         isSpawned = true;
+        InitTools();
     }
 
     private void Awake()
     {
         InitComponents();
-        InitTools();
     }
 
     private void InitComponents()
@@ -117,11 +116,12 @@ public class Player : NetworkBehaviour
             else
                 Debug.LogWarning($"{itemIdx} 인덱스 없음");
         }
-        else if (currentItemType != ItemType.Tool)
+        else
         {
-            SetCurrentTool();
+            Debug.Log("Active False");
             if (HasInputAuthority)
                 RPC_EquipmentTool();
+            SetCurrentTool();
         }
 
         toolStateManager.ChangeSelectedItem(itemIdx);
@@ -130,32 +130,35 @@ public class Player : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     private void RPC_EquipmentTool(int itemIdx = -1)
     {
-        EquippedToolIndex = itemIdx;
-        UpdateEquippedTool();
-    }
-
-    private void UpdateEquippedTool()
-    {
-        foreach (var kvp in toolDict)
+        foreach (var tool in toolDict)
         {
-            if (kvp.Value != null)
-                kvp.Value.SetActive(false);
+            if (tool.Value != null)
+                tool.Value.SetActive(false);
         }
 
-        if (toolDict.TryGetValue(EquippedToolIndex, out GameObject currentToolGameObject))
+        if (itemIdx == -1)
+            return;
+
+        if (toolDict.TryGetValue(itemIdx, out GameObject currentToolGameObject))
             currentToolGameObject.SetActive(true);
     }
 
     private void SetCurrentItemType(int _currentItemIdx)
     {
-        //if (_currentItemIdx < 50)
-        //    currentItemType = ItemType.Drink;
-        //else if (_currentItemIdx < 100)
-        //    currentItemType = ItemType.Food;
-        //else if (_currentItemIdx >= 300 && _currentItemIdx < 400)
-        //    currentItemType = ItemType.Placeable;
-        if (_currentItemIdx >= 400)
+        // 50 ~ 59 : Drink
+        if (_currentItemIdx >= 50 && _currentItemIdx < 60)
+            currentItemType = ItemType.Drink;
+        // 60 ~ 69 : Food
+        if (_currentItemIdx >= 60 && _currentItemIdx < 70)
+            currentItemType = ItemType.Food;
+        // 300 ~ 400 : Placeable
+        else if (_currentItemIdx >= 300 && _currentItemIdx < 400)
+            currentItemType = ItemType.Placeable;
+        // 400 ~ : Tool
+        else if (_currentItemIdx >= 400)
             currentItemType = ItemType.Tool;
+        else
+            currentItemType = ItemType.Default;
     }
 
     /// <summary>
