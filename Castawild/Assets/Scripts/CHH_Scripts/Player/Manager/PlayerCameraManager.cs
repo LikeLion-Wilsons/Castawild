@@ -188,9 +188,18 @@ public class PlayerCameraManager : MonoBehaviour
         thirdPersonCam.GetComponent<CinemachineOrbitalFollow>().VerticalAxis.Value = 22f;
     }
 
-    // 카메라 상하각도 조절
+    // 1인칭 카메라 상하각도 조절
     private void UpdateCameraPitch()
     {
+        if (movementManager.isLyingOrGettingUp && currentView == ViewType.FirstPerson)
+        {
+            pitch = 0f;
+            yaw = 0f;
+            Vector3 flatForward = new Vector3(player.transform.forward.x, 0f, player.transform.forward.z).normalized;
+            firstPersonCam.transform.rotation = Quaternion.LookRotation(flatForward);
+            return;
+        }
+
         if (currentView == ViewType.ThirdPerson || !player.IsCursorLocked)
             return;
 
@@ -198,7 +207,7 @@ public class PlayerCameraManager : MonoBehaviour
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         // 자고있을 때 좌우회전 추가
-        if (movementManager.currentState == movementManager.sleepState)
+        if (movementManager.CurrentMoveState == MoveAnimationState.Sleep)
         {
             yaw += inputManager.lookInput.x * sensitivity;
             yaw = Mathf.Clamp(yaw, minYaw, maxYaw);
@@ -264,8 +273,7 @@ public class PlayerCameraManager : MonoBehaviour
         thirdPersonTarget.localPosition = targetPos;
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ApplySleepCameraView(bool isSleep)
+    public void ApplySleepCameraView(bool isSleep)
     {
         if (isSleep)
         {

@@ -26,6 +26,7 @@ public class Player : NetworkBehaviour
     #region Components
     [HideInInspector] public Animator anim;
     [HideInInspector] public Rigidbody rigid;
+    [HideInInspector] public PlayerInteractUI playerInteractUI;
     [HideInInspector] public PlayerController playerController;
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public MovementStateManager movementManager;
@@ -42,15 +43,6 @@ public class Player : NetworkBehaviour
     #region Interact
     [Header("Interact")]
     [HideInInspector] public Bed currentBed;
-
-    [Header("UI")]
-    public Image crosshairImage;
-    [SerializeField] private Sprite originImage;
-    [SerializeField] private Sprite axeImage;
-    [SerializeField] private Sprite pickaxeImage;
-    public CanvasGroup interactableUI;
-    public TextMeshProUGUI interactableText;
-    public CanvasGroup placeableUI;
     #endregion
 
     [Header("Networked")]
@@ -61,6 +53,7 @@ public class Player : NetworkBehaviour
     [Networked] public string CurrentToolName { get; set; }
     [Networked, HideInInspector] public int CurrentToolAtt { get; set; }
     [Networked, HideInInspector] public int CurrentToolID { get; set; }
+    [Networked, HideInInspector] public bool IsSleeping { get; set; }
 
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isAimLocked = false;
@@ -94,10 +87,11 @@ public class Player : NetworkBehaviour
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
         playerController = GetComponent<PlayerController>();
+        playerInteractUI = GetComponentInChildren<PlayerInteractUI>();
         inputManager = GetComponent<PlayerInputManager>();
         movementManager = GetComponent<MovementStateManager>();
         toolStateManager = GetComponent<ToolStateManager>();
-        cameraManager = GetComponent<PlayerCameraManager>();
+        cameraManager = GetComponentInChildren<PlayerCameraManager>();
         inventory = GetComponent<InventoryDataManager>();
     }
 
@@ -176,30 +170,8 @@ public class Player : NetworkBehaviour
         toolStateManager.RPC_ChangeSelectedItem();
     }
 
-    public void ChangeCrosshairUI(InteractableType type = InteractableType.None)
-    {
-        switch (type)
-        {
-            case InteractableType.Tree:
-                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
-                crosshairImage.sprite = axeImage;
-                break;
-            case InteractableType.Stone:
-                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
-                crosshairImage.sprite = pickaxeImage;
-                break;
-            case InteractableType.None:
-            default:
-                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(10f, 10f);
-                crosshairImage.sprite = originImage;
-                break;
-        }
-    }
-
     public bool CanUseTool()
     {
-        if (!HasInputAuthority)
-            Debug.Log("UI Open : " + IsUIOpen + "  CanMove : " + CanMove);
         return !IsUIOpen && CanMove;
     }
 
@@ -225,9 +197,10 @@ public class Player : NetworkBehaviour
         {
             currentBed.FinishSleep();
             currentBed = default;
-            CanMove = true;
+            cameraManager.ApplySleepCameraView(false);
         }
     }
+
 
     public bool CanMoving() => CanMove && IsCursorLocked;
 
@@ -274,29 +247,17 @@ public class Player : NetworkBehaviour
             currentToolGameObject.SetActive(true);
     }
 
+    public void PlayerCanMove() => CanMove = true;
+
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_IsUIOpen(bool isOpen) => IsUIOpen = isOpen;
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_CursorLocked(bool isLocked) => IsCursorLocked = isLocked;
 
-    public void InteractUI(InteractableType interactableType = InteractableType.None)
-    {
-        // 나무/돌은 조준점만
-        if (interactableType == InteractableType.None || interactableType == InteractableType.Tree || interactableType == InteractableType.Stone)
-        {
-            placeableUI.alpha = 0f;
-            interactableUI.alpha = 0f;
-            ChangeCrosshairUI(interactableType);
-            return;
-        }
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplySleepCameraView() => cameraManager.ApplySleepCameraView(true);
 
-        // Placeable
-        else if (interactableType != InteractableType.Item)
-            placeableUI.alpha = 1f;
-
-        interactableUI.alpha = 1f;
-
-        ChangeCrosshairUI(interactableType);
-    }
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_TurnOffUI() => playerInteractUI.TurnOffUI();
 }

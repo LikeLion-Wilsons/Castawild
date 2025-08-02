@@ -23,7 +23,7 @@ public class AimState : ToolBaseState
 
         toolStateManager.cameraManager.MoveCamera(true);
 
-        toolStateManager.player.crosshairImage.gameObject.SetActive(true);
+        toolStateManager.player.playerInteractUI.crosshairImage.gameObject.SetActive(true);
     }
 
     public override void UpdateState()
@@ -61,7 +61,7 @@ public class AimState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
-        toolStateManager.player.crosshairImage.gameObject.SetActive(false);
+        toolStateManager.player.playerInteractUI.crosshairImage.gameObject.SetActive(false);
     }
 
     private void LookForward()

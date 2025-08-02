@@ -51,6 +51,7 @@ public class MovementStateManager : BaseStateManager
     [Header("Animation")]
     [SerializeField] private float animationLerpSpeed = 10f;
     [HideInInspector] public bool isTriggerSet = false;
+    [HideInInspector] public bool isLyingOrGettingUp; // 눕거나 일어나는 애니메이션 도중 카메라 못움직이게 확인하는 불변수
     #endregion
 
     #region Network

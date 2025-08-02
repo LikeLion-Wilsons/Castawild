@@ -10,5 +10,5 @@ public abstract class InteractableObject : NetworkBehaviour
 
     // HasInputAuthority 에서만 실행
     abstract public bool CanInteract();
-    abstract public void Interact(PlayerRef playerRef); 
+    abstract public void Interact(PlayerRef playerRef);
 }
