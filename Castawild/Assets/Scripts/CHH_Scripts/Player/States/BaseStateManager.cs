@@ -34,4 +34,5 @@ public class BaseStateManager : NetworkBehaviour
 
     public void SetInput(PlayerNetworkInputData inputData) => input = inputData;
     public void SetPrevInputButton(NetworkButtons _prevInputButtons) => prevInputButtons = _prevInputButtons;
+
 }

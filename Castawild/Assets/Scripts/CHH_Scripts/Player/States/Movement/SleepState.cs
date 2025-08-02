@@ -21,8 +21,8 @@ public class SleepState : MovementBaseState
 
         movementManager.CanWakeUp = false;
 
-        if (movementManager.HasInputAuthority)
-            movementManager.cameraManager.SleepCamera(true);
+        if (movementManager.HasStateAuthority)
+            movementManager.cameraManager.RPC_ApplySleepCameraView(true);
     }
 
     public override void UpdateState()
@@ -39,6 +39,6 @@ public class SleepState : MovementBaseState
             movementManager.player.interactableUI.alpha = 0f;
 
         if (movementManager.HasInputAuthority)
-            movementManager.cameraManager.SleepCamera(false);
+            movementManager.cameraManager.RPC_ApplySleepCameraView(false);
     }
 }

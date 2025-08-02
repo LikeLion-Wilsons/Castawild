@@ -3,6 +3,7 @@ using Fusion.Addons.SimpleKCC;
 using Test;
 using UnityEngine;
 using UnityEngine.UI;
+using YSB_Scripts;
 
 [DisallowMultipleComponent]
 public sealed class PlayerController : NetworkBehaviour
@@ -55,18 +56,20 @@ public sealed class PlayerController : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (GetInput<PlayerNetworkInputData>(out var input) && HasStateAuthority)
+        if (GetInput<PlayerNetworkInputData>(out var input))
         {
-            maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
 
-            movementManager.SetInput(input);
-            toolManager.SetInput(input);
+            if (HasStateAuthority)
+            {
+                movementManager.SetInput(input);
+                toolManager.SetInput(input);
 
-            movementManager.currentState.UpdateState();
-            toolManager.currentState.UpdateState();
+                movementManager.currentState.UpdateState();
+                toolManager.currentState.UpdateState();
 
-            movementManager.SetPrevInputButton(input.Buttons);
-            toolManager.SetPrevInputButton(input.Buttons);
+                movementManager.SetPrevInputButton(input.Buttons);
+                toolManager.SetPrevInputButton(input.Buttons);
+            }
 
             if (!player.CanMove)
             {
@@ -78,17 +81,17 @@ public sealed class PlayerController : NetworkBehaviour
                 return;
             }
 
-            TestTryOverlap(input);
-
-            if (!player.CanMove)
-                return;
-
+            maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
             movementManager.MoveValue = input.moveValue;
+
             Move(input.moveDir);
+            Rotate(input);
+
+            if (HasInputAuthority)
+                TestTryOverlap(input);
 
             prevInputButtons = input.Buttons;
         }
-        Rotate(input);
     }
 
     public void Move(Vector3 direction)
@@ -121,11 +124,9 @@ public sealed class PlayerController : NetworkBehaviour
         // 첫 번재 인자 : 이동 벡터(속도) -> moveDir * speed, 중력 포함해서 넣기
         // 두 번째 인자 : y축 점프 힘 -> 점프 눌렀을 때만 값넣기, 아니면 0
         // Move 함수의 ManualFixedUpdate 내부에서 DeltaTime 곱하기 때문에 여기서는 곱하지 말기
-        if (HasStateAuthority)
-        {
-            kcc.Move(velocity, jump);
-            Grounded = kcc.IsGrounded;
-        }
+
+        kcc.Move(velocity, jump);
+        Grounded = kcc.IsGrounded;
     }
 
     private void Rotate(PlayerNetworkInputData input)
@@ -172,7 +173,7 @@ public sealed class PlayerController : NetworkBehaviour
                 {
                     if (interactable.CanInteract())
                     {
-                        player.RPC_InteractUI(interactable.interactableType);
+                        player.InteractUI(interactable.interactableType);
                         currentInteractObject = interactable;
                         break;
                     }
@@ -181,7 +182,7 @@ public sealed class PlayerController : NetworkBehaviour
                 // 다른 오브젝트 
                 else if (_interactResult[i].TryGetComponent<InteractableObject>(out var interactableObject))
                 {
-                    player.RPC_InteractUI(interactableObject.interactableType);
+                    player.InteractUI(interactableObject.interactableType);
                     player.interactableText.text = interactableObject.text;
 
                     // 설치가능한 오브젝트
@@ -204,7 +205,7 @@ public sealed class PlayerController : NetworkBehaviour
         }
         else
         {
-            player.RPC_InteractUI();
+            player.InteractUI();
             currentInteractObject = null;
         }
 
@@ -254,5 +255,11 @@ public sealed class PlayerController : NetworkBehaviour
             Debug.Log("Player Att : " + att);
             currentInteractObject?.Interact(Object.InputAuthority, att);
         }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_SetPosition(Vector3 position)
+    {
+        kcc.SetPosition(position);
     }
 }

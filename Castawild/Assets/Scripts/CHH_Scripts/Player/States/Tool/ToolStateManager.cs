@@ -104,12 +104,14 @@ public class ToolStateManager : BaseStateManager
     }
 
     // 400:짱돌 401:방망이 402:횃불 403:돌도끼 404:돌작살 405:돌곡괭이
-    public void ChangeSelectedItem(int itemIdx = -1)
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_ChangeSelectedItem(int itemIdx = -1)
     {
         // 설치가능한 아이템 
         if (itemIdx >= 300 && itemIdx < 400)
         {
-            ChangeState(carryState);
+            if (HasStateAuthority)
+                ChangeState(carryState);
             return;
         }
 
@@ -164,11 +166,10 @@ public class ToolStateManager : BaseStateManager
     /// </summary>
     public bool HoldAimTool() => CurrentToolType == ToolType.Bow || CurrentToolType == ToolType.Throw;
 
-    public void ArmVisibleChanged(bool isVisible)
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ArmVisibleChanged(bool isVisible)
     {
-        if (HasInputAuthority && cameraManager.currentView == ViewType.FirstPerson)
-        {
+        if (cameraManager.currentView == ViewType.FirstPerson)
             armMesh.SetActive(isVisible);
-        }
     }
 }

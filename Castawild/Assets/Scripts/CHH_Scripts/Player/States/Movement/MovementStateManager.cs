@@ -170,4 +170,10 @@ public class MovementStateManager : BaseStateManager
             runSpeed -= value;
         }
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_ChangeSleepState(PlayerRef playerRef)
+    {
+        ChangeState(sleepState);
+    }
 }
