@@ -17,25 +17,25 @@ public class PlayerCameraManager : MonoBehaviour
     private Player player;
     #endregion
 
-    public bool isAiming = false;
-    public ViewType currentView = ViewType.FirstPerson;
+    [HideInInspector] public bool isAiming = false;
+    [HideInInspector] public ViewType currentView = ViewType.FirstPerson;
 
     #region First Person
     [Header("1인칭")]
-    public CinemachineCamera firstPersonCam;
-    [SerializeField] private Transform firstPersonTarget;
-
     [SerializeField] private GameObject[] playerMeshes;
     [SerializeField] private GameObject playerHead;
 
+    public CinemachineCamera firstPersonCam;
+    [SerializeField] private Transform firstPersonTarget;
+
+    [Header("마우스")]
     public float sensitivity = 1.5f;
-    [SerializeField] private float maxXRotation = 80f;
-    [SerializeField] private float minXRotation = -80f;
 
     private float pitch = 0f;
     private float yaw = 0f;
-    public float minPitch = -80f;
-    public float maxPitch = 80f;
+
+    [SerializeField] private float minPitch = -80f;
+    [SerializeField] private float maxPitch = 80f;
     [SerializeField] private float minYaw = -90f;
     [SerializeField] private float maxYaw = 90f;
     #endregion
@@ -50,12 +50,11 @@ public class PlayerCameraManager : MonoBehaviour
     private Vector3 thirdPerson_DefaultTargetPos;
     private float thirdPerson_DefaultFov;
     private Coroutine moveCameraCoroutine;
-
-    [SerializeField] private float thirdPerson_aimZoomDuration = 0.3f;
     #endregion
 
     #region Third Person Camera Zoom
     [Header("3인칭 Zoom")]
+    [SerializeField] private float thirdPerson_aimZoomDuration = 0.3f;
     [SerializeField] private float zoomSpeed = 2f;
     [SerializeField] private float zoomLerpSpeed = 10f;
     [SerializeField] private float minDistance = 3f;

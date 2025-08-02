@@ -18,7 +18,8 @@ public class WalkState : MovementBaseState
     public override void UpdateState()
     {
         // Run
-        if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.toolStateManager.currentState != movementManager.toolStateManager.aimState)
+        if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.HasEnoughStaminaToRun()
+            && movementManager.toolStateManager.currentState != movementManager.toolStateManager.aimState)
             movementManager.ChangeState(movementManager.runState);
 
         // Crouch

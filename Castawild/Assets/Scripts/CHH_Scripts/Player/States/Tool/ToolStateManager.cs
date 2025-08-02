@@ -22,18 +22,20 @@ public class ToolStateManager : BaseStateManager
     public EatState eatState;
     #endregion
 
+    [Header("Player")]
     public Transform armature;
     [SerializeField] private GameObject armMesh;
 
     #region Network
-    [Networked] public bool CanComboAttack { get; set; }
-    [Networked] public bool ComboAttack { get; set; }
-    [Networked] public bool CanReceiveInput { get; set; }
+    [Header("Player")]
+    [Networked, HideInInspector] public bool CanComboAttack { get; set; }
+    [Networked, HideInInspector] public bool ComboAttack { get; set; }
+    [Networked, HideInInspector] public bool CanReceiveInput { get; set; }
     [Networked] public ToolAnimationState CurrentToolUseState { get; set; }
     [Networked] public ToolType CurrentToolType { get; set; }
     #endregion
 
-    public bool isTriggerSet = false;
+    [HideInInspector] public bool isTriggerSet = false;
 
     protected override void Awake()
     {

@@ -1,22 +1,15 @@
-using UnityEngine;
 
-public class PlayerData : ScriptableObject
+[System.Serializable]
+public class PlayerData
 {
-    public string characterName; //엔티티 이름
-    public int maxHp; //최대체력 
-    public int hp; //현재체력 
-    public float armor; //방어력
-    public int attack; //공격력 
+    public string characterName;
+    public float maxHp;
+    public float maxStamina;
+    public int armor;
+    public int attack;
 
-    public float maxHunger;//허기
+    public float maxHunger;
     public float hunger;
-    public float maxThirst;//갈증
-    public float thirst;
-    public float maxSatiation;//만족감
-    public float satiation;
-    public float maxTemperature;//온도
-    public float temperature;
-    public float maxStamina;//스태미너
-    public float stamina;
-
+    public float maxThirst;
+    public float maxTemperature;
 }

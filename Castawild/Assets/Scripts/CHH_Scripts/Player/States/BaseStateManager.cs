@@ -9,12 +9,13 @@ public class BaseStateManager : NetworkBehaviour
     [HideInInspector] public Player player;
     [HideInInspector] public PlayerController playerController;
 
+
     public PlayerNetworkInputData input { get; private set; }
     public NetworkButtons prevInputButtons;
 
     public BaseState currentState;
 
-    [Networked] public bool IsAnimationFinished { get; set; }
+    [Networked, HideInInspector] public bool IsAnimationFinished { get; set; }
 
     protected virtual void Awake()
     {

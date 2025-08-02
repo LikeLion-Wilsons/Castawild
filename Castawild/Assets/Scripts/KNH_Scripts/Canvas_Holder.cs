@@ -10,7 +10,8 @@ public class Canvas_Holder : MonoBehaviour
 
     public bool isDragging = false;
     // 수정한 부분
-    public Player player;
+    private Player player;
+    public UIStats uiStats;
 
     private void Awake()
     {
@@ -70,8 +71,8 @@ public class Canvas_Holder : MonoBehaviour
                 player.RPC_IsUIOpen(true);
             else
                 player.RPC_IsUIOpen(false);
-			
-			OnUIActive.Invoke(uiParts["Inventory"].IsOpen());
+
+            OnUIActive.Invoke(uiParts["Inventory"].IsOpen());
         }
     }
 
@@ -88,5 +89,11 @@ public class Canvas_Holder : MonoBehaviour
                 return true;
         }
         return false;
+    }
+
+    public void SetPlayer(Player _player)
+    {
+        player = _player;
+        uiStats.player = player;
     }
 }

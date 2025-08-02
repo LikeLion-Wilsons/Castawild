@@ -11,7 +11,17 @@ public enum ItemType { None, Default, Tool, Food, Drink, Placeable }
 
 public class Player : NetworkBehaviour
 {
-    public PlayerData playerData;
+    [Header("Status")]
+    public PlayerData playerData = new PlayerData();
+
+    [Header("Current Status")]
+    [Networked] public float Hp { get; set; }
+    [Networked] public float Stamina { get; set; }
+    [Networked] public float Hunger { get; set; }
+    [Networked] public float Thirst { get; set; }
+    [Networked] public float Temperature { get; set; }
+
+    public float staminaDecreaseRate = 1f;
 
     #region Components
     [HideInInspector] public Animator anim;
@@ -23,17 +33,17 @@ public class Player : NetworkBehaviour
     [HideInInspector] public PlayerCameraManager cameraManager;
     #endregion
 
-    #region Throw
-    public float throwForce = 10f;
-    public float throwUpForce = 5f;
-    #endregion
-
     #region Tool
+    [Header("Tool")]
     [SerializeField] private Transform tools;
     private Dictionary<int, GameObject> toolDict = new Dictionary<int, GameObject>();
     #endregion
 
     #region Interact
+    [Header("Interact")]
+    [HideInInspector] public Bed currentBed;
+
+    [Header("UI")]
     public Image crosshairImage;
     [SerializeField] private Sprite originImage;
     [SerializeField] private Sprite axeImage;
@@ -41,16 +51,16 @@ public class Player : NetworkBehaviour
     public CanvasGroup interactableUI;
     public TextMeshProUGUI interactableText;
     public CanvasGroup placeableUI;
-    [HideInInspector] public Bed currentBed;
     #endregion
 
-    [Networked] public bool CanMove { get; set; } = true;
-    [Networked] public bool IsUIOpen { get; set; }
-    [Networked] public bool IsCursorLocked { get; set; }
+    [Header("Networked")]
+    [Networked, HideInInspector] public bool CanMove { get; set; } = true;
+    [Networked, HideInInspector] public bool IsUIOpen { get; set; }
+    [Networked, HideInInspector] public bool IsCursorLocked { get; set; }
 
     [Networked] public string CurrentToolName { get; set; }
-    [Networked] public int CurrentToolAtt { get; set; }
-    [Networked] public int CurrentToolID { get; set; }
+    [Networked, HideInInspector] public int CurrentToolAtt { get; set; }
+    [Networked, HideInInspector] public int CurrentToolID { get; set; }
 
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isAimLocked = false;
@@ -61,7 +71,17 @@ public class Player : NetworkBehaviour
     override public void Spawned()
     {
         isSpawned = true;
+        InitStatus();
         InitTools();
+    }
+
+    private void InitStatus()
+    {
+        Hp = playerData.maxHp;
+        Stamina = playerData.maxStamina;
+        Hunger = playerData.maxHunger;
+        Thirst = playerData.maxThirst;
+        Temperature = playerData.maxTemperature;
     }
 
     private void Awake()

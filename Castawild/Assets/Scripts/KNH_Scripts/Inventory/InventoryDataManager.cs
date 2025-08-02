@@ -50,7 +50,7 @@ public class InventoryDataManager : NetworkBehaviour
 
             canvasHolder = uiCanvas.GetComponent<Canvas_Holder>();
             player = GetComponent<Player>();
-            canvasHolder.player = player;
+            canvasHolder.SetPlayer(player);
 
             int i = 0;
             while (i < 9)

@@ -1,9 +1,6 @@
 using Fusion;
 using Fusion.Addons.SimpleKCC;
-using Test;
 using UnityEngine;
-using UnityEngine.UI;
-using YSB_Scripts;
 
 [DisallowMultipleComponent]
 public sealed class PlayerController : NetworkBehaviour
@@ -27,7 +24,7 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private LayerMask interactLayer;
     [HideInInspector] public EnvironmentObject currentInteractObject;
 
-    [Networked] public bool Grounded { get; set; }
+    [Networked, HideInInspector] public bool Grounded { get; set; }
 
     Collider[] _interactResult = new Collider[5];
 
