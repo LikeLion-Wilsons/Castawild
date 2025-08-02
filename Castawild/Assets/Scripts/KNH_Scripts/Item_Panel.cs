@@ -45,6 +45,11 @@ public class Item_Panel :
         Canvas_Holder.OnUIActive+= OnUIActive;
     }
 
+    void OnDestroy()
+    {
+        Canvas_Holder.OnUIActive -= OnUIActive;
+    }
+
     void OnUIActive(bool active)
     {
         if (active == false && inventoryData.canvasHolder.isDragging)
@@ -107,9 +112,10 @@ public class Item_Panel :
         if (item.itemID != -1 && item.count != 0)
         {
             itemData.gameObject.SetActive(true);
-            //임시
             item_icon.sprite = item.GetData().image;
-            itemCountText.text = item.count.ToString();
+            //도구형 아이템은 개수 표시 안함
+            if (item.itemID / 100 == 4) itemCountText.gameObject.SetActive(false);
+            else itemCountText.text = item.count.ToString();
             durabilityBar.fillAmount = item.durability;
         }
         else
