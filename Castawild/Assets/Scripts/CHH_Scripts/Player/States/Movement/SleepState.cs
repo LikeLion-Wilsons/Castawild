@@ -15,14 +15,13 @@ public class SleepState : MovementBaseState
         movementManager.CurrentMoveState = MoveAnimationState.Sleep;
         movementManager.currentMoveType = MoveType.Idle;
 
-        if (movementManager.HasInputAuthority)
-            movementManager.player.interactableUI.alpha = 1f;
-        movementManager.player.interactableText.text = "Wake Up";
-
         movementManager.CanWakeUp = false;
 
         if (movementManager.HasStateAuthority)
+        {
+            movementManager.player.RPC_TurnOffUI();
             movementManager.cameraManager.RPC_ApplySleepCameraView(true);
+        }
     }
 
     public override void UpdateState()
@@ -35,10 +34,10 @@ public class SleepState : MovementBaseState
 
     public override void ExitState()
     {
-        if (movementManager.HasInputAuthority)
-            movementManager.player.interactableUI.alpha = 0f;
-
-        if (movementManager.HasInputAuthority)
+        if (movementManager.HasStateAuthority)
+        {
+            movementManager.player.RPC_SetWakeUpUI(false);
             movementManager.cameraManager.RPC_ApplySleepCameraView(false);
+        }
     }
 }

@@ -32,5 +32,9 @@ public class AnimationTrigger : MonoBehaviour
 
     public void Interact() => playercontroller.Interact();
     public void FinishSleep() => player.FinishSleep();
-    public void CanWakeUp() => movementManager.CanWakeUp = true;
+    public void CanWakeUp()
+    {
+        movementManager.CanWakeUp = true;
+        player.RPC_SetWakeUpUI(true);
+    }
 }

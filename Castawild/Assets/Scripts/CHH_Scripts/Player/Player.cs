@@ -44,13 +44,14 @@ public class Player : NetworkBehaviour
     [HideInInspector] public Bed currentBed;
 
     [Header("UI")]
+    public CanvasGroup interactableUI;
+    public CanvasGroup placeableUI;
     public Image crosshairImage;
+
+    public TextMeshProUGUI interactableText;
     [SerializeField] private Sprite originImage;
     [SerializeField] private Sprite axeImage;
     [SerializeField] private Sprite pickaxeImage;
-    public CanvasGroup interactableUI;
-    public TextMeshProUGUI interactableText;
-    public CanvasGroup placeableUI;
     #endregion
 
     [Header("Networked")]
@@ -221,11 +222,14 @@ public class Player : NetworkBehaviour
     {
         if (HasInputAuthority)
         {
+            RPC_FinishSleep();
             currentBed.FinishSleep();
             currentBed = default;
-            CanMove = true;
         }
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_FinishSleep() => CanMove = true;
 
     public bool CanMoving() => CanMove && IsCursorLocked;
 
@@ -280,21 +284,50 @@ public class Player : NetworkBehaviour
 
     public void InteractUI(InteractableType interactableType = InteractableType.None)
     {
-        // 나무/돌은 조준점만
-        if (interactableType == InteractableType.None || interactableType == InteractableType.Tree || interactableType == InteractableType.Stone)
+        if (interactableType == InteractableType.Bed ||
+            interactableType == InteractableType.Box ||
+            interactableType == InteractableType.Campfire ||
+            interactableType == InteractableType.WaterPurifier)
         {
-            placeableUI.alpha = 0f;
-            interactableUI.alpha = 0f;
-            ChangeCrosshairUI(interactableType);
-            return;
+            interactableUI.alpha = 1f;
+            placeableUI.alpha = 1f;
         }
 
-        // Placeable
-        else if (interactableType != InteractableType.Item)
-            placeableUI.alpha = 1f;
+        else if (interactableType == InteractableType.Tree || interactableType == InteractableType.Stone)
+        {
+            interactableUI.alpha = 0f;
+            placeableUI.alpha = 0f;
+        }
 
-        interactableUI.alpha = 1f;
+        else if (interactableType == InteractableType.Item)
+        {
+            interactableUI.alpha = 1f;
+            placeableUI.alpha = 0f;
+        }
+
+        else if (interactableType == InteractableType.None)
+        {
+            interactableUI.alpha = 0f;
+            placeableUI.alpha = 0f;
+        }
 
         ChangeCrosshairUI(interactableType);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+
+    public void RPC_TurnOffUI() => interactableUI.alpha = 0f;
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_SetWakeUpUI(bool isSleep)
+    {
+        Debug.Log("WakeUp true");
+        if (isSleep)
+        {
+            interactableUI.alpha = 1f;
+            interactableText.text = "Wake Up";
+        }
+        else
+            interactableUI.alpha = 0f;
     }
 }
