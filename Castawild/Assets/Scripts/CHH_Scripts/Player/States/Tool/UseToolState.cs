@@ -80,7 +80,8 @@ public class UseToolState : ToolBaseState
 
     public void SetActiveArmMesh(bool isActive)
     {
-        toolStateManager.ArmVisibleChanged(isActive);
+        if (toolStateManager.HasStateAuthority)
+            toolStateManager.RPC_ArmVisibleChanged(isActive);
 
         if (toolStateManager.CurrentToolType == ToolType.Fist && toolStateManager.cameraManager.currentView == ViewType.FirstPerson
             && toolStateManager.HasInputAuthority)

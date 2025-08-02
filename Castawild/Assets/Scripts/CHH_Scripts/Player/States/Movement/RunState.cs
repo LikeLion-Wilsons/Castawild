@@ -1,3 +1,6 @@
+using UnityEngine;
+using static Unity.Collections.Unicode;
+
 public class RunState : MovementBaseState
 {
     public RunState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
@@ -14,6 +17,16 @@ public class RunState : MovementBaseState
 
     public override void UpdateState()
     {
+        if (movementManager.HasStateAuthority)
+        {
+            if (movementManager.Stamina <= 0)
+            {
+                movementManager.ChangeState(movementManager.walkState);
+                return;
+            }
+            movementManager.Stamina -= movementManager.player.staminaDecreaseRate * movementManager.Runner.DeltaTime;
+        }
+
         // Walk
         if (movementManager.input.IsUp(PlayerNetworkInputData.sprintInput))
             movementManager.ChangeState(movementManager.walkState);

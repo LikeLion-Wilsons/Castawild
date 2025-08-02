@@ -701,6 +701,7 @@ GameObject:
   - component: {fileID: 4923192095475422838}
   - component: {fileID: 5059391615841553791}
   - component: {fileID: 4060323632390679247}
+  - component: {fileID: 8256277296280362921}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -793,6 +794,25 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &8256277296280362921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1614097380249645196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1681eb2bca87e649a45e68d33d7058c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactableUI: {fileID: 4835231499433151479}
+  placeableUI: {fileID: 3262131317510922916}
+  crosshairImage: {fileID: 1497862815240175391}
+  interactableText: {fileID: 4697920596943624128}
+  originImage: {fileID: 21300000, guid: e63e19b592fc89c46b22961b98684cd8, type: 3}
+  axeImage: {fileID: 21300000, guid: 1963a850e6795bd48a4297d98d345277, type: 3}
+  pickaxeImage: {fileID: 21300000, guid: 4e20a6e4a49bb5548992241a1c2f79c2, type: 3}
 --- !u!1 &1666858941217677416
 GameObject:
   m_ObjectHideFlags: 0
@@ -3363,9 +3383,10 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7813269517312369915}
-  - {fileID: 3312262715438081692}
   - {fileID: 6893158983951836988}
   - {fileID: 1537898097600247738}
+  - {fileID: 3312262715438081692}
+  - {fileID: 5508614353083602396}
   - {fileID: 3533680929014235342}
   - {fileID: 3517969266310779276}
   - {fileID: 7467696255462433047}
@@ -3446,32 +3467,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5a853199b9360a4b83abacd575d5062, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerData: {fileID: 11400000, guid: 643df4f9e15c3f445a30530c009e87cf, type: 2}
+  playerData:
+    characterName: 
+    maxHp: 100
+    maxStamina: 100
+    armor: 10
+    attack: 10
+    maxHunger: 100
+    hunger: 100
+    maxThirst: 100
+    maxTemperature: 100
+  _Hp: 0
+  _Stamina: 0
+  _Hunger: 0
+  _Thirst: 0
+  _Temperature: 0
+  staminaDecreaseRate: 1
   anim: {fileID: 0}
   rigid: {fileID: 0}
+  playerInteractUI: {fileID: 0}
   playerController: {fileID: 0}
   inputManager: {fileID: 0}
   movementManager: {fileID: 0}
   toolStateManager: {fileID: 0}
   cameraManager: {fileID: 0}
-  throwForce: 10
-  throwUpForce: 5
   tools: {fileID: 7844614530758869572}
-  crosshairImage: {fileID: 1497862815240175391}
-  originImage: {fileID: 21300000, guid: e63e19b592fc89c46b22961b98684cd8, type: 3}
-  axeImage: {fileID: 21300000, guid: 1963a850e6795bd48a4297d98d345277, type: 3}
-  pickaxeImage: {fileID: 21300000, guid: 4e20a6e4a49bb5548992241a1c2f79c2, type: 3}
-  interactableUI: {fileID: 4835231499433151479}
-  interactableText: {fileID: 4697920596943624128}
-  placeableUI: {fileID: 3262131317510922916}
-  _CurrentBedID:
-    Raw: 0
+  currentBed: {fileID: 0}
   _CanMove: 1
   _IsUIOpen: 0
   _IsCursorLocked: 0
   _CurrentToolName: 
   _CurrentToolAtt: 0
   _CurrentToolID: 0
+  _IsSleeping: 0
   inventory: {fileID: 0}
   isAimLocked: 0
   isSpawned: 0
@@ -3528,21 +3556,19 @@ MonoBehaviour:
   crouchSpeed: 2
   rotationSpeed: 10
   canJump: 1
-  sensitivity: 1.5
-  maxXRotation: 80
-  minXRotation: -80
+  gravity: -9.81
+  jumpForce: 8
+  isJumping: 0
+  velocity: {x: 0, y: 0, z: 0}
   groundYOffset: 0
   groundCheckRadius: 0.3
   groundMask:
     serializedVersion: 2
     m_Bits: 8
   fallMultiplier: 1.5
-  gravity: -9.81
-  jumpForce: 8
-  isJumping: 0
-  velocity: {x: 0, y: 0, z: 0}
   animationLerpSpeed: 10
   isTriggerSet: 0
+  isLyingOrGettingUp: 0
   _CurrentMoveState: 0
   _JumpTriggered: 0
   _CanWakeUp: 0
@@ -4060,8 +4086,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAiming: 0
   currentView: 1
-  firstPersonCam: {fileID: 3849144779001713377}
-  firstPersonTarget: {fileID: 3312262715438081692}
   playerMeshes:
   - {fileID: 3201401248480740544}
   - {fileID: 1511078505299715385}
@@ -4069,9 +4093,11 @@ MonoBehaviour:
   - {fileID: 3653424579983766144}
   - {fileID: 7288379860564303627}
   playerHead: {fileID: 8440806264938112468}
+  firstPersonCam: {fileID: 3849144779001713377}
+  firstPersonTarget: {fileID: 3312262715438081692}
+  firstPerson_AimTargetPos: {fileID: 5508614353083602396}
+  firstPerson_AimFov: 40
   sensitivity: 0.5
-  maxXRotation: 80
-  minXRotation: -80
   minPitch: -80
   maxPitch: 80
   minYaw: -90
@@ -4080,7 +4106,7 @@ MonoBehaviour:
   thirdPersonTarget: {fileID: 3533680929014235342}
   thirdPerson_AimTargetPos: {fileID: 3517969266310779276}
   thirdPerson_AimFov: 40
-  thirdPerson_aimZoomDuration: 0.3
+  aimZoomDuration: 0.3
   zoomSpeed: 2
   zoomLerpSpeed: 10
   minDistance: 3
@@ -4210,6 +4236,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1658880377584063772}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8558716601116625296
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5508614353083602396}
+  m_Layer: 0
+  m_Name: FirstPersonAimCameraPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5508614353083602396
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8558716601116625296}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 3.26, z: 5.05}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6388187669656790763}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8586754752780306059
 GameObject:

@@ -1,8 +1,6 @@
 using Fusion;
 using Fusion.Addons.SimpleKCC;
-using Test;
 using UnityEngine;
-using UnityEngine.UI;
 
 [DisallowMultipleComponent]
 public sealed class PlayerController : NetworkBehaviour
@@ -26,7 +24,7 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private LayerMask interactLayer;
     [HideInInspector] public EnvironmentObject currentInteractObject;
 
-    [Networked] public bool Grounded { get; set; }
+    [Networked, HideInInspector] public bool Grounded { get; set; }
 
     Collider[] _interactResult = new Collider[5];
 
@@ -55,10 +53,11 @@ public sealed class PlayerController : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (GetInput<PlayerNetworkInputData>(out var input) && HasStateAuthority)
-        {
-            maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
+        if (!GetInput<PlayerNetworkInputData>(out var input))
+            return;
 
+        if (HasStateAuthority)
+        {
             movementManager.SetInput(input);
             toolManager.SetInput(input);
 
@@ -67,28 +66,32 @@ public sealed class PlayerController : NetworkBehaviour
 
             movementManager.SetPrevInputButton(input.Buttons);
             toolManager.SetPrevInputButton(input.Buttons);
+        }
 
-            if (!player.CanMove)
+        if (!player.CanMove)
+        {
+            if (HasStateAuthority)
             {
                 // 중력만 적용해서 return
                 Vector3 velocity = kcc.RealVelocity;
                 velocity.y += gravity * Runner.DeltaTime;
                 kcc.Move(velocity);
                 Grounded = kcc.IsGrounded;
-                return;
             }
+            return;
+        }
 
+        maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
+        movementManager.MoveValue = input.moveValue;
+
+        if (HasStateAuthority)
+            Move(input.moveDir);
+        Rotate(input);
+
+        if (HasInputAuthority)
             TestTryOverlap(input);
 
-            if (!player.CanMove)
-                return;
-
-            movementManager.MoveValue = input.moveValue;
-            Move(input.moveDir);
-
-            prevInputButtons = input.Buttons;
-        }
-        Rotate(input);
+        prevInputButtons = input.Buttons;
     }
 
     public void Move(Vector3 direction)
@@ -121,11 +124,10 @@ public sealed class PlayerController : NetworkBehaviour
         // 첫 번재 인자 : 이동 벡터(속도) -> moveDir * speed, 중력 포함해서 넣기
         // 두 번째 인자 : y축 점프 힘 -> 점프 눌렀을 때만 값넣기, 아니면 0
         // Move 함수의 ManualFixedUpdate 내부에서 DeltaTime 곱하기 때문에 여기서는 곱하지 말기
-        if (HasStateAuthority)
-        {
-            kcc.Move(velocity, jump);
-            Grounded = kcc.IsGrounded;
-        }
+
+        kcc.Move(velocity, jump);
+        Grounded = kcc.IsGrounded;
+
     }
 
     private void Rotate(PlayerNetworkInputData input)
@@ -172,7 +174,7 @@ public sealed class PlayerController : NetworkBehaviour
                 {
                     if (interactable.CanInteract())
                     {
-                        player.RPC_InteractUI(interactable.interactableType);
+                        player.playerInteractUI.InteractUI(interactable.interactableType);
                         currentInteractObject = interactable;
                         break;
                     }
@@ -181,8 +183,8 @@ public sealed class PlayerController : NetworkBehaviour
                 // 다른 오브젝트 
                 else if (_interactResult[i].TryGetComponent<InteractableObject>(out var interactableObject))
                 {
-                    player.RPC_InteractUI(interactableObject.interactableType);
-                    player.interactableText.text = interactableObject.text;
+                    player.playerInteractUI.InteractUI(interactableObject.interactableType);
+                    player.playerInteractUI.interactableText.text = interactableObject.text;
 
                     // 설치가능한 오브젝트
                     if (interactableObject.isPlaceable)
@@ -204,7 +206,7 @@ public sealed class PlayerController : NetworkBehaviour
         }
         else
         {
-            player.RPC_InteractUI();
+            player.playerInteractUI.InteractUI();
             currentInteractObject = null;
         }
 
@@ -254,5 +256,11 @@ public sealed class PlayerController : NetworkBehaviour
             Debug.Log("Player Att : " + att);
             currentInteractObject?.Interact(Object.InputAuthority, att);
         }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_SetPosition(Vector3 position)
+    {
+        kcc.SetPosition(position);
     }
 }
