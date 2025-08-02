@@ -3018,6 +3018,37 @@ Transform:
   - {fileID: 1806554494072874901}
   m_Father: {fileID: 7795445470291607828}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5945523982237185583
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8012178248796667738}
+  m_Layer: 6
+  m_Name: ThrowPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8012178248796667738
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5945523982237185583}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.91, z: 1.39}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6388187669656790763}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6063467021221887537
 GameObject:
   m_ObjectHideFlags: 0
@@ -3391,6 +3422,7 @@ Transform:
   - {fileID: 3517969266310779276}
   - {fileID: 7467696255462433047}
   - {fileID: 3860441751889761913}
+  - {fileID: 8012178248796667738}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7933685528624486573
@@ -3474,7 +3506,6 @@ MonoBehaviour:
     armor: 10
     attack: 10
     maxHunger: 100
-    hunger: 100
     maxThirst: 100
     maxTemperature: 100
   _Hp: 0
@@ -3483,6 +3514,8 @@ MonoBehaviour:
   _Thirst: 0
   _Temperature: 0
   staminaDecreaseRate: 1
+  hungerDecreaseRate: 1
+  thirstDecreaseRate: 1
   anim: {fileID: 0}
   rigid: {fileID: 0}
   playerInteractUI: {fileID: 0}
@@ -3529,6 +3562,8 @@ MonoBehaviour:
     m_Bits: 256
   currentInteractObject: {fileID: 0}
   _Grounded: 0
+  throwObject: {fileID: 2851996315657733653, guid: 622425fdfb35f88448956003b0686135, type: 3}
+  throwPos: {fileID: 8012178248796667738}
 --- !u!114 &3318766871343913700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4086,6 +4121,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAiming: 0
   currentView: 1
+  sensitivity: 0.5
+  minPitch: -80
+  maxPitch: 80
+  minYaw: -90
+  maxYaw: 90
   playerMeshes:
   - {fileID: 3201401248480740544}
   - {fileID: 1511078505299715385}
@@ -4095,13 +4135,7 @@ MonoBehaviour:
   playerHead: {fileID: 8440806264938112468}
   firstPersonCam: {fileID: 3849144779001713377}
   firstPersonTarget: {fileID: 3312262715438081692}
-  firstPerson_AimTargetPos: {fileID: 5508614353083602396}
   firstPerson_AimFov: 40
-  sensitivity: 0.5
-  minPitch: -80
-  maxPitch: 80
-  minYaw: -90
-  maxYaw: 90
   thirdPersonCam: {fileID: 1706552347776469061}
   thirdPersonTarget: {fileID: 3533680929014235342}
   thirdPerson_AimTargetPos: {fileID: 3517969266310779276}

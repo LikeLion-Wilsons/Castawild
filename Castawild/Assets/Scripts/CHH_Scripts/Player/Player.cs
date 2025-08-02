@@ -1,8 +1,6 @@
 using Fusion;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
