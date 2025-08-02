@@ -166,11 +166,10 @@ public class ToolStateManager : BaseStateManager
     /// </summary>
     public bool HoldAimTool() => CurrentToolType == ToolType.Bow || CurrentToolType == ToolType.Throw;
 
-    public void ArmVisibleChanged(bool isVisible)
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ArmVisibleChanged(bool isVisible)
     {
-        if (HasInputAuthority && cameraManager.currentView == ViewType.FirstPerson)
-        {
+        if (cameraManager.currentView == ViewType.FirstPerson)
             armMesh.SetActive(isVisible);
-        }
     }
 }

@@ -1,3 +1,4 @@
+using Fusion;
 using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -9,6 +10,7 @@ public class PlayerCameraManager : MonoBehaviour
     #region Components
     private PlayerController playerController;
     private PlayerInputManager inputManager;
+    private MovementStateManager movementManager;
     private CinemachineOrbitalFollow orbital;
     private CinemachineInputAxisController inputAxisController;
     private ToolStateManager toolManager;
@@ -91,6 +93,7 @@ public class PlayerCameraManager : MonoBehaviour
         player = GetComponentInParent<Player>();
         playerController = GetComponentInParent<PlayerController>();
         inputManager = GetComponentInParent<PlayerInputManager>();
+        movementManager = GetComponentInParent<MovementStateManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
         orbital = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
         inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
@@ -196,12 +199,12 @@ public class PlayerCameraManager : MonoBehaviour
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         // 자고있을 때 좌우회전 추가
-        if (!player.CanMoving())
+        if (movementManager.currentState == movementManager.sleepState)
         {
             yaw += inputManager.lookInput.x * sensitivity;
             yaw = Mathf.Clamp(yaw, minYaw, maxYaw);
         }
-        else if (player.CanMoving() && yaw != 0f)
+        else if (movementManager.currentState != movementManager.sleepState && yaw != 0f)
             yaw = 0f;
 
         firstPersonCam.transform.localEulerAngles = new Vector3(pitch, yaw, 0f);
@@ -262,7 +265,8 @@ public class PlayerCameraManager : MonoBehaviour
         thirdPersonTarget.localPosition = targetPos;
     }
 
-    public void SleepCamera(bool isSleep)
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplySleepCameraView(bool isSleep)
     {
         if (isSleep)
         {
