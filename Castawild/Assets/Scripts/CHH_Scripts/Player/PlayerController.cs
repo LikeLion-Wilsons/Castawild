@@ -68,7 +68,7 @@ public sealed class PlayerController : NetworkBehaviour
                 toolManager.SetPrevInputButton(input.Buttons);
             }
 
-            if (!player.CanMove)
+            if (!player.CanMove && HasStateAuthority)
             {
                 // 중력만 적용해서 return
                 Vector3 velocity = kcc.RealVelocity;
@@ -81,7 +81,8 @@ public sealed class PlayerController : NetworkBehaviour
             maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
             movementManager.MoveValue = input.moveValue;
 
-            Move(input.moveDir);
+            if (HasStateAuthority)
+                Move(input.moveDir);
             Rotate(input);
 
             if (HasInputAuthority)
@@ -124,6 +125,7 @@ public sealed class PlayerController : NetworkBehaviour
 
         kcc.Move(velocity, jump);
         Grounded = kcc.IsGrounded;
+
     }
 
     private void Rotate(PlayerNetworkInputData input)

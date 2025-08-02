@@ -22,7 +22,6 @@ public class UIStats : MonoBehaviour
         thirstBar.fillAmount = player.Thirst / player.playerData.maxThirst;
         temperatureBar.fillAmount = player.Temperature / player.playerData.maxTemperature;
         healthBar.fillAmount = player.Hp / player.playerData.maxHp;
-        Debug.Log(staminaBar.fillAmount);
         staminaBar.fillAmount = player.Stamina / player.playerData.maxStamina;
     }
 }

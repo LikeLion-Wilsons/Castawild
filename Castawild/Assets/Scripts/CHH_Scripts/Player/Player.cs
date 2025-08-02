@@ -198,8 +198,6 @@ public class Player : NetworkBehaviour
 
     public bool CanUseTool()
     {
-        if (!HasInputAuthority)
-            Debug.Log("UI Open : " + IsUIOpen + "  CanMove : " + CanMove);
         return !IsUIOpen && CanMove;
     }
 
