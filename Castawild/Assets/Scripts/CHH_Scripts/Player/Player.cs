@@ -22,6 +22,8 @@ public class Player : NetworkBehaviour
     [Networked] public float Temperature { get; set; }
 
     public float staminaDecreaseRate = 1f;
+    public float hungerDecreaseRate = 1f;
+    public float thirstDecreaseRate = 1f;
 
     #region Components
     [HideInInspector] public Animator anim;
@@ -77,6 +79,22 @@ public class Player : NetworkBehaviour
         Temperature = playerData.maxTemperature;
     }
 
+    private void InitTools()
+    {
+        foreach (Transform tool in tools)
+        {
+            ToolInfo itemInfo = tool.GetComponent<ToolInfo>();
+            if (itemInfo != null)
+            {
+                if (!toolDict.ContainsKey(itemInfo.ItemID))
+                {
+                    toolDict.Add(itemInfo.ItemID, tool.gameObject);
+                    tool.gameObject.SetActive(false);
+                }
+            }
+        }
+    }
+
     private void Awake()
     {
         InitComponents();
@@ -95,19 +113,12 @@ public class Player : NetworkBehaviour
         inventory = GetComponent<InventoryDataManager>();
     }
 
-    private void InitTools()
+    public override void FixedUpdateNetwork()
     {
-        foreach (Transform tool in tools)
+        if (HasStateAuthority)
         {
-            ToolInfo itemInfo = tool.GetComponent<ToolInfo>();
-            if (itemInfo != null)
-            {
-                if (!toolDict.ContainsKey(itemInfo.ItemID))
-                {
-                    toolDict.Add(itemInfo.ItemID, tool.gameObject);
-                    tool.gameObject.SetActive(false);
-                }
-            }
+            Hunger -= hungerDecreaseRate * Runner.DeltaTime;
+            Thirst -= thirstDecreaseRate * Runner.DeltaTime;
         }
     }
 
