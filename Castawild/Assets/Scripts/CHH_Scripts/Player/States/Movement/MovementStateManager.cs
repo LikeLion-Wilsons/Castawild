@@ -10,6 +10,7 @@ public class MovementStateManager : BaseStateManager
     #endregion
 
     #region States
+    [Header("State")]
     public MovementBaseState previousState;
     public IdleState idleState;
     public WalkState walkState;
@@ -21,6 +22,7 @@ public class MovementStateManager : BaseStateManager
     #endregion
 
     #region Movement
+    [Header("Movement")]
     public float currentMoveSpeed;
     public float airSpeedMuliplier = 0.7f;
     public float walkSpeed = 3f;
@@ -28,13 +30,16 @@ public class MovementStateManager : BaseStateManager
     public float crouchSpeed = 2f;
     public float rotationSpeed = 10f;
     [HideInInspector] public bool canJump = true;
-
-    public float sensitivity = 1.5f;
-    public float maxXRotation = 80f;
-    public float minXRotation = -80f;
     #endregion
 
+    [Space]
+    public float gravity = -20f;
+    public float jumpForce = 10f;
+    [HideInInspector] public bool isJumping;
+    [HideInInspector] public Vector3 velocity;
+
     #region GoundCheck
+    [Header("GoundCheck")]
     [SerializeField] private float groundYOffset;
     [SerializeField] private float groundCheckRadius = 0.3f;
     [SerializeField] private LayerMask groundMask;
@@ -42,24 +47,25 @@ public class MovementStateManager : BaseStateManager
     private Vector3 spherePos;
     #endregion
 
-    #region Gravity
-    public float gravity = -20f;
-    public float jumpForce = 10f;
-    [HideInInspector] public bool isJumping;
-    [HideInInspector] public Vector3 velocity;
-    #endregion
-
     #region Animation
+    [Header("Animation")]
     [SerializeField] private float animationLerpSpeed = 10f;
-    public bool isTriggerSet = false;
+    [HideInInspector] public bool isTriggerSet = false;
     #endregion
 
     #region Network
+    [Header("Networked")]
     [Networked] public MoveAnimationState CurrentMoveState { get; set; }
-    [Networked] public bool JumpTriggered { get; set; }
-    [Networked] public bool CanWakeUp { get; set; }
-    [Networked] public Vector2 MoveValue { get; set; }
+    [Networked, HideInInspector] public bool JumpTriggered { get; set; }
+    [Networked, HideInInspector] public bool CanWakeUp { get; set; }
+    [Networked, HideInInspector] public Vector2 MoveValue { get; set; }
     #endregion
+
+    public float Stamina
+    {
+        get => player.Stamina;
+        set => player.Stamina = value;
+    }
 
     protected override void Awake()
     {
@@ -175,5 +181,13 @@ public class MovementStateManager : BaseStateManager
     public void RPC_ChangeSleepState(PlayerRef playerRef)
     {
         ChangeState(sleepState);
+    }
+
+    public bool HasEnoughStaminaToRun()
+    {
+        if (Stamina <= player.playerData.maxStamina * 0.3f)
+            return false;
+
+        return true;
     }
 }
