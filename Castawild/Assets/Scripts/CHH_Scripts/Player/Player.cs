@@ -118,13 +118,13 @@ public class Player : NetworkBehaviour
         }
         else
         {
-            Debug.Log("Active False");
             if (HasInputAuthority)
                 RPC_EquipmentTool();
             SetCurrentTool();
         }
 
-        toolStateManager.ChangeSelectedItem(itemIdx);
+        if (HasInputAuthority)
+            toolStateManager.RPC_ChangeSelectedItem(itemIdx);
     }
 
     private void SetCurrentItemType(int _currentItemIdx)
@@ -143,7 +143,6 @@ public class Player : NetworkBehaviour
             currentItemType = ItemType.Tool;
         else
             currentItemType = ItemType.Default;
-        Debug.Log(currentItemType);
     }
 
     /// <summary>
@@ -154,7 +153,7 @@ public class Player : NetworkBehaviour
         RPC_EquipmentTool();
         SetCurrentTool();
 
-        toolStateManager.ChangeSelectedItem();
+        toolStateManager.RPC_ChangeSelectedItem();
     }
 
     public void ChangeCrosshairUI(InteractableType type = InteractableType.None)
