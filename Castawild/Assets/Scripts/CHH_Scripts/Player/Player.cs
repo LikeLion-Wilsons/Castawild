@@ -41,7 +41,7 @@ public class Player : NetworkBehaviour
     public CanvasGroup interactableUI;
     public TextMeshProUGUI interactableText;
     public CanvasGroup placeableUI;
-    [Networked, HideInInspector] public NetworkId CurrentBedID { get; set; }
+    [HideInInspector] public Bed currentBed;
     #endregion
 
     [Networked] public bool CanMove { get; set; } = true;
@@ -202,13 +202,10 @@ public class Player : NetworkBehaviour
 
     public void FinishSleep()
     {
-        if (HasStateAuthority)
+        if (HasInputAuthority)
         {
-            NetworkObject bedObj = Runner.FindObject(CurrentBedID);
-            Bed bed = bedObj?.GetComponent<Bed>();
-
-            bed.FinishSleep();
-            CurrentBedID = default;
+            currentBed.FinishSleep();
+            currentBed = default;
             CanMove = true;
         }
     }
@@ -264,8 +261,7 @@ public class Player : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_CursorLocked(bool isLocked) => IsCursorLocked = isLocked;
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_InteractUI(InteractableType interactableType = InteractableType.None)
+    public void InteractUI(InteractableType interactableType = InteractableType.None)
     {
         // 나무/돌은 조준점만
         if (interactableType == InteractableType.None || interactableType == InteractableType.Tree || interactableType == InteractableType.Stone)

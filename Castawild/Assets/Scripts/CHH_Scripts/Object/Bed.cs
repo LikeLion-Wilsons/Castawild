@@ -21,10 +21,10 @@ public class Bed : InteractableObject
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
 
         Player player = playerObj.GetComponent<Player>();
-        player.CurrentBedID = Object.Id;
-        player.movementManager.ChangeState(player.movementManager.sleepState);
+        player.currentBed = this;
+        player.movementManager.RPC_ChangeSleepState(playerRef);
 
         PlayerController playerController = playerObj.GetComponent<PlayerController>();
-        playerController.kcc.SetPosition(sleepPos.position);
+        playerController.RPC_SetPosition(sleepPos.position);
     }
 }
