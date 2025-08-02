@@ -188,9 +188,16 @@ public class PlayerCameraManager : MonoBehaviour
         thirdPersonCam.GetComponent<CinemachineOrbitalFollow>().VerticalAxis.Value = 22f;
     }
 
-    // 카메라 상하각도 조절
+    // 1인칭 카메라 상하각도 조절
     private void UpdateCameraPitch()
     {
+        if (movementManager.isLyingOrGettingUp && currentView == ViewType.FirstPerson)
+        {
+            Vector3 flatForward = new Vector3(player.transform.forward.x, 0f, player.transform.forward.z).normalized;
+            firstPersonCam.transform.rotation = Quaternion.LookRotation(flatForward);
+            return;
+        }
+
         if (currentView == ViewType.ThirdPerson || !player.IsCursorLocked)
             return;
 

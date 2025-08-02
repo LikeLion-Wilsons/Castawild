@@ -1,5 +1,5 @@
-using Fusion;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class AnimationTrigger : MonoBehaviour
 {
@@ -7,6 +7,7 @@ public class AnimationTrigger : MonoBehaviour
     private PlayerController playercontroller;
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
+    private PlayerCameraManager cameraManager;
 
     private void Awake()
     {
@@ -14,6 +15,7 @@ public class AnimationTrigger : MonoBehaviour
         playercontroller = GetComponentInParent<PlayerController>();
         movementManager = GetComponentInParent<MovementStateManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
+        cameraManager = transform.parent.GetComponentInChildren<PlayerCameraManager>();
     }
 
     public void ToolAnimationFinishTrigger() => toolManager.IsAnimationFinished = true;
@@ -31,10 +33,26 @@ public class AnimationTrigger : MonoBehaviour
     }
 
     public void Interact() => playercontroller.Interact();
-    public void FinishSleep() => player.FinishSleep();
+    public void FinishSleep()
+    {
+        if (player.HasStateAuthority)
+            player.CanMove = true;
+
+        if (player.HasInputAuthority)
+        {
+            player.FinishSleep();
+            cameraManager.RPC_ApplySleepCameraView(false);
+        }
+    }
+
     public void CanWakeUp()
     {
-        movementManager.CanWakeUp = true;
-        player.RPC_SetWakeUpUI(true);
+        if (player.HasStateAuthority)
+            movementManager.CanWakeUp = true;
+
+        if (player.HasInputAuthority)
+            player.SetWakeUpUI();
     }
+
+    public void LyingOrGettingUp(int playing) => movementManager.isLyingOrGettingUp = (playing != 0);
 }

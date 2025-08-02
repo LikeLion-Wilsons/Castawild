@@ -35,9 +35,6 @@ public class SleepState : MovementBaseState
     public override void ExitState()
     {
         if (movementManager.HasStateAuthority)
-        {
-            movementManager.player.RPC_SetWakeUpUI(false);
-            movementManager.cameraManager.RPC_ApplySleepCameraView(false);
-        }
+            movementManager.player.RPC_TurnOffUI();
     }
 }

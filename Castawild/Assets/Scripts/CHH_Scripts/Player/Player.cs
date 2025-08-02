@@ -222,14 +222,11 @@ public class Player : NetworkBehaviour
     {
         if (HasInputAuthority)
         {
-            RPC_FinishSleep();
             currentBed.FinishSleep();
             currentBed = default;
         }
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_FinishSleep() => CanMove = true;
 
     public bool CanMoving() => CanMove && IsCursorLocked;
 
@@ -318,16 +315,9 @@ public class Player : NetworkBehaviour
 
     public void RPC_TurnOffUI() => interactableUI.alpha = 0f;
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_SetWakeUpUI(bool isSleep)
+    public void SetWakeUpUI()
     {
-        Debug.Log("WakeUp true");
-        if (isSleep)
-        {
-            interactableUI.alpha = 1f;
-            interactableText.text = "Wake Up";
-        }
-        else
-            interactableUI.alpha = 0f;
+        interactableUI.alpha = 1f;
+        interactableText.text = "Wake Up";
     }
 }
