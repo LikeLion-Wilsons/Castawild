@@ -26,6 +26,7 @@ public class Player : NetworkBehaviour
     #region Components
     [HideInInspector] public Animator anim;
     [HideInInspector] public Rigidbody rigid;
+    [HideInInspector] public PlayerInteractUI playerInteractUI;
     [HideInInspector] public PlayerController playerController;
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public MovementStateManager movementManager;
@@ -42,16 +43,6 @@ public class Player : NetworkBehaviour
     #region Interact
     [Header("Interact")]
     [HideInInspector] public Bed currentBed;
-
-    [Header("UI")]
-    public CanvasGroup interactableUI;
-    public CanvasGroup placeableUI;
-    public Image crosshairImage;
-
-    public TextMeshProUGUI interactableText;
-    [SerializeField] private Sprite originImage;
-    [SerializeField] private Sprite axeImage;
-    [SerializeField] private Sprite pickaxeImage;
     #endregion
 
     [Header("Networked")]
@@ -62,6 +53,7 @@ public class Player : NetworkBehaviour
     [Networked] public string CurrentToolName { get; set; }
     [Networked, HideInInspector] public int CurrentToolAtt { get; set; }
     [Networked, HideInInspector] public int CurrentToolID { get; set; }
+    [Networked, HideInInspector] public bool IsSleeping { get; set; }
 
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isAimLocked = false;
@@ -95,10 +87,11 @@ public class Player : NetworkBehaviour
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
         playerController = GetComponent<PlayerController>();
+        playerInteractUI = GetComponentInChildren<PlayerInteractUI>();
         inputManager = GetComponent<PlayerInputManager>();
         movementManager = GetComponent<MovementStateManager>();
         toolStateManager = GetComponent<ToolStateManager>();
-        cameraManager = GetComponent<PlayerCameraManager>();
+        cameraManager = GetComponentInChildren<PlayerCameraManager>();
         inventory = GetComponent<InventoryDataManager>();
     }
 
@@ -177,26 +170,6 @@ public class Player : NetworkBehaviour
         toolStateManager.RPC_ChangeSelectedItem();
     }
 
-    public void ChangeCrosshairUI(InteractableType type = InteractableType.None)
-    {
-        switch (type)
-        {
-            case InteractableType.Tree:
-                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
-                crosshairImage.sprite = axeImage;
-                break;
-            case InteractableType.Stone:
-                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
-                crosshairImage.sprite = pickaxeImage;
-                break;
-            case InteractableType.None:
-            default:
-                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(10f, 10f);
-                crosshairImage.sprite = originImage;
-                break;
-        }
-    }
-
     public bool CanUseTool()
     {
         return !IsUIOpen && CanMove;
@@ -224,6 +197,7 @@ public class Player : NetworkBehaviour
         {
             currentBed.FinishSleep();
             currentBed = default;
+            cameraManager.ApplySleepCameraView(false);
         }
     }
 
@@ -273,51 +247,17 @@ public class Player : NetworkBehaviour
             currentToolGameObject.SetActive(true);
     }
 
+    public void PlayerCanMove() => CanMove = true;
+
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_IsUIOpen(bool isOpen) => IsUIOpen = isOpen;
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_CursorLocked(bool isLocked) => IsCursorLocked = isLocked;
 
-    public void InteractUI(InteractableType interactableType = InteractableType.None)
-    {
-        if (interactableType == InteractableType.Bed ||
-            interactableType == InteractableType.Box ||
-            interactableType == InteractableType.Campfire ||
-            interactableType == InteractableType.WaterPurifier)
-        {
-            interactableUI.alpha = 1f;
-            placeableUI.alpha = 1f;
-        }
-
-        else if (interactableType == InteractableType.Tree || interactableType == InteractableType.Stone)
-        {
-            interactableUI.alpha = 0f;
-            placeableUI.alpha = 0f;
-        }
-
-        else if (interactableType == InteractableType.Item)
-        {
-            interactableUI.alpha = 1f;
-            placeableUI.alpha = 0f;
-        }
-
-        else if (interactableType == InteractableType.None)
-        {
-            interactableUI.alpha = 0f;
-            placeableUI.alpha = 0f;
-        }
-
-        ChangeCrosshairUI(interactableType);
-    }
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplySleepCameraView() => cameraManager.ApplySleepCameraView(true);
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-
-    public void RPC_TurnOffUI() => interactableUI.alpha = 0f;
-
-    public void SetWakeUpUI()
-    {
-        interactableUI.alpha = 1f;
-        interactableText.text = "Wake Up";
-    }
+    public void RPC_TurnOffUI() => playerInteractUI.TurnOffUI();
 }

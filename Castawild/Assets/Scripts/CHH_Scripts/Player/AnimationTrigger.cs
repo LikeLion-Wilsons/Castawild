@@ -35,14 +35,10 @@ public class AnimationTrigger : MonoBehaviour
     public void Interact() => playercontroller.Interact();
     public void FinishSleep()
     {
-        if (player.HasStateAuthority)
-            player.CanMove = true;
+        player.PlayerCanMove();
 
         if (player.HasInputAuthority)
-        {
             player.FinishSleep();
-            cameraManager.RPC_ApplySleepCameraView(false);
-        }
     }
 
     public void CanWakeUp()
@@ -51,7 +47,10 @@ public class AnimationTrigger : MonoBehaviour
             movementManager.CanWakeUp = true;
 
         if (player.HasInputAuthority)
-            player.SetWakeUpUI();
+        {
+            player.playerInteractUI.SetWakeUpUI();
+            movementManager.isLyingOrGettingUp = false;
+        }
     }
 
     public void LyingOrGettingUp(int playing) => movementManager.isLyingOrGettingUp = (playing != 0);

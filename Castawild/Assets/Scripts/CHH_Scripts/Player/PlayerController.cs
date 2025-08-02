@@ -53,43 +53,45 @@ public sealed class PlayerController : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (GetInput<PlayerNetworkInputData>(out var input))
+        if (!GetInput<PlayerNetworkInputData>(out var input))
+            return;
+
+        if (HasStateAuthority)
         {
+            movementManager.SetInput(input);
+            toolManager.SetInput(input);
 
+            movementManager.currentState.UpdateState();
+            toolManager.currentState.UpdateState();
+
+            movementManager.SetPrevInputButton(input.Buttons);
+            toolManager.SetPrevInputButton(input.Buttons);
+        }
+
+        if (!player.CanMove)
+        {
             if (HasStateAuthority)
-            {
-                movementManager.SetInput(input);
-                toolManager.SetInput(input);
-
-                movementManager.currentState.UpdateState();
-                toolManager.currentState.UpdateState();
-
-                movementManager.SetPrevInputButton(input.Buttons);
-                toolManager.SetPrevInputButton(input.Buttons);
-            }
-
-            if (!player.CanMove && HasStateAuthority)
             {
                 // 중력만 적용해서 return
                 Vector3 velocity = kcc.RealVelocity;
                 velocity.y += gravity * Runner.DeltaTime;
                 kcc.Move(velocity);
                 Grounded = kcc.IsGrounded;
-                return;
             }
-
-            maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
-            movementManager.MoveValue = input.moveValue;
-
-            if (HasStateAuthority)
-                Move(input.moveDir);
-            Rotate(input);
-
-            if (HasInputAuthority)
-                TestTryOverlap(input);
-
-            prevInputButtons = input.Buttons;
+            return;
         }
+
+        maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
+        movementManager.MoveValue = input.moveValue;
+
+        if (HasStateAuthority)
+            Move(input.moveDir);
+        Rotate(input);
+
+        if (HasInputAuthority)
+            TestTryOverlap(input);
+
+        prevInputButtons = input.Buttons;
     }
 
     public void Move(Vector3 direction)
@@ -172,7 +174,7 @@ public sealed class PlayerController : NetworkBehaviour
                 {
                     if (interactable.CanInteract())
                     {
-                        player.InteractUI(interactable.interactableType);
+                        player.playerInteractUI.InteractUI(interactable.interactableType);
                         currentInteractObject = interactable;
                         break;
                     }
@@ -181,8 +183,8 @@ public sealed class PlayerController : NetworkBehaviour
                 // 다른 오브젝트 
                 else if (_interactResult[i].TryGetComponent<InteractableObject>(out var interactableObject))
                 {
-                    player.InteractUI(interactableObject.interactableType);
-                    player.interactableText.text = interactableObject.text;
+                    player.playerInteractUI.InteractUI(interactableObject.interactableType);
+                    player.playerInteractUI.interactableText.text = interactableObject.text;
 
                     // 설치가능한 오브젝트
                     if (interactableObject.isPlaceable)
@@ -204,7 +206,7 @@ public sealed class PlayerController : NetworkBehaviour
         }
         else
         {
-            player.InteractUI();
+            player.playerInteractUI.InteractUI();
             currentInteractObject = null;
         }
 

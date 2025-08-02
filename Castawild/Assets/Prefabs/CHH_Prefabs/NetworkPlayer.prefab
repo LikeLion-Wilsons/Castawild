@@ -701,6 +701,7 @@ GameObject:
   - component: {fileID: 4923192095475422838}
   - component: {fileID: 5059391615841553791}
   - component: {fileID: 4060323632390679247}
+  - component: {fileID: 8256277296280362921}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -793,6 +794,25 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &8256277296280362921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1614097380249645196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1681eb2bca87e649a45e68d33d7058c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactableUI: {fileID: 4835231499433151479}
+  placeableUI: {fileID: 3262131317510922916}
+  crosshairImage: {fileID: 1497862815240175391}
+  interactableText: {fileID: 4697920596943624128}
+  originImage: {fileID: 21300000, guid: e63e19b592fc89c46b22961b98684cd8, type: 3}
+  axeImage: {fileID: 21300000, guid: 1963a850e6795bd48a4297d98d345277, type: 3}
+  pickaxeImage: {fileID: 21300000, guid: 4e20a6e4a49bb5548992241a1c2f79c2, type: 3}
 --- !u!1 &1666858941217677416
 GameObject:
   m_ObjectHideFlags: 0
@@ -3456,7 +3476,6 @@ MonoBehaviour:
     hunger: 100
     maxThirst: 100
     maxTemperature: 100
-    temperature: 0
   _Hp: 0
   _Stamina: 0
   _Hunger: 0
@@ -3465,6 +3484,7 @@ MonoBehaviour:
   staminaDecreaseRate: 1
   anim: {fileID: 0}
   rigid: {fileID: 0}
+  playerInteractUI: {fileID: 0}
   playerController: {fileID: 0}
   inputManager: {fileID: 0}
   movementManager: {fileID: 0}
@@ -3472,19 +3492,13 @@ MonoBehaviour:
   cameraManager: {fileID: 0}
   tools: {fileID: 7844614530758869572}
   currentBed: {fileID: 0}
-  crosshairImage: {fileID: 1497862815240175391}
-  originImage: {fileID: 21300000, guid: e63e19b592fc89c46b22961b98684cd8, type: 3}
-  axeImage: {fileID: 21300000, guid: 1963a850e6795bd48a4297d98d345277, type: 3}
-  pickaxeImage: {fileID: 21300000, guid: 4e20a6e4a49bb5548992241a1c2f79c2, type: 3}
-  interactableUI: {fileID: 4835231499433151479}
-  interactableText: {fileID: 4697920596943624128}
-  placeableUI: {fileID: 3262131317510922916}
   _CanMove: 1
   _IsUIOpen: 0
   _IsCursorLocked: 0
   _CurrentToolName: 
   _CurrentToolAtt: 0
   _CurrentToolID: 0
+  _IsSleeping: 0
   inventory: {fileID: 0}
   isAimLocked: 0
   isSpawned: 0
@@ -3553,6 +3567,7 @@ MonoBehaviour:
   fallMultiplier: 1.5
   animationLerpSpeed: 10
   isTriggerSet: 0
+  isLyingOrGettingUp: 0
   _CurrentMoveState: 0
   _JumpTriggered: 0
   _CanWakeUp: 0

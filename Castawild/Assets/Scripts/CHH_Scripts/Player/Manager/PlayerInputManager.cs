@@ -1,4 +1,3 @@
-using Fusion;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -31,7 +30,6 @@ public class PlayerInputManager : MonoBehaviour
     #endregion 
 
     private PlayerCameraManager cameraManager;
-    private MovementStateManager movementManager;
     private Player player;
 
     private void OnEnable()
@@ -47,7 +45,6 @@ public class PlayerInputManager : MonoBehaviour
     private void Awake()
     {
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
-        movementManager = GetComponent<MovementStateManager>();
         player = GetComponent<Player>();
         InitInputActions();
     }
