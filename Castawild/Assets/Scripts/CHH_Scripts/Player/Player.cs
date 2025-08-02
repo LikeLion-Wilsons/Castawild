@@ -201,7 +201,6 @@ public class Player : NetworkBehaviour
         }
     }
 
-
     public bool CanMoving() => CanMove && IsCursorLocked;
 
     public void SetCursorLocked(bool isLocked)

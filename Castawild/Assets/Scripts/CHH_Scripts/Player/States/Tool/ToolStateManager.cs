@@ -174,4 +174,7 @@ public class ToolStateManager : BaseStateManager
         if (cameraManager.currentView == ViewType.FirstPerson)
             armMesh.SetActive(isVisible);
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_MoveAimCamera(bool _isAiming) => cameraManager.MoveCamera(_isAiming);
 }

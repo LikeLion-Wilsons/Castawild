@@ -20,17 +20,9 @@ public class PlayerCameraManager : MonoBehaviour
     [HideInInspector] public bool isAiming = false;
     [HideInInspector] public ViewType currentView = ViewType.FirstPerson;
 
-    #region First Person
-    [Header("1인칭")]
-    [SerializeField] private GameObject[] playerMeshes;
-    [SerializeField] private GameObject playerHead;
-
-    public CinemachineCamera firstPersonCam;
-    [SerializeField] private Transform firstPersonTarget;
-
+    #region Mouse Settings
     [Header("마우스")]
     public float sensitivity = 1.5f;
-
     private float pitch = 0f;
     private float yaw = 0f;
 
@@ -38,6 +30,18 @@ public class PlayerCameraManager : MonoBehaviour
     [SerializeField] private float maxPitch = 80f;
     [SerializeField] private float minYaw = -90f;
     [SerializeField] private float maxYaw = 90f;
+    #endregion
+
+    #region First Person
+    [Header("1인칭")]
+    [SerializeField] private GameObject[] playerMeshes;
+    [SerializeField] private GameObject playerHead;
+
+    public CinemachineCamera firstPersonCam;
+    [SerializeField] private Transform firstPersonTarget;
+    [SerializeField] private float firstPerson_AimFov;
+    private Vector3 firstPerson_DefaultTargetPos;
+    private float firstPerson_DefaultFov;
     #endregion
 
     #region Third Person
@@ -49,12 +53,11 @@ public class PlayerCameraManager : MonoBehaviour
 
     private Vector3 thirdPerson_DefaultTargetPos;
     private float thirdPerson_DefaultFov;
-    private Coroutine moveCameraCoroutine;
     #endregion
 
     #region Third Person Camera Zoom
     [Header("3인칭 Zoom")]
-    [SerializeField] private float thirdPerson_aimZoomDuration = 0.3f;
+    [SerializeField] private float aimZoomDuration = 0.3f;
     [SerializeField] private float zoomSpeed = 2f;
     [SerializeField] private float zoomLerpSpeed = 10f;
     [SerializeField] private float minDistance = 3f;
@@ -63,6 +66,8 @@ public class PlayerCameraManager : MonoBehaviour
     private float targetZoom;
     private float currentZoom;
     #endregion
+
+    private Coroutine moveCameraCoroutine;
 
     public CinemachineCamera CurrenCam
     {
@@ -200,7 +205,7 @@ public class PlayerCameraManager : MonoBehaviour
             return;
         }
 
-        if (currentView == ViewType.ThirdPerson || !player.IsCursorLocked)
+        if (currentView == ViewType.ThirdPerson || !player.IsCursorLocked || !player.CanMoving())
             return;
 
         pitch -= inputManager.lookInput.y * sensitivity;
@@ -249,28 +254,47 @@ public class PlayerCameraManager : MonoBehaviour
         }
 
         if (_isAiming)
-            moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(thirdPerson_AimTargetPos.localPosition, thirdPerson_AimFov));
+        {
+            if (currentView == ViewType.FirstPerson)
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(firstPersonTarget.localPosition, firstPerson_AimFov));
+            else
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(thirdPerson_AimTargetPos.localPosition, thirdPerson_AimFov));
+        }
         else
-            moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(thirdPerson_DefaultTargetPos, thirdPerson_DefaultFov));
+        {
+            if (currentView == ViewType.FirstPerson)
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(firstPerson_DefaultTargetPos, firstPerson_DefaultFov));
+            else
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(thirdPerson_DefaultTargetPos, thirdPerson_DefaultFov));
+        }
     }
 
     private IEnumerator MoveCameraCoroutine(Vector3 targetPos, float targetFov)
     {
-        Vector3 startPosition = thirdPersonTarget.localPosition;
-        float startFov = thirdPersonCam.Lens.FieldOfView;
+        Vector3 startPosition = firstPersonTarget.localPosition;
+        float startFov = firstPersonCam.Lens.FieldOfView;
+
+        if (currentView == ViewType.ThirdPerson)
+        {
+            startPosition = thirdPersonTarget.localPosition;
+            startFov = thirdPersonCam.Lens.FieldOfView;
+        }
 
         float elapsed = 0f;
 
-        while (elapsed < thirdPerson_aimZoomDuration)
+        while (elapsed < aimZoomDuration)
         {
-            thirdPersonTarget.localPosition = Vector3.Lerp(startPosition, targetPos, elapsed / thirdPerson_aimZoomDuration);
-            thirdPersonCam.Lens.FieldOfView = Mathf.Lerp(startFov, targetFov, elapsed / thirdPerson_aimZoomDuration);
+            thirdPersonTarget.localPosition = Vector3.Lerp(startPosition, targetPos, elapsed / aimZoomDuration);
+            thirdPersonCam.Lens.FieldOfView = Mathf.Lerp(startFov, targetFov, elapsed / aimZoomDuration);
 
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        thirdPersonTarget.localPosition = targetPos;
+        if (currentView == ViewType.ThirdPerson)
+            firstPersonTarget.localPosition = targetPos;
+        else
+            thirdPersonTarget.localPosition = targetPos;
     }
 
     public void ApplySleepCameraView(bool isSleep)
