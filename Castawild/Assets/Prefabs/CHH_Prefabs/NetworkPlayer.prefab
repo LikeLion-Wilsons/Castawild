@@ -3383,9 +3383,10 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7813269517312369915}
-  - {fileID: 3312262715438081692}
   - {fileID: 6893158983951836988}
   - {fileID: 1537898097600247738}
+  - {fileID: 3312262715438081692}
+  - {fileID: 5508614353083602396}
   - {fileID: 3533680929014235342}
   - {fileID: 3517969266310779276}
   - {fileID: 7467696255462433047}
@@ -4094,6 +4095,8 @@ MonoBehaviour:
   playerHead: {fileID: 8440806264938112468}
   firstPersonCam: {fileID: 3849144779001713377}
   firstPersonTarget: {fileID: 3312262715438081692}
+  firstPerson_AimTargetPos: {fileID: 5508614353083602396}
+  firstPerson_AimFov: 40
   sensitivity: 0.5
   minPitch: -80
   maxPitch: 80
@@ -4103,7 +4106,7 @@ MonoBehaviour:
   thirdPersonTarget: {fileID: 3533680929014235342}
   thirdPerson_AimTargetPos: {fileID: 3517969266310779276}
   thirdPerson_AimFov: 40
-  thirdPerson_aimZoomDuration: 0.3
+  aimZoomDuration: 0.3
   zoomSpeed: 2
   zoomLerpSpeed: 10
   minDistance: 3
@@ -4233,6 +4236,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1658880377584063772}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8558716601116625296
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5508614353083602396}
+  m_Layer: 0
+  m_Name: FirstPersonAimCameraPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5508614353083602396
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8558716601116625296}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 3.26, z: 5.05}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6388187669656790763}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8586754752780306059
 GameObject:

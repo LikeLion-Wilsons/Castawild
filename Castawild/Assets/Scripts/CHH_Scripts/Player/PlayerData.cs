@@ -9,7 +9,6 @@ public class PlayerData
     public int attack;
 
     public float maxHunger;
-    public float hunger;
     public float maxThirst;
     public float maxTemperature;
 }

@@ -21,7 +21,8 @@ public class AimState : ToolBaseState
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.runState)
             toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.walkState);
 
-        toolStateManager.cameraManager.MoveCamera(true);
+        if (toolStateManager.HasStateAuthority)
+            toolStateManager.RPC_MoveAimCamera(true);
 
         toolStateManager.player.playerInteractUI.crosshairImage.gameObject.SetActive(true);
     }
@@ -41,7 +42,8 @@ public class AimState : ToolBaseState
         else if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
             toolStateManager.player.isAimLocked = false;
-            toolStateManager.cameraManager.MoveCamera(false);
+            if (toolStateManager.HasStateAuthority)
+                toolStateManager.RPC_MoveAimCamera(false);
             toolStateManager.ChangeState(toolStateManager.idleState);
         }
     }
