@@ -11,8 +11,8 @@ public class InventoryDataManager : NetworkBehaviour
     private UIInventory uiInventory;
     private UITable uiTable;
     [SerializeField] GameObject itemBox;
-    private int nextScrollTick = 0;
-    private int scrollCooldownTick = 6; // 0.2초 쿨타임 (60 tick 기준)
+    private float nextScrollTime = 0f;
+    public float scrollCooldown = 0.1f; // 100ms
     [SerializeField] GameObject playerUIPrefab; // 인스펙터에 연결
     [Networked, Capacity(30)] public NetworkLinkedList<Item> itemList => default;
 
@@ -113,7 +113,7 @@ public class InventoryDataManager : NetworkBehaviour
         // ChangeSelectedSlot(0);
     }
 
-    public override void FixedUpdateNetwork()
+    private void Update()
     {
         if (Input.inputString != null)
         {
@@ -123,24 +123,25 @@ public class InventoryDataManager : NetworkBehaviour
                 ChangeSelectedSlot(number - 1);
             }
         }
-        // 마우스 휠 입력
 
-        if (Runner.Tick >= nextScrollTick)
+        // 마우스 휠 입력
+        float scroll = Input.GetAxisRaw("Mouse ScrollWheel");
+        if (Time.time >= nextScrollTime)
         {
-            float scroll = Input.GetAxisRaw("Mouse ScrollWheel");
             if (scroll > 0f)
             {
                 int next = (selectedSlot - 1 + maxSlotCount) % maxSlotCount;
                 ChangeSelectedSlot(next);
-                nextScrollTick = Runner.Tick + scrollCooldownTick;
+                nextScrollTime = Time.time + scrollCooldown;
             }
             else if (scroll < 0f)
             {
                 int next = (selectedSlot + 1) % maxSlotCount;
                 ChangeSelectedSlot(next);
-                nextScrollTick = Runner.Tick + scrollCooldownTick;
+                nextScrollTime = Time.time + scrollCooldown;
             }
         }
+
         //선택된 아이템 버리기
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -155,6 +156,10 @@ public class InventoryDataManager : NetworkBehaviour
         {
             GetItem(1, 1);
         }
+    }
+    public override void FixedUpdateNetwork()
+    {   
+       
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
