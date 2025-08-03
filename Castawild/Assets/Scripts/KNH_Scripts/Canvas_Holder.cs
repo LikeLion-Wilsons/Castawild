@@ -7,6 +7,7 @@ public class Canvas_Holder : MonoBehaviour
     public GameObject hotBarUI;
     public GameObject inventoryUI;
     public GameObject tableUI;
+    public GameObject campfireUI;
 
     public bool isDragging = false;
     // 수정한 부분
@@ -19,7 +20,7 @@ public class Canvas_Holder : MonoBehaviour
 
 
     [SerializeField] UIPart[] parts;
-    private Dictionary<string, UIPart> uiParts = new Dictionary<string, UIPart>();
+    public Dictionary<string, UIPart> uiParts = new Dictionary<string, UIPart>();
     public void OpenUI(string uiName)
     {
         if (uiParts.ContainsKey(uiName))
@@ -42,6 +43,7 @@ public class Canvas_Holder : MonoBehaviour
         foreach (var part in uiParts.Values)
         {
             part.Close(player.inputManager);
+            player.RPC_IsUIOpen(false);
         }
     }
 
@@ -63,17 +65,26 @@ public class Canvas_Holder : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab) && isDragging == false)
         {
-            uiParts["Inventory"].Toggle(player.inputManager);
-            uiParts["Table"].Toggle(player.inputManager);
-
-            // 수정한 부분
             if (uiParts["Inventory"].IsOpen())
-                player.RPC_IsUIOpen(true);
+            {
+                CloseAllUI();
+            }
             else
-                player.RPC_IsUIOpen(false);
-
+            {
+                uiParts["Inventory"].Toggle(player.inputManager);
+                uiParts["Table"].Toggle(player.inputManager);
+            }
             OnUIActive.Invoke(uiParts["Inventory"].IsOpen());
         }
+
+        if (uiParts["Campfire"].IsOpen() && Input.GetKeyDown(KeyCode.E))
+            CloseAllUI();
+
+        // 수정한 부분
+        if (uiParts["Inventory"].IsOpen())
+            player.RPC_IsUIOpen(true);
+        else
+            player.RPC_IsUIOpen(false);
     }
 
     public bool IsInventoryOpen()
