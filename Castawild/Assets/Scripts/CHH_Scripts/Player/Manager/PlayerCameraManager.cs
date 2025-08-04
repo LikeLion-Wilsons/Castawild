@@ -40,7 +40,6 @@ public class PlayerCameraManager : MonoBehaviour
     public CinemachineCamera firstPersonCam;
     [SerializeField] private Transform firstPersonTarget;
     [SerializeField] private float firstPerson_AimFov;
-    private Vector3 firstPerson_DefaultTargetPos;
     private float firstPerson_DefaultFov;
     #endregion
 
@@ -114,6 +113,7 @@ public class PlayerCameraManager : MonoBehaviour
     {
         thirdPerson_DefaultTargetPos = thirdPersonTarget.localPosition;
         thirdPerson_DefaultFov = thirdPersonCam.Lens.FieldOfView;
+        firstPerson_DefaultFov = firstPersonCam.Lens.FieldOfView;
         targetZoom = currentZoom = orbital.Radius;
     }
 
@@ -256,44 +256,45 @@ public class PlayerCameraManager : MonoBehaviour
         if (_isAiming)
         {
             if (currentView == ViewType.FirstPerson)
-                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(firstPersonTarget.localPosition, firstPerson_AimFov));
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(firstPerson_AimFov));
             else
-                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(thirdPerson_AimTargetPos.localPosition, thirdPerson_AimFov));
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(thirdPerson_AimFov, thirdPerson_AimTargetPos.localPosition));
         }
         else
         {
             if (currentView == ViewType.FirstPerson)
-                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(firstPerson_DefaultTargetPos, firstPerson_DefaultFov));
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(firstPerson_DefaultFov));
             else
-                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(thirdPerson_DefaultTargetPos, thirdPerson_DefaultFov));
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(thirdPerson_DefaultFov, thirdPerson_DefaultTargetPos));
         }
     }
 
-    private IEnumerator MoveCameraCoroutine(Vector3 targetPos, float targetFov)
+    private IEnumerator MoveCameraCoroutine(float targetFov, Vector3 targetPos = default)
     {
-        Vector3 startPosition = firstPersonTarget.localPosition;
         float startFov = firstPersonCam.Lens.FieldOfView;
 
         if (currentView == ViewType.ThirdPerson)
-        {
-            startPosition = thirdPersonTarget.localPosition;
             startFov = thirdPersonCam.Lens.FieldOfView;
-        }
+
+        Vector3 startPosition = thirdPersonTarget.localPosition;
 
         float elapsed = 0f;
 
         while (elapsed < aimZoomDuration)
         {
-            thirdPersonTarget.localPosition = Vector3.Lerp(startPosition, targetPos, elapsed / aimZoomDuration);
-            thirdPersonCam.Lens.FieldOfView = Mathf.Lerp(startFov, targetFov, elapsed / aimZoomDuration);
+            if (currentView == ViewType.ThirdPerson)
+            {
+                thirdPersonCam.Lens.FieldOfView = Mathf.Lerp(startFov, targetFov, elapsed / aimZoomDuration);
+                thirdPersonTarget.localPosition = Vector3.Lerp(startPosition, targetPos, elapsed / aimZoomDuration);
+            }
+            else
+                firstPersonCam.Lens.FieldOfView = Mathf.Lerp(startFov, targetFov, elapsed / aimZoomDuration);
 
             elapsed += Time.deltaTime;
             yield return null;
         }
 
         if (currentView == ViewType.ThirdPerson)
-            firstPersonTarget.localPosition = targetPos;
-        else
             thirdPersonTarget.localPosition = targetPos;
     }
 
