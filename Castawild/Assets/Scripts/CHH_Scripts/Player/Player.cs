@@ -1,6 +1,7 @@
 using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
@@ -38,7 +39,10 @@ public class Player : NetworkBehaviour
     [Header("Tool")]
     [SerializeField] private Transform tools;
     private Dictionary<int, GameObject> toolDict = new Dictionary<int, GameObject>();
-    [SerializeField] private Transform bowPos;
+    [SerializeField] private Transform bowOriginPos;
+    [SerializeField] private Transform bowUsePos;
+    [SerializeField] private Transform firstPersonBowUsePos;
+    [SerializeField] private Transform cameraRot;
     [SerializeField] private GameObject arrow;
     #endregion
 
@@ -259,24 +263,49 @@ public class Player : NetworkBehaviour
 
     public void PlayerCanMove() => CanMove = true;
 
-    public void BowSetting()
+    public void BowSetting(bool isBowUse)
     {
         if (toolDict.TryGetValue(406, out GameObject bow))
         {
-            bow.transform.position = bowPos.position;
+            if (isBowUse)
+            {
+                if (HasInputAuthority && cameraManager.currentView == ViewType.FirstPerson)
+                {
+                    bow.transform.SetParent(firstPersonBowUsePos);
+                    cameraRot.SetParent(cameraManager.firstPersonCam.transform);
+                    cameraRot.localPosition = Vector3.zero;
+                }
+                else
+                    bow.transform.SetParent(bowUsePos);
 
-            if (inventory.HasItem(201))
-                arrow.SetActive(true);
+                bow.transform.localPosition = Vector3.zero;
+                bow.transform.localRotation = Quaternion.identity;
+            }
             else
-                arrow.SetActive(false);
-        }
+            {
+                bow.transform.SetParent(bowOriginPos);
 
+                bow.transform.localPosition = Vector3.zero;
+                bow.transform.localRotation = Quaternion.identity;
+            }
+
+            if (inventory.HasItem(201) && isBowUse)
+                RPC_ActiveArrow(true);
+            else
+                RPC_ActiveArrow(false);
+        }
         else
         {
             Debug.Log("활 없음");
             return;
         }
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_ActiveArrow(bool active) => arrow.SetActive(active);
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_ActiveArrowInputAuthority(bool active) => arrow.SetActive(active);
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_IsUIOpen(bool isOpen) => IsUIOpen = isOpen;

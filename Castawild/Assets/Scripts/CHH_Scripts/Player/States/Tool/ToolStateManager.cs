@@ -6,7 +6,6 @@ public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife
 
 // 재생해야할 애니메이션 상태
 public enum ToolAnimationState { Idle, Aim, FullAim, FullUse, Carry, Eat, Drink }
-public enum BowAnimationState { Idle, Pull, Shoot }
 
 public class ToolStateManager : BaseStateManager
 {
@@ -29,7 +28,6 @@ public class ToolStateManager : BaseStateManager
 
     [Header("Bow")]
     [SerializeField] private Animator bowAnim;
-    [HideInInspector] private BowAnimationState bowAnimationState;
 
     #region Network
     [Header("Player")]
@@ -89,6 +87,12 @@ public class ToolStateManager : BaseStateManager
                 anim.SetBool("FullAiming", true);
                 break;
             case ToolAnimationState.FullUse:
+                if (input.IsDown(PlayerNetworkInputData.aimInput) && HoldAimTool())
+                {
+                    anim.SetInteger("WeaponType", (int)CurrentToolType);
+                    anim.SetBool("Aiming", true);
+                    anim.SetBool("FullAiming", true);
+                }
                 anim.SetInteger("WeaponType", (int)CurrentToolType);
                 anim.SetBool("FullUseTool", true);
                 break;
@@ -139,7 +143,10 @@ public class ToolStateManager : BaseStateManager
                 CurrentToolType = ToolType.Pickaxe;
                 break;
             case 406: // 화살
-                CurrentToolType = ToolType.Bow;
+                {
+                    CurrentToolType = ToolType.Bow;
+                    player.RPC_ActiveArrowInputAuthority(false);
+                }
                 break;
             case 400: // 400:짱돌 
             default:
@@ -201,4 +208,16 @@ public class ToolStateManager : BaseStateManager
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_MoveAimCamera(bool _isAiming) => cameraManager.MoveCamera(_isAiming);
 
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_BowSetting(bool pull)
+    {
+        bowAnim.SetBool("Pull", pull);
+        player.BowSetting(pull);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_BowShoot()
+    {
+        bowAnim.SetTrigger("Shoot");
+    }
 }
