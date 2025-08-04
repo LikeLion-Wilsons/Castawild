@@ -277,6 +277,21 @@ public class InventoryDataManager : NetworkBehaviour
 
     }
 
+    // 추가한 부분
+    // 아이템 있는지 확인
+    public bool HasItem(int id)
+    {
+        for (int i = 0; i < itemList.Count; i++)
+        {
+            if (itemList[i].itemID == id)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void SwapItems(int indexA, int indexB)
     {
         if (indexA >= itemList.Count && indexB >= itemList.Count) return;

@@ -6,6 +6,7 @@ public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife
 
 // 재생해야할 애니메이션 상태
 public enum ToolAnimationState { Idle, Aim, FullAim, FullUse, Carry, Eat, Drink }
+public enum BowAnimationState { Idle, Pull, Shoot }
 
 public class ToolStateManager : BaseStateManager
 {
@@ -25,6 +26,10 @@ public class ToolStateManager : BaseStateManager
     [Header("Player")]
     public Transform armature;
     [SerializeField] private GameObject armMesh;
+
+    [Header("Bow")]
+    [SerializeField] private Animator bowAnim;
+    [HideInInspector] private BowAnimationState bowAnimationState;
 
     #region Network
     [Header("Player")]
@@ -105,7 +110,6 @@ public class ToolStateManager : BaseStateManager
         anim.SetBool("ComboAttack", ComboAttack);
     }
 
-    // 400:짱돌 401:방망이 402:횃불 403:돌도끼 404:돌작살 405:돌곡괭이
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_ChangeSelectedItem(int itemIdx = -1)
     {
@@ -133,6 +137,9 @@ public class ToolStateManager : BaseStateManager
                 break;
             case 405: // 돌곡괭이
                 CurrentToolType = ToolType.Pickaxe;
+                break;
+            case 406: // 화살
+                CurrentToolType = ToolType.Bow;
                 break;
             case 400: // 400:짱돌 
             default:
@@ -171,10 +178,27 @@ public class ToolStateManager : BaseStateManager
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_ArmVisibleChanged(bool isVisible)
     {
-        if (cameraManager.currentView == ViewType.FirstPerson)
-            armMesh.SetActive(isVisible);
+        if (cameraManager.currentView != ViewType.FirstPerson)
+            return;
+
+        armMesh.SetActive(isVisible);
+
+        if (isVisible)
+        {
+            armature.SetParent(cameraManager.firstPersonCam.transform);
+            armature.localPosition = new Vector3(0f, -3f, 0f);
+            armature.localRotation = Quaternion.identity;
+        }
+
+        else
+        {
+            armature.SetParent(player.transform);
+            armature.localPosition = Vector3.zero;
+            armature.localRotation = Quaternion.identity;
+        }
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_MoveAimCamera(bool _isAiming) => cameraManager.MoveCamera(_isAiming);
+
 }
