@@ -6,6 +6,7 @@ public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife
 
 // 재생해야할 애니메이션 상태
 public enum ToolAnimationState { Idle, Aim, FullAim, FullUse, Carry, Eat, Drink }
+public enum BowAnimationState { Idle, Pull, Shoot }
 
 public class ToolStateManager : BaseStateManager
 {
@@ -25,6 +26,10 @@ public class ToolStateManager : BaseStateManager
     [Header("Player")]
     public Transform armature;
     [SerializeField] private GameObject armMesh;
+
+    [Header("Bow")]
+    [SerializeField] private Animator bowAnim;
+    [HideInInspector] private BowAnimationState bowAnimationState;
 
     #region Network
     [Header("Player")]
