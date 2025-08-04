@@ -15,7 +15,12 @@ public class UseToolState : ToolBaseState
         toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
 
         toolStateManager.CurrentToolUseState = ToolAnimationState.FullUse;
-        SetActiveArmMesh(true);
+
+        if (toolStateManager.CurrentToolType == ToolType.Fist)
+            SetActiveArmMesh(true);
+
+        else if (toolStateManager.CurrentToolType == ToolType.Bow)
+            toolStateManager.player.BowSetting();
     }
 
     public override void UpdateState()
@@ -47,7 +52,9 @@ public class UseToolState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
-        SetActiveArmMesh(false);
+
+        if (toolStateManager.CurrentToolType == ToolType.Fist)
+            SetActiveArmMesh(false);
 
         toolStateManager.player.CanMove = true;
         toolStateManager.player.isAimLocked = false;
@@ -82,23 +89,5 @@ public class UseToolState : ToolBaseState
     {
         if (toolStateManager.HasStateAuthority)
             toolStateManager.RPC_ArmVisibleChanged(isActive);
-
-        if (toolStateManager.CurrentToolType == ToolType.Fist && toolStateManager.cameraManager.currentView == ViewType.FirstPerson
-            && toolStateManager.HasInputAuthority)
-        {
-            if (isActive)
-            {
-                toolStateManager.armature.SetParent(toolStateManager.cameraManager.firstPersonCam.transform);
-                toolStateManager.armature.localPosition = new Vector3(0f, -3f, 0f);
-                toolStateManager.armature.localRotation = Quaternion.identity;
-            }
-
-            if (!isActive)
-            {
-                toolStateManager.armature.SetParent(toolStateManager.player.transform);
-                toolStateManager.armature.localPosition = Vector3.zero;
-                toolStateManager.armature.localRotation = Quaternion.identity;
-            }
-        }
     }
 }

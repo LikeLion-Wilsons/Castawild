@@ -1,8 +1,6 @@
 using Fusion;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
@@ -40,6 +38,8 @@ public class Player : NetworkBehaviour
     [Header("Tool")]
     [SerializeField] private Transform tools;
     private Dictionary<int, GameObject> toolDict = new Dictionary<int, GameObject>();
+    [SerializeField] private Transform bowPos;
+    [SerializeField] private GameObject arrow;
     #endregion
 
     #region Interact
@@ -258,6 +258,25 @@ public class Player : NetworkBehaviour
     }
 
     public void PlayerCanMove() => CanMove = true;
+
+    public void BowSetting()
+    {
+        if (toolDict.TryGetValue(406, out GameObject bow))
+        {
+            bow.transform.position = bowPos.position;
+
+            if (inventory.HasItem(201))
+                arrow.SetActive(true);
+            else
+                arrow.SetActive(false);
+        }
+
+        else
+        {
+            Debug.Log("활 없음");
+            return;
+        }
+    }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_IsUIOpen(bool isOpen) => IsUIOpen = isOpen;
