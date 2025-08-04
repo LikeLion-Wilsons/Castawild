@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7b30c7c93af76c46acd2b93a24d37fb, type: 3}
+  m_Name: String
+  m_EditorClassIdentifier: 
+  itemID: 200
+  image: {fileID: 21300000, guid: 90192622496cded43ac060f5e25e20e8, type: 3}
+  itemName: "\uC12C\uC720"
+  description: "\uD654\uC0B4\uC744 \uC81C\uC791\uD560 \uC218 \uC788\uB2E4."
+  type: 1
+  range: {x: 5, y: 4}
+  stackable: 0
+  ingredient:
+  - {fileID: 11400000, guid: fe2b133aecebcd545903b55440f42ca1, type: 2}
+  ingredientCount: 01000000
