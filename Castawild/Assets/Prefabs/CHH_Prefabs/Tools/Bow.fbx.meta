@@ -1,9 +1,14 @@
 fileFormatVersion: 2
-guid: 26ce90fe40fdb674f9e3ca82f3e88113
+guid: 4025f6167a80ac748b14b065f96d8d67
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WoodenArrow.002
+    second: {fileID: 2100000, guid: ba5bfb21a88057448885ec6896343efe, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -32,8 +37,8 @@ ModelImporter:
     clipAnimations:
     - serializedVersion: 16
       name: Bow_Pull
-      takeName: Root|WoodenArrowAction
-      internalID: -7504273472154801122
+      takeName: Root|Action
+      internalID: -8486116764607792134
       firstFrame: 0
       lastFrame: 7
       wrapMode: 0
@@ -61,10 +66,10 @@ ModelImporter:
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Bow_Shoot
-      takeName: Root|WoodenArrowAction
-      internalID: -8280567844299480744
-      firstFrame: 7
-      lastFrame: 9
+      takeName: Root|Action
+      internalID: 4788011675001322925
+      firstFrame: 9
+      lastFrame: 11
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

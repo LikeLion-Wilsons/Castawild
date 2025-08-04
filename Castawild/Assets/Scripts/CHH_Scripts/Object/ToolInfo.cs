@@ -10,6 +10,7 @@ public class ToolInfo : MonoBehaviour
 {
     [SerializeField] private string toolName;
     [SerializeField] private int itemID;
+    [Tooltip("제대로 호환되는 오브젝트 때렸을 시 공격력")]
     [SerializeField] private int att;
     public string ToolName => toolName;
     public int ItemID => itemID;
