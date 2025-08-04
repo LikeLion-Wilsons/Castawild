@@ -20,7 +20,9 @@ public class UseToolState : ToolBaseState
             SetActiveArmMesh(true);
 
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
-            toolStateManager.player.BowSetting();
+        {
+            toolStateManager.RPC_BowSetting(true);
+        }
     }
 
     public override void UpdateState()
@@ -55,6 +57,11 @@ public class UseToolState : ToolBaseState
 
         if (toolStateManager.CurrentToolType == ToolType.Fist)
             SetActiveArmMesh(false);
+
+        else if (toolStateManager.CurrentToolType == ToolType.Bow)
+        {
+            toolStateManager.RPC_BowSetting(false);
+        }
 
         toolStateManager.player.CanMove = true;
         toolStateManager.player.isAimLocked = false;

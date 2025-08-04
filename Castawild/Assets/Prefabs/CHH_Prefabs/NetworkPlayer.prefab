@@ -472,7 +472,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3555937060719847740}
   m_Layer: 0
-  m_Name: BowPos
+  m_Name: BowUsePos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -486,13 +486,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 790204061741161754}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.5, y: 0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: 0, y: 0.1010007, z: -0.01099992}
+  m_LocalRotation: {x: -0.43275657, y: 0.43275657, z: 0.5592153, w: 0.5592153}
+  m_LocalPosition: {x: 0, y: -0.031, z: -0.051}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7192038657501666305}
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 90}
+  m_LocalEulerAnglesHint: {x: -75.47, y: 0, z: 90}
 --- !u!1 &1017937576476777739
 GameObject:
   m_ObjectHideFlags: 0
@@ -1299,8 +1299,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2344188678965562170}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.21346568, y: 0.7667895, z: -0.31761461, w: 0.51535165}
-  m_LocalPosition: {x: -6.5473285, y: 9.531069, z: 2.6706724}
+  m_LocalRotation: {x: 0.019997431, y: 0.9232624, z: -0.04851382, w: 0.38056943}
+  m_LocalPosition: {x: -7.007904, y: 3.5080278, z: 7.056265}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1383,7 +1383,7 @@ MonoBehaviour:
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
-    Value: 112.190674
+    Value: 135.19702
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -1393,7 +1393,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: 45
+    Value: 6.0158005
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
@@ -1562,6 +1562,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6388187669656790763}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2462444186883049600
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5652918095632363721}
+  m_Layer: 0
+  m_Name: BowOriginPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5652918095632363721
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2462444186883049600}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.5, y: 0.5, z: 0.5, w: 0.5}
+  m_LocalPosition: {x: 0, y: -0.121, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7844614530758869572}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 90}
 --- !u!1 &2518628448095068810
 GameObject:
   m_ObjectHideFlags: 0
@@ -3557,7 +3588,8 @@ MonoBehaviour:
   toolStateManager: {fileID: 0}
   cameraManager: {fileID: 0}
   tools: {fileID: 7844614530758869572}
-  bowPos: {fileID: 3555937060719847740}
+  bowOriginPos: {fileID: 5652918095632363721}
+  bowUsePos: {fileID: 3555937060719847740}
   arrow: {fileID: 2432054003010317866}
   currentBed: {fileID: 0}
   _CanMove: 1
@@ -3706,6 +3738,7 @@ MonoBehaviour:
   animTrigger: {fileID: 0}
   armature: {fileID: 7813269517312369915}
   armMesh: {fileID: 3201401248480740544}
+  bowAnim: {fileID: 1436198795544721307}
   _CanComboAttack: 0
   _ComboAttack: 0
   _CanReceiveInput: 0
@@ -4410,6 +4443,7 @@ Transform:
   - {fileID: 6488644284147007480}
   - {fileID: 968123453888714388}
   - {fileID: 8625031622050551108}
+  - {fileID: 5652918095632363721}
   m_Father: {fileID: 1287323105947238445}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8679211938237616189
@@ -5263,11 +5297,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5953429828703502006, guid: da2206c5f6910b1448ff6439e50e2843, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.121
       objectReference: {fileID: 0}
     - target: {fileID: 5953429828703502006, guid: da2206c5f6910b1448ff6439e50e2843, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 5953429828703502006, guid: da2206c5f6910b1448ff6439e50e2843, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5301,11 +5335,20 @@ PrefabInstance:
       propertyPath: m_Name
       value: 406_Bow
       objectReference: {fileID: 0}
+    - target: {fileID: 6473084774308537356, guid: da2206c5f6910b1448ff6439e50e2843, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: da2206c5f6910b1448ff6439e50e2843, type: 3}
+--- !u!95 &1436198795544721307 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 8275964137282413765, guid: da2206c5f6910b1448ff6439e50e2843, type: 3}
+  m_PrefabInstance: {fileID: 7004301081049977694}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2432054003010317866 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4680403862541139316, guid: da2206c5f6910b1448ff6439e50e2843, type: 3}

@@ -14,9 +14,9 @@ public class AimState : ToolBaseState
         toolStateManager.player.isAimLocked = true;
 
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
-            toolStateManager.CurrentToolUseState = ToolAnimationState.Aim;
-        else
             toolStateManager.CurrentToolUseState = ToolAnimationState.FullAim;
+        else
+            toolStateManager.CurrentToolUseState = ToolAnimationState.Aim;
 
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.runState)
             toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.walkState);
@@ -25,7 +25,9 @@ public class AimState : ToolBaseState
             toolStateManager.RPC_MoveAimCamera(true);
 
         if (toolStateManager.CurrentToolType == ToolType.Bow)
-            toolStateManager.player.BowSetting();
+        {
+            toolStateManager.RPC_BowSetting(true);
+        }
 
         toolStateManager.player.playerInteractUI.crosshairImage.gameObject.SetActive(true);
     }
@@ -34,19 +36,29 @@ public class AimState : ToolBaseState
     {
         RotatePlayer();
 
-        if (toolStateManager.movementManager.currentMoveType != MoveType.Idle)
-            toolStateManager.CurrentToolUseState = ToolAnimationState.Aim;
-        else if (toolStateManager.movementManager.currentMoveType == MoveType.Idle)
+        if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
             toolStateManager.CurrentToolUseState = ToolAnimationState.FullAim;
+        else
+            toolStateManager.CurrentToolUseState = ToolAnimationState.Aim;
 
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
+        {
+            if (toolStateManager.CurrentToolType == ToolType.Bow)
+                toolStateManager.RPC_BowShoot();
+
             toolStateManager.ChangeState(toolStateManager.useToolState);
+        }
 
         else if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
             toolStateManager.player.isAimLocked = false;
+
             if (toolStateManager.HasStateAuthority)
                 toolStateManager.RPC_MoveAimCamera(false);
+
+            if (toolStateManager.CurrentToolType == ToolType.Bow)
+                toolStateManager.RPC_BowSetting(false);
+
             toolStateManager.ChangeState(toolStateManager.idleState);
         }
     }
@@ -66,7 +78,6 @@ public class AimState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
-        toolStateManager.player.playerInteractUI.crosshairImage.gameObject.SetActive(false);
     }
 
     private void LookForward()
