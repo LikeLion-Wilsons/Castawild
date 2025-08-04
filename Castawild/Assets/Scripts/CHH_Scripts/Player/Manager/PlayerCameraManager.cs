@@ -111,9 +111,9 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void InitVariables()
     {
-        firstPerson_DefaultFov = firstPersonCam.Lens.FieldOfView;
         thirdPerson_DefaultTargetPos = thirdPersonTarget.localPosition;
         thirdPerson_DefaultFov = thirdPersonCam.Lens.FieldOfView;
+        firstPerson_DefaultFov = firstPersonCam.Lens.FieldOfView;
         targetZoom = currentZoom = orbital.Radius;
     }
 

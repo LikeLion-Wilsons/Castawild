@@ -25,9 +25,7 @@ public class AimState : ToolBaseState
             toolStateManager.RPC_MoveAimCamera(true);
 
         if (toolStateManager.CurrentToolType == ToolType.Bow)
-        {
             toolStateManager.RPC_BowSetting(true);
-        }
 
         toolStateManager.player.playerInteractUI.crosshairImage.gameObject.SetActive(true);
     }

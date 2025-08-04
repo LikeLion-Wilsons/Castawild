@@ -41,6 +41,8 @@ public class Player : NetworkBehaviour
     private Dictionary<int, GameObject> toolDict = new Dictionary<int, GameObject>();
     [SerializeField] private Transform bowOriginPos;
     [SerializeField] private Transform bowUsePos;
+    [SerializeField] private Transform firstPersonBowUsePos;
+    [SerializeField] private Transform cameraRot;
     [SerializeField] private GameObject arrow;
     #endregion
 
@@ -267,13 +269,22 @@ public class Player : NetworkBehaviour
         {
             if (isBowUse)
             {
-                bow.transform.parent = bowUsePos;
+                if (HasInputAuthority && cameraManager.currentView == ViewType.FirstPerson)
+                {
+                    bow.transform.SetParent(firstPersonBowUsePos);
+                    cameraRot.SetParent(cameraManager.firstPersonCam.transform);
+                    cameraRot.localPosition = Vector3.zero;
+                }
+                else
+                    bow.transform.SetParent(bowUsePos);
+
                 bow.transform.localPosition = Vector3.zero;
                 bow.transform.localRotation = Quaternion.identity;
             }
             else
             {
-                bow.transform.parent = bowOriginPos;
+                bow.transform.SetParent(bowOriginPos);
+
                 bow.transform.localPosition = Vector3.zero;
                 bow.transform.localRotation = Quaternion.identity;
             }

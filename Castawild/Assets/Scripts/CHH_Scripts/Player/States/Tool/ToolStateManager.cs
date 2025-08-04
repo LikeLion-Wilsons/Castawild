@@ -112,7 +112,6 @@ public class ToolStateManager : BaseStateManager
         }
 
         anim.SetBool("ComboAttack", ComboAttack);
-        Debug.Log(anim.GetBool("FullAiming"));
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
@@ -212,7 +211,6 @@ public class ToolStateManager : BaseStateManager
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_BowSetting(bool pull)
     {
-        bowAnim.transform.localPosition = Vector3.zero;
         bowAnim.SetBool("Pull", pull);
         player.BowSetting(pull);
     }
@@ -220,7 +218,6 @@ public class ToolStateManager : BaseStateManager
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_BowShoot()
     {
-        bowAnim.transform.localPosition = Vector3.zero;
         bowAnim.SetTrigger("Shoot");
     }
 }
