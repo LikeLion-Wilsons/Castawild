@@ -61,7 +61,7 @@ public class Canvas_Holder : MonoBehaviour
     public static event Action<bool> OnUIActive;
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.Tab) && isDragging == false)
         {
             uiParts["Inventory"].Toggle(player.inputManager);
             uiParts["Table"].Toggle(player.inputManager);
