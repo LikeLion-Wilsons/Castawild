@@ -7,6 +7,7 @@ public class Canvas_Holder : MonoBehaviour
     public GameObject hotBarUI;
     public GameObject inventoryUI;
     public GameObject tableUI;
+    public GameObject chestUI;
     public GameObject campfireUI;
 
     public bool isDragging = false;
@@ -42,6 +43,7 @@ public class Canvas_Holder : MonoBehaviour
     {
         foreach (var part in uiParts.Values)
         {
+            if (part.name == "HotBar") continue;
             part.Close(player.inputManager);
             player.RPC_IsUIOpen(false);
         }
@@ -57,8 +59,7 @@ public class Canvas_Holder : MonoBehaviour
         }
 
         // 수정한 부분
-        uiParts["Inventory"].Toggle();
-        uiParts["Table"].Toggle();
+        CloseAllUI();
     }
     public static event Action<bool> OnUIActive;
     void Update()
@@ -74,10 +75,9 @@ public class Canvas_Holder : MonoBehaviour
                 uiParts["Inventory"].Toggle(player.inputManager);
                 uiParts["Table"].Toggle(player.inputManager);
             }
-            OnUIActive.Invoke(uiParts["Inventory"].IsOpen());
         }
 
-        if (uiParts["Campfire"].IsOpen() && Input.GetKeyDown(KeyCode.E))
+        if (uiParts["Chest"].IsOpen() && Input.GetKeyDown(KeyCode.E))
             CloseAllUI();
 
         // 수정한 부분

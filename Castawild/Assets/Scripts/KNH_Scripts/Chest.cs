@@ -37,7 +37,7 @@ public class Chest : InteractableObject
         if (CanOpen)
         {
             canvasHolder.uiParts["Inventory"].Toggle();
-            canvasHolder.uiParts["Campfire"].Toggle();
+            canvasHolder.uiParts["Chest"].Toggle();
             CanOpen = false;
         }
     }
