@@ -1,6 +1,7 @@
 using Fusion;
+using UnityEngine;
 
-public class Chest : InteractableObject
+public class Campfire : InteractableObject
 {
     [Networked] private bool CanOpen { get; set; } = true;
     Canvas_Holder canvasHolder;
@@ -36,7 +37,7 @@ public class Chest : InteractableObject
         if (CanOpen)
         {
             canvasHolder.uiParts["Inventory"].Toggle();
-            canvasHolder.uiParts["Chest"].Toggle();
+            canvasHolder.uiParts["Campfire"].Toggle();
             CanOpen = false;
         }
     }

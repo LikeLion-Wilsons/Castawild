@@ -77,8 +77,11 @@ public class Canvas_Holder : MonoBehaviour
             }
         }
 
-        if (uiParts["Chest"].IsOpen() && Input.GetKeyDown(KeyCode.E))
-            CloseAllUI();
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (uiParts["Chest"].IsOpen() || uiParts["Campfire"].IsOpen())
+                CloseAllUI();
+        }
 
         // 수정한 부분
         if (uiParts["Inventory"].IsOpen())
