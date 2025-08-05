@@ -42,6 +42,7 @@ public class Player : NetworkBehaviour
     private Dictionary<int, GameObject> toolDict = new Dictionary<int, GameObject>();
     [SerializeField] private Transform bowOriginalParent;
     [SerializeField] private Transform bowUseParent;
+    [SerializeField] private Transform bowUseLocalParent;
     [SerializeField] private GameObject arrow;
 
     [SerializeField, HideInInspector] public bool hasArrow;
@@ -322,16 +323,28 @@ public class Player : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_TurnOffUI() => playerInteractUI.TurnOffUI();
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_SetBowPos(bool isBowUse)
     {
         if (currentToolObject == null)
             return;
 
-        if (isBowUse)
-            currentToolObject.transform.SetParent(bowUseParent);
+        if (HasInputAuthority)
+        {
+            if (isBowUse && cameraManager.currentView == ViewType.FirstPerson)
+                currentToolObject.transform.SetParent(bowUseLocalParent);
+            else if (isBowUse && cameraManager.currentView == ViewType.ThirdPerson)
+                currentToolObject.transform.SetParent(bowUseParent);
+            else
+                currentToolObject.transform.SetParent(bowOriginalParent);
+        }
         else
-            currentToolObject.transform.SetParent(bowOriginalParent);
+        {
+            if (isBowUse)
+                currentToolObject.transform.SetParent(bowUseParent);
+            if (isBowUse)
+                currentToolObject.transform.SetParent(bowOriginalParent);
+        }
 
         currentToolObject.transform.localPosition = Vector3.zero;
         currentToolObject.transform.localRotation = Quaternion.identity;
