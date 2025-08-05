@@ -133,7 +133,7 @@ public class PlayerCameraManager : MonoBehaviour
     private void HandleViewChange()
     {
         if (inputManager.viewChangeAction.WasPressedThisFrame()
-            && (toolManager.currentState == toolManager.idleState || toolManager.currentState == toolManager.carryState))
+            && (toolManager.CurrentToolUseState == ToolAnimationState.Idle || toolManager.CurrentToolUseState == ToolAnimationState.Carry))
         {
             ViewChange(currentView == ViewType.FirstPerson ? ViewType.ThirdPerson : ViewType.FirstPerson);
         }

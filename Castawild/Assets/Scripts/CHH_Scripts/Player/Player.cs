@@ -40,8 +40,12 @@ public class Player : NetworkBehaviour
     [Header("Tool")]
     [SerializeField] private Transform tools;
     private Dictionary<int, GameObject> toolDict = new Dictionary<int, GameObject>();
-    [SerializeField] private Transform bowUsePos;
+    [SerializeField] private Transform bowOriginalParent;
+    [SerializeField] private Transform bowUseParent;
     [SerializeField] private GameObject arrow;
+
+    [SerializeField, HideInInspector] public bool hasArrow;
+    private GameObject currentToolObject;
     #endregion
 
     #region Interact
@@ -256,7 +260,12 @@ public class Player : NetworkBehaviour
             return;
 
         if (toolDict.TryGetValue(itemIdx, out GameObject currentToolGameObject))
+        {
             currentToolGameObject.SetActive(true);
+            currentToolObject = currentToolGameObject;
+        }
+        else
+            currentToolObject = null;
     }
 
     public void PlayerCanMove() => CanMove = true;
@@ -270,6 +279,9 @@ public class Player : NetworkBehaviour
             arrow.SetActive(visible);
         else
             arrow.SetActive(visible);
+
+        if (HasStateAuthority)
+            hasArrow = visible;
     }
 
     public void AttachToCamera(bool attach)
@@ -288,6 +300,11 @@ public class Player : NetworkBehaviour
         }
     }
 
+    //public Vector3 GetArrowPos()
+    //{
+    //    if(currentToolObject.TryGetComponent<Bow>)
+    //}
+
     public void ActiveArrowInputAuthority(bool active) => arrow.SetActive(active);
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -301,4 +318,19 @@ public class Player : NetworkBehaviour
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_TurnOffUI() => playerInteractUI.TurnOffUI();
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_SetBowPos(bool isBowUse)
+    {
+        if (currentToolObject == null)
+            return;
+
+        if (isBowUse)
+            currentToolObject.transform.SetParent(bowUseParent);
+        else
+            currentToolObject.transform.SetParent(bowOriginalParent);
+
+        currentToolObject.transform.localPosition = Vector3.zero;
+        currentToolObject.transform.localRotation = Quaternion.identity;
+    }
 }

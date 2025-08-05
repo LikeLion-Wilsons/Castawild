@@ -32,8 +32,11 @@ public class ToolStateManager : BaseStateManager
     [SerializeField] private Animator bowAnim;
 
     [Header("Throw")]
-    [SerializeField] private float throwForce;
-    [SerializeField] private Stone_Throwable throwableStone;
+    [SerializeField] private float throwForce = 20f;
+    [SerializeField] private float arrowForce = 30f;
+    [SerializeField] private ThrowObject throwableStone;
+    [SerializeField] private ThrowObject arrow;
+    [SerializeField] private Transform arrowPos;
     [SerializeField] private Transform throwPos;
 
     #region Network
@@ -204,23 +207,30 @@ public class ToolStateManager : BaseStateManager
     public void RPC_MoveAimCamera(bool _isAiming) => cameraManager.MoveCamera(_isAiming);
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_BowSetting(bool pull)
-    {
-        bowAnim.SetBool("Pull", pull);
-    }
+    public void RPC_BowPullAnimation(bool pull) => bowAnim.SetBool("Pull", pull);
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_BowShoot()
-    {
-        bowAnim.SetTrigger("Shoot");
-    }
+    public void RPC_BowShootAnimation() => bowAnim.SetTrigger("Shoot");
 
-    public void SpawnThrowObject()
+    public void SpawnThrowObject(bool isArrow)
     {
         if (!HasStateAuthority)
             return;
 
-        NetworkObject stone = Runner.Spawn(throwableStone.gameObject, throwPos.position, Quaternion.identity);
-        stone.GetComponent<Stone_Throwable>().AddForce(transform.forward, throwForce);
+        NetworkObject throwObject;
+        if (isArrow && player.hasArrow)
+        {
+            throwObject = Runner.Spawn(arrow.gameObject, arrowPos.position, Quaternion.identity);
+            throwObject?.GetComponent<ThrowObject>().AddForce(transform.forward, arrowForce);
+            //player.currentToolObject
+            //bowPos
+        }
+        else
+        {
+            throwObject = Runner.Spawn(throwableStone.gameObject, throwPos.position, Quaternion.identity);
+            Vector3 throwDirection = transform.forward + Vector3.up * 0.2f;
+            throwDirection.Normalize();
+            throwObject?.GetComponent<ThrowObject>().AddForce(transform.forward, throwForce);
+        }
     }
 }

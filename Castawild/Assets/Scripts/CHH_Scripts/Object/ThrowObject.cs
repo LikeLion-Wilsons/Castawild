@@ -1,7 +1,7 @@
 using Fusion;
 using UnityEngine;
 
-public class Stone_Throwable : NetworkBehaviour
+public class ThrowObject : NetworkBehaviour
 {
     private Rigidbody rigid;
 
