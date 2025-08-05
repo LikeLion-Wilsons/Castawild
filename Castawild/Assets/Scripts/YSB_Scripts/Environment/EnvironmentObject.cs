@@ -7,11 +7,18 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, INetwork
     public GameObject VisualRoot { get { return visualRoot; } }
     [SerializeField] private GameObject visualRoot;
 
-    [Networked] protected int Health { get; set; }
-    [Networked] protected int MaxHP { get; set; }
+    [Networked] protected int Health { get; set; } 
+    [Networked] protected int MaxHP { get; set; } 
     [Networked] protected TickTimer ReviveTimer { get; set; }
+    [SerializeField] private float reviveTime = 10f;
 
-    public event System.Action<NetworkBehaviour> OnDied;
+    public override void FixedUpdateNetwork()
+    {
+        if (HasStateAuthority && CanRevive())
+        {
+            Revive();
+        }
+    }
 
     public virtual void Init(SpawnableDefinition def, int instanceId)
     {
@@ -35,11 +42,10 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, INetwork
     public virtual void Revive()
     {
         Health = MaxHP;
-        ReviveTimer = TickTimer.CreateFromSeconds(Runner, 10f);
     }
 
     protected void Die()
     {
-        OnDied?.Invoke(this);
+        ReviveTimer = TickTimer.CreateFromSeconds(Runner, reviveTime);
     }
 }
