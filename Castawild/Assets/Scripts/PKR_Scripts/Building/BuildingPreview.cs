@@ -10,8 +10,6 @@ public class BuildingPreview : MonoBehaviour
     private GameObject previewObject;
     private Renderer previewRenderer;
     private Camera cam;
-    private Material validMaterial;
-    private Material invalidMaterial;
     private bool isPreviewing = false;
     private bool onAirPos = false;
 
@@ -25,20 +23,6 @@ public class BuildingPreview : MonoBehaviour
     void Awake()
     {
         cam = Camera.main;
-        validMaterial = CreateMaterial(validColor, 0.5f);
-        invalidMaterial = CreateMaterial(invalidColor, 0.5f);
-    }
-
-    private Material CreateMaterial(Color color, float alpha)
-    {
-        Material material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        color.a = alpha;
-        material.SetColor("_BaseColor", color); // URP Lit 쉐이더는 _BaseColor 사용
-        material.SetFloat("_Surface", 1); // 0: Opaque, 1: Transparent
-        material.SetFloat("_Blend", 0); // Alpha
-        material.SetFloat("_ZWrite", 0);
-        material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-        return material;
     }
 
     void Update()
@@ -182,7 +166,7 @@ public class BuildingPreview : MonoBehaviour
     private void UpdatePreviewColor()
     {
         bool canBuild = CheckBuildable();
-        previewRenderer.material = canBuild ? validMaterial : invalidMaterial;
+        previewRenderer.material.color = canBuild ? validColor : invalidColor;
     }
 
     public Vector3 GetPreviewPosition()
