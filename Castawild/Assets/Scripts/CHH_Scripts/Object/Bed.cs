@@ -13,20 +13,18 @@ public class Bed : InteractableObject
     }
 
     public override bool CanInteract() => CanSleep;
+    public void FinishSleep() => CanSleep = true;
 
     public override void Interact(PlayerRef playerRef)
     {
         CanSleep = false;
-
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
 
-        PlayerController playerController = playerObj.GetComponent<PlayerController>();
-        playerController.kcc.SetPosition(sleepPos.position);
-
         Player player = playerObj.GetComponent<Player>();
-        player.CurrentBed = this;
-        player.movementManager.ChangeState(player.movementManager.sleepState);
-    }
+        player.currentBed = this;
+        player.movementManager.RPC_ChangeSleepState(playerRef);
 
-    public void FinishSleep() => CanSleep = true;
+        PlayerController playerController = playerObj.GetComponent<PlayerController>();
+        playerController.RPC_SetPosition(sleepPos.position);
+    }
 }

@@ -22,18 +22,23 @@ public class ToolStateManager : BaseStateManager
     public EatState eatState;
     #endregion
 
+    [Header("Player")]
     public Transform armature;
     [SerializeField] private GameObject armMesh;
 
+    [Header("Bow")]
+    [SerializeField] private Animator bowAnim;
+
     #region Network
-    [Networked] public bool CanComboAttack { get; set; }
-    [Networked] public bool ComboAttack { get; set; }
-    [Networked] public bool CanReceiveInput { get; set; }
+    [Header("Player")]
+    [Networked, HideInInspector] public bool CanComboAttack { get; set; }
+    [Networked, HideInInspector] public bool ComboAttack { get; set; }
+    [Networked, HideInInspector] public bool CanReceiveInput { get; set; }
     [Networked] public ToolAnimationState CurrentToolUseState { get; set; }
     [Networked] public ToolType CurrentToolType { get; set; }
     #endregion
 
-    public bool isTriggerSet = false;
+    [HideInInspector] public bool isTriggerSet = false;
 
     protected override void Awake()
     {
@@ -82,6 +87,12 @@ public class ToolStateManager : BaseStateManager
                 anim.SetBool("FullAiming", true);
                 break;
             case ToolAnimationState.FullUse:
+                if (input.IsDown(PlayerNetworkInputData.aimInput) && HoldAimTool())
+                {
+                    anim.SetInteger("WeaponType", (int)CurrentToolType);
+                    anim.SetBool("Aiming", true);
+                    anim.SetBool("FullAiming", true);
+                }
                 anim.SetInteger("WeaponType", (int)CurrentToolType);
                 anim.SetBool("FullUseTool", true);
                 break;
@@ -103,13 +114,14 @@ public class ToolStateManager : BaseStateManager
         anim.SetBool("ComboAttack", ComboAttack);
     }
 
-    // 400:짱돌 401:방망이 402:횃불 403:돌도끼 404:돌작살 405:돌곡괭이
-    public void ChangeSelectedItem(int itemIdx = -1)
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_ChangeSelectedItem(int itemIdx = -1)
     {
         // 설치가능한 아이템 
         if (itemIdx >= 300 && itemIdx < 400)
         {
-            ChangeState(carryState);
+            if (HasStateAuthority)
+                ChangeState(carryState);
             return;
         }
 
@@ -129,6 +141,12 @@ public class ToolStateManager : BaseStateManager
                 break;
             case 405: // 돌곡괭이
                 CurrentToolType = ToolType.Pickaxe;
+                break;
+            case 406: // 화살
+                {
+                    CurrentToolType = ToolType.Bow;
+                    player.RPC_ActiveArrowInputAuthority(false);
+                }
                 break;
             case 400: // 400:짱돌 
             default:
@@ -164,11 +182,42 @@ public class ToolStateManager : BaseStateManager
     /// </summary>
     public bool HoldAimTool() => CurrentToolType == ToolType.Bow || CurrentToolType == ToolType.Throw;
 
-    public void ArmVisibleChanged(bool isVisible)
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ArmVisibleChanged(bool isVisible)
     {
-        if (HasInputAuthority && cameraManager.currentView == ViewType.FirstPerson)
+        if (cameraManager.currentView != ViewType.FirstPerson)
+            return;
+
+        armMesh.SetActive(isVisible);
+
+        if (isVisible)
         {
-            armMesh.SetActive(isVisible);
+            armature.SetParent(cameraManager.firstPersonCam.transform);
+            armature.localPosition = new Vector3(0f, -3f, 0f);
+            armature.localRotation = Quaternion.identity;
         }
+
+        else
+        {
+            armature.SetParent(player.transform);
+            armature.localPosition = Vector3.zero;
+            armature.localRotation = Quaternion.identity;
+        }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_MoveAimCamera(bool _isAiming) => cameraManager.MoveCamera(_isAiming);
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_BowSetting(bool pull)
+    {
+        bowAnim.SetBool("Pull", pull);
+        player.BowSetting(pull);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_BowShoot()
+    {
+        bowAnim.SetTrigger("Shoot");
     }
 }

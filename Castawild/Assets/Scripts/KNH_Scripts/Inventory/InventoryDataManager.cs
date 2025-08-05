@@ -50,7 +50,7 @@ public class InventoryDataManager : NetworkBehaviour
 
             canvasHolder = uiCanvas.GetComponent<Canvas_Holder>();
             player = GetComponent<Player>();
-            canvasHolder.player = player;
+            canvasHolder.SetPlayer(player);
 
             int i = 0;
             while (i < 9)
@@ -271,6 +271,21 @@ public class InventoryDataManager : NetworkBehaviour
         }
         return false;
 
+    }
+
+    // 추가한 부분
+    // 아이템 있는지 확인
+    public bool HasItem(int id)
+    {
+        for (int i = 0; i < itemList.Count; i++)
+        {
+            if (itemList[i].itemID == id)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void SwapItems(int indexA, int indexB)

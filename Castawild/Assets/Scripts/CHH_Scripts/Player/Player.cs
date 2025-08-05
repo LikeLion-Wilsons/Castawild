@@ -1,8 +1,7 @@
 using Fusion;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
@@ -11,11 +10,24 @@ public enum ItemType { None, Default, Tool, Food, Drink, Placeable }
 
 public class Player : NetworkBehaviour
 {
-    public PlayerData playerData;
+    [Header("Status")]
+    public PlayerData playerData = new PlayerData();
+
+    [Header("Current Status")]
+    [Networked] public float Hp { get; set; }
+    [Networked] public float Stamina { get; set; }
+    [Networked] public float Hunger { get; set; }
+    [Networked] public float Thirst { get; set; }
+    [Networked] public float Temperature { get; set; }
+
+    public float staminaDecreaseRate = 1f;
+    public float hungerDecreaseRate = 1f;
+    public float thirstDecreaseRate = 1f;
 
     #region Components
     [HideInInspector] public Animator anim;
     [HideInInspector] public Rigidbody rigid;
+    [HideInInspector] public PlayerInteractUI playerInteractUI;
     [HideInInspector] public PlayerController playerController;
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public MovementStateManager movementManager;
@@ -23,34 +35,31 @@ public class Player : NetworkBehaviour
     [HideInInspector] public PlayerCameraManager cameraManager;
     #endregion
 
-    #region Throw
-    public float throwForce = 10f;
-    public float throwUpForce = 5f;
-    #endregion
-
     #region Tool
+    [Header("Tool")]
     [SerializeField] private Transform tools;
     private Dictionary<int, GameObject> toolDict = new Dictionary<int, GameObject>();
+    [SerializeField] private Transform bowOriginPos;
+    [SerializeField] private Transform bowUsePos;
+    [SerializeField] private Transform firstPersonBowUsePos;
+    [SerializeField] private Transform cameraRot;
+    [SerializeField] private GameObject arrow;
     #endregion
 
     #region Interact
-    public Image crosshairImage;
-    [SerializeField] private Sprite originImage;
-    [SerializeField] private Sprite axeImage;
-    [SerializeField] private Sprite pickaxeImage;
-    public CanvasGroup interactableUI;
-    public TextMeshProUGUI interactableText;
-    public CanvasGroup placeableUI;
-    [Networked, HideInInspector] public Bed CurrentBed { get; set; }
+    [Header("Interact")]
+    [HideInInspector] public Bed currentBed;
     #endregion
 
-    [Networked] public bool CanMove { get; set; } = true;
-    [Networked] public bool IsUIOpen { get; set; }
-    [Networked] public bool IsCursorLocked { get; set; }
+    [Header("Networked")]
+    [Networked, HideInInspector] public bool CanMove { get; set; } = true;
+    [Networked, HideInInspector] public bool IsUIOpen { get; set; }
+    [Networked, HideInInspector] public bool IsCursorLocked { get; set; }
 
     [Networked] public string CurrentToolName { get; set; }
-    [Networked] public int CurrentToolAtt { get; set; }
-    [Networked] public int CurrentToolID { get; set; }
+    [Networked, HideInInspector] public int CurrentToolAtt { get; set; }
+    [Networked, HideInInspector] public int CurrentToolID { get; set; }
+    [Networked, HideInInspector] public bool IsSleeping { get; set; }
 
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isAimLocked = false;
@@ -61,24 +70,17 @@ public class Player : NetworkBehaviour
     override public void Spawned()
     {
         isSpawned = true;
+        InitStatus();
         InitTools();
     }
 
-    private void Awake()
+    private void InitStatus()
     {
-        InitComponents();
-    }
-
-    private void InitComponents()
-    {
-        anim = GetComponentInChildren<Animator>();
-        rigid = GetComponent<Rigidbody>();
-        playerController = GetComponent<PlayerController>();
-        inputManager = GetComponent<PlayerInputManager>();
-        movementManager = GetComponent<MovementStateManager>();
-        toolStateManager = GetComponent<ToolStateManager>();
-        cameraManager = GetComponent<PlayerCameraManager>();
-        inventory = GetComponent<InventoryDataManager>();
+        Hp = playerData.maxHp;
+        Stamina = playerData.maxStamina;
+        Hunger = playerData.maxHunger;
+        Thirst = playerData.maxThirst;
+        Temperature = playerData.maxTemperature;
     }
 
     private void InitTools()
@@ -94,6 +96,33 @@ public class Player : NetworkBehaviour
                     tool.gameObject.SetActive(false);
                 }
             }
+        }
+    }
+
+    private void Awake()
+    {
+        InitComponents();
+    }
+
+    private void InitComponents()
+    {
+        anim = GetComponentInChildren<Animator>();
+        rigid = GetComponent<Rigidbody>();
+        playerController = GetComponent<PlayerController>();
+        playerInteractUI = GetComponentInChildren<PlayerInteractUI>();
+        inputManager = GetComponent<PlayerInputManager>();
+        movementManager = GetComponent<MovementStateManager>();
+        toolStateManager = GetComponent<ToolStateManager>();
+        cameraManager = GetComponentInChildren<PlayerCameraManager>();
+        inventory = GetComponent<InventoryDataManager>();
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        if (HasStateAuthority)
+        {
+            Hunger -= hungerDecreaseRate * Runner.DeltaTime;
+            Thirst -= thirstDecreaseRate * Runner.DeltaTime;
         }
     }
 
@@ -118,34 +147,17 @@ public class Player : NetworkBehaviour
         }
         else
         {
-            Debug.Log("Active False");
             if (HasInputAuthority)
                 RPC_EquipmentTool();
             SetCurrentTool();
         }
 
-        toolStateManager.ChangeSelectedItem(itemIdx);
-    }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    private void RPC_EquipmentTool(int itemIdx = -1)
-    {
-        foreach (var tool in toolDict)
-        {
-            if (tool.Value != null)
-                tool.Value.SetActive(false);
-        }
-
-        if (itemIdx == -1)
-            return;
-
-        if (toolDict.TryGetValue(itemIdx, out GameObject currentToolGameObject))
-            currentToolGameObject.SetActive(true);
+        if (HasInputAuthority)
+            toolStateManager.RPC_ChangeSelectedItem(itemIdx);
     }
 
     private void SetCurrentItemType(int _currentItemIdx)
     {
-        Debug.Log(_currentItemIdx);
         // 50 ~ 59 : Drink
         if (_currentItemIdx >= 50 && _currentItemIdx < 60)
             currentItemType = ItemType.Drink;
@@ -160,7 +172,6 @@ public class Player : NetworkBehaviour
             currentItemType = ItemType.Tool;
         else
             currentItemType = ItemType.Default;
-        Debug.Log(currentItemType);
     }
 
     /// <summary>
@@ -171,34 +182,13 @@ public class Player : NetworkBehaviour
         RPC_EquipmentTool();
         SetCurrentTool();
 
-        toolStateManager.ChangeSelectedItem();
+        toolStateManager.RPC_ChangeSelectedItem();
     }
 
-    public void ChangeCrosshairUI(InteractableType type = InteractableType.None)
+    public bool CanUseTool()
     {
-        switch (type)
-        {
-            case InteractableType.Tree:
-                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
-                crosshairImage.sprite = axeImage;
-                break;
-            case InteractableType.Stone:
-                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
-                crosshairImage.sprite = pickaxeImage;
-                break;
-            case InteractableType.None:
-            default:
-                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(10f, 10f);
-                crosshairImage.sprite = originImage;
-                break;
-        }
+        return !IsUIOpen && CanMove;
     }
-
-    public bool CanUseTool() => !IsUIOpen && CanMove;
-
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_IsUIOpen(bool isOpen) => IsUIOpen = isOpen;
 
     /// <summary>
     /// 현재 들고있는 도구 + 플레이어 공격력
@@ -218,9 +208,12 @@ public class Player : NetworkBehaviour
 
     public void FinishSleep()
     {
-        CurrentBed.FinishSleep();
-        CurrentBed = null;
-        CanMove = true;
+        if (HasInputAuthority)
+        {
+            currentBed.FinishSleep();
+            currentBed = default;
+            cameraManager.ApplySleepCameraView(false);
+        }
     }
 
     public bool CanMoving() => CanMove && IsCursorLocked;
@@ -231,10 +224,7 @@ public class Player : NetworkBehaviour
             RPC_CursorLocked(isLocked);
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_CursorLocked(bool isLocked) => IsCursorLocked = isLocked;
-
-    public void PlayerStop()
+    public void StopPlayer()
     {
         CanMove = false;
         playerController.kcc.Move(Vector3.zero);
@@ -254,4 +244,78 @@ public class Player : NetworkBehaviour
         CurrentToolName = toolInfo.ToolName;
         CurrentToolAtt = toolInfo.Att;
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    private void RPC_EquipmentTool(int itemIdx = -1)
+    {
+        foreach (var tool in toolDict)
+        {
+            if (tool.Value != null)
+                tool.Value.SetActive(false);
+        }
+
+        if (itemIdx == -1)
+            return;
+
+        if (toolDict.TryGetValue(itemIdx, out GameObject currentToolGameObject))
+            currentToolGameObject.SetActive(true);
+    }
+
+    public void PlayerCanMove() => CanMove = true;
+
+    public void BowSetting(bool isBowUse)
+    {
+        if (toolDict.TryGetValue(406, out GameObject bow))
+        {
+            if (isBowUse)
+            {
+                if (HasInputAuthority && cameraManager.currentView == ViewType.FirstPerson)
+                {
+                    bow.transform.SetParent(firstPersonBowUsePos);
+                    cameraRot.SetParent(cameraManager.firstPersonCam.transform);
+                    cameraRot.localPosition = Vector3.zero;
+                }
+                else
+                    bow.transform.SetParent(bowUsePos);
+
+                bow.transform.localPosition = Vector3.zero;
+                bow.transform.localRotation = Quaternion.identity;
+            }
+            else
+            {
+                bow.transform.SetParent(bowOriginPos);
+
+                bow.transform.localPosition = Vector3.zero;
+                bow.transform.localRotation = Quaternion.identity;
+            }
+
+            if (inventory.HasItem(201) && isBowUse)
+                RPC_ActiveArrow(true);
+            else
+                RPC_ActiveArrow(false);
+        }
+        else
+        {
+            Debug.Log("활 없음");
+            return;
+        }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_ActiveArrow(bool active) => arrow.SetActive(active);
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_ActiveArrowInputAuthority(bool active) => arrow.SetActive(active);
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_IsUIOpen(bool isOpen) => IsUIOpen = isOpen;
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_CursorLocked(bool isLocked) => IsCursorLocked = isLocked;
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplySleepCameraView() => cameraManager.ApplySleepCameraView(true);
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_TurnOffUI() => playerInteractUI.TurnOffUI();
 }

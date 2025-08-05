@@ -10,26 +10,37 @@ public class SleepState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.player.PlayerStop();
+        if (!movementManager.HasInputAuthority)
+            Debug.Log("SleepEnter");
+        movementManager.player.StopPlayer();
 
         movementManager.CurrentMoveState = MoveAnimationState.Sleep;
         movementManager.currentMoveType = MoveType.Idle;
 
-        movementManager.player.interactableUI.alpha = 1f;
-        movementManager.player.interactableText.text = "Wake Up";
+        movementManager.CanWakeUp = false;
 
-        movementManager.cameraManager.SleepCamera(true);
+        if (movementManager.HasStateAuthority)
+        {
+            movementManager.player.RPC_TurnOffUI();
+            movementManager.player.RPC_ApplySleepCameraView();
+        }
     }
 
     public override void UpdateState()
     {
-        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.interactInput))
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.interactInput) && movementManager.CanWakeUp)
+        {
+            if (!movementManager.HasInputAuthority)
+                Debug.Log("WakeUp");
             movementManager.ChangeState(movementManager.idleState);
+        }
     }
 
     public override void ExitState()
     {
-        movementManager.player.interactableUI.alpha = 0f;
-        movementManager.cameraManager.SleepCamera(false);
+        if (!movementManager.HasInputAuthority)
+            Debug.Log("SleepExit");
+        if (movementManager.HasInputAuthority)
+            movementManager.player.playerInteractUI.TurnOffUI();
     }
 }

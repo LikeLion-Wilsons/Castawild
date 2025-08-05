@@ -27,7 +27,7 @@ public class JumpState : MovementBaseState
 
             if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
                 movementManager.ChangeState(movementManager.idleState);
-            else if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput))
+            else if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.HasEnoughStaminaToRun())
                 movementManager.ChangeState(movementManager.runState);
             else
                 movementManager.ChangeState(movementManager.walkState);

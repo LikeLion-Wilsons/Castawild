@@ -1681,7 +1681,6 @@ MonoBehaviour:
   player: {fileID: 0}
   hungerBar: {fileID: 679697255584774767}
   thirstBar: {fileID: 4406706821030157185}
-  satiationBar: {fileID: 822989959234088303}
   temperatureBar: {fileID: 8254562132606757984}
   healthBar: {fileID: 7441853433576039053}
   staminaBar: {fileID: 2753404041570099846}
@@ -2804,6 +2803,7 @@ MonoBehaviour:
   inventoryUI: {fileID: 862843738221293036}
   tableUI: {fileID: 5968180590557479756}
   isDragging: 0
+  uiStats: {fileID: 6076010028049235856}
   parts: []
   ui_Part_Parent: {fileID: 8740063373338327921}
 --- !u!1 &2897719330056352808
@@ -3171,8 +3171,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1514235105144904388}
   m_HandleRect: {fileID: 6886025332259635258}
   m_Direction: 2
-  m_Value: -0.000010986329
-  m_Size: 0.833312
+  m_Value: -0.0000061035157
+  m_Size: 0.8333333
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4402,7 +4402,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 50.000523}
+  m_AnchoredPosition: {x: 0, y: 50.000282}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1531450813167747468
@@ -5077,7 +5077,6 @@ GameObject:
   - component: {fileID: 1264945639900986408}
   - component: {fileID: 2713219173348907803}
   - component: {fileID: 9197697624980333026}
-  - component: {fileID: 3964058705372879579}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -5147,52 +5146,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &3964058705372879579
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6160590078434569122}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe57b54053d48c1428bef86058bd057b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  item_panel: {fileID: 5474218961702926246}
-  content: {fileID: 5980619922629422042}
-  itemPanels:
-  - {fileID: 4116955428125253552}
-  - {fileID: 8201218117380741160}
-  - {fileID: 3317918460288798921}
-  - {fileID: 4624680466066783985}
-  - {fileID: 8006100596736423684}
-  - {fileID: 3411767029424368192}
-  - {fileID: 5121848766295210500}
-  - {fileID: 1523094748937888049}
-  - {fileID: 6910709303560333112}
-  - {fileID: 5474218961702926246}
-  - {fileID: 4377057772306443063}
-  - {fileID: 6987653468279765525}
-  - {fileID: 8016754666582385484}
-  - {fileID: 2762579788069833030}
-  - {fileID: 6015157206673392665}
-  - {fileID: 1049224648134661769}
-  - {fileID: 3261459068022257446}
-  - {fileID: 8853954189983693957}
-  - {fileID: 6653377283199852653}
-  - {fileID: 5840154519491473346}
-  - {fileID: 4125799296856812721}
-  - {fileID: 7725689123830555757}
-  - {fileID: 7937534190593056446}
-  - {fileID: 5363755101690212241}
-  - {fileID: 7801342112622860140}
-  - {fileID: 4716150124445495920}
-  - {fileID: 9162448404514429981}
-  - {fileID: 2980054171178639542}
-  - {fileID: 649074190746267365}
-  itemClick: {fileID: 3937718113261005428}
-  inventoryData: {fileID: 0}
 --- !u!1 &6193209639901959251
 GameObject:
   m_ObjectHideFlags: 0

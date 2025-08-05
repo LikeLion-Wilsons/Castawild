@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 424633515593134592}
   - component: {fileID: 8843817968482036333}
   - component: {fileID: 8296172669144270188}
-  - component: {fileID: 8296172669144270190}
   - component: {fileID: 4470281708690755191}
   m_Layer: 0
   m_Name: 402_Torch
@@ -136,27 +135,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 2
---- !u!65 &8296172669144270190
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2150556656117040860}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.07825382, y: 0.45741233, z: 0.07061753}
-  m_Center: {x: -0.008117202, y: 0.22811763, z: 0.0012901723}
 --- !u!114 &4470281708690755191
 MonoBehaviour:
   m_ObjectHideFlags: 0
