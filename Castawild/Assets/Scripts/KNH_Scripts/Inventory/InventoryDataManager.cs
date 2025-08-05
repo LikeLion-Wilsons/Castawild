@@ -14,6 +14,7 @@ public class InventoryDataManager : NetworkBehaviour
     private float nextScrollTime = 0f;
     public float scrollCooldown = 0.1f; // 100ms
     [SerializeField] GameObject playerUIPrefab; // 인스펙터에 연결
+    public GameObject UICanvas;
     [Networked, Capacity(30)] public NetworkLinkedList<Item> itemList => default;
 
     // 수정한 부분
@@ -43,6 +44,7 @@ public class InventoryDataManager : NetworkBehaviour
             // 본인의 UI만 생성
             GameObject uiCanvas = Instantiate(playerUIPrefab);
             uiCanvas.transform.SetParent(null); // 루트로 이동
+            UICanvas = uiCanvas;
             uiInventory = uiCanvas.GetComponentInChildren<UIInventory>();
             uiInventory.BindToInventoryData(this);
             uiTable = uiCanvas.GetComponentInChildren<UITable>();
@@ -157,6 +159,10 @@ public class InventoryDataManager : NetworkBehaviour
         {
             GetItem(1, 1);
         }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            RPC_UseSelectedItem(1);
+        }
     }
     public override void FixedUpdateNetwork()
     {   
@@ -186,6 +192,12 @@ public class InventoryDataManager : NetworkBehaviour
     public void RPC_UseItem(int index, int count)
     {
         UseItem(index, count);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_UseSelectedItem(int count)
+    {
+        UseItem(selectedSlot, count);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -231,8 +243,6 @@ public class InventoryDataManager : NetworkBehaviour
     // 아이템 획득
     public bool GetItem(int id, int amount)
     {
-        //Debug.Log("GetItem");
-
         // 이미 존재하는 아이템이면 개수만 증가
         for (int i = 0; i < itemList.Count; i++)
         {

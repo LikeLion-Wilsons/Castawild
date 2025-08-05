@@ -262,10 +262,12 @@ public class Item_Panel :
         }
         else
         {
+            //좌클릭 드래그: 원래 위치로
             if (transform.parent == onDragParent)
             {
                 transform.SetParent(originalParent);
                 rectTransform.anchoredPosition = originalAnchoredPos;
+                Debug.Log("좌클릭 드래그: 원래 위치로");
             }
         }
         canvasGroup.blocksRaycasts = true;
@@ -276,6 +278,7 @@ public class Item_Panel :
 
     public void OnDrop(PointerEventData eventData)
     {
+        Debug.Log(isInveontoryOpen);
         if (!isInveontoryOpen) return;
 
         var droppedObj = eventData.pointerDrag;
@@ -343,6 +346,7 @@ public class Item_Panel :
                 }
 
             }
+            //위치 교환
             inventoryData.RPC_SwapItems(indexA, indexB);
         }
     }
