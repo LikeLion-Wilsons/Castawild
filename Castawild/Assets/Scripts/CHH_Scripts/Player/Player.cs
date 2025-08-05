@@ -272,10 +272,9 @@ public class Player : NetworkBehaviour
     public void RPC_ArrowVisible(bool visible)
     {
         if (inventory.HasItem(201) && visible)
-            RPC_ActiveArrow(true);
+            arrow.SetActive(visible);
         else
-            RPC_ActiveArrow(false);
-
+            arrow.SetActive(visible);
     }
 
     public void AttachToCamera(bool attach)
@@ -295,9 +294,6 @@ public class Player : NetworkBehaviour
     }
 
     public void ActiveArrowInputAuthority(bool active) => arrow.SetActive(active);
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_ActiveArrow(bool active) => arrow.SetActive(active);
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_IsUIOpen(bool isOpen) => IsUIOpen = isOpen;

@@ -149,6 +149,8 @@ public sealed class PlayerController : NetworkBehaviour
         }
         else if (input.currentView == ViewType.ThirdPerson && input.moveValue.sqrMagnitude > 0.001f)
         {
+            if (input.camForward == Vector3.zero)
+                return;
             Quaternion target = Quaternion.LookRotation(input.camForward);
             kcc.SetLookRotation(Quaternion.Slerp(kcc.Transform.rotation, target, rotationSpeed * Runner.DeltaTime));
         }
