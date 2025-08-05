@@ -80,7 +80,7 @@ public class InventoryDataManager : NetworkBehaviour
     int selectedSlot = 0;
     int maxSlotCount = 9; // 총 슬롯 수
     public static InventoryDataManager Instance { get; set; }
-
+    public static event Action<int> onItemSelected;
     void ChangeSelectedSlot(int newValue)
     {
         if (Object.HasInputAuthority)
@@ -94,6 +94,7 @@ public class InventoryDataManager : NetworkBehaviour
             }
             inventorySlots[newValue].Select();
             selectedSlot = newValue;
+            onItemSelected?.Invoke(inventorySlots[newValue].item.itemID);
 
             // 수정한 부분
             if (inventorySlots[selectedSlot].IsEmpty())
