@@ -3653,6 +3653,7 @@ MonoBehaviour:
   cameraManager: {fileID: 0}
   tools: {fileID: 7844614530758869572}
   bowOriginPos: {fileID: 5652918095632363721}
+  toolUsePos: {fileID: 0}
   bowUsePos: {fileID: 3555937060719847740}
   firstPersonBowUsePos: {fileID: 1816490953092983314}
   cameraRot: {fileID: 8944785604705992443}
@@ -3669,6 +3670,7 @@ MonoBehaviour:
   isAimLocked: 0
   isSpawned: 0
   currentItemType: 0
+  amarture: {fileID: 762437358709272171}
 --- !u!114 &8380833186685685926
 MonoBehaviour:
   m_ObjectHideFlags: 0

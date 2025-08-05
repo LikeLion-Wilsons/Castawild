@@ -158,6 +158,7 @@ public class PlayerCameraManager : MonoBehaviour
                 }
                 firstPersonCam.Priority = 10;
                 thirdPersonCam.Priority = 0;
+                player.AttachToCamera(true);
             }
         }
 
@@ -175,6 +176,7 @@ public class PlayerCameraManager : MonoBehaviour
                 }
                 firstPersonCam.Priority = 0;
                 thirdPersonCam.Priority = 10;
+                player.AttachToCamera(false);
             }
         }
     }

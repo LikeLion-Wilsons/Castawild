@@ -20,9 +20,9 @@ public class UseToolState : ToolBaseState
             SetActiveArmMesh(true);
 
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
-        {
             toolStateManager.RPC_BowSetting(true);
-        }
+
+        toolStateManager.player.RPC_ArrowVisible(true);
     }
 
     public override void UpdateState()
@@ -51,6 +51,8 @@ public class UseToolState : ToolBaseState
                 toolStateManager.ChangeState(toolStateManager.idleState);
                 if (toolStateManager.CurrentToolType == ToolType.Bow)
                     toolStateManager.RPC_BowSetting(false);
+
+                toolStateManager.player.RPC_ArrowVisible(false);
             }
         }
     }
@@ -63,9 +65,8 @@ public class UseToolState : ToolBaseState
             SetActiveArmMesh(false);
 
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
-        {
             toolStateManager.RPC_BowSetting(false);
-        }
+        toolStateManager.player.RPC_ArrowVisible(false);
 
         toolStateManager.player.CanMove = true;
         toolStateManager.player.isAimLocked = false;

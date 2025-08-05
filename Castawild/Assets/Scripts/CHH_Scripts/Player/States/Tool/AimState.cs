@@ -27,6 +27,8 @@ public class AimState : ToolBaseState
         if (toolStateManager.CurrentToolType == ToolType.Bow)
             toolStateManager.RPC_BowSetting(true);
 
+        toolStateManager.player.RPC_ArrowVisible(true);
+
         toolStateManager.player.playerInteractUI.crosshairImage.gameObject.SetActive(true);
     }
 
@@ -56,6 +58,8 @@ public class AimState : ToolBaseState
 
             if (toolStateManager.CurrentToolType == ToolType.Bow)
                 toolStateManager.RPC_BowSetting(false);
+
+            toolStateManager.player.RPC_ArrowVisible(false);
 
             toolStateManager.ChangeState(toolStateManager.idleState);
         }

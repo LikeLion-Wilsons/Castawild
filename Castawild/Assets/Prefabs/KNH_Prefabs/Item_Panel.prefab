@@ -495,7 +495,6 @@ MonoBehaviour:
     itemID: 0
     count: 0
     durability: 0
-    isNull: 0
   itemData: {fileID: 6561729517177915155}
   inventory: {fileID: 0}
   image: {fileID: 695216775382904445}

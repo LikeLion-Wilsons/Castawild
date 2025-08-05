@@ -145,7 +145,7 @@ public class ToolStateManager : BaseStateManager
             case 406: // 화살
                 {
                     CurrentToolType = ToolType.Bow;
-                    player.RPC_ActiveArrowInputAuthority(false);
+                    player.ActiveArrowInputAuthority(false);
                 }
                 break;
             case 400: // 400:짱돌 
@@ -189,20 +189,6 @@ public class ToolStateManager : BaseStateManager
             return;
 
         armMesh.SetActive(isVisible);
-
-        if (isVisible)
-        {
-            armature.SetParent(cameraManager.firstPersonCam.transform);
-            armature.localPosition = new Vector3(0f, -3f, 0f);
-            armature.localRotation = Quaternion.identity;
-        }
-
-        else
-        {
-            armature.SetParent(player.transform);
-            armature.localPosition = Vector3.zero;
-            armature.localRotation = Quaternion.identity;
-        }
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
@@ -212,7 +198,7 @@ public class ToolStateManager : BaseStateManager
     public void RPC_BowSetting(bool pull)
     {
         bowAnim.SetBool("Pull", pull);
-        player.BowSetting(pull);
+        //player.BowSetting(pull);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

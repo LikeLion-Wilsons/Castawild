@@ -1,5 +1,6 @@
 using Fusion;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 
@@ -39,7 +40,9 @@ public class Player : NetworkBehaviour
     [Header("Tool")]
     [SerializeField] private Transform tools;
     private Dictionary<int, GameObject> toolDict = new Dictionary<int, GameObject>();
+    private Transform toolOriginPos;
     [SerializeField] private Transform bowOriginPos;
+    [SerializeField] private Transform toolUsePos;
     [SerializeField] private Transform bowUsePos;
     [SerializeField] private Transform firstPersonBowUsePos;
     [SerializeField] private Transform cameraRot;
@@ -263,49 +266,38 @@ public class Player : NetworkBehaviour
 
     public void PlayerCanMove() => CanMove = true;
 
-    public void BowSetting(bool isBowUse)
+    public GameObject amarture;
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_ArrowVisible(bool visible)
     {
-        if (toolDict.TryGetValue(406, out GameObject bow))
+        if (inventory.HasItem(201) && visible)
+            RPC_ActiveArrow(true);
+        else
+            RPC_ActiveArrow(false);
+
+    }
+
+    public void AttachToCamera(bool attach)
+    {
+        if (attach && cameraManager.currentView == ViewType.FirstPerson)
         {
-            if (isBowUse)
-            {
-                if (HasInputAuthority && cameraManager.currentView == ViewType.FirstPerson)
-                {
-                    bow.transform.SetParent(firstPersonBowUsePos);
-                    cameraRot.SetParent(cameraManager.firstPersonCam.transform);
-                    cameraRot.localPosition = Vector3.zero;
-                }
-                else
-                    bow.transform.SetParent(bowUsePos);
-
-                bow.transform.localPosition = Vector3.zero;
-                bow.transform.localRotation = Quaternion.identity;
-            }
-            else
-            {
-                bow.transform.SetParent(bowOriginPos);
-
-                bow.transform.localPosition = Vector3.zero;
-                bow.transform.localRotation = Quaternion.identity;
-            }
-
-            if (inventory.HasItem(201) && isBowUse)
-                RPC_ActiveArrow(true);
-            else
-                RPC_ActiveArrow(false);
+            amarture.transform.SetParent(cameraManager.firstPersonCam.transform);
+            amarture.transform.localPosition = new Vector3(0f, -3f, 0f);
+            amarture.transform.localRotation = Quaternion.identity;
         }
         else
         {
-            Debug.Log("활 없음");
-            return;
+            amarture.transform.SetParent(transform);
+            amarture.transform.localPosition = Vector3.zero;
+            amarture.transform.localRotation = Quaternion.identity;
         }
     }
 
+    public void ActiveArrowInputAuthority(bool active) => arrow.SetActive(active);
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_ActiveArrow(bool active) => arrow.SetActive(active);
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    public void RPC_ActiveArrowInputAuthority(bool active) => arrow.SetActive(active);
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_IsUIOpen(bool isOpen) => IsUIOpen = isOpen;

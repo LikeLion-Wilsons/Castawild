@@ -138,7 +138,6 @@ public sealed class PlayerController : NetworkBehaviour
 
         kcc.Move(velocity, jump);
         Grounded = kcc.IsGrounded;
-
     }
 
     private void Rotate(PlayerNetworkInputData input)
