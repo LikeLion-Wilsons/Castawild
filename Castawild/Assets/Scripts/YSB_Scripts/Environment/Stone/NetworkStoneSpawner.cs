@@ -17,7 +17,6 @@ public class NetworkStoneSpawner : EnvironmentSpawner<YSB_Scripts.NetworkStone, 
         yield return base.CacheTerrainAlphamaps();
         yield return base.LoadPrefabs();
 
-        // 풀 최대 개수 세팅 (base 클래스에서 loadedPrefabs 채워진 뒤에 호출 가능)
         foreach (var prefab in loadedPrefabs)
         {
             if (Runner != null && prefab != null)

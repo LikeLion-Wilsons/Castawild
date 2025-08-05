@@ -375,6 +375,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxStackCount: 20
   canvasHolder: {fileID: 0}
+  itemBox: {fileID: 0}
+  scrollCooldown: 0.1
   playerUIPrefab: {fileID: 0}
   inventorySlots:
   - {fileID: 1499725588}
@@ -1001,7 +1003,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 503825063060841399, guid: e749cc6fe2a853349bb3f6bb330140f7, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 22.506079
+      value: -0.000024795532
       objectReference: {fileID: 0}
     - target: {fileID: 605224482016889041, guid: e749cc6fe2a853349bb3f6bb330140f7, type: 3}
       propertyPath: m_AnchorMax.x
