@@ -3,13 +3,35 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
+
 namespace BKPureNature
 {
+    [System.Serializable]
+    public struct WeatherPreset
+    {
+        public string name;
+        [Header("Wind")]
+        [Range(0f, 5f)]
+        public float baseWindPower;
+        public float baseWindSpeed;
+        [Range(0f, 10f)]
+        public float burstsPower;
+        public float burstsSpeed;
+        public float burstsScale;
+        [Header("Visuals")]
+        [Tooltip("Multiplies with the Sun Color Gradient to tint the main light.")]
+        public Color lightColorTint;
+        [Tooltip("Multiplies with the Fog Color Gradient to tint the scene fog.")]
+        public Color fogColorTint;
+        [Tooltip("The cloud material to use for this weather type.")]
+        public Material cloudMaterial;
+    }
     [ExecuteInEditMode]
     public class BK_EnvironmentManager : NetworkBehaviour
     {
         // --- VISUAL & LIGHTING PROPERTIES ---
-        [Header("Lighting & Color")][Space(5)]
+        [Header("Lighting & Color")]
+        [Space(5)]
         public Light directionalLight;
         public Gradient sunColorGradient;
         public Gradient fogColorGradient;
@@ -21,7 +43,8 @@ namespace BKPureNature
         public bool overrideAmbientColor = true;
 
         // --- CLOUD PROPERTIES ---
-        [Header("Volumetric Clouds")][Space(5)]
+        [Header("Volumetric Clouds")]
+        [Space(5)]
         [Tooltip("Default material for clouds. This will be dynamically replaced by the material from the active Weather Preset.")]
         public Material cloudsMaterial;
         public float Altitude = 1000f;
@@ -29,7 +52,8 @@ namespace BKPureNature
         public int volumeSamples = 25;
 
         // --- WIND PROPERTIES (EDITOR ONLY) ---
-        [Header("Wind Settings (Editor Preview)")][Space(5)]
+        [Header("Wind Settings (Editor Preview)")]
+        [Space(5)]
         [Tooltip("Base wind for trunks. Networked in game.")]
         [Range(0f, 5f)]
         public float baseWindPower = 3f;
@@ -43,7 +67,8 @@ namespace BKPureNature
         [Tooltip("Wind bursts scale. Networked in game.")]
         public float burstsScale = 10f;
 
-        [Header("Micro Wind (Not Networked)")][Space(5)]
+        [Header("Micro Wind (Not Networked)")]
+        [Space(5)]
         [Tooltip("Micro wind for leaves")]
         [Range(0f, 1f)]
         public float microPower = 0.1f;
@@ -56,9 +81,11 @@ namespace BKPureNature
         public float renderDistance = 30f;
 
         // --- DEVELOPER MODE ---
-        [Header("Developer Mode")][Space(5)]
+        [Header("Developer Mode")]
+        [Space(5)]
         public bool developerMode = false;
 
+        // --- NETWORKED WEATHER PROPERTIES ---
         // --- NETWORKED WEATHER PROPERTIES ---
         [Networked, OnChangedRender(nameof(OnWeatherChanged))]
         private float Net_BaseWindPower { get; set; }
@@ -72,6 +99,8 @@ namespace BKPureNature
         private float Net_BurstsScale { get; set; }
         [Networked, OnChangedRender(nameof(OnWeatherChanged))]
         private Color Net_LightColorTint { get; set; } = Color.white;
+        [Networked, OnChangedRender(nameof(OnWeatherChanged))]
+        private float Net_LightIntensity { get; set; } = 1f;
         [Networked, OnChangedRender(nameof(OnWeatherChanged))]
         private Color Net_FogColorTint { get; set; } = Color.white;
         [Networked, OnChangedRender(nameof(OnPresetIndexChanged))]
@@ -93,6 +122,8 @@ namespace BKPureNature
             [Header("Visuals")]
             [Tooltip("Multiplies with the Sun Color Gradient to tint the main light.")]
             public Color lightColorTint;
+            [Tooltip("Sets the intensity of the directional light.")]
+            public float lightIntensity;
             [Tooltip("Multiplies with the Fog Color Gradient to tint the scene fog.")]
             public Color fogColorTint;
             [Tooltip("The cloud material to use for this weather type.")]
@@ -219,6 +250,7 @@ namespace BKPureNature
             float startBurstsSpeed = Net_BurstsSpeed;
             float startBurstsScale = Net_BurstsScale;
             Color startLightTint = Net_LightColorTint;
+            float startLightIntensity = Net_LightIntensity;
             Color startFogTint = Net_FogColorTint;
 
             while (timer < transitionDuration)
@@ -232,6 +264,7 @@ namespace BKPureNature
                 Net_BurstsSpeed = Mathf.Lerp(startBurstsSpeed, targetPreset.burstsSpeed, progress);
                 Net_BurstsScale = Mathf.Lerp(startBurstsScale, targetPreset.burstsScale, progress);
                 Net_LightColorTint = Color.Lerp(startLightTint, targetPreset.lightColorTint, progress);
+                Net_LightIntensity = Mathf.Lerp(startLightIntensity, targetPreset.lightIntensity, progress);
                 Net_FogColorTint = Color.Lerp(startFogTint, targetPreset.fogColorTint, progress);
 
                 yield return null;
@@ -253,6 +286,7 @@ namespace BKPureNature
             Net_BurstsSpeed = preset.burstsSpeed;
             Net_BurstsScale = preset.burstsScale;
             Net_LightColorTint = preset.lightColorTint;
+            Net_LightIntensity = preset.lightIntensity;
             Net_FogColorTint = preset.fogColorTint;
             Net_CurrentPresetIndex = presetIndex;
         }
@@ -316,6 +350,9 @@ namespace BKPureNature
 
             Color lightTint = Application.isPlaying ? Net_LightColorTint : (weatherPresets.Length > 0 ? weatherPresets[0].lightColorTint : Color.white);
             Color fogTint = Application.isPlaying ? Net_FogColorTint : (weatherPresets.Length > 0 ? weatherPresets[0].fogColorTint : Color.white);
+            float lightIntensity = Application.isPlaying ? Net_LightIntensity : (weatherPresets.Length > 0 ? weatherPresets[0].lightIntensity : 1f);
+
+            directionalLight.intensity = lightIntensity;
 
             if (overrideSunColor) 
                 directionalLight.color = sunColorGradient.Evaluate(time) * lightTint;

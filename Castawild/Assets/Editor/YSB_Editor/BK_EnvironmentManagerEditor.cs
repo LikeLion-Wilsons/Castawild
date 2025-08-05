@@ -11,7 +11,6 @@ namespace BKPureNature
 
         private SerializedProperty overrideSunColorProp;
         private SerializedProperty overrideFogColorProp;
-        private SerializedProperty overrideCloudColorProp;
         private SerializedProperty overrideAmbientColorProp;
 
         private bool lightingFoldout = true;
@@ -25,7 +24,6 @@ namespace BKPureNature
         {
             overrideSunColorProp = serializedObject.FindProperty("overrideSunColor");
             overrideFogColorProp = serializedObject.FindProperty("overrideFogColor");
-            overrideCloudColorProp = serializedObject.FindProperty("overrideCloudColor");
             overrideAmbientColorProp = serializedObject.FindProperty("overrideAmbientColor");
         }
 
@@ -61,13 +59,6 @@ namespace BKPureNature
                 using (new EditorGUI.DisabledScope(!overrideFogColorProp.boolValue))
                 {
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("fogColorGradient"), GUIContent.none);
-                }
-                EditorGUILayout.EndHorizontal();
-                EditorGUILayout.BeginHorizontal();
-                overrideCloudColorProp.boolValue = EditorGUILayout.ToggleLeft("Clouds", overrideCloudColorProp.boolValue, GUILayout.Width(70));
-                using (new EditorGUI.DisabledScope(!overrideCloudColorProp.boolValue))
-                {
-                    EditorGUILayout.PropertyField(serializedObject.FindProperty("scatteringColorGradient"), GUIContent.none);
                 }
                 Rect gradientRect = GUILayoutUtility.GetLastRect();
                 EditorGUILayout.EndHorizontal();
