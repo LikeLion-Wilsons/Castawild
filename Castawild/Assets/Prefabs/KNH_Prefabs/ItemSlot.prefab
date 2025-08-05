@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item:
-    item_Data: {fileID: 0}
+    itemID: 0
     count: 0
     durability: 1
   itemData: {fileID: 0}
@@ -138,7 +138,8 @@ MonoBehaviour:
   item_icon: {fileID: 0}
   itemCountText: {fileID: 0}
   durabilityBar: {fileID: 0}
-  icons: []
   originalParent: {fileID: 0}
   onDragParent: {fileID: 0}
   rectTransform: {fileID: 0}
+  draggedClone: {fileID: 0}
+  isClone: 0
