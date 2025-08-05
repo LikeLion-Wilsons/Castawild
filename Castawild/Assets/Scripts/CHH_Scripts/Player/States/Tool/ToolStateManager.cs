@@ -134,6 +134,9 @@ public class ToolStateManager : BaseStateManager
 
         switch (itemIdx)
         {
+            case 400: // 짱돌 
+                CurrentToolType = ToolType.Throw;
+                break;
             case 401: // 방망이
                 CurrentToolType = ToolType.Sword;
                 break;
@@ -155,7 +158,6 @@ public class ToolStateManager : BaseStateManager
                     player.ActiveArrowInputAuthority(false);
                 }
                 break;
-            case 400: // 400:짱돌 
             default:
                 CurrentToolType = ToolType.Fist;
                 break;
@@ -205,8 +207,6 @@ public class ToolStateManager : BaseStateManager
     public void RPC_BowSetting(bool pull)
     {
         bowAnim.SetBool("Pull", pull);
-
-        //player.BowSetting(pull);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -217,7 +217,10 @@ public class ToolStateManager : BaseStateManager
 
     public void SpawnThrowObject()
     {
-        Runner.Spawn(throwableStone.gameObject, throwPos.position, Quaternion.identity);
-        throwableStone.AddForce(transform.forward, throwForce);
+        if (!HasStateAuthority)
+            return;
+
+        NetworkObject stone = Runner.Spawn(throwableStone.gameObject, throwPos.position, Quaternion.identity);
+        stone.GetComponent<Stone_Throwable>().AddForce(transform.forward, throwForce);
     }
 }
