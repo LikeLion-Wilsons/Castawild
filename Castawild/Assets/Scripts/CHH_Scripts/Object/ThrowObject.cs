@@ -9,6 +9,7 @@ public class ThrowObject : NetworkBehaviour
     public override void Spawned()
     {
         rigid = GetComponent<Rigidbody>();
+        rigid.collisionDetectionMode = CollisionDetectionMode.Continuous;
     }
 
     //public void AddForce(Vector3 forward, float force)
