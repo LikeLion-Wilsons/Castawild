@@ -27,6 +27,7 @@ namespace YSB_Scripts
 
         public override void Interact(PlayerRef player, int att)
         {
+            Debug.Log($"Tree[{InstanceId}] Interact with player: {player} for {att} damage");
             if (!IsAlive()) return;
 
             RPC_RequestDamage(player, att);

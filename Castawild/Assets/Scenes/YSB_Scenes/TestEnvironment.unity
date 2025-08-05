@@ -15,7 +15,7 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
   m_Fog: 0
-  m_FogColor: {r: 0.4629168, g: 0.6162567, b: 0.7830189, a: 1}
+  m_FogColor: {r: 0.4629168, g: 0.6162567, b: 0.7830189, a: 0}
   m_FogMode: 3
   m_FogDensity: 0.01
   m_LinearFogStart: 0
@@ -83961,39 +83961,39 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 957.8
+      value: 1009.9
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 81.5
+      value: 46.7
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 401.9
+      value: 386.7
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.05217094
+      value: -0.3084085
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.70518076
+      value: 0.67136925
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.70517814
+      value: -0.6363036
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.05217449
+      value: -0.22195794
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 180
+      value: 224.153
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -8.463013
+      value: -7.5650024
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -95977,7 +95977,7 @@ Transform:
   m_GameObject: {fileID: 813833625}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -731.53, y: 57.11, z: -436.76}
+  m_LocalPosition: {x: -731.53, y: 60.92, z: -436.76}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -129443,7 +129443,6 @@ MonoBehaviour:
     activeTrees: []
   maxSpawnAttempts: 20
   checkInterval: 5
-  reviveDelay: 1
   maxPoolCountPerPrefab: 100
 --- !u!4 &1094382505
 Transform:
@@ -182394,9 +182393,21 @@ PrefabInstance:
       value: 194.37
       objectReference: {fileID: 0}
     - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: developerMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
       propertyPath: directionalLight
       value: 
       objectReference: {fileID: 1663637564}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: maxChangeInterval
+      value: 600
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: minChangeInterval
+      value: 300
+      objectReference: {fileID: 0}
     - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
       propertyPath: fogColorGradient.key0.b
       value: 0.7830189
@@ -182408,6 +182419,10 @@ PrefabInstance:
     - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
       propertyPath: fogColorGradient.key0.r
       value: 0.4629168
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.size
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
       propertyPath: ambientColorGradient.ctime0
@@ -182494,14 +182509,220 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].name
+      value: calm
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].name
+      value: windy
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].name
+      value: storm
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
       propertyPath: ambientColorGradient.m_NumColorKeys
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].burstsPower
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].burstsScale
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].burstsSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].burstsPower
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].burstsScale
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].burstsSpeed
+      value: 1.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].burstsPower
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].burstsScale
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].burstsSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].baseWindPower
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].baseWindSpeed
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].cloudMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: b7482bf359174615862b64f1226177d2, type: 2}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].baseWindPower
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].baseWindSpeed
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].cloudMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: b7482bf359174615862b64f1226177d2, type: 2}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].baseWindPower
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].baseWindSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].cloudMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 7a9f7e7456b847bfaffc06a060f22268, type: 2}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].fogColorTint.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].fogColorTint.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].fogColorTint.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].lightIntensity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].fogColorTint.b
+      value: 0.83396226
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].fogColorTint.g
+      value: 0.83396226
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].fogColorTint.r
+      value: 0.83396226
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].lightIntensity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].fogColorTint.b
+      value: 0.2905661
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].fogColorTint.g
+      value: 0.2905661
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].fogColorTint.r
+      value: 0.2905661
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].lightIntensity
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].lightColorTint.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].lightColorTint.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].lightColorTint.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].lightColorTint.b
+      value: 0.78867924
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].lightColorTint.g
+      value: 0.78867924
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].lightColorTint.r
+      value: 0.78867924
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].lightColorTint.b
+      value: 0.4113207
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].lightColorTint.g
+      value: 0.4113207
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].lightColorTint.r
+      value: 0.4113207
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5276194084423436488, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 1563946644}
   m_SourcePrefab: {fileID: 100100000, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+--- !u!1 &1563946642 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5276194084423436488, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+  m_PrefabInstance: {fileID: 1563946641}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1563946643 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+  m_PrefabInstance: {fileID: 1563946641}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563946642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7c87be04fee6674ab4942ca4762d482, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1563946644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563946642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 2339462436
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1563946643}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1001 &1565094572
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -192162,7 +192383,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 1
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -241847,7 +242068,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2084618703
 Transform:
   m_ObjectHideFlags: 0
@@ -241857,7 +242078,7 @@ Transform:
   m_GameObject: {fileID: 2084618702}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -466.40118, y: 192.09909, z: -295.00458}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -241909,7 +242130,6 @@ MonoBehaviour:
   terrainSettings: []
   maxSpawnAttempts: 20
   checkInterval: 5
-  reviveDelay: 10
   maxPoolCountPerPrefab: 500
 --- !u!1001 &2085007312
 PrefabInstance:
@@ -248152,6 +248372,10 @@ PrefabInstance:
     - target: {fileID: 6275592738214374975, guid: 94c39922ab14ed944bdbac19aa233a9d, type: 3}
       propertyPath: SortKey
       value: 2615442195
+      objectReference: {fileID: 0}
+    - target: {fileID: 7232786918405458552, guid: 94c39922ab14ed944bdbac19aa233a9d, type: 3}
+      propertyPath: visibleRange
+      value: 5000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
