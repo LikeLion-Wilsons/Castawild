@@ -3520,8 +3520,8 @@ GameObject:
   - component: {fileID: 6363259293620697004}
   - component: {fileID: 4022685551630965951}
   - component: {fileID: 1934811449108985206}
-  - component: {fileID: 8098947412558268367}
-  - component: {fileID: 7108623047508341866}
+  - component: {fileID: 2786422843061414890}
+  - component: {fileID: 3726970098046256588}
   m_Layer: 6
   m_Name: BuildingPlayer
   m_TagString: Player
@@ -3578,7 +3578,7 @@ MonoBehaviour:
   - {fileID: 230939324335428207}
   - {fileID: 6363259293620697004}
   - {fileID: 1934811449108985206}
-  - {fileID: 8098947412558268367}
+  - {fileID: 2786422843061414890}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &5000463041039569134
 MonoBehaviour:
@@ -3868,7 +3868,9 @@ MonoBehaviour:
   maxStackCount: 0
   canvasHolder: {fileID: 0}
   itemBox: {fileID: 8916761579934458356, guid: 869cf2b2614eada47821732853417e61, type: 3}
+  scrollCooldown: 0.1
   playerUIPrefab: {fileID: 2839189812646824299, guid: e749cc6fe2a853349bb3f6bb330140f7, type: 3}
+  UICanvas: {fileID: 0}
   inventorySlots:
   - {fileID: 0}
   - {fileID: 0}
@@ -3901,7 +3903,7 @@ MonoBehaviour:
   - {fileID: 0}
   inventoryItemPrefab: {fileID: 0}
   _itemList: []
---- !u!114 &8098947412558268367
+--- !u!114 &2786422843061414890
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3910,13 +3912,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7137290088832178523}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e90dc6322f91aa04da384c3b222d5326, type: 3}
+  m_Script: {fileID: 11500000, guid: 04d3cb0176ef64b4390c82643d37f05b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingPreview: {fileID: 7108623047508341866}
+  buildingPreview: {fileID: 3726970098046256588}
   previewPrefab: {fileID: 3489290178109122348, guid: 1b286a461984f6a4da2d833ec13f0534, type: 3}
   networkPrefab: {fileID: 8647573889241653394, guid: 2c606c55e0a15e94dbd46b809c50c60a, type: 3}
---- !u!114 &7108623047508341866
+--- !u!114 &3726970098046256588
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3925,11 +3927,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7137290088832178523}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f83b6d0c9f0999a40b8a9a1844c508a5, type: 3}
+  m_Script: {fileID: 11500000, guid: e1f539cfdbc781c4a8315e513d5969b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  validColor: {r: 0, g: 0, b: 1, a: 1}
-  invalidColor: {r: 1, g: 0, b: 0, a: 1}
+  validColor: {r: 0, g: 0.08572531, b: 1, a: 0.16862746}
+  invalidColor: {r: 1, g: 0, b: 0, a: 0.23921569}
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 9
