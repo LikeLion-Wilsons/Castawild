@@ -43,9 +43,9 @@ public class Player : NetworkBehaviour
     [SerializeField] private Transform bowOriginalParent;
     [SerializeField] private Transform bowUseParent;
     [SerializeField] private Transform bowUseLocalParent;
-    [SerializeField] private GameObject arrow;
+    public GameObject arrow;
 
-    [SerializeField, HideInInspector] public bool hasArrow;
+    [Networked, HideInInspector] public bool HasArrow { get; set; }
     private GameObject currentToolObject;
     #endregion
 
@@ -266,23 +266,23 @@ public class Player : NetworkBehaviour
             currentToolObject = currentToolGameObject;
         }
         else
+        {
             currentToolObject = null;
+        }
     }
 
     public void PlayerCanMove() => CanMove = true;
 
     public GameObject amarture;
 
+    // false : 공격 끝났을 때, 조준 끝났을 때
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_ArrowVisible(bool visible)
+    public void RPC_ActiveArrow(bool visible)
     {
-        if (inventory.HasItem(201) && visible)
+        if (HasArrow && visible)
             arrow.SetActive(visible);
         else
-            arrow.SetActive(visible);
-
-        if (HasStateAuthority)
-            hasArrow = visible;
+            arrow.SetActive(false);
     }
 
     public void AttachToCamera(bool attach)
@@ -300,8 +300,6 @@ public class Player : NetworkBehaviour
             amarture.transform.localRotation = Quaternion.identity;
         }
     }
-
-    public void ActiveArrowInputAuthority(bool active) => arrow.SetActive(active);
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_IsUIOpen(bool isOpen) => IsUIOpen = isOpen;
@@ -334,11 +332,16 @@ public class Player : NetworkBehaviour
         {
             if (isBowUse)
                 currentToolObject.transform.SetParent(bowUseParent);
-            if (isBowUse)
+            if (!isBowUse)
                 currentToolObject.transform.SetParent(bowOriginalParent);
         }
 
         currentToolObject.transform.localPosition = Vector3.zero;
         currentToolObject.transform.localRotation = Quaternion.identity;
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_HasArrow(bool hasArrow) => HasArrow = hasArrow;
+
+    public void CurrentToolActive(bool active) => currentToolObject?.SetActive(active);
 }

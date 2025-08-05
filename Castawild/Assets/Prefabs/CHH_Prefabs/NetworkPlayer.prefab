@@ -3720,6 +3720,7 @@ MonoBehaviour:
   bowUseParent: {fileID: 1542822223830889626}
   bowUseLocalParent: {fileID: 3555937060719847740}
   arrow: {fileID: 2432054003010317866}
+  arrowMesh: {fileID: 0}
   hasArrow: 0
   currentBed: {fileID: 0}
   _CanMove: 1
@@ -3872,8 +3873,8 @@ MonoBehaviour:
   arrowUpForce: 0.2
   throwForce: 20
   arrowForce: 40
-  throwableStone: {fileID: 3276171059478812674, guid: 13ec340cd21e8b941800f61a46abf836, type: 3}
-  arrow: {fileID: 8716954291783428198, guid: efed917af524c72458d453d086971822, type: 3}
+  throwableStonePrefab: {fileID: 3276171059478812674, guid: 13ec340cd21e8b941800f61a46abf836, type: 3}
+  arrowPrefab: {fileID: 8716954291783428198, guid: efed917af524c72458d453d086971822, type: 3}
   firstPersonArrowPos: {fileID: 3011774156531074929}
   thirdPersonArrowPos: {fileID: 2414465423738557776}
   throwPos: {fileID: 8012178248796667738}
@@ -3882,6 +3883,7 @@ MonoBehaviour:
   _CanReceiveInput: 0
   _CurrentToolUseState: 0
   _CurrentToolType: 0
+  _RayTargetPos: {x: 0, y: 0, z: 0}
   isTriggerSet: 0
 --- !u!114 &6363259293620697004
 MonoBehaviour:

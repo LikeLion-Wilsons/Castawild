@@ -36,8 +36,8 @@ public class ToolStateManager : BaseStateManager
     [SerializeField] private float arrowUpForce = 0.3f;
     [SerializeField] private float throwForce = 20f;
     [SerializeField] private float arrowForce = 30f;
-    [SerializeField] private ThrowObject throwableStone;
-    [SerializeField] private ThrowObject arrow;
+    [SerializeField] private ThrowObject throwableStonePrefab;
+    [SerializeField] private ThrowObject arrowPrefab;
     [SerializeField] private Transform firstPersonArrowPos;
     [SerializeField] private Transform thirdPersonArrowPos;
     [SerializeField] private Transform throwPos;
@@ -161,7 +161,7 @@ public class ToolStateManager : BaseStateManager
             case 406: // 화살
                 {
                     CurrentToolType = ToolType.Bow;
-                    player.ActiveArrowInputAuthority(false);
+                    player.arrow.SetActive(false);
                 }
                 break;
             default:
@@ -229,34 +229,36 @@ public class ToolStateManager : BaseStateManager
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_SetTargetPosValue(Vector3 targetPos) => RayTargetPos = targetPos;
 
+    // 돌맹이 / 화살 생성
     public void SpawnThrowObject(bool isArrow)
     {
         if (!HasStateAuthority)
             return;
 
-        Debug.Log("Throw targetPos : " + RayTargetPos);
         NetworkObject throwObject;
-        if (isArrow && player.hasArrow)
+        if (isArrow && player.HasArrow)
         {
             if (input.currentView == ViewType.FirstPerson)
             {
-                throwObject = Runner.Spawn(arrow.gameObject, firstPersonArrowPos.position, cameraManager.firstPersonCam.transform.rotation);
+                throwObject = Runner.Spawn(arrowPrefab.gameObject, firstPersonArrowPos.position, cameraManager.firstPersonCam.transform.rotation);
                 throwObject?.GetComponent<ThrowObject>().AddForce(arrowForce, arrowUpForce, RayTargetPos);
             }
             else
             {
-                throwObject = Runner.Spawn(arrow.gameObject, thirdPersonArrowPos.position, cameraManager.thirdPersonCam.transform.rotation);
+                throwObject = Runner.Spawn(arrowPrefab.gameObject, thirdPersonArrowPos.position, cameraManager.thirdPersonCam.transform.rotation);
                 throwObject?.GetComponent<ThrowObject>().AddForce(arrowForce, arrowUpForce, RayTargetPos);
             }
         }
-        else
+        else if (!isArrow)
         {
             if (input.currentView == ViewType.FirstPerson)
-                throwObject = Runner.Spawn(throwableStone.gameObject, throwPos.position, cameraManager.firstPersonCam.transform.rotation);
+                throwObject = Runner.Spawn(throwableStonePrefab.gameObject, throwPos.position, cameraManager.firstPersonCam.transform.rotation);
             else
-                throwObject = Runner.Spawn(throwableStone.gameObject, throwPos.position, cameraManager.thirdPersonCam.transform.rotation);
+                throwObject = Runner.Spawn(throwableStonePrefab.gameObject, throwPos.position, cameraManager.thirdPersonCam.transform.rotation);
             throwObject?.GetComponent<ThrowObject>().AddForce(throwForce, throwUpForce, RayTargetPos);
         }
+
+        // 돌맹이나 화살 개수 줄이기
     }
 
     public bool IsAiming() => CurrentToolUseState == ToolAnimationState.Aim || CurrentToolUseState == ToolAnimationState.FullAim;
