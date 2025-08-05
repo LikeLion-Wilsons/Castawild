@@ -21,8 +21,11 @@ public class UseToolState : ToolBaseState
 
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
         {
-            toolStateManager.RPC_BowSetting(true);
+            toolStateManager.RPC_BowPullAnimation(true);
+            toolStateManager.player.RPC_SetBowPos(true);
         }
+
+        toolStateManager.player.RPC_ArrowVisible(true);
     }
 
     public override void UpdateState()
@@ -50,7 +53,12 @@ public class UseToolState : ToolBaseState
             {
                 toolStateManager.ChangeState(toolStateManager.idleState);
                 if (toolStateManager.CurrentToolType == ToolType.Bow)
-                    toolStateManager.RPC_BowSetting(false);
+                {
+                    toolStateManager.RPC_BowPullAnimation(false);
+                    toolStateManager.player.RPC_SetBowPos(false);
+                }
+
+                toolStateManager.player.RPC_ArrowVisible(false);
             }
         }
     }
@@ -63,9 +71,8 @@ public class UseToolState : ToolBaseState
             SetActiveArmMesh(false);
 
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
-        {
-            toolStateManager.RPC_BowSetting(false);
-        }
+            toolStateManager.RPC_BowPullAnimation(false);
+        toolStateManager.player.RPC_ArrowVisible(false);
 
         toolStateManager.player.CanMove = true;
         toolStateManager.player.isAimLocked = false;

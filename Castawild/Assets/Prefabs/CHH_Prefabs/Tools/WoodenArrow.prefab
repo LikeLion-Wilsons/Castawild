@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2307357973184481892}
   - component: {fileID: 5548253200701518750}
   - component: {fileID: 5548253200701518748}
-  - component: {fileID: 3798517580751719835}
+  - component: {fileID: 7993736799480077785}
   m_Layer: 9
   m_Name: WoodenArrow
   m_TagString: Untagged
@@ -109,6 +109,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 2307357973184481892}
+  - {fileID: 7993736799480077785}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &2307357973184481892
 MonoBehaviour:
@@ -181,26 +182,15 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!205 &3798517580751719835
-LODGroup:
+--- !u!114 &7993736799480077785
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5548253200701518749}
-  serializedVersion: 2
-  m_LocalReferencePoint: {x: -0.00027958304, y: 0.0067417324, z: 0.000097777694}
-  m_Size: 0.61073685
-  m_FadeMode: 1
-  m_AnimateCrossFading: 1
-  m_LastLODIsBillboard: 0
-  m_LODs:
-  - screenRelativeHeight: 0.30502084
-    fadeTransitionWidth: 0
-    renderers:
-    - renderer: {fileID: 5548253200699518301}
-  - screenRelativeHeight: 0.019119713
-    fadeTransitionWidth: 0
-    renderers:
-    - renderer: {fileID: 0}
   m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5e17082a9a03164fba2555363e6842f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

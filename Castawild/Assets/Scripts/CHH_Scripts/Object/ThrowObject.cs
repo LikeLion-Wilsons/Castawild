@@ -1,5 +1,4 @@
 using Fusion;
-using System.Net.Sockets;
 using UnityEngine;
 
 public class ThrowObject : NetworkBehaviour
@@ -9,6 +8,10 @@ public class ThrowObject : NetworkBehaviour
     public override void Spawned()
     {
         rigid = GetComponent<Rigidbody>();
-        rigid.AddForce(GetComponent<Transform>().forward * 10f, ForceMode.Impulse);
+    }
+
+    public void AddForce(Vector3 forward, float force)
+    {
+        rigid.AddForce(forward * force, ForceMode.Impulse);
     }
 }

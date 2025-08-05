@@ -1,4 +1,6 @@
 using Fusion;
+using NUnit.Framework;
+using Unity.VisualScripting;
 using UnityEngine;
 
 // 현재 들고있는 무기
@@ -28,6 +30,13 @@ public class ToolStateManager : BaseStateManager
 
     [Header("Bow")]
     [SerializeField] private Animator bowAnim;
+
+    [Header("Throw")]
+    [SerializeField] private float throwForce = 20f;
+    [SerializeField] private float arrowForce = 30f;
+    [SerializeField] private ThrowObject throwableStone;
+    [SerializeField] private ThrowObject arrow;
+    [SerializeField] private Transform throwPos;
 
     #region Network
     [Header("Player")]
@@ -127,6 +136,9 @@ public class ToolStateManager : BaseStateManager
 
         switch (itemIdx)
         {
+            case 400: // 짱돌 
+                CurrentToolType = ToolType.Throw;
+                break;
             case 401: // 방망이
                 CurrentToolType = ToolType.Sword;
                 break;
@@ -145,10 +157,9 @@ public class ToolStateManager : BaseStateManager
             case 406: // 화살
                 {
                     CurrentToolType = ToolType.Bow;
-                    player.RPC_ActiveArrowInputAuthority(false);
+                    player.ActiveArrowInputAuthority(false);
                 }
                 break;
-            case 400: // 400:짱돌 
             default:
                 CurrentToolType = ToolType.Fist;
                 break;
@@ -189,35 +200,34 @@ public class ToolStateManager : BaseStateManager
             return;
 
         armMesh.SetActive(isVisible);
-
-        if (isVisible)
-        {
-            armature.SetParent(cameraManager.firstPersonCam.transform);
-            armature.localPosition = new Vector3(0f, -3f, 0f);
-            armature.localRotation = Quaternion.identity;
-        }
-
-        else
-        {
-            armature.SetParent(player.transform);
-            armature.localPosition = Vector3.zero;
-            armature.localRotation = Quaternion.identity;
-        }
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_MoveAimCamera(bool _isAiming) => cameraManager.MoveCamera(_isAiming);
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_BowSetting(bool pull)
-    {
-        bowAnim.SetBool("Pull", pull);
-        player.BowSetting(pull);
-    }
+    public void RPC_BowPullAnimation(bool pull) => bowAnim.SetBool("Pull", pull);
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_BowShoot()
+    public void RPC_BowShootAnimation() => bowAnim.SetTrigger("Shoot");
+
+    public void SpawnThrowObject(bool isArrow)
     {
-        bowAnim.SetTrigger("Shoot");
+        if (!HasStateAuthority)
+            return;
+
+        NetworkObject throwObject;
+        if (isArrow && player.hasArrow)
+        {
+            throwObject = Runner.Spawn(arrow.gameObject, player.GetArrowPos(), Quaternion.identity);
+            throwObject?.GetComponent<ThrowObject>().AddForce(transform.forward, arrowForce);
+        }
+        else
+        {
+            throwObject = Runner.Spawn(throwableStone.gameObject, throwPos.position, Quaternion.identity);
+            Vector3 throwDirection = transform.forward + Vector3.up * 0.2f;
+            throwDirection.Normalize();
+            throwObject?.GetComponent<ThrowObject>().AddForce(transform.forward, throwForce);
+        }
     }
 }

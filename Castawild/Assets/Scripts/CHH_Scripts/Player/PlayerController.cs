@@ -30,9 +30,7 @@ public sealed class PlayerController : NetworkBehaviour
 
     Collider[] _interactResult = new Collider[5];
 
-    [Header("Test")]
-    public NetworkObject throwObject;
-    public Transform throwPos;
+
 
     private NetworkButtons prevInputButtons;
 
@@ -61,11 +59,6 @@ public sealed class PlayerController : NetworkBehaviour
     {
         if (!GetInput<PlayerNetworkInputData>(out var input))
             return;
-
-        if (!Runner.IsResimulation && HasInputAuthority && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
-        {
-            RPC_SpawnThrowObject(throwPos.position);
-        }
 
         if (HasStateAuthority)
         {
@@ -138,7 +131,6 @@ public sealed class PlayerController : NetworkBehaviour
 
         kcc.Move(velocity, jump);
         Grounded = kcc.IsGrounded;
-
     }
 
     private void Rotate(PlayerNetworkInputData input)
@@ -150,6 +142,8 @@ public sealed class PlayerController : NetworkBehaviour
         }
         else if (input.currentView == ViewType.ThirdPerson && input.moveValue.sqrMagnitude > 0.001f)
         {
+            if (input.camForward == Vector3.zero)
+                return;
             Quaternion target = Quaternion.LookRotation(input.camForward);
             kcc.SetLookRotation(Quaternion.Slerp(kcc.Transform.rotation, target, rotationSpeed * Runner.DeltaTime));
         }
@@ -273,11 +267,5 @@ public sealed class PlayerController : NetworkBehaviour
     public void RPC_SetPosition(Vector3 position)
     {
         kcc.SetPosition(position);
-    }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_SpawnThrowObject(Vector3 position)
-    {
-        Runner.Spawn(throwObject, throwPos.position, Quaternion.identity);
     }
 }

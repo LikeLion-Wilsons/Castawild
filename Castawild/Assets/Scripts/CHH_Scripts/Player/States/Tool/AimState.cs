@@ -25,7 +25,12 @@ public class AimState : ToolBaseState
             toolStateManager.RPC_MoveAimCamera(true);
 
         if (toolStateManager.CurrentToolType == ToolType.Bow)
-            toolStateManager.RPC_BowSetting(true);
+        {
+            toolStateManager.RPC_BowPullAnimation(true);
+            toolStateManager.player.RPC_SetBowPos(true);
+        }
+
+        toolStateManager.player.RPC_ArrowVisible(true);
 
         toolStateManager.player.playerInteractUI.crosshairImage.gameObject.SetActive(true);
     }
@@ -42,7 +47,7 @@ public class AimState : ToolBaseState
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
         {
             if (toolStateManager.CurrentToolType == ToolType.Bow)
-                toolStateManager.RPC_BowShoot();
+                toolStateManager.RPC_BowShootAnimation();
 
             toolStateManager.ChangeState(toolStateManager.useToolState);
         }
@@ -55,7 +60,12 @@ public class AimState : ToolBaseState
                 toolStateManager.RPC_MoveAimCamera(false);
 
             if (toolStateManager.CurrentToolType == ToolType.Bow)
-                toolStateManager.RPC_BowSetting(false);
+            {
+                toolStateManager.RPC_BowPullAnimation(false);
+                toolStateManager.player.RPC_SetBowPos(false);
+            }
+
+            toolStateManager.player.RPC_ArrowVisible(false);
 
             toolStateManager.ChangeState(toolStateManager.idleState);
         }
