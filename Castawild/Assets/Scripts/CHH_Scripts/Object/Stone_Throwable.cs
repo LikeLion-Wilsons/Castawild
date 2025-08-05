@@ -8,6 +8,10 @@ public class Stone_Throwable : NetworkBehaviour
     public override void Spawned()
     {
         rigid = GetComponent<Rigidbody>();
-        rigid.AddForce(GetComponent<Transform>().forward * 30f, ForceMode.Impulse);
+    }
+
+    public void AddForce(Vector3 forward, float force)
+    {
+        rigid.AddForce(forward * force, ForceMode.Impulse);
     }
 }

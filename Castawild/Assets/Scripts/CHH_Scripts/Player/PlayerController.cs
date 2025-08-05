@@ -30,9 +30,7 @@ public sealed class PlayerController : NetworkBehaviour
 
     Collider[] _interactResult = new Collider[5];
 
-    [Header("Test")]
-    public NetworkObject throwObject;
-    public Transform throwPos;
+
 
     private NetworkButtons prevInputButtons;
 
@@ -61,11 +59,6 @@ public sealed class PlayerController : NetworkBehaviour
     {
         if (!GetInput<PlayerNetworkInputData>(out var input))
             return;
-
-        //if (!Runner.IsResimulation && HasInputAuthority && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
-        //{
-        //    RPC_SpawnThrowObject(throwPos.position);
-        //}
 
         if (HasStateAuthority)
         {
@@ -274,11 +267,5 @@ public sealed class PlayerController : NetworkBehaviour
     public void RPC_SetPosition(Vector3 position)
     {
         kcc.SetPosition(position);
-    }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_SpawnThrowObject(Vector3 position)
-    {
-        Runner.Spawn(throwObject, throwPos.position, Quaternion.identity);
     }
 }

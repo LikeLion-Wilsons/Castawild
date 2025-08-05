@@ -1,4 +1,6 @@
 using Fusion;
+using NUnit.Framework;
+using Unity.VisualScripting;
 using UnityEngine;
 
 // 현재 들고있는 무기
@@ -28,6 +30,11 @@ public class ToolStateManager : BaseStateManager
 
     [Header("Bow")]
     [SerializeField] private Animator bowAnim;
+
+    [Header("Throw")]
+    [SerializeField] private float throwForce;
+    [SerializeField] private Stone_Throwable throwableStone;
+    [SerializeField] private Transform throwPos;
 
     #region Network
     [Header("Player")]
@@ -198,7 +205,7 @@ public class ToolStateManager : BaseStateManager
     public void RPC_BowSetting(bool pull)
     {
         bowAnim.SetBool("Pull", pull);
-        
+
         //player.BowSetting(pull);
     }
 
@@ -206,5 +213,11 @@ public class ToolStateManager : BaseStateManager
     public void RPC_BowShoot()
     {
         bowAnim.SetTrigger("Shoot");
+    }
+
+    public void SpawnThrowObject()
+    {
+        Runner.Spawn(throwableStone.gameObject, throwPos.position, Quaternion.identity);
+        throwableStone.AddForce(transform.forward, throwForce);
     }
 }
