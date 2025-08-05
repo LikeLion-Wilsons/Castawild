@@ -182,10 +182,6 @@ public class InventoryDataManager : NetworkBehaviour
             });
         }
     }
-    public override void FixedUpdateNetwork()
-    {   
-       
-    }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     void RPC_UpdateInventoryUI()
@@ -215,7 +211,7 @@ public class InventoryDataManager : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_UseSelectedItem(int count)
     {
-        UseItem(selectedSlot, count);
+        UseItem(itemList[selectedSlot].itemID, count);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
