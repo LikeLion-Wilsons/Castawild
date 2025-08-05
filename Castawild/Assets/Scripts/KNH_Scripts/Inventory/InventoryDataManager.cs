@@ -11,9 +11,10 @@ public class InventoryDataManager : NetworkBehaviour
     private UIInventory uiInventory;
     private UITable uiTable;
     [SerializeField] GameObject itemBox;
-    private int nextScrollTick = 0;
-    private int scrollCooldownTick = 6; // 0.2초 쿨타임 (60 tick 기준)
+    private float nextScrollTime = 0f;
+    public float scrollCooldown = 0.1f; // 100ms
     [SerializeField] GameObject playerUIPrefab; // 인스펙터에 연결
+    public GameObject UICanvas;
     [Networked, Capacity(30)] public NetworkLinkedList<Item> itemList => default;
 
     // 수정한 부분
@@ -43,6 +44,7 @@ public class InventoryDataManager : NetworkBehaviour
             // 본인의 UI만 생성
             GameObject uiCanvas = Instantiate(playerUIPrefab);
             uiCanvas.transform.SetParent(null); // 루트로 이동
+            UICanvas = uiCanvas;
             uiInventory = uiCanvas.GetComponentInChildren<UIInventory>();
             uiInventory.BindToInventoryData(this);
             uiTable = uiCanvas.GetComponentInChildren<UITable>();
@@ -114,7 +116,7 @@ public class InventoryDataManager : NetworkBehaviour
         // ChangeSelectedSlot(0);
     }
 
-    public override void FixedUpdateNetwork()
+    private void Update()
     {
         if (Input.inputString != null)
         {
@@ -124,24 +126,25 @@ public class InventoryDataManager : NetworkBehaviour
                 ChangeSelectedSlot(number - 1);
             }
         }
-        // 마우스 휠 입력
 
-        if (Runner.Tick >= nextScrollTick)
+        // 마우스 휠 입력
+        float scroll = Input.GetAxisRaw("Mouse ScrollWheel");
+        if (Time.time >= nextScrollTime)
         {
-            float scroll = Input.GetAxisRaw("Mouse ScrollWheel");
             if (scroll > 0f)
             {
                 int next = (selectedSlot - 1 + maxSlotCount) % maxSlotCount;
                 ChangeSelectedSlot(next);
-                nextScrollTick = Runner.Tick + scrollCooldownTick;
+                nextScrollTime = Time.time + scrollCooldown;
             }
             else if (scroll < 0f)
             {
                 int next = (selectedSlot + 1) % maxSlotCount;
                 ChangeSelectedSlot(next);
-                nextScrollTick = Runner.Tick + scrollCooldownTick;
+                nextScrollTime = Time.time + scrollCooldown;
             }
         }
+
         //선택된 아이템 버리기
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -156,6 +159,14 @@ public class InventoryDataManager : NetworkBehaviour
         {
             GetItem(1, 1);
         }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            RPC_UseSelectedItem(1);
+        }
+    }
+    public override void FixedUpdateNetwork()
+    {   
+       
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
@@ -181,6 +192,12 @@ public class InventoryDataManager : NetworkBehaviour
     public void RPC_UseItem(int index, int count)
     {
         UseItem(index, count);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_UseSelectedItem(int count)
+    {
+        UseItem(selectedSlot, count);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -226,8 +243,6 @@ public class InventoryDataManager : NetworkBehaviour
     // 아이템 획득
     public bool GetItem(int id, int amount)
     {
-        //Debug.Log("GetItem");
-
         // 이미 존재하는 아이템이면 개수만 증가
         for (int i = 0; i < itemList.Count; i++)
         {
