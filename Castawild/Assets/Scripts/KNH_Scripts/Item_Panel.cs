@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -41,6 +42,20 @@ public class Item_Panel :
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
         uiInventory = inventory.GetComponent<UIInventory>();
+        Canvas_Holder.OnUIActive+= OnUIActive;
+    }
+
+    void OnDestroy()
+    {
+        Canvas_Holder.OnUIActive -= OnUIActive;
+    }
+
+    void OnUIActive(bool active)
+    {
+        if (active == false && inventoryData.canvasHolder.isDragging)
+        {
+            ForceCancelDrag();
+        }
     }
     public void BindToInventoryData(InventoryDataManager data)
     {
@@ -49,8 +64,44 @@ public class Item_Panel :
     void Update()
     {
         if (inventoryData != null)
+        {
+            bool wasOpen = isInveontoryOpen;
             isInveontoryOpen = inventoryData.canvasHolder.IsInventoryOpen();
+
+            //// 인벤토리가 방금 닫혔다면 → 드래그 강제 종료
+            //if (wasOpen && !isInveontoryOpen && inventoryData.canvasHolder.isDragging)
+            //{
+            //    ForceCancelDrag();
+            //}
+        }
+
     }
+
+    //드래그 취소
+    public void ForceCancelDrag()
+    {
+        if (isRightMouseDrag)
+        {
+            if (draggedClone != null)
+            {
+                Destroy(draggedClone);
+                draggedClone = null;
+            }
+            item.count = originalCount;
+            int index = uiInventory.GetIndex(this);
+            inventoryData.RPC_SetItem(index, item);
+        }
+        else
+        {
+            transform.SetParent(originalParent);
+            rectTransform.anchoredPosition = originalAnchoredPos;
+        }
+        isRightMouseDrag = false;
+        canvasGroup.blocksRaycasts = true;
+        SetItemSlot();
+        uiInventory.SetItemList();
+    }
+
     public void SlotInit(Item _item)
     {
         item = _item;
@@ -61,9 +112,10 @@ public class Item_Panel :
         if (item.itemID != -1 && item.count != 0)
         {
             itemData.gameObject.SetActive(true);
-            //임시
             item_icon.sprite = item.GetData().image;
-            itemCountText.text = item.count.ToString();
+            //도구형 아이템은 개수 표시 안함
+            if (item.itemID / 100 == 4) itemCountText.gameObject.SetActive(false);
+            else itemCountText.text = item.count.ToString();
             durabilityBar.fillAmount = item.durability;
         }
         else
@@ -102,6 +154,8 @@ public class Item_Panel :
         originalAnchoredPos = rectTransform.anchoredPosition;
         originalParent = transform.parent;
         if (item.itemID == -1) return;
+
+        inventoryData.canvasHolder.isDragging = true;
         //우클릭 여부 저장
         isRightMouseDrag = Input.GetMouseButton(1);
 
@@ -159,6 +213,8 @@ public class Item_Panel :
     public void OnEndDrag(PointerEventData eventData)
     {
         if (!isInveontoryOpen) return;
+        inventoryData.canvasHolder.isDragging = false;
+
         // 드래그 종료 위치 기준으로 레이캐스트
         List<RaycastResult> results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventData, results);
@@ -275,7 +331,13 @@ public class Item_Panel :
                     // 같은 아이템이면 합치기
                     toItem.count += fromItem.count;
                     inventoryData.RPC_SetItem(indexA, toItem);
-                    inventoryData.RPC_ThrowItem(indexB);//합쳐지는 아이템 삭제
+                    Item item = new Item
+                    {
+                        itemID = -1,
+                        count = 0,
+                        durability = 0
+                    };
+                    inventoryData.RPC_SetItem(indexB, item);//합쳐지는 아이템 삭제
                     uiInventory.SetItemList();
                     return;
                 }

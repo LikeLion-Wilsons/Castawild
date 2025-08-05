@@ -1,8 +1,8 @@
 using Fusion;
 using Fusion.Addons.SimpleKCC;
-using Test;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
+using static UnityEditor.PlayerSettings;
 
 [DisallowMultipleComponent]
 public sealed class PlayerController : NetworkBehaviour
@@ -24,11 +24,15 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private Transform thirdPersonInteractPos;
     [SerializeField] private float interactRadius = 1f;
     [SerializeField] private LayerMask interactLayer;
-    [HideInInspector] public TestInteractable currentInteractObject;
+    [HideInInspector] public EnvironmentObject currentInteractObject;
 
-    public bool Grounded => kcc.IsGrounded;
+    [Networked, HideInInspector] public bool Grounded { get; set; }
 
     Collider[] _interactResult = new Collider[5];
+
+    [Header("Test")]
+    public NetworkObject throwObject;
+    public Transform throwPos;
 
     private NetworkButtons prevInputButtons;
 
@@ -55,29 +59,50 @@ public sealed class PlayerController : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (GetInput<PlayerNetworkInputData>(out var input))
-        {
-            // 속도 조절
-            maxSpeed = movementManager.CanMove ? movementManager.currentMoveSpeed : 0f;
+        if (!GetInput<PlayerNetworkInputData>(out var input))
+            return;
 
+        if (!Runner.IsResimulation && HasInputAuthority && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
+        {
+            RPC_SpawnThrowObject(throwPos.position);
+        }
+
+        if (HasStateAuthority)
+        {
             movementManager.SetInput(input);
             toolManager.SetInput(input);
 
             movementManager.currentState.UpdateState();
             toolManager.currentState.UpdateState();
 
-            TestTryOverlap(input.currentView);
-
             movementManager.SetPrevInputButton(input.Buttons);
             toolManager.SetPrevInputButton(input.Buttons);
-
-            movementManager.MoveValue = input.moveValue;
-
-            Move(input.moveDir);
-            Rotate(input);
-
-            prevInputButtons = input.Buttons;
         }
+
+        if (!player.CanMove)
+        {
+            if (HasStateAuthority)
+            {
+                // 중력만 적용해서 return
+                Vector3 velocity = kcc.RealVelocity;
+                velocity.y += gravity * Runner.DeltaTime;
+                kcc.Move(velocity);
+                Grounded = kcc.IsGrounded;
+            }
+            return;
+        }
+
+        maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
+        movementManager.MoveValue = input.moveValue;
+
+        if (HasStateAuthority)
+            Move(input.moveDir);
+        Rotate(input);
+
+        if (HasInputAuthority)
+            TestTryOverlap(input);
+
+        prevInputButtons = input.Buttons;
     }
 
     public void Move(Vector3 direction)
@@ -102,7 +127,6 @@ public sealed class PlayerController : NetworkBehaviour
         float jump = 0f;
         if (movementManager.JumpTriggered)
         {
-            Debug.Log("KCC.JumpTriggered" + movementManager.JumpTriggered);
             movementManager.JumpTriggered = false;
             jump = jumpImpulse;
         }
@@ -111,7 +135,10 @@ public sealed class PlayerController : NetworkBehaviour
         // 첫 번재 인자 : 이동 벡터(속도) -> moveDir * speed, 중력 포함해서 넣기
         // 두 번째 인자 : y축 점프 힘 -> 점프 눌렀을 때만 값넣기, 아니면 0
         // Move 함수의 ManualFixedUpdate 내부에서 DeltaTime 곱하기 때문에 여기서는 곱하지 말기
+
         kcc.Move(velocity, jump);
+        Grounded = kcc.IsGrounded;
+
     }
 
     private void Rotate(PlayerNetworkInputData input)
@@ -136,11 +163,11 @@ public sealed class PlayerController : NetworkBehaviour
         toolManager.UpdateMoveAnimation();
     }
 
-    private void TestTryOverlap(ViewType currentView)
+    private void TestTryOverlap(PlayerNetworkInputData input)
     {
         Camera cam = Camera.main;
 
-        Vector3 origin = (currentView == ViewType.FirstPerson) ? cam.transform.position : thirdPersonInteractPos.position;
+        Vector3 origin = (input.currentView == ViewType.FirstPerson) ? cam.transform.position : thirdPersonInteractPos.position;
         Vector3 point1 = origin + cam.transform.forward * interactHeight;
         Vector3 point2 = origin;
 
@@ -152,21 +179,46 @@ public sealed class PlayerController : NetworkBehaviour
             for (int i = 0; i < hitCount; i++)
             {
                 var interact = _interactResult[i];
-                if (_interactResult[i].TryGetComponent<TestInteractable>(out var interactable))
+
+                // 돌 / 나무
+                if (_interactResult[i].TryGetComponent<EnvironmentObject>(out var interactable))
                 {
                     if (interactable.CanInteract())
                     {
-                        player.ChangeCrosshairUI(interactable.interactableType);
+                        player.playerInteractUI.InteractUI(interactable.interactableType);
                         currentInteractObject = interactable;
                         break;
+                    }
+                }
+
+                // 다른 오브젝트 
+                else if (_interactResult[i].TryGetComponent<InteractableObject>(out var interactableObject))
+                {
+                    player.playerInteractUI.InteractUI(interactableObject.interactableType);
+                    player.playerInteractUI.interactableText.text = interactableObject.text;
+
+                    // 설치가능한 오브젝트
+                    if (interactableObject.isPlaceable)
+                    {
+                        if (interactableObject.CanInteract()
+                            && input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
+                        {
+                            // 제거하고 템창에 넣는 로직 추가하기
+                        }
+                    }
+
+                    if (interactableObject.CanInteract()
+                        && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
+                    {
+                        interactableObject.Interact(Object.InputAuthority);
                     }
                 }
             }
         }
         else
         {
+            player.playerInteractUI.InteractUI();
             currentInteractObject = null;
-            player.ChangeCrosshairUI();
         }
 
         Debug.DrawLine(point1, point2, Color.green, 1f);
@@ -215,5 +267,17 @@ public sealed class PlayerController : NetworkBehaviour
             Debug.Log("Player Att : " + att);
             currentInteractObject?.Interact(Object.InputAuthority, att);
         }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_SetPosition(Vector3 position)
+    {
+        kcc.SetPosition(position);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SpawnThrowObject(Vector3 position)
+    {
+        Runner.Spawn(throwObject, throwPos.position, Quaternion.identity);
     }
 }

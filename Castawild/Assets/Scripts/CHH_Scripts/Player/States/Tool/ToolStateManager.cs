@@ -1,8 +1,12 @@
 using Fusion;
 using UnityEngine;
 
+// 현재 들고있는 무기
 public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife, Smash }
-public enum ToolAnimationState { Idle, Aim, FullAim, FullUse }
+
+// 재생해야할 애니메이션 상태
+public enum ToolAnimationState { Idle, Aim, FullAim, FullUse, Carry, Eat, Drink }
+
 public class ToolStateManager : BaseStateManager
 {
     #region Components
@@ -14,19 +18,27 @@ public class ToolStateManager : BaseStateManager
     public ToolIdleState idleState;
     public UseToolState useToolState;
     public AimState aimState;
+    public CarryState carryState;
+    public EatState eatState;
     #endregion
 
+    [Header("Player")]
     public Transform armature;
-    public GameObject visibleMesh;
+    [SerializeField] private GameObject armMesh;
+
+    [Header("Bow")]
+    [SerializeField] private Animator bowAnim;
 
     #region Network
-    [Networked] public bool Interact { get; set; }
-    [Networked] public bool CanComboAttack { get; set; }
-    [Networked] public bool ComboAttack { get; set; }
-    [Networked] public bool CanReceiveInput { get; set; }
+    [Header("Player")]
+    [Networked, HideInInspector] public bool CanComboAttack { get; set; }
+    [Networked, HideInInspector] public bool ComboAttack { get; set; }
+    [Networked, HideInInspector] public bool CanReceiveInput { get; set; }
     [Networked] public ToolAnimationState CurrentToolUseState { get; set; }
     [Networked] public ToolType CurrentToolType { get; set; }
     #endregion
+
+    [HideInInspector] public bool isTriggerSet = false;
 
     protected override void Awake()
     {
@@ -47,7 +59,10 @@ public class ToolStateManager : BaseStateManager
         idleState = new ToolIdleState(this, inputManager);
         useToolState = new UseToolState(this, inputManager);
         aimState = new AimState(this, inputManager);
+        carryState = new CarryState(this, inputManager);
+        eatState = new EatState(this, inputManager);
     }
+
     public override void Spawned()
     {
         ChangeState(idleState);
@@ -59,6 +74,7 @@ public class ToolStateManager : BaseStateManager
         anim.SetBool("Aiming", false);
         anim.SetBool("FullAiming", false);
         anim.SetBool("FullUseTool", false);
+        anim.SetBool("Carrying", false);
 
         switch (CurrentToolUseState)
         {
@@ -71,18 +87,45 @@ public class ToolStateManager : BaseStateManager
                 anim.SetBool("FullAiming", true);
                 break;
             case ToolAnimationState.FullUse:
+                if (input.IsDown(PlayerNetworkInputData.aimInput) && HoldAimTool())
+                {
+                    anim.SetInteger("WeaponType", (int)CurrentToolType);
+                    anim.SetBool("Aiming", true);
+                    anim.SetBool("FullAiming", true);
+                }
                 anim.SetInteger("WeaponType", (int)CurrentToolType);
                 anim.SetBool("FullUseTool", true);
+                break;
+            case ToolAnimationState.Carry:
+                anim.SetBool("Carrying", true);
+                break;
+            case ToolAnimationState.Eat:
+                if (!isTriggerSet)
+                    anim.SetTrigger("Eating");
+                isTriggerSet = true;
+                break;
+            case ToolAnimationState.Drink:
+                if (!isTriggerSet)
+                    anim.SetTrigger("Drinking");
+                isTriggerSet = true;
                 break;
         }
 
         anim.SetBool("ComboAttack", ComboAttack);
     }
 
-    // 400:짱돌 401:방망이 402:횃불 403:돌도끼 404:돌작살 405:돌곡괭이
-    public void ChangeCurrentTool(int toolIdx = -1)
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_ChangeSelectedItem(int itemIdx = -1)
     {
-        switch (toolIdx)
+        // 설치가능한 아이템 
+        if (itemIdx >= 300 && itemIdx < 400)
+        {
+            if (HasStateAuthority)
+                ChangeState(carryState);
+            return;
+        }
+
+        switch (itemIdx)
         {
             case 401: // 방망이
                 CurrentToolType = ToolType.Sword;
@@ -98,6 +141,12 @@ public class ToolStateManager : BaseStateManager
                 break;
             case 405: // 돌곡괭이
                 CurrentToolType = ToolType.Pickaxe;
+                break;
+            case 406: // 화살
+                {
+                    CurrentToolType = ToolType.Bow;
+                    player.RPC_ActiveArrowInputAuthority(false);
+                }
                 break;
             case 400: // 400:짱돌 
             default:
@@ -132,4 +181,43 @@ public class ToolStateManager : BaseStateManager
     /// 조준가능한 도구인지 확인
     /// </summary>
     public bool HoldAimTool() => CurrentToolType == ToolType.Bow || CurrentToolType == ToolType.Throw;
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ArmVisibleChanged(bool isVisible)
+    {
+        if (cameraManager.currentView != ViewType.FirstPerson)
+            return;
+
+        armMesh.SetActive(isVisible);
+
+        if (isVisible)
+        {
+            armature.SetParent(cameraManager.firstPersonCam.transform);
+            armature.localPosition = new Vector3(0f, -3f, 0f);
+            armature.localRotation = Quaternion.identity;
+        }
+
+        else
+        {
+            armature.SetParent(player.transform);
+            armature.localPosition = Vector3.zero;
+            armature.localRotation = Quaternion.identity;
+        }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_MoveAimCamera(bool _isAiming) => cameraManager.MoveCamera(_isAiming);
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_BowSetting(bool pull)
+    {
+        bowAnim.SetBool("Pull", pull);
+        player.BowSetting(pull);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_BowShoot()
+    {
+        bowAnim.SetTrigger("Shoot");
+    }
 }

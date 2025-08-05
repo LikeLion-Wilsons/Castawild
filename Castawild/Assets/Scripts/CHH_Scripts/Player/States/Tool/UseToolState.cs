@@ -11,11 +11,18 @@ public class UseToolState : ToolBaseState
 
     public override void EnterState()
     {
-        toolStateManager.movementManager.CanMove = false;
+        toolStateManager.player.StopPlayer();
         toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
 
         toolStateManager.CurrentToolUseState = ToolAnimationState.FullUse;
-        SetActiveArmMesh(true);
+
+        if (toolStateManager.CurrentToolType == ToolType.Fist)
+            SetActiveArmMesh(true);
+
+        else if (toolStateManager.CurrentToolType == ToolType.Bow)
+        {
+            toolStateManager.RPC_BowSetting(true);
+        }
     }
 
     public override void UpdateState()
@@ -40,15 +47,27 @@ public class UseToolState : ToolBaseState
             if (toolStateManager.input.IsDown(PlayerNetworkInputData.aimInput) && toolStateManager.HoldAimTool())
                 toolStateManager.ChangeState(toolStateManager.aimState);
             else
+            {
                 toolStateManager.ChangeState(toolStateManager.idleState);
+                if (toolStateManager.CurrentToolType == ToolType.Bow)
+                    toolStateManager.RPC_BowSetting(false);
+            }
         }
     }
 
     public override void ExitState()
     {
         base.ExitState();
-        SetActiveArmMesh(false);
-        toolStateManager.movementManager.CanMove = true;
+
+        if (toolStateManager.CurrentToolType == ToolType.Fist)
+            SetActiveArmMesh(false);
+
+        else if (toolStateManager.CurrentToolType == ToolType.Bow)
+        {
+            toolStateManager.RPC_BowSetting(false);
+        }
+
+        toolStateManager.player.CanMove = true;
         toolStateManager.player.isAimLocked = false;
 
         comboCount = 1;
@@ -79,23 +98,7 @@ public class UseToolState : ToolBaseState
 
     public void SetActiveArmMesh(bool isActive)
     {
-        if (toolStateManager.CurrentToolType == ToolType.Fist && toolStateManager.cameraManager.currentView == ViewType.FirstPerson
-            && toolStateManager.HasInputAuthority)
-        {
-            toolStateManager.visibleMesh.SetActive(isActive);
-            if (isActive)
-            {
-                toolStateManager.armature.SetParent(toolStateManager.cameraManager.firstPersonCam.transform);
-                toolStateManager.armature.localPosition = new Vector3(0f, -3f, 0f);
-                toolStateManager.armature.localRotation = Quaternion.identity;
-            }
-
-            if (!isActive)
-            {
-                toolStateManager.armature.SetParent(toolStateManager.player.transform);
-                toolStateManager.armature.localPosition = Vector3.zero;
-                toolStateManager.armature.localRotation = Quaternion.identity;
-            }
-        }
+        if (toolStateManager.HasStateAuthority)
+            toolStateManager.RPC_ArmVisibleChanged(isActive);
     }
 }

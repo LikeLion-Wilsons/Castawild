@@ -17,19 +17,19 @@ public class PlayerInputManager : MonoBehaviour
     private InputAction aimAction;
     private InputAction sprintAction;
     private InputAction toolAction;
+    private InputAction interactAction;
+    private InputAction removeAction;
 
     [HideInInspector] public Vector2 lookInput;
     [HideInInspector] public Vector2 zoomInput;
     #endregion
 
     #region Cursor
-    [HideInInspector] public bool isCursorLocked = false;
     public Action cursorLocked;
     public Action cursorUnLocked;
     #endregion 
 
     private PlayerCameraManager cameraManager;
-    private MovementStateManager movementManager;
     private Player player;
 
     private void OnEnable()
@@ -45,7 +45,6 @@ public class PlayerInputManager : MonoBehaviour
     private void Awake()
     {
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
-        movementManager = GetComponent<MovementStateManager>();
         player = GetComponent<Player>();
         InitInputActions();
     }
@@ -63,20 +62,25 @@ public class PlayerInputManager : MonoBehaviour
         sprintAction = InputSystem.actions.FindAction("Sprint");
         aimAction = InputSystem.actions.FindAction("Aim");
         toolAction = InputSystem.actions.FindAction("Attack");
+        interactAction = InputSystem.actions.FindAction("Interact");
+        removeAction = InputSystem.actions.FindAction("Remove");
     }
 
     private void Update()
     {
+        if (!player.isSpawned || !player.HasInputAuthority)
+            return;
+
         // 게임 포커스가 사라지면 커서 해제
-        if (!Application.isFocused && isCursorLocked)
+        if (!Application.isFocused && player.IsCursorLocked)
             UnlockCursor();
 
         // Game 창이 포커스된 상태에서 클릭 시 커서 잠금
-        if (!isCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame && !player.IsInventoryTableOpen())
+        if (!player.IsCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame && !player.IsUIOpen)
             LockCursor();
 
         // ESC 눌렀을 때 해제
-        if (isCursorLocked && Keyboard.current.escapeKey.wasPressedThisFrame)
+        if (player.IsCursorLocked && Keyboard.current.escapeKey.wasPressedThisFrame && !player.IsUIOpen)
             UnlockCursor();
 
         HandleCameraInput();
@@ -86,7 +90,7 @@ public class PlayerInputManager : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        isCursorLocked = true;
+        player.SetCursorLocked(true);
 
         cursorLocked?.Invoke();
     }
@@ -95,7 +99,7 @@ public class PlayerInputManager : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        isCursorLocked = false;
+        player.SetCursorLocked(false);
 
         cursorUnLocked?.Invoke();
     }
@@ -111,6 +115,8 @@ public class PlayerInputManager : MonoBehaviour
         inputData.Buttons.Set(PlayerNetworkInputData.aimInput, aimAction.IsPressed());
         inputData.Buttons.Set(PlayerNetworkInputData.sprintInput, sprintAction.IsPressed());
         inputData.Buttons.Set(PlayerNetworkInputData.toolUseInput, toolAction.IsPressed());
+        inputData.Buttons.Set(PlayerNetworkInputData.interactInput, interactAction.IsPressed());
+        inputData.Buttons.Set(PlayerNetworkInputData.removeInput, removeAction.IsPressed());
 
         inputData.moveValue = moveAction.ReadValue<Vector2>();
         inputData = SetMoveDir(inputData);
@@ -121,7 +127,7 @@ public class PlayerInputManager : MonoBehaviour
 
     private PlayerNetworkInputData SetMoveDir(PlayerNetworkInputData inputData)
     {
-        if (isCursorLocked)
+        if (player.CanMoving())
         {
             Vector3 forward = Vector3.zero;
             Vector3 right = Vector3.zero;
@@ -155,8 +161,6 @@ public class PlayerInputManager : MonoBehaviour
 
         return inputData;
     }
-
-
 
     private void HandleCameraInput()
     {

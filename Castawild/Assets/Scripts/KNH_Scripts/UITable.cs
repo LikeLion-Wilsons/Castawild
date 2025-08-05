@@ -31,7 +31,7 @@ public class UITable : UIPart
         //제작 아이템 목록
         for (int i = 0; i<itemDataList.Count; i++)
         {
-            if (itemDataList[i].itemID >= 300)
+            if (itemDataList[i].itemID >= 200)
             {
                 GameObject go = Instantiate(button);
                 go.transform.SetParent(parent);
@@ -48,6 +48,8 @@ public class UITable : UIPart
 
     public void Craft()
     {
+        if (inventoryData.canvasHolder.isDragging == true) return;//드래그 중에 제작 불가
+
         if (canCreate)
         {
             inventoryData.RPC_GetItem(selectedItem.itemID, 1);
@@ -61,6 +63,8 @@ public class UITable : UIPart
 
     public void SetTableUI()
     {
+        if (inventoryData.canvasHolder.isDragging == true) return;
+
         if (selectedItem == null) return;
         //텍스트 설정
         itemName.GetComponent<TextMeshProUGUI>().text = selectedItem.itemName;

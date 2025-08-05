@@ -50,7 +50,7 @@ public class InventoryDataManager : NetworkBehaviour
 
             canvasHolder = uiCanvas.GetComponent<Canvas_Holder>();
             player = GetComponent<Player>();
-            canvasHolder.player = player;
+            canvasHolder.SetPlayer(player);
 
             int i = 0;
             while (i < 9)
@@ -80,7 +80,7 @@ public class InventoryDataManager : NetworkBehaviour
     int selectedSlot = 0;
     int maxSlotCount = 9; // 총 슬롯 수
     public static InventoryDataManager Instance { get; set; }
-
+    public static event Action<int> onItemSelected;
     void ChangeSelectedSlot(int newValue)
     {
         if (Object.HasInputAuthority)
@@ -94,12 +94,13 @@ public class InventoryDataManager : NetworkBehaviour
             }
             inventorySlots[newValue].Select();
             selectedSlot = newValue;
+            onItemSelected?.Invoke(inventorySlots[newValue].item.itemID);
 
             // 수정한 부분
             if (inventorySlots[selectedSlot].IsEmpty())
-                player.UnequipCurrentTool();
+                player.RemoveSelectedItem();
             else
-                player.EquipTool(itemList[selectedSlot].itemID);
+                player.ApplySelectedItem(itemList[selectedSlot].itemID);
         }
     }
 
@@ -272,6 +273,21 @@ public class InventoryDataManager : NetworkBehaviour
 
     }
 
+    // 추가한 부분
+    // 아이템 있는지 확인
+    public bool HasItem(int id)
+    {
+        for (int i = 0; i < itemList.Count; i++)
+        {
+            if (itemList[i].itemID == id)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void SwapItems(int indexA, int indexB)
     {
         if (indexA >= itemList.Count && indexB >= itemList.Count) return;
@@ -322,34 +338,55 @@ public class InventoryDataManager : NetworkBehaviour
         }
     }
 
-    public void UseItem(int index, int count)
+    public void UseItem(int id, int count)
     {
-        if (index >= 0 && index < itemList.Count)
+        for (int i = 0; i < itemList.Count; i++)
         {
-            if (itemList[index].itemID == -1) return;
-            Debug.Log(itemList[index].GetData().name + " 사용!");
-            var item = itemList.Get(index);
-
-            item.count -= count;
-            if (item.count <= 0) item.itemID = -1;
-            itemList.Set(index, item);
-            if (Object.HasStateAuthority)
+            if (itemList[i].itemID == id)
             {
-                //onInventoryUpdated?.Invoke();
-                RPC_UpdateInventoryUI();
+                var item = itemList.Get(i);
+                if (item.count - count >= 0)
+                {
+                    item.count -= count;
+                    itemList.Set(i, item);
+                    break;
+                }
+                else
+                {
+                    count -= item.count;
+                    item.count = 0;
+                    itemList.Set(i, item);
+                }
+
             }
         }
+        if (Object.HasStateAuthority)
+        {
+            RPC_UpdateInventoryUI();
+        }
+        //if (index >= 0 && index < itemList.Count)
+        //{
+        //    if (itemList[index].itemID == -1) return;
+        //    Debug.Log(itemList[index].GetData().name + " 사용!");
+        //    var item = itemList.Get(index);
+
+        //    item.count -= count;
+        //    if (item.count <= 0) item.itemID = -1;
+        //    itemList.Set(index, item);
+
+        //}
     }
 
     // 아이템 소지 수량 확인
     public int GetItemCount(int id)
     {
+        int count = 0;
         foreach (var item in itemList)
         {
             if (item.itemID != -1 && item.GetData().itemID == id)
-                return item.count;
+                count += item.count;
         }
-        return 0;
+        return count;
     }
 
     public NetworkLinkedList<Item> GetItemList()
