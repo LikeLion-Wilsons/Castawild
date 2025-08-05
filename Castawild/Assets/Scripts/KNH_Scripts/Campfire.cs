@@ -15,11 +15,8 @@ public class Campfire : InteractableObject
     private void Update()
     {
         if (canvasHolder == null) return;
-        if (canvasHolder.uiParts["Inventory"].IsOpen())
-            CanOpen = false;
-        else
-            CanOpen = true;
-
+        bool isInventoryOpen = canvasHolder.uiParts["Inventory"].IsOpen();
+        CanOpen = !isInventoryOpen;
     }
     public override bool CanInteract() => CanOpen;
     public void FinishInteract() => CanOpen = true;
@@ -36,8 +33,8 @@ public class Campfire : InteractableObject
 
         if (CanOpen)
         {
-            canvasHolder.uiParts["Inventory"].Toggle();
-            canvasHolder.uiParts["Campfire"].Toggle();
+            canvasHolder.uiParts["Inventory"].Open(player.inputManager);
+            canvasHolder.uiParts["Campfire"].Open(player.inputManager);
             CanOpen = false;
         }
     }

@@ -45,7 +45,6 @@ public class Canvas_Holder : MonoBehaviour
         {
             if (part.name == "HotBar") continue;
             part.Close(player.inputManager);
-            player.RPC_IsUIOpen(false);
         }
     }
 
@@ -64,6 +63,12 @@ public class Canvas_Holder : MonoBehaviour
     public static event Action<bool> OnUIActive;
     void Update()
     {
+        // 수정한 부분
+        if (uiParts["Inventory"].IsOpen())
+            player.RPC_IsUIOpen(true);
+        else
+            player.RPC_IsUIOpen(false);
+
         if (Input.GetKeyDown(KeyCode.Tab) && isDragging == false)
         {
             if (uiParts["Inventory"].IsOpen())
@@ -77,17 +82,7 @@ public class Canvas_Holder : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            if (uiParts["Chest"].IsOpen() || uiParts["Campfire"].IsOpen())
-                CloseAllUI();
-        }
 
-        // 수정한 부분
-        if (uiParts["Inventory"].IsOpen())
-            player.RPC_IsUIOpen(true);
-        else
-            player.RPC_IsUIOpen(false);
     }
 
     public bool IsInventoryOpen()
