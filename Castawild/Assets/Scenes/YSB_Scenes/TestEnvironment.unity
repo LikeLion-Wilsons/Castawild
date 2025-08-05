@@ -83961,39 +83961,39 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 957.8
+      value: 1009.9
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 81.5
+      value: 46.7
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 401.9
+      value: 386.7
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.05217094
+      value: -0.3084085
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.70518076
+      value: 0.67136925
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.70517814
+      value: -0.6363036
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.05217449
+      value: -0.22195794
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 180
+      value: 224.153
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -8.463013
+      value: -7.5650024
       objectReference: {fileID: 0}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -182393,9 +182393,21 @@ PrefabInstance:
       value: 194.37
       objectReference: {fileID: 0}
     - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: developerMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
       propertyPath: directionalLight
       value: 
       objectReference: {fileID: 1663637564}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: maxChangeInterval
+      value: 600
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: minChangeInterval
+      value: 300
+      objectReference: {fileID: 0}
     - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
       propertyPath: fogColorGradient.key0.b
       value: 0.7830189
@@ -182407,6 +182419,10 @@ PrefabInstance:
     - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
       propertyPath: fogColorGradient.key0.r
       value: 0.4629168
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.size
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
       propertyPath: ambientColorGradient.ctime0
@@ -182493,14 +182509,124 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].name
+      value: calm
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].name
+      value: windy
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].name
+      value: storm
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
       propertyPath: ambientColorGradient.m_NumColorKeys
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].burstsPower
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].burstsScale
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].burstsSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].burstsPower
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].burstsScale
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].burstsSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].burstsPower
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].burstsScale
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].burstsSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].baseWindPower
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[0].baseWindSpeed
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].baseWindPower
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[1].baseWindSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].baseWindPower
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      propertyPath: weatherPresets.Array.data[2].baseWindSpeed
+      value: 3.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5276194084423436488, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1563946644}
   m_SourcePrefab: {fileID: 100100000, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+--- !u!1 &1563946642 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5276194084423436488, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+  m_PrefabInstance: {fileID: 1563946641}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1563946643 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5276194084423436495, guid: 8149d26980d14792bffa647f2ce4cc54, type: 3}
+  m_PrefabInstance: {fileID: 1563946641}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563946642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7c87be04fee6674ab4942ca4762d482, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1563946644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563946642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 2339462436
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1563946643}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1001 &1565094572
 PrefabInstance:
   m_ObjectHideFlags: 0
