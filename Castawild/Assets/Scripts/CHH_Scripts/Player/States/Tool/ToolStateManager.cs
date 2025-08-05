@@ -198,6 +198,7 @@ public class ToolStateManager : BaseStateManager
     public void RPC_BowSetting(bool pull)
     {
         bowAnim.SetBool("Pull", pull);
+        
         //player.BowSetting(pull);
     }
 

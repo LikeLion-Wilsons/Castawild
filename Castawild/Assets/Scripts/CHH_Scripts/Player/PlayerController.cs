@@ -62,10 +62,10 @@ public sealed class PlayerController : NetworkBehaviour
         if (!GetInput<PlayerNetworkInputData>(out var input))
             return;
 
-        if (!Runner.IsResimulation && HasInputAuthority && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
-        {
-            RPC_SpawnThrowObject(throwPos.position);
-        }
+        //if (!Runner.IsResimulation && HasInputAuthority && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
+        //{
+        //    RPC_SpawnThrowObject(throwPos.position);
+        //}
 
         if (HasStateAuthority)
         {

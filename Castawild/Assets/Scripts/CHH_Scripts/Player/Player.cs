@@ -40,12 +40,7 @@ public class Player : NetworkBehaviour
     [Header("Tool")]
     [SerializeField] private Transform tools;
     private Dictionary<int, GameObject> toolDict = new Dictionary<int, GameObject>();
-    private Transform toolOriginPos;
-    [SerializeField] private Transform bowOriginPos;
-    [SerializeField] private Transform toolUsePos;
     [SerializeField] private Transform bowUsePos;
-    [SerializeField] private Transform firstPersonBowUsePos;
-    [SerializeField] private Transform cameraRot;
     [SerializeField] private GameObject arrow;
     #endregion
 

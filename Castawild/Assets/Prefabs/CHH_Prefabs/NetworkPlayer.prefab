@@ -3696,7 +3696,7 @@ MonoBehaviour:
     m_Bits: 256
   currentInteractObject: {fileID: 0}
   _Grounded: 0
-  throwObject: {fileID: 2851996315657733653, guid: 622425fdfb35f88448956003b0686135, type: 3}
+  throwObject: {fileID: 4567678241715135965, guid: c19cb8ae3a01c0b45aa126b1b78daa66, type: 3}
   throwPos: {fileID: 8012178248796667738}
 --- !u!114 &3318766871343913700
 MonoBehaviour:
