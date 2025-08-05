@@ -427,6 +427,7 @@ MonoBehaviour:
   interactableType: 0
   text: Open
   isPlaceable: 1
+  player: {fileID: 0}
 --- !u!65 &8007645641892018026
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -460,7 +461,56 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f32c86d74f2ebd4d8334928279bffe4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _itemList: []
+  player: {fileID: 0}
+  _itemList:
+  - itemID: 0
+    count: 0
+    durability: 0
+  - itemID: 0
+    count: 0
+    durability: 0
+  - itemID: 0
+    count: 0
+    durability: 0
+  - itemID: 0
+    count: 0
+    durability: 0
+  - itemID: 0
+    count: 0
+    durability: 0
+  - itemID: 0
+    count: 0
+    durability: 0
+  - itemID: 0
+    count: 0
+    durability: 0
+  - itemID: 0
+    count: 0
+    durability: 0
+  - itemID: 0
+    count: 0
+    durability: 0
+  - itemID: 0
+    count: 0
+    durability: 0
+  - itemID: 0
+    count: 0
+    durability: 0
+  - itemID: 0
+    count: 0
+    durability: 0
+  - itemID: 0
+    count: 0
+    durability: 0
+  - itemID: 0
+    count: 0
+    durability: 0
+  - itemID: 0
+    count: 0
+    durability: 0
+  - itemID: 0
+    count: 0
+    durability: 0
 --- !u!1 &1738608518560589796
 GameObject:
   m_ObjectHideFlags: 0
