@@ -127,26 +127,26 @@ public class PlayerInputManager : MonoBehaviour
 
     private PlayerNetworkInputData SetMoveDir(PlayerNetworkInputData inputData)
     {
+        Vector3 forward = Vector3.zero;
+        Vector3 right = Vector3.zero;
+
+        if (cameraManager.currentView == ViewType.ThirdPerson)
+        {
+            forward = cameraManager.CurrenCam.transform.forward;
+            right = cameraManager.CurrenCam.transform.right;
+
+            Vector3 camForward = cameraManager.CurrenCam.transform.forward;
+            inputData.camForward = new Vector3(camForward.x, 0f, camForward.z);
+        }
+
         if (player.CanMoving())
         {
-            Vector3 forward = Vector3.zero;
-            Vector3 right = Vector3.zero;
-
             if (cameraManager.currentView == ViewType.FirstPerson)
             {
                 forward = transform.forward;
                 right = transform.right;
 
                 inputData.lookValue = lookAction.ReadValue<Vector2>();
-            }
-
-            else if (cameraManager.currentView == ViewType.ThirdPerson)
-            {
-                forward = cameraManager.CurrenCam.transform.forward;
-                right = cameraManager.CurrenCam.transform.right;
-
-                Vector3 camForward = cameraManager.CurrenCam.transform.forward;
-                inputData.camForward = new Vector3(camForward.x, 0f, camForward.z);
             }
 
             forward.y = 0f;

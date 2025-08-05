@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &74963934721862383
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3011774156531074929}
+  m_Layer: 6
+  m_Name: FirstPersonArrowPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3011774156531074929
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 74963934721862383}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.553, y: -0.002, z: 2.322}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7897038115889330701}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &226974489380342212
 GameObject:
   m_ObjectHideFlags: 0
@@ -199,6 +230,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1816490953092983314}
+  - {fileID: 3011774156531074929}
   m_Father: {fileID: 1537898097600247738}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3849144779001713377
@@ -475,7 +507,7 @@ GameObject:
   m_Layer: 0
   m_Name: BowUseLocalParent
   m_TagString: Untagged
-  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -1301,7 +1333,7 @@ Transform:
   m_GameObject: {fileID: 2344188678965562170}
   serializedVersion: 2
   m_LocalRotation: {x: -0.05381909, y: 0.7835739, z: 0.06855383, w: 0.6151551}
-  m_LocalPosition: {x: -9.5666, y: 0.7235184, z: 2.337692}
+  m_LocalPosition: {x: -9.5666, y: 1.7635183, z: 2.337692}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1670,7 +1702,7 @@ GameObject:
   m_Layer: 0
   m_Name: BowUseParent
   m_TagString: Untagged
-  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -2816,7 +2848,7 @@ Transform:
   m_GameObject: {fileID: 5346962011802279663}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.46, z: 0}
+  m_LocalPosition: {x: 0, y: 3.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3438,6 +3470,37 @@ Transform:
   - {fileID: 4812495201628802431}
   m_Father: {fileID: 5360379301146613224}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6598131488761095140
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2414465423738557776}
+  m_Layer: 6
+  m_Name: ThirdPersonArrowPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2414465423738557776
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6598131488761095140}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.2, y: 2.995, z: 2.53}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6388187669656790763}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6745149731310445075
 GameObject:
   m_ObjectHideFlags: 0
@@ -3550,6 +3613,7 @@ Transform:
   - {fileID: 7467696255462433047}
   - {fileID: 3860441751889761913}
   - {fileID: 8012178248796667738}
+  - {fileID: 2414465423738557776}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7933685528624486573
@@ -3804,10 +3868,14 @@ MonoBehaviour:
   armature: {fileID: 7813269517312369915}
   armMesh: {fileID: 3201401248480740544}
   bowAnim: {fileID: 1436198795544721307}
-  throwForce: 30
-  arrowForce: 30
+  throwUpForce: 0.3
+  arrowUpForce: 0.2
+  throwForce: 20
+  arrowForce: 40
   throwableStone: {fileID: 3276171059478812674, guid: 13ec340cd21e8b941800f61a46abf836, type: 3}
-  arrow: {fileID: 7993736799480077785, guid: 4a71180523a42c940b31a6ab892bd51e, type: 3}
+  arrow: {fileID: 8716954291783428198, guid: efed917af524c72458d453d086971822, type: 3}
+  firstPersonArrowPos: {fileID: 3011774156531074929}
+  thirdPersonArrowPos: {fileID: 2414465423738557776}
   throwPos: {fileID: 8012178248796667738}
   _CanComboAttack: 0
   _ComboAttack: 0
@@ -5214,7 +5282,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1703291259242920242, guid: c19cb8ae3a01c0b45aa126b1b78daa66, type: 3}
       propertyPath: m_Name
-      value: 400_Stone_PickUp
+      value: 400_Stone_Handle
+      objectReference: {fileID: 0}
+    - target: {fileID: 1703291259242920242, guid: c19cb8ae3a01c0b45aa126b1b78daa66, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6123478145016397464, guid: c19cb8ae3a01c0b45aa126b1b78daa66, type: 3}
       propertyPath: m_LocalPosition.x

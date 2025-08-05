@@ -301,14 +301,6 @@ public class Player : NetworkBehaviour
         }
     }
 
-    public Vector3 GetArrowPos()
-    {
-        if (currentToolObject.TryGetComponent<Bow>(out Bow bow))
-            return bow.arrowPos.position;
-        else
-            return Vector3.zero;
-    }
-
     public void ActiveArrowInputAuthority(bool active) => arrow.SetActive(active);
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]

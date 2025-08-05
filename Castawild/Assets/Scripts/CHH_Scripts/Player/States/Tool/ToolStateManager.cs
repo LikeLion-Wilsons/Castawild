@@ -32,19 +32,23 @@ public class ToolStateManager : BaseStateManager
     [SerializeField] private Animator bowAnim;
 
     [Header("Throw")]
+    [SerializeField] private float throwUpForce = 0.3f;
+    [SerializeField] private float arrowUpForce = 0.3f;
     [SerializeField] private float throwForce = 20f;
     [SerializeField] private float arrowForce = 30f;
     [SerializeField] private ThrowObject throwableStone;
     [SerializeField] private ThrowObject arrow;
+    [SerializeField] private Transform firstPersonArrowPos;
+    [SerializeField] private Transform thirdPersonArrowPos;
     [SerializeField] private Transform throwPos;
 
     #region Network
-    [Header("Player")]
     [Networked, HideInInspector] public bool CanComboAttack { get; set; }
     [Networked, HideInInspector] public bool ComboAttack { get; set; }
     [Networked, HideInInspector] public bool CanReceiveInput { get; set; }
     [Networked] public ToolAnimationState CurrentToolUseState { get; set; }
     [Networked] public ToolType CurrentToolType { get; set; }
+    [Networked] public Vector3 RayTargetPos { get; set; }
     #endregion
 
     [HideInInspector] public bool isTriggerSet = false;
@@ -211,23 +215,49 @@ public class ToolStateManager : BaseStateManager
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_BowShootAnimation() => bowAnim.SetTrigger("Shoot");
 
+    public void SetTargetPos()
+    {
+        if (!HasInputAuthority)
+            return;
+
+        Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
+        Ray ray = Camera.main.ScreenPointToRay(screenCenter);
+        RayTargetPos = ray.GetPoint(30f);
+        RPC_SetTargetPosValue(RayTargetPos);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetTargetPosValue(Vector3 targetPos) => RayTargetPos = targetPos;
+
     public void SpawnThrowObject(bool isArrow)
     {
         if (!HasStateAuthority)
             return;
 
+        Debug.Log("Throw targetPos : " + RayTargetPos);
         NetworkObject throwObject;
         if (isArrow && player.hasArrow)
         {
-            throwObject = Runner.Spawn(arrow.gameObject, player.GetArrowPos(), Quaternion.identity);
-            throwObject?.GetComponent<ThrowObject>().AddForce(transform.forward, arrowForce);
+            if (input.currentView == ViewType.FirstPerson)
+            {
+                throwObject = Runner.Spawn(arrow.gameObject, firstPersonArrowPos.position, cameraManager.firstPersonCam.transform.rotation);
+                throwObject?.GetComponent<ThrowObject>().AddForce(arrowForce, arrowUpForce, RayTargetPos);
+            }
+            else
+            {
+                throwObject = Runner.Spawn(arrow.gameObject, thirdPersonArrowPos.position, cameraManager.thirdPersonCam.transform.rotation);
+                throwObject?.GetComponent<ThrowObject>().AddForce(arrowForce, arrowUpForce, RayTargetPos);
+            }
         }
         else
         {
-            throwObject = Runner.Spawn(throwableStone.gameObject, throwPos.position, Quaternion.identity);
-            Vector3 throwDirection = transform.forward + Vector3.up * 0.2f;
-            throwDirection.Normalize();
-            throwObject?.GetComponent<ThrowObject>().AddForce(transform.forward, throwForce);
+            if (input.currentView == ViewType.FirstPerson)
+                throwObject = Runner.Spawn(throwableStone.gameObject, throwPos.position, cameraManager.firstPersonCam.transform.rotation);
+            else
+                throwObject = Runner.Spawn(throwableStone.gameObject, throwPos.position, cameraManager.thirdPersonCam.transform.rotation);
+            throwObject?.GetComponent<ThrowObject>().AddForce(throwForce, throwUpForce, RayTargetPos);
         }
     }
+
+    public bool IsAiming() => CurrentToolUseState == ToolAnimationState.Aim || CurrentToolUseState == ToolAnimationState.FullAim;
 }

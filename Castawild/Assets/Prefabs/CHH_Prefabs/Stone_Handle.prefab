@@ -13,12 +13,12 @@ GameObject:
   - component: {fileID: 5502669249355725482}
   - component: {fileID: 1380810401459524713}
   m_Layer: 0
-  m_Name: Stone_PickUp
+  m_Name: Stone_Handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6123478145016397464
 Transform:
   m_ObjectHideFlags: 0

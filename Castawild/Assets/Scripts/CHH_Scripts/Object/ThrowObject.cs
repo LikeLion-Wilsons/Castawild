@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class ThrowObject : NetworkBehaviour
 {
+    private Vector3 targetPos;
     private Rigidbody rigid;
 
     public override void Spawned()
@@ -10,8 +11,16 @@ public class ThrowObject : NetworkBehaviour
         rigid = GetComponent<Rigidbody>();
     }
 
-    public void AddForce(Vector3 forward, float force)
+    //public void AddForce(Vector3 forward, float force)
+    //{
+    //    rigid.AddForce(forward * force, ForceMode.Impulse);
+    //}
+
+    public void AddForce(float force, float upForce, Vector3 targetPos)
     {
-        rigid.AddForce(forward * force, ForceMode.Impulse);
+        Vector3 direction = (targetPos - transform.position).normalized;
+        Vector3 forceDir = direction + Vector3.up * upForce;
+
+        rigid.AddForce(forceDir.normalized * force, ForceMode.Impulse);
     }
 }
