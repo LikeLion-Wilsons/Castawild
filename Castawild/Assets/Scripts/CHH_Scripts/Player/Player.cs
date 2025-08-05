@@ -1,5 +1,6 @@
 using Fusion;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 
@@ -39,11 +40,13 @@ public class Player : NetworkBehaviour
     [Header("Tool")]
     [SerializeField] private Transform tools;
     private Dictionary<int, GameObject> toolDict = new Dictionary<int, GameObject>();
-    [SerializeField] private Transform bowOriginPos;
-    [SerializeField] private Transform bowUsePos;
-    [SerializeField] private Transform firstPersonBowUsePos;
-    [SerializeField] private Transform cameraRot;
-    [SerializeField] private GameObject arrow;
+    [SerializeField] private Transform bowOriginalParent;
+    [SerializeField] private Transform bowUseParent;
+    [SerializeField] private Transform bowUseLocalParent;
+    public GameObject arrow;
+
+    [Networked, HideInInspector] public bool HasArrow { get; set; }
+    private GameObject currentToolObject;
     #endregion
 
     #region Interact
@@ -258,54 +261,45 @@ public class Player : NetworkBehaviour
             return;
 
         if (toolDict.TryGetValue(itemIdx, out GameObject currentToolGameObject))
+        {
             currentToolGameObject.SetActive(true);
+            currentToolObject = currentToolGameObject;
+        }
+        else
+        {
+            currentToolObject = null;
+        }
     }
 
     public void PlayerCanMove() => CanMove = true;
 
-    public void BowSetting(bool isBowUse)
+    public GameObject amarture;
+
+    // false : 공격 끝났을 때, 조준 끝났을 때
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_ActiveArrow(bool visible)
     {
-        if (toolDict.TryGetValue(406, out GameObject bow))
+        if (HasArrow && visible)
+            arrow.SetActive(visible);
+        else
+            arrow.SetActive(false);
+    }
+
+    public void AttachToCamera(bool attach)
+    {
+        if (attach && cameraManager.currentView == ViewType.FirstPerson)
         {
-            if (isBowUse)
-            {
-                if (HasInputAuthority && cameraManager.currentView == ViewType.FirstPerson)
-                {
-                    bow.transform.SetParent(firstPersonBowUsePos);
-                    cameraRot.SetParent(cameraManager.firstPersonCam.transform);
-                    cameraRot.localPosition = Vector3.zero;
-                }
-                else
-                    bow.transform.SetParent(bowUsePos);
-
-                bow.transform.localPosition = Vector3.zero;
-                bow.transform.localRotation = Quaternion.identity;
-            }
-            else
-            {
-                bow.transform.SetParent(bowOriginPos);
-
-                bow.transform.localPosition = Vector3.zero;
-                bow.transform.localRotation = Quaternion.identity;
-            }
-
-            if (inventory.HasItem(201) && isBowUse)
-                RPC_ActiveArrow(true);
-            else
-                RPC_ActiveArrow(false);
+            amarture.transform.SetParent(cameraManager.firstPersonCam.transform);
+            amarture.transform.localPosition = new Vector3(0f, -3f, 0f);
+            amarture.transform.localRotation = Quaternion.identity;
         }
         else
         {
-            Debug.Log("활 없음");
-            return;
+            amarture.transform.SetParent(transform);
+            amarture.transform.localPosition = Vector3.zero;
+            amarture.transform.localRotation = Quaternion.identity;
         }
     }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_ActiveArrow(bool active) => arrow.SetActive(active);
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    public void RPC_ActiveArrowInputAuthority(bool active) => arrow.SetActive(active);
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_IsUIOpen(bool isOpen) => IsUIOpen = isOpen;
@@ -318,4 +312,36 @@ public class Player : NetworkBehaviour
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_TurnOffUI() => playerInteractUI.TurnOffUI();
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_SetBowPos(bool isBowUse)
+    {
+        if (currentToolObject == null)
+            return;
+
+        if (HasInputAuthority)
+        {
+            if (isBowUse && cameraManager.currentView == ViewType.FirstPerson)
+                currentToolObject.transform.SetParent(bowUseLocalParent);
+            else if (isBowUse && cameraManager.currentView == ViewType.ThirdPerson)
+                currentToolObject.transform.SetParent(bowUseParent);
+            else
+                currentToolObject.transform.SetParent(bowOriginalParent);
+        }
+        else
+        {
+            if (isBowUse)
+                currentToolObject.transform.SetParent(bowUseParent);
+            if (!isBowUse)
+                currentToolObject.transform.SetParent(bowOriginalParent);
+        }
+
+        currentToolObject.transform.localPosition = Vector3.zero;
+        currentToolObject.transform.localRotation = Quaternion.identity;
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_HasArrow(bool hasArrow) => HasArrow = hasArrow;
+
+    public void CurrentToolActive(bool active) => currentToolObject?.SetActive(active);
 }

@@ -75,19 +75,20 @@ public class BuildingManager : NetworkBehaviour
     {
         if (buildingPreview.IsBuildable)
         {
-            // 실제 건설 오브젝트 생성
-            NetworkObject prefab = networkPrefab;
-            Vector3 pos = buildingPreview.GetPreviewPosition();
-            Quaternion rot = buildingPreview.GetPreviewRotation();
-
-            RPCRequestBuild(prefab, pos, rot);
+            var pos = buildingPreview.GetPreviewPosition();
+            var rot = buildingPreview.GetPreviewRotation();
+            Debug.Log("Building at position: " + pos + ", rotation: " + rot);
+            RPCRequestBuild(pos, rot);
             PreviewStop();
         }
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    void RPCRequestBuild(NetworkObject prefab, Vector3 pos, Quaternion rot)
+    void RPCRequestBuild(Vector3 pos, Quaternion rot)
     {
-        Runner.Spawn(prefab, pos, rot);
+        var retryPos = buildingPreview.GetPreviewPosition();
+        var retryRot = buildingPreview.GetPreviewRotation();
+        Debug.Log($" pos:{pos},retryPos:{retryPos}, rot:{rot},retryRot:{retryRot}");
+        Runner.Spawn(networkPrefab, pos, rot);
     }
 }

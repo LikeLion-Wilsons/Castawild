@@ -133,7 +133,7 @@ public class PlayerCameraManager : MonoBehaviour
     private void HandleViewChange()
     {
         if (inputManager.viewChangeAction.WasPressedThisFrame()
-            && (toolManager.currentState == toolManager.idleState || toolManager.currentState == toolManager.carryState))
+            && (toolManager.CurrentToolUseState == ToolAnimationState.Idle || toolManager.CurrentToolUseState == ToolAnimationState.Carry))
         {
             ViewChange(currentView == ViewType.FirstPerson ? ViewType.ThirdPerson : ViewType.FirstPerson);
         }
@@ -158,6 +158,7 @@ public class PlayerCameraManager : MonoBehaviour
                 }
                 firstPersonCam.Priority = 10;
                 thirdPersonCam.Priority = 0;
+                player.AttachToCamera(true);
             }
         }
 
@@ -175,6 +176,7 @@ public class PlayerCameraManager : MonoBehaviour
                 }
                 firstPersonCam.Priority = 0;
                 thirdPersonCam.Priority = 10;
+                player.AttachToCamera(false);
             }
         }
     }

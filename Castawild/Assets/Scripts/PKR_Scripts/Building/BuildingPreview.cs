@@ -18,7 +18,8 @@ public class BuildingPreview : MonoBehaviour
     // 저장된 bounds 정보
     private Bounds savedBounds;
     private bool hasSavedBounds = false;
-
+    private Vector3 savedPosition;
+    private Quaternion savedRotation;
     public bool IsBuildable => CheckBuildable();
 
     void Awake()
@@ -47,6 +48,7 @@ public class BuildingPreview : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             previewObject.transform.Rotate(0, 45, 0);
+            savedRotation = previewObject.transform.rotation;
         }
 
         UpdatePreviewPosition();
@@ -173,6 +175,8 @@ public class BuildingPreview : MonoBehaviour
             previewObject.transform.position = ray.GetPoint(10f);
             onAirPos = true;
         }
+        
+        savedPosition = previewObject.transform.position;
     }
 
     private void UpdatePreviewColor()
@@ -183,21 +187,11 @@ public class BuildingPreview : MonoBehaviour
 
     public Vector3 GetPreviewPosition()
     {
-        if (previewObject != null)
-        {
-            return previewObject.transform.position;
-        }
-
-        return Vector3.zero;
+        return savedPosition;
     }
 
     public Quaternion GetPreviewRotation()
     {
-        if (previewObject != null)
-        {
-            return previewObject.transform.rotation;
-        }
-
-        return Quaternion.identity;
+        return savedRotation;
     }
 }
