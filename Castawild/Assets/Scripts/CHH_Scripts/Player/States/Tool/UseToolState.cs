@@ -16,8 +16,12 @@ public class UseToolState : ToolBaseState
 
         toolStateManager.CurrentToolUseState = ToolAnimationState.FullUse;
 
-        if (toolStateManager.CurrentToolType == ToolType.Fist)
+        if (toolStateManager.CurrentToolType == ToolType.Fist || toolStateManager.CurrentToolType == ToolType.Throw)
+        {
             SetActiveArmMesh(true);
+            if (toolStateManager.CurrentToolType == ToolType.Throw)
+                toolStateManager.player.CurrentToolActive(true);
+        }
 
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
         {
@@ -25,11 +29,14 @@ public class UseToolState : ToolBaseState
             toolStateManager.player.RPC_SetBowPos(true);
         }
 
-        toolStateManager.player.RPC_ArrowVisible(true);
+        toolStateManager.player.RPC_ActiveArrow(true);
     }
 
     public override void UpdateState()
     {
+        if (toolStateManager.input.currentView == ViewType.ThirdPerson)
+            toolStateManager.playerController.LookForward_ThirdPerson(toolStateManager.input);
+
         // 곡괭이, 도끼는 손 때까지 상태 유지
         if (CraftingToolActionRelease())
             return;
@@ -58,7 +65,7 @@ public class UseToolState : ToolBaseState
                     toolStateManager.player.RPC_SetBowPos(false);
                 }
 
-                toolStateManager.player.RPC_ArrowVisible(false);
+                toolStateManager.player.RPC_ActiveArrow(false);
             }
         }
     }
@@ -72,7 +79,7 @@ public class UseToolState : ToolBaseState
 
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
             toolStateManager.RPC_BowPullAnimation(false);
-        toolStateManager.player.RPC_ArrowVisible(false);
+        toolStateManager.player.RPC_ActiveArrow(false);
 
         toolStateManager.player.CanMove = true;
         toolStateManager.player.isAimLocked = false;

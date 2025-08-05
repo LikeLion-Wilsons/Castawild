@@ -42,9 +42,10 @@ public class Player : NetworkBehaviour
     private Dictionary<int, GameObject> toolDict = new Dictionary<int, GameObject>();
     [SerializeField] private Transform bowOriginalParent;
     [SerializeField] private Transform bowUseParent;
-    [SerializeField] private GameObject arrow;
+    [SerializeField] private Transform bowUseLocalParent;
+    public GameObject arrow;
 
-    [SerializeField, HideInInspector] public bool hasArrow;
+    [Networked, HideInInspector] public bool HasArrow { get; set; }
     private GameObject currentToolObject;
     #endregion
 
@@ -265,23 +266,23 @@ public class Player : NetworkBehaviour
             currentToolObject = currentToolGameObject;
         }
         else
+        {
             currentToolObject = null;
+        }
     }
 
     public void PlayerCanMove() => CanMove = true;
 
     public GameObject amarture;
 
+    // false : 공격 끝났을 때, 조준 끝났을 때
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_ArrowVisible(bool visible)
+    public void RPC_ActiveArrow(bool visible)
     {
-        if (inventory.HasItem(201) && visible)
+        if (HasArrow && visible)
             arrow.SetActive(visible);
         else
-            arrow.SetActive(visible);
-
-        if (HasStateAuthority)
-            hasArrow = visible;
+            arrow.SetActive(false);
     }
 
     public void AttachToCamera(bool attach)
@@ -300,16 +301,6 @@ public class Player : NetworkBehaviour
         }
     }
 
-    public Vector3 GetArrowPos()
-    {
-        if (currentToolObject.TryGetComponent<Bow>(out Bow bow))
-            return bow.arrowPos.position;
-        else
-            return Vector3.zero;
-    }
-
-    public void ActiveArrowInputAuthority(bool active) => arrow.SetActive(active);
-
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_IsUIOpen(bool isOpen) => IsUIOpen = isOpen;
 
@@ -322,18 +313,35 @@ public class Player : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_TurnOffUI() => playerInteractUI.TurnOffUI();
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_SetBowPos(bool isBowUse)
     {
         if (currentToolObject == null)
             return;
 
-        if (isBowUse)
-            currentToolObject.transform.SetParent(bowUseParent);
+        if (HasInputAuthority)
+        {
+            if (isBowUse && cameraManager.currentView == ViewType.FirstPerson)
+                currentToolObject.transform.SetParent(bowUseLocalParent);
+            else if (isBowUse && cameraManager.currentView == ViewType.ThirdPerson)
+                currentToolObject.transform.SetParent(bowUseParent);
+            else
+                currentToolObject.transform.SetParent(bowOriginalParent);
+        }
         else
-            currentToolObject.transform.SetParent(bowOriginalParent);
+        {
+            if (isBowUse)
+                currentToolObject.transform.SetParent(bowUseParent);
+            if (!isBowUse)
+                currentToolObject.transform.SetParent(bowOriginalParent);
+        }
 
         currentToolObject.transform.localPosition = Vector3.zero;
         currentToolObject.transform.localRotation = Quaternion.identity;
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_HasArrow(bool hasArrow) => HasArrow = hasArrow;
+
+    public void CurrentToolActive(bool active) => currentToolObject?.SetActive(active);
 }

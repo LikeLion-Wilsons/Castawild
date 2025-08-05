@@ -55,5 +55,15 @@ public class AnimationTrigger : MonoBehaviour
 
     public void LyingOrGettingUp(int playing) => movementManager.isLyingOrGettingUp = (playing != 0);
 
-    public void Throw(int isArrow) => toolManager.SpawnThrowObject(isArrow == 0 ? false : true);
+    public void Throw(int isArrow)
+    {
+        toolManager.SpawnThrowObject(isArrow == 0 ? false : true);
+
+        if (isArrow == 0)
+            player.CurrentToolActive(false);
+        else
+            player.arrow.SetActive(false);
+    }
+
+    public void SetTargetPos() => toolManager.SetTargetPos();
 }

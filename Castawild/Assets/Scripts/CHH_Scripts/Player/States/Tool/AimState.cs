@@ -30,7 +30,7 @@ public class AimState : ToolBaseState
             toolStateManager.player.RPC_SetBowPos(true);
         }
 
-        toolStateManager.player.RPC_ArrowVisible(true);
+        toolStateManager.player.RPC_ActiveArrow(true);
 
         toolStateManager.player.playerInteractUI.crosshairImage.gameObject.SetActive(true);
     }
@@ -65,7 +65,7 @@ public class AimState : ToolBaseState
                 toolStateManager.player.RPC_SetBowPos(false);
             }
 
-            toolStateManager.player.RPC_ArrowVisible(false);
+            toolStateManager.player.RPC_ActiveArrow(false);
 
             toolStateManager.ChangeState(toolStateManager.idleState);
         }

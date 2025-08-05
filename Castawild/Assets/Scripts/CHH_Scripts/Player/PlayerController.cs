@@ -140,13 +140,18 @@ public sealed class PlayerController : NetworkBehaviour
             Quaternion yaw = Quaternion.Euler(0, input.lookValue.x * cameraManager.sensitivity, 0);
             kcc.SetLookRotation(kcc.Transform.rotation * yaw);
         }
-        else if (input.currentView == ViewType.ThirdPerson && input.moveValue.sqrMagnitude > 0.001f)
+        else if (input.currentView == ViewType.ThirdPerson && (input.moveValue.sqrMagnitude > 0.001f || toolManager.IsAiming()))
         {
             if (input.camForward == Vector3.zero)
                 return;
-            Quaternion target = Quaternion.LookRotation(input.camForward);
-            kcc.SetLookRotation(Quaternion.Slerp(kcc.Transform.rotation, target, rotationSpeed * Runner.DeltaTime));
+            LookForward_ThirdPerson(input);
         }
+    }
+
+    public void LookForward_ThirdPerson(PlayerNetworkInputData input)
+    {
+        Quaternion target = Quaternion.LookRotation(input.camForward);
+        kcc.SetLookRotation(Quaternion.Slerp(kcc.Transform.rotation, target, rotationSpeed * Runner.DeltaTime));
     }
 
     public override void Render()

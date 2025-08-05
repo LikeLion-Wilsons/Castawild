@@ -278,9 +278,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4025f6167a80ac748b14b065f96d8d67, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7067222899213131518}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4025f6167a80ac748b14b065f96d8d67, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8649324916914995123}
   m_SourcePrefab: {fileID: 100100000, guid: 4025f6167a80ac748b14b065f96d8d67, type: 3}
 --- !u!1 &6473084774308537356 stripped
 GameObject:
@@ -324,21 +321,3 @@ MonoBehaviour:
   toolName: Bow
   itemID: 406
   att: 5
---- !u!114 &8649324916914995123
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6473084774308537356}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a05a2a93bfed69643aaa84e785f1a1cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  arrowPos: {fileID: 9064313162595997141}
---- !u!4 &9064313162595997141 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -6278434232993461112, guid: 4025f6167a80ac748b14b065f96d8d67, type: 3}
-  m_PrefabInstance: {fileID: 6130645524735023453}
-  m_PrefabAsset: {fileID: 0}
