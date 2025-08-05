@@ -9,35 +9,47 @@ public class BuildingPreview : MonoBehaviour
 
     private GameObject previewObject;
     private Renderer previewRenderer;
-    private Camera playerCamera;
-    private bool isActive = false;
+    private Camera cam;
     private Material validMaterial;
     private Material invalidMaterial;
+    private bool isPreviewing = false;
+    private bool onAirPos = false;
 
-    void Start()
+    // 저장된 bounds 정보
+    private Bounds savedBounds;
+    private bool hasSavedBounds = false;
+    private Vector3 savedPosition;
+    private Quaternion savedRotation;
+    public bool IsBuildable => CheckBuildable();
+
+    void Awake()
     {
-        // 카메라 찾기 개선
-        playerCamera = Camera.main;
-        if (playerCamera == null)
-        {
-            playerCamera = FindObjectOfType<Camera>();
-        }
-
-        if (playerCamera == null)
-        {
-            Debug.LogError("BuildingPreview: 카메라를 찾을 수 없습니다!");
-            return;
-        }
-
-        Debug.Log($"BuildingPreview: 카메라 설정 완료 - {playerCamera.name}");
-
+        cam = Camera.main;
         validMaterial = CreateMaterial(validColor, 0.5f);
         invalidMaterial = CreateMaterial(invalidColor, 0.5f);
     }
 
+    private Material CreateMaterial(Color color, float alpha)
+    {
+        Material material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        color.a = alpha;
+        material.SetColor("_BaseColor", color); // URP Lit 쉐이더는 _BaseColor 사용
+        material.SetFloat("_Surface", 1); // 0: Opaque, 1: Transparent
+        material.SetFloat("_Blend", 0); // Alpha
+        material.SetFloat("_ZWrite", 0);
+        material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+        return material;
+    }
+
     void Update()
     {
-        if (!isActive || previewObject == null) return;
+        if (!isPreviewing) return;
+        //R키를 누르면 회전
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            previewObject.transform.Rotate(0, 45, 0);
+            savedRotation = previewObject.transform.rotation;
+        }
 
         UpdatePreviewPosition();
         UpdatePreviewColor();
@@ -45,150 +57,141 @@ public class BuildingPreview : MonoBehaviour
 
     public void PreviewStart(GameObject prefab)
     {
-        if (previewObject != null)
-        {
-            Destroy(previewObject);
-        }
-
+        isPreviewing = true;
         previewObject = Instantiate(prefab);
         previewRenderer = previewObject.GetComponent<Renderer>();
 
+        // 미리보기 오브젝트의 콜라이더를 비활성화하여 자기 자신과 충돌하지 않도록 함
         SetupPreviewObject();
-
-        isActive = true;
-
-        Debug.Log($"BuildingPreview: 미리보기 시작 - {prefab.name}");
-    }
-
-    public void PreviewStop()
-    {
-        if (previewObject != null)
-        {
-            Destroy(previewObject);
-            previewObject = null;
-        }
-        isActive = false;
-
-        Debug.Log("BuildingPreview: 미리보기 종료");
-    }
-
-    public Vector3 GetPreviewPosition()
-    {
-        if (previewObject != null)
-        {
-            return previewObject.transform.position;
-        }
-        return Vector3.zero;
-    }
-
-    public bool IsBuildable()
-    {
-        return CheckBuildable();
-    }
-
-    private void UpdatePreviewPosition()
-    {
-        if (playerCamera == null)
-        {
-            Debug.LogWarning("BuildingPreview: 카메라가 null입니다!");
-            return;
-        }
-
-        Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        // 디버깅을 위한 레이캐스트 정보 출력
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayerMask))
-        {
-            previewObject.transform.position = hit.point;
-            Debug.Log($"BuildingPreview: 마우스 위치 업데이트 - {hit.point}, 레이어: {LayerMask.LayerToName(hit.collider.gameObject.layer)}");
-        }
-        else
-        {
-            Debug.LogWarning($"BuildingPreview: 레이캐스트 실패 - groundLayerMask: {groundLayerMask.value}");
-        }
-    }
-
-    private void UpdatePreviewColor()
-    {
-        bool canBuild = CheckBuildable();
-
-        if (previewRenderer != null)
-        {
-            previewRenderer.material = canBuild ? validMaterial : invalidMaterial;
-        }
-    }
-
-    private bool CheckBuildable()
-    {
-        if (previewObject == null) return false;
-
-        // 미리보기 오브젝트의 콜라이더를 사용하여 충돌 검사
-        Collider previewCollider = previewObject.GetComponent<Collider>();
-        if (previewCollider == null) return true;
-
-        // 현재 위치에서 장애물과의 충돌 검사
-        Vector3 center = previewObject.transform.position;
-        Vector3 size = previewCollider.bounds.size;
-
-        Collider[] obstacles = Physics.OverlapBox(center, size * 0.5f, previewObject.transform.rotation, obstacleLayerMask);
-
-        return obstacles.Length == 0;
     }
 
     private void SetupPreviewObject()
     {
         if (previewObject == null) return;
 
-        // 모든 컴포넌트 비활성화 (렌더러 제외)
-        MonoBehaviour[] scripts = previewObject.GetComponentsInChildren<MonoBehaviour>();
-        foreach (MonoBehaviour script in scripts)
+        // 콜라이더 정보를 저장한 후 비활성화
+        Collider previewCollider = previewObject.GetComponent<Collider>();
+        if (previewCollider != null)
         {
-            if (script != this)
-            {
-                script.enabled = false;
-            }
+            savedBounds = previewCollider.bounds;
+            hasSavedBounds = true;
+        }
+        else
+        {
+            hasSavedBounds = false;
         }
 
-        // 콜라이더를 트리거로 변경
+        // 모든 콜라이더를 비활성화
         Collider[] colliders = previewObject.GetComponentsInChildren<Collider>();
         foreach (Collider collider in colliders)
         {
-            collider.isTrigger = true;
-        }
-
-        // 리지드바디 비활성화
-        Rigidbody[] rigidbodies = previewObject.GetComponentsInChildren<Rigidbody>();
-        foreach (Rigidbody rb in rigidbodies)
-        {
-            rb.isKinematic = true;
+            collider.enabled = false;
         }
     }
 
-    private Material CreateMaterial(Color color, float alpha)
+    public void PreviewStop()
     {
-        Material material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        material.SetFloat("_Mode", 3); // Transparent 모드
-        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        material.SetInt("_ZWrite", 0);
-        material.DisableKeyword("_ALPHATEST_ON");
-        material.EnableKeyword("_ALPHABLEND_ON");
-        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-        material.renderQueue = 3000;
+        isPreviewing = false;
+        hasSavedBounds = false;
+        Destroy(previewObject);
+    }
 
-        color.a = alpha;
-        material.color = color;
+    private bool CheckBuildable()
+    {
+        if (onAirPos || previewObject == null) return false;
 
-        return material;
+        if (!hasSavedBounds) return true; // 저장된 bounds가 없으면 건설 가능
+
+        // 저장된 bounds를 사용하여 충돌 검사
+        // bounds의 중심점을 현재 위치로 업데이트
+        Vector3 currentCenter = previewObject.transform.position + (savedBounds.center - previewObject.transform.position);
+
+        // 약간의 여유 공간을 주어서 딱 맞는 경우에도 건설할 수 있도록 함
+        Vector3 adjustedExtents = savedBounds.extents * 0.95f; // 5% 여유 공간
+
+        Collider[] obstacles = Physics.OverlapBox(
+            currentCenter,
+            adjustedExtents,
+            previewObject.transform.rotation,
+            obstacleLayerMask
+        );
+
+        return obstacles.Length == 0;
+    }
+
+    private void UpdatePreviewPosition()
+    {
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray, 20f, groundLayerMask);
+
+        RaycastHit? closestHit = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (RaycastHit hit in hits)
+        {
+            // 미리보기 오브젝트와 충돌하지 않았는지 확인
+            if (hit.collider.gameObject == previewObject)
+                continue;
+
+            // 가장 가까운 hit 찾기
+            if (hit.distance < closestDistance)
+            {
+                closestDistance = hit.distance;
+                closestHit = hit;
+            }
+        }
+
+        if (closestHit.HasValue)
+        {
+            Vector3 targetPosition = closestHit.Value.point;
+            Vector3 normal = closestHit.Value.normal;
+
+            // 콜라이더의 크기를 고려하여 높이 조정
+            if (hasSavedBounds)
+            {
+                // normal 벡터를 고려하여 건설물을 지면에 올바르게 배치
+                float colliderHeight = savedBounds.size.y;
+
+                // normal 벡터가 위쪽을 향하는지 확인 (지면인지 확인)
+                if (normal.y > 0.5f) // 대략 30도 이내의 경사면
+                {
+                    // 지면에 수직으로 배치
+                    targetPosition.y += colliderHeight * 0.5f;
+                }
+                else
+                {
+                    // 경사면에 맞춰서 배치
+                    // normal 벡터 방향으로 콜라이더 높이의 절반만큼 이동
+                    Vector3 offset = normal * (colliderHeight * 0.5f);
+                    targetPosition += offset;
+                }
+            }
+
+            previewObject.transform.position = targetPosition;
+            onAirPos = false;
+        }
+        else
+        {
+            previewObject.transform.position = ray.GetPoint(10f);
+            onAirPos = true;
+        }
+        
+        savedPosition = previewObject.transform.position;
+    }
+
+    private void UpdatePreviewColor()
+    {
+        bool canBuild = CheckBuildable();
+        previewRenderer.material = canBuild ? validMaterial : invalidMaterial;
+    }
+
+    public Vector3 GetPreviewPosition()
+    {
+        return savedPosition;
     }
 
     public Quaternion GetPreviewRotation()
     {
-        if (previewObject != null)
-        {
-            return previewObject.transform.rotation;
-        }
-        return Quaternion.identity;
+        return savedRotation;
     }
 }
