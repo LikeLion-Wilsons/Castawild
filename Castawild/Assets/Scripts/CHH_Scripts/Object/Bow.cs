@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Bow
+public class Bow : MonoBehaviour
 {
-    public Transform bowPos;
+    public Transform arrowPos;
 }

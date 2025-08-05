@@ -36,7 +36,6 @@ public class ToolStateManager : BaseStateManager
     [SerializeField] private float arrowForce = 30f;
     [SerializeField] private ThrowObject throwableStone;
     [SerializeField] private ThrowObject arrow;
-    [SerializeField] private Transform arrowPos;
     [SerializeField] private Transform throwPos;
 
     #region Network
@@ -220,10 +219,8 @@ public class ToolStateManager : BaseStateManager
         NetworkObject throwObject;
         if (isArrow && player.hasArrow)
         {
-            throwObject = Runner.Spawn(arrow.gameObject, arrowPos.position, Quaternion.identity);
+            throwObject = Runner.Spawn(arrow.gameObject, player.GetArrowPos(), Quaternion.identity);
             throwObject?.GetComponent<ThrowObject>().AddForce(transform.forward, arrowForce);
-            //player.currentToolObject
-            //bowPos
         }
         else
         {
