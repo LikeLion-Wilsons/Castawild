@@ -344,4 +344,25 @@ public class Player : NetworkBehaviour
     public void RPC_HasArrow(bool hasArrow) => HasArrow = hasArrow;
 
     public void CurrentToolActive(bool active) => currentToolObject?.SetActive(active);
+
+    /// <summary>
+    /// 플레이어 공격을 받았을 때 호출
+    /// </summary>
+    public void AttackPlayer(int att)
+    {
+        if (!HasStateAuthority)
+            return;
+        Hp -= att;
+
+        if (Hp <= 0)
+        {
+            movementManager.ChangeState(movementManager.deathState);
+            toolStateManager.ChangeState(toolStateManager.idleState);
+        }
+        else
+        {
+            movementManager.ChangeState(movementManager.getHitState);
+            toolStateManager.ChangeState(toolStateManager.idleState);
+        }
+    }
 }

@@ -12,7 +12,6 @@ public class WalkState : MovementBaseState
     {
         movementManager.CurrentMoveState = MoveAnimationState.Walk;
         movementManager.currentMoveSpeed = movementManager.walkSpeed;
-        movementManager.currentMoveType = MoveType.Walk;
     }
 
     public override void UpdateState()

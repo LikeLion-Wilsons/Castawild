@@ -1,7 +1,7 @@
 using Fusion;
 using UnityEngine;
 
-public enum MoveAnimationState { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump, Sleep }
+public enum MoveAnimationState { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump, Sleep, Death, GetHit }
 
 public class MovementStateManager : BaseStateManager
 {
@@ -18,7 +18,8 @@ public class MovementStateManager : BaseStateManager
     public JumpState jumpState;
     public CrouchState crouchState;
     public SleepState sleepState;
-    public MoveType currentMoveType;
+    public GetHitState getHitState;
+    public DeathState deathState;
     #endregion
 
     #region Movement
@@ -89,6 +90,8 @@ public class MovementStateManager : BaseStateManager
         crouchState = new CrouchState(this, inputManager);
         jumpState = new JumpState(this, inputManager);
         sleepState = new SleepState(this, inputManager);
+        getHitState = new GetHitState(this, inputManager);
+        deathState = new DeathState(this, inputManager);
     }
 
     public override void Spawned()
@@ -137,6 +140,16 @@ public class MovementStateManager : BaseStateManager
                 break;
             case MoveAnimationState.Sleep:
                 anim.SetBool("Sleeping", true);
+                break;
+            case MoveAnimationState.GetHit:
+                if (!isTriggerSet)
+                    anim.SetTrigger("GetHit");
+                isTriggerSet = true;
+                break;
+            case MoveAnimationState.Death:
+                if (!isTriggerSet)
+                    anim.SetTrigger("Death");
+                isTriggerSet = true;
                 break;
         }
 
@@ -191,4 +204,6 @@ public class MovementStateManager : BaseStateManager
 
         return true;
     }
+
+    public bool IsDeath() => CurrentMoveState == MoveAnimationState.Death;
 }

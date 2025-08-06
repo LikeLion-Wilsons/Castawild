@@ -30,8 +30,6 @@ public sealed class PlayerController : NetworkBehaviour
 
     Collider[] _interactResult = new Collider[5];
 
-
-
     private NetworkButtons prevInputButtons;
 
     public override void Spawned()
@@ -83,6 +81,13 @@ public sealed class PlayerController : NetworkBehaviour
                 Grounded = kcc.IsGrounded;
             }
             return;
+        }
+
+
+        if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
+        {
+            Debug.Log("Attack Player");
+            player.AttackPlayer(40);
         }
 
         maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
