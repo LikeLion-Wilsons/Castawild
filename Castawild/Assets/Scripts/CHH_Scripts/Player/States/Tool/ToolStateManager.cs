@@ -49,7 +49,6 @@ public class ToolStateManager : BaseStateManager
     [Networked] public Vector3 RayTargetPos { get; set; }
     #endregion
 
-    [HideInInspector] public bool isTriggerSet = false;
 
     protected override void Awake()
     {
@@ -111,14 +110,14 @@ public class ToolStateManager : BaseStateManager
                 anim.SetBool("Carrying", true);
                 break;
             case ToolAnimationState.Eat:
-                if (!isTriggerSet)
+                if (!IsTriggerSet)
                     anim.SetTrigger("Eating");
-                isTriggerSet = true;
+                IsTriggerSet = true;
                 break;
             case ToolAnimationState.Drink:
-                if (!isTriggerSet)
+                if (!IsTriggerSet)
                     anim.SetTrigger("Drinking");
-                isTriggerSet = true;
+                IsTriggerSet = true;
                 break;
         }
 

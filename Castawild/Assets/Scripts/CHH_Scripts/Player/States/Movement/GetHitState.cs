@@ -22,7 +22,7 @@ public class GetHitState : MovementBaseState
 
     public override void ExitState()
     {
-        movementManager.isTriggerSet = false;
+        movementManager.RPC_TriggerSet(false);
         movementManager.player.CanMove = true;
     }
 }

@@ -52,7 +52,6 @@ public class MovementStateManager : BaseStateManager
     #region Animation
     [Header("Animation")]
     [SerializeField] private float animationLerpSpeed = 10f;
-    [HideInInspector] public bool isTriggerSet = false;
     [HideInInspector] public bool isLyingOrGettingUp; // 눕거나 일어나는 애니메이션 도중 카메라 못움직이게 확인하는 불변수
     #endregion
 
@@ -132,27 +131,27 @@ public class MovementStateManager : BaseStateManager
                 anim.SetBool("Walking", true);
                 break;
             case MoveAnimationState.IdleJump:
-                if (!isTriggerSet)
+                if (!IsTriggerSet)
                     anim.SetTrigger("IdleJump");
-                isTriggerSet = true;
+                IsTriggerSet = true;
                 break;
             case MoveAnimationState.RunJump:
-                if (!isTriggerSet)
+                if (!IsTriggerSet)
                     anim.SetTrigger("RunJump");
-                isTriggerSet = true;
+                IsTriggerSet = true;
                 break;
             case MoveAnimationState.Sleep:
                 anim.SetBool("Sleeping", true);
                 break;
             case MoveAnimationState.GetHit:
-                if (!isTriggerSet)
+                if (!IsTriggerSet)
                     anim.SetTrigger("GetHit");
-                isTriggerSet = true;
+                IsTriggerSet = true;
                 break;
             case MoveAnimationState.Death:
-                if (!isTriggerSet)
+                if (!IsTriggerSet)
                     anim.SetTrigger("Death");
-                isTriggerSet = true;
+                IsTriggerSet = true;
                 break;
         }
 

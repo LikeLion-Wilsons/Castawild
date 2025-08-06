@@ -1,5 +1,6 @@
 using Fusion;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
@@ -383,11 +384,13 @@ public class Player : NetworkBehaviour
 
         if (Hp <= 0)
         {
+            Debug.Log("Death");
             movementManager.ChangeState(movementManager.deathState);
             toolStateManager.ChangeState(toolStateManager.idleState);
         }
         else
         {
+            Debug.Log("Hit");
             movementManager.ChangeState(movementManager.getHitState);
             toolStateManager.ChangeState(toolStateManager.idleState);
         }

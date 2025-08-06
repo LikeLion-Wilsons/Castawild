@@ -24,7 +24,7 @@ public class DeathState : MovementBaseState
     {
         movementManager.playerController.SetPosition(movementManager.player.RespawnPos);
         movementManager.Revived = true;
-        movementManager.isTriggerSet = false;
+        movementManager.RPC_TriggerSet(false);
         movementManager.player.CanMove = true;
     }
 }

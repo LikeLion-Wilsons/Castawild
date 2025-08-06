@@ -55,7 +55,6 @@ public sealed class PlayerController : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        Debug.Log("FixedUpdateNetwork Position Before UpdateState : " + kcc.Position);
         if (!GetInput<PlayerNetworkInputData>(out var input))
             return;
 
@@ -76,7 +75,6 @@ public sealed class PlayerController : NetworkBehaviour
             movementManager.SetPrevInputButton(input.Buttons);
             toolManager.SetPrevInputButton(input.Buttons);
         }
-        Debug.Log("FixedUpdateNetwork Position Before UpdateState : " + kcc.Position);
 
         if (!player.CanMove)
         {
