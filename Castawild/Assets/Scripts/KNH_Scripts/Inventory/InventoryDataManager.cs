@@ -1,8 +1,8 @@
+using ExitGames.Client.Photon.StructWrapping;
 using Fusion;
+using NUnit.Framework.Interfaces;
 using System;
 using UnityEngine;
-using static Unity.Collections.Unicode;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public delegate void OnItemGet();
 
@@ -174,17 +174,24 @@ public class InventoryDataManager : NetworkBehaviour
         {
             RPC_UseSelectedItem(1);
         }
-        if (Input.GetKeyDown(KeyCode.B))
+        
+        //테스트용
+        if (Object.HasInputAuthority && Input.GetKeyDown(KeyCode.B))
         {
-            Runner.Spawn(chest, transform.position, Quaternion.identity, null, (runner, o) =>
-            {
-                //o.GetComponent<Player>().Init();
-            });
+            RPCRequestBuild();
         }
     }
 
+    //테스트용
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    void RPCRequestBuild()
+    {
+        PlayerRef playerRef = Runner.LocalPlayer;
+        Runner.Spawn(chest, chest.transform.position, Quaternion.identity, null);
+    }
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    void RPC_UpdateInventoryUI()
+    public void RPC_UpdateInventoryUI()
     {
         uiInventory.SetItemList();
         uiTable.GetComponent<UITable>().SetTableUI();
@@ -225,6 +232,33 @@ public class InventoryDataManager : NetworkBehaviour
     {
         itemList.Set(index, item);
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetItemFromChest(ChestDataManager chestData)
+    {
+        int index = 0;
+        for (int i = 29; i < 45; i++)
+        {
+            itemList.Set(i, chestData.itemList[index]);
+            index++;
+        }
+        RPC_UpdateInventoryUI();
+        Debug.Log("chest -> inventory");
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestStoreToChest(ChestDataManager chestData)
+    {
+        int index = 29;
+        for (int i = 0; i < 16; i++)
+        {
+            chestData.RPC_SetItem(i,itemList[index]);
+            index++;
+        }
+        Debug.Log("inventory -> chest");
+        RPC_UpdateInventoryUI();
+    }
+
 
     public Item_Scriptable GetSeletedItem(bool use)
     {
@@ -318,19 +352,19 @@ public class InventoryDataManager : NetworkBehaviour
     {
         if (indexA >= itemList.Count || indexB >= itemList.Count) return;
 
-        Debug.Log("Swap");
+        Debug.Log("Swap "+indexA +" "+indexB);
 
-        // 두 인덱스가 전부 보관함(상자) 영역일 경우
-        bool isAChest = indexA >= 29;
-        bool isBChest = indexB >= 29;
+        //// 두 인덱스가 전부 보관함(상자) 영역일 경우
+        //bool isAChest = indexA >= 29;
+        //bool isBChest = indexB >= 29;
 
 
-        // A와 B 모두 보관함일 경우 → ChestDataManager에서 스왑
-        if (isAChest && isBChest)
-        {
-            canvasHolder.currentOpenedChest.SwapItems(indexA - 29, indexB - 29); // 상자 내 인덱스로 조정
-            return;
-        }
+        //// A와 B 모두 보관함일 경우 → ChestDataManager에서 스왑
+        //if (isAChest && isBChest)
+        //{
+        //    canvasHolder.currentOpenedChest.SwapItems(indexA - 29, indexB - 29); // 상자 내 인덱스로 조정
+        //    return;
+        //}
 
         // 슬롯 수 부족할 경우 확장
         while (itemList.Count <= Mathf.Max(indexA, indexB))
@@ -339,32 +373,18 @@ public class InventoryDataManager : NetworkBehaviour
             itemList.Add(item);
         }
 
-        // A나 B 중 하나가 상자인 경우 → 인벤토리와 보관함 간 스왑
-        if (isAChest || isBChest)
+        //교환
+        var tempA = itemList[indexA];
+        var tempB = itemList[indexB];
+
+        itemList.Set(indexA, tempB);
+        itemList.Set(indexB, tempA);
+
+        if (Object.HasStateAuthority)
         {
-            int chestIndex = isAChest ? indexA - 29 : indexB - 29;
-            int inventoryIndex = isAChest ? indexB : indexA;
-
-            Item chestItem = canvasHolder.currentOpenedChest.itemList[chestIndex];
-            Item inventoryItem = itemList[inventoryIndex];
-
-            // 교환
-            canvasHolder.currentOpenedChest.itemList.Set(chestIndex, inventoryItem);
-            itemList.Set(inventoryIndex, chestItem);
+            RPC_UpdateInventoryUI();
         }
-        else
-        {
-            var tempA = itemList[indexA];
-            var tempB = itemList[indexB];
 
-            itemList.Set(indexA, tempB);
-            itemList.Set(indexB, tempA);
-
-            if (Object.HasStateAuthority)
-            {
-                RPC_UpdateInventoryUI();
-            }
-        }
     }
 
     //아이템 버리기

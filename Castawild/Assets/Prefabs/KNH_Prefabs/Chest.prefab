@@ -462,55 +462,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  _itemList:
-  - itemID: 0
-    count: 0
-    durability: 0
-  - itemID: 0
-    count: 0
-    durability: 0
-  - itemID: 0
-    count: 0
-    durability: 0
-  - itemID: 0
-    count: 0
-    durability: 0
-  - itemID: 0
-    count: 0
-    durability: 0
-  - itemID: 0
-    count: 0
-    durability: 0
-  - itemID: 0
-    count: 0
-    durability: 0
-  - itemID: 0
-    count: 0
-    durability: 0
-  - itemID: 0
-    count: 0
-    durability: 0
-  - itemID: 0
-    count: 0
-    durability: 0
-  - itemID: 0
-    count: 0
-    durability: 0
-  - itemID: 0
-    count: 0
-    durability: 0
-  - itemID: 0
-    count: 0
-    durability: 0
-  - itemID: 0
-    count: 0
-    durability: 0
-  - itemID: 0
-    count: 0
-    durability: 0
-  - itemID: 0
-    count: 0
-    durability: 0
+  isSpawned: 0
+  _itemList: []
 --- !u!1 &1738608518560589796
 GameObject:
   m_ObjectHideFlags: 0
