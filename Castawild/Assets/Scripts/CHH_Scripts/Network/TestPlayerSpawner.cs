@@ -18,7 +18,11 @@ public class TestPlayerSpawner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
         // 1. 플레이어 오브젝트 생성
         Debug.Log($"Spawning player for {playerRef}");
-        var playerObj = Runner.Spawn(playerPrefab, spawnPos, Quaternion.identity, playerRef);
+        var playerObj = Runner.Spawn(playerPrefab, spawnPos, Quaternion.identity, playerRef, (runner, player) =>
+        {
+            player.GetComponent<Player>().Init();
+        });
+
         if (playerObj == null)
             Debug.LogError("Spawned player is NULL");
         else

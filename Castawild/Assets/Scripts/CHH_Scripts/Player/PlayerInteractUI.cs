@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerInGameUI : MonoBehaviour
+public class PlayerInteractUI : MonoBehaviour
 {
     private PlayerInputManager inputManager;
     private MovementStateManager movementStateManager;
@@ -59,6 +59,7 @@ public class PlayerInGameUI : MonoBehaviour
         if (autoRevivedElapsed >= autoReviveTime || pressedRevivedElapsed >= reviveTime)
         {
             canRevived = false;
+            revivedBar.fillAmount = 0f;
             autoRevivedElapsed = 0f;
             pressedRevivedElapsed = 0f;
 

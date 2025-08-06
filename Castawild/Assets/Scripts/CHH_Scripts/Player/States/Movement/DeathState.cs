@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class DeathState : MovementBaseState
 {
@@ -21,6 +22,7 @@ public class DeathState : MovementBaseState
 
     public override void ExitState()
     {
+        movementManager.playerController.SetPosition(movementManager.player.RespawnPos);
         movementManager.Revived = true;
         movementManager.isTriggerSet = false;
         movementManager.player.CanMove = true;

@@ -29,7 +29,7 @@ public class Player : NetworkBehaviour
     #region Components
     [HideInInspector] public Animator anim;
     [HideInInspector] public Rigidbody rigid;
-    [HideInInspector] public PlayerInGameUI playerInteractUI;
+    [HideInInspector] public PlayerInteractUI playerInteractUI;
     [HideInInspector] public PlayerController playerController;
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public MovementStateManager movementManager;
@@ -56,6 +56,7 @@ public class Player : NetworkBehaviour
     #endregion
 
     [Header("Networked")]
+    [Networked, HideInInspector] public Vector3 RespawnPos { get; set; }
     [Networked, HideInInspector] public bool CanMove { get; set; } = true;
     [Networked, HideInInspector] public bool IsUIOpen { get; set; }
     [Networked, HideInInspector] public bool IsCursorLocked { get; set; }
@@ -103,6 +104,11 @@ public class Player : NetworkBehaviour
         }
     }
 
+    public void Init()
+    {
+        RespawnPos = transform.position;
+    }
+
     private void Awake()
     {
         InitComponents();
@@ -113,7 +119,7 @@ public class Player : NetworkBehaviour
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
         playerController = GetComponent<PlayerController>();
-        playerInteractUI = GetComponentInChildren<PlayerInGameUI>();
+        playerInteractUI = GetComponentInChildren<PlayerInteractUI>();
         inputManager = GetComponent<PlayerInputManager>();
         movementManager = GetComponent<MovementStateManager>();
         toolStateManager = GetComponent<ToolStateManager>();
@@ -133,7 +139,6 @@ public class Player : NetworkBehaviour
 
             if (toolStateManager.CanRecoverStamina() && movementManager.CanRecoverStamina())
             {
-                Debug.Log("Increase Stamina");
                 if (Stamina < playerData.maxStamina)
                     Stamina += staminaIncreaseRate * Runner.DeltaTime;
                 else
@@ -357,6 +362,15 @@ public class Player : NetworkBehaviour
     public void RPC_HasArrow(bool hasArrow) => HasArrow = hasArrow;
 
     public void CurrentToolActive(bool active) => currentToolObject?.SetActive(active);
+
+    public void SetRespawnPos(Vector3 respawnPos)
+    {
+        if (HasInputAuthority)
+            RPC_SetRespawnPos(respawnPos);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetRespawnPos(Vector3 respawnPos) { RespawnPos = respawnPos; }
 
     /// <summary>
     /// 플레이어 공격을 받았을 때 호출

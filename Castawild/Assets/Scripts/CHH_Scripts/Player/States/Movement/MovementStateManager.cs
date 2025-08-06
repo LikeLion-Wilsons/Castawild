@@ -6,7 +6,7 @@ public enum MoveAnimationState { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJu
 public class MovementStateManager : BaseStateManager
 {
     #region Conponent
-    [HideInInspector] public PlayerInGameUI inGameUI;
+    [HideInInspector] public PlayerInteractUI interactUI;
     [HideInInspector] public ToolStateManager toolStateManager;
     #endregion
 
@@ -80,7 +80,7 @@ public class MovementStateManager : BaseStateManager
 
     private void InitComponents()
     {
-        inGameUI = GetComponentInChildren<PlayerInGameUI>();
+        interactUI = GetComponentInChildren<PlayerInteractUI>();
         toolStateManager = GetComponent<ToolStateManager>();
     }
 
