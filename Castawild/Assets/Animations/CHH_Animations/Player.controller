@@ -35,8 +35,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 2
-    m_ConditionEvent: Death
+  - m_ConditionMode: 1
+    m_ConditionEvent: Revived
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 3465817130612087018}
@@ -223,8 +223,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 2
-    m_ConditionEvent: Death
+  - m_ConditionMode: 1
+    m_ConditionEvent: Revived
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1016856338965002602}
@@ -1405,8 +1405,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 2
-    m_ConditionEvent: Death
+  - m_ConditionMode: 1
+    m_ConditionEvent: Revived
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 4544277728301894042}
@@ -2552,7 +2552,7 @@ AnimatorController:
   m_Name: Player
   serializedVersion: 5
   m_AnimatorParameters:
-  - m_Name: Death
+  - m_Name: Revived
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -2590,6 +2590,12 @@ AnimatorController:
     m_Controller: {fileID: 9100000}
   - m_Name: Walking
     m_Type: 4
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
+  - m_Name: Death
+    m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
@@ -4685,7 +4691,7 @@ AnimatorStateMachine:
     - {fileID: 7775559062614712651}
     - {fileID: -5147605628973386124}
   m_StateMachineBehaviours: []
-  m_AnyStatePosition: {x: -190, y: -60, z: 0}
+  m_AnyStatePosition: {x: -310, y: -80, z: 0}
   m_EntryPosition: {x: 20, y: 110, z: 0}
   m_ExitPosition: {x: 830, y: 140, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}

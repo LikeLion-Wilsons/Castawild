@@ -1,8 +1,8 @@
-
 using UnityEngine;
 
 public class DeathState : MovementBaseState
 {
+
     public DeathState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
         : base(_movementManager, _inputManager)
     {
@@ -11,7 +11,8 @@ public class DeathState : MovementBaseState
     public override void EnterState()
     {
         movementManager.CurrentMoveState = MoveAnimationState.Death;
-        movementManager.player.CanMove = true;
+        movementManager.player.CanMove = false;
+        movementManager.Revived = false;
     }
 
     public override void UpdateState()
@@ -20,7 +21,8 @@ public class DeathState : MovementBaseState
 
     public override void ExitState()
     {
+        movementManager.Revived = true;
         movementManager.isTriggerSet = false;
-        movementManager.player.CanMove = false;
+        movementManager.player.CanMove = true;
     }
 }

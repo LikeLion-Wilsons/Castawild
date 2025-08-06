@@ -21,6 +21,7 @@ public class Player : NetworkBehaviour
     [Networked] public float Thirst { get; set; }
     [Networked] public float Temperature { get; set; }
 
+    public float staminaIncreaseRate = 2f;
     public float staminaDecreaseRate = 1f;
     public float hungerDecreaseRate = 1f;
     public float thirstDecreaseRate = 1f;
@@ -28,7 +29,7 @@ public class Player : NetworkBehaviour
     #region Components
     [HideInInspector] public Animator anim;
     [HideInInspector] public Rigidbody rigid;
-    [HideInInspector] public PlayerInteractUI playerInteractUI;
+    [HideInInspector] public PlayerInGameUI playerInteractUI;
     [HideInInspector] public PlayerController playerController;
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public MovementStateManager movementManager;
@@ -112,7 +113,7 @@ public class Player : NetworkBehaviour
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
         playerController = GetComponent<PlayerController>();
-        playerInteractUI = GetComponentInChildren<PlayerInteractUI>();
+        playerInteractUI = GetComponentInChildren<PlayerInGameUI>();
         inputManager = GetComponent<PlayerInputManager>();
         movementManager = GetComponent<MovementStateManager>();
         toolStateManager = GetComponent<ToolStateManager>();
@@ -122,10 +123,22 @@ public class Player : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
+        if (movementManager.currentState == movementManager.deathState)
+            return;
+
         if (HasStateAuthority)
         {
             Hunger -= hungerDecreaseRate * Runner.DeltaTime;
             Thirst -= thirstDecreaseRate * Runner.DeltaTime;
+
+            if (toolStateManager.CanRecoverStamina() && movementManager.CanRecoverStamina())
+            {
+                Debug.Log("Increase Stamina");
+                if (Stamina < playerData.maxStamina)
+                    Stamina += staminaIncreaseRate * Runner.DeltaTime;
+                else
+                    Stamina = playerData.maxStamina;
+            }
         }
     }
 
@@ -350,7 +363,7 @@ public class Player : NetworkBehaviour
     /// </summary>
     public void AttackPlayer(int att)
     {
-        if (!HasStateAuthority)
+        if (!HasStateAuthority || Hp <= 0)
             return;
         Hp -= att;
 
@@ -364,5 +377,13 @@ public class Player : NetworkBehaviour
             movementManager.ChangeState(movementManager.getHitState);
             toolStateManager.ChangeState(toolStateManager.idleState);
         }
+    }
+
+    public void Revived()
+    {
+        Hp = playerData.maxHp * 0.2f;
+        Stamina = playerData.maxStamina;
+        Thirst = playerData.maxThirst * 0.2f;
+        Hunger = playerData.maxHunger * 0.2f;
     }
 }

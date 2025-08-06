@@ -6,6 +6,7 @@ public enum MoveAnimationState { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJu
 public class MovementStateManager : BaseStateManager
 {
     #region Conponent
+    [HideInInspector] public PlayerInGameUI inGameUI;
     [HideInInspector] public ToolStateManager toolStateManager;
     #endregion
 
@@ -57,6 +58,7 @@ public class MovementStateManager : BaseStateManager
 
     #region Network
     [Header("Networked")]
+    [Networked, HideInInspector] public bool Revived { get; set; }
     [Networked] public MoveAnimationState CurrentMoveState { get; set; }
     [Networked, HideInInspector] public bool JumpTriggered { get; set; }
     [Networked, HideInInspector] public bool CanWakeUp { get; set; }
@@ -78,8 +80,8 @@ public class MovementStateManager : BaseStateManager
 
     private void InitComponents()
     {
+        inGameUI = GetComponentInChildren<PlayerInGameUI>();
         toolStateManager = GetComponent<ToolStateManager>();
-        playerController = GetComponent<PlayerController>();
     }
 
     private void InitStates()
@@ -107,6 +109,7 @@ public class MovementStateManager : BaseStateManager
             anim.SetFloat("Vertical", MoveValue.y, 0.1f, deltaTime);
         }
 
+        anim.SetBool("Revived", Revived);
         anim.SetBool("Walking", false);
         anim.SetBool("Running", false);
         anim.SetBool("Crouching", false);
@@ -200,10 +203,22 @@ public class MovementStateManager : BaseStateManager
     public bool HasEnoughStaminaToRun()
     {
         if (Stamina <= player.playerData.maxStamina * 0.3f)
+        {
+            Debug.Log("Stamina : " + Stamina);
             return false;
+        }
 
         return true;
     }
 
     public bool IsDeath() => CurrentMoveState == MoveAnimationState.Death;
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_Revived()
+    {
+        ChangeState(idleState);
+        player.Revived();
+    }
+
+    public bool CanRecoverStamina() => currentState != runState && currentState != deathState;
 }

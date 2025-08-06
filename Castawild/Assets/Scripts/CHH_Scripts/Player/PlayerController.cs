@@ -86,7 +86,6 @@ public sealed class PlayerController : NetworkBehaviour
 
         if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
         {
-            Debug.Log("Attack Player");
             player.AttackPlayer(40);
         }
 
