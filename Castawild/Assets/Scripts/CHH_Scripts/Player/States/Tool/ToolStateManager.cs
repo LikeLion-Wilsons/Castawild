@@ -1,6 +1,4 @@
 using Fusion;
-using NUnit.Framework;
-using Unity.VisualScripting;
 using UnityEngine;
 
 // 현재 들고있는 무기
@@ -260,6 +258,8 @@ public class ToolStateManager : BaseStateManager
 
         // 돌맹이나 화살 개수 줄이기
     }
+
+    public bool CanRecoverStamina() => currentState != useToolState;
 
     public bool IsAiming() => CurrentToolUseState == ToolAnimationState.Aim || CurrentToolUseState == ToolAnimationState.FullAim;
 }

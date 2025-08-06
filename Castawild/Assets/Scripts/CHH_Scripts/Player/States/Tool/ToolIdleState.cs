@@ -14,6 +14,9 @@ public class ToolIdleState : ToolBaseState
 
     public override void UpdateState()
     {
+        if (toolStateManager.movementManager.IsDeath())
+            return;
+
         // Aim
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.aimInput)
             && toolStateManager.HoldAimTool() && toolStateManager.player.CanUseTool())

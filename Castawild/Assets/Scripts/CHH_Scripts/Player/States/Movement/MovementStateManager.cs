@@ -1,11 +1,12 @@
 using Fusion;
 using UnityEngine;
 
-public enum MoveAnimationState { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump, Sleep }
+public enum MoveAnimationState { Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump, Sleep, Death, GetHit }
 
 public class MovementStateManager : BaseStateManager
 {
     #region Conponent
+    [HideInInspector] public PlayerInteractUI interactUI;
     [HideInInspector] public ToolStateManager toolStateManager;
     #endregion
 
@@ -18,7 +19,8 @@ public class MovementStateManager : BaseStateManager
     public JumpState jumpState;
     public CrouchState crouchState;
     public SleepState sleepState;
-    public MoveType currentMoveType;
+    public GetHitState getHitState;
+    public DeathState deathState;
     #endregion
 
     #region Movement
@@ -56,6 +58,7 @@ public class MovementStateManager : BaseStateManager
 
     #region Network
     [Header("Networked")]
+    [Networked, HideInInspector] public bool Revived { get; set; }
     [Networked] public MoveAnimationState CurrentMoveState { get; set; }
     [Networked, HideInInspector] public bool JumpTriggered { get; set; }
     [Networked, HideInInspector] public bool CanWakeUp { get; set; }
@@ -77,8 +80,8 @@ public class MovementStateManager : BaseStateManager
 
     private void InitComponents()
     {
+        interactUI = GetComponentInChildren<PlayerInteractUI>();
         toolStateManager = GetComponent<ToolStateManager>();
-        playerController = GetComponent<PlayerController>();
     }
 
     private void InitStates()
@@ -89,6 +92,8 @@ public class MovementStateManager : BaseStateManager
         crouchState = new CrouchState(this, inputManager);
         jumpState = new JumpState(this, inputManager);
         sleepState = new SleepState(this, inputManager);
+        getHitState = new GetHitState(this, inputManager);
+        deathState = new DeathState(this, inputManager);
     }
 
     public override void Spawned()
@@ -104,6 +109,7 @@ public class MovementStateManager : BaseStateManager
             anim.SetFloat("Vertical", MoveValue.y, 0.1f, deltaTime);
         }
 
+        anim.SetBool("Revived", Revived);
         anim.SetBool("Walking", false);
         anim.SetBool("Running", false);
         anim.SetBool("Crouching", false);
@@ -137,6 +143,16 @@ public class MovementStateManager : BaseStateManager
                 break;
             case MoveAnimationState.Sleep:
                 anim.SetBool("Sleeping", true);
+                break;
+            case MoveAnimationState.GetHit:
+                if (!isTriggerSet)
+                    anim.SetTrigger("GetHit");
+                isTriggerSet = true;
+                break;
+            case MoveAnimationState.Death:
+                if (!isTriggerSet)
+                    anim.SetTrigger("Death");
+                isTriggerSet = true;
                 break;
         }
 
@@ -187,8 +203,22 @@ public class MovementStateManager : BaseStateManager
     public bool HasEnoughStaminaToRun()
     {
         if (Stamina <= player.playerData.maxStamina * 0.3f)
+        {
+            Debug.Log("Stamina : " + Stamina);
             return false;
+        }
 
         return true;
     }
+
+    public bool IsDeath() => CurrentMoveState == MoveAnimationState.Death;
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_Revived()
+    {
+        ChangeState(idleState);
+        player.Revived();
+    }
+
+    public bool CanRecoverStamina() => currentState != runState && currentState != deathState;
 }
