@@ -450,6 +450,8 @@ MonoBehaviour:
   itemBox: {fileID: 0}
   scrollCooldown: 0.1
   playerUIPrefab: {fileID: 0}
+  UICanvas: {fileID: 0}
+  chest: {fileID: 0}
   inventorySlots:
   - {fileID: 0}
   - {fileID: 0}
@@ -1445,6 +1447,10 @@ PrefabInstance:
     - target: {fileID: 1534066118601383972, guid: 36f0b95c8afb6ca49b8e112cc8fba58d, type: 3}
       propertyPath: m_Name
       value: Chest
+      objectReference: {fileID: 0}
+    - target: {fileID: 1534066118601383972, guid: 36f0b95c8afb6ca49b8e112cc8fba58d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2323664047488889271, guid: 36f0b95c8afb6ca49b8e112cc8fba58d, type: 3}
       propertyPath: m_LocalPosition.x

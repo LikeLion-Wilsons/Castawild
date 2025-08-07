@@ -310,6 +310,7 @@ GameObject:
   - component: {fileID: 5336792767714363798}
   - component: {fileID: 8007645641892018026}
   - component: {fileID: 383020975430086419}
+  - component: {fileID: 4883542714525335335}
   m_Layer: 8
   m_Name: Chest
   m_TagString: Untagged
@@ -411,6 +412,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 5336792767714363798}
   - {fileID: 383020975430086419}
+  - {fileID: 4883542714525335335}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &5336792767714363798
 MonoBehaviour:
@@ -427,6 +429,7 @@ MonoBehaviour:
   interactableType: 0
   text: Open
   isPlaceable: 1
+  player: {fileID: 0}
 --- !u!65 &8007645641892018026
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -460,7 +463,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f32c86d74f2ebd4d8334928279bffe4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  isSpawned: 0
   _itemList: []
+--- !u!114 &4883542714525335335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1534066118601383972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &1738608518560589796
 GameObject:
   m_ObjectHideFlags: 0

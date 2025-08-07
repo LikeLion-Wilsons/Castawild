@@ -14,11 +14,12 @@ public class Canvas_Holder : MonoBehaviour
     // 수정한 부분
     private Player player;
     public UIStats uiStats;
+    public ChestDataManager currentOpenedChest;
 
-    private void Awake()
+    public void SetOpenedChest(ChestDataManager chest)
     {
+        currentOpenedChest = chest;
     }
-
 
     [SerializeField] UIPart[] parts;
     public Dictionary<string, UIPart> uiParts = new Dictionary<string, UIPart>();
@@ -45,6 +46,13 @@ public class Canvas_Holder : MonoBehaviour
         {
             if (part.name == "HotBar") continue;
             part.Close(player.inputManager);
+        }
+        if (currentOpenedChest != null)
+        {
+            currentOpenedChest.GetComponent<Chest>().FinishInteract();
+            ChestDataManager chestData = currentOpenedChest.GetComponent<ChestDataManager>();
+            if (player.HasInputAuthority)
+                player.GetComponent<InventoryDataManager>().RPC_RequestStoreToChest(chestData);
         }
     }
 
