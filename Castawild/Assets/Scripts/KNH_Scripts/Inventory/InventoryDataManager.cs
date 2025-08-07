@@ -357,8 +357,6 @@ public class InventoryDataManager : NetworkBehaviour
     {
         if (indexA >= itemList.Count || indexB >= itemList.Count) return;
 
-        Debug.Log("Swap " + indexA + " " + indexB);
-
         // 슬롯 수 부족할 경우 확장
         while (itemList.Count <= Mathf.Max(indexA, indexB))
         {
