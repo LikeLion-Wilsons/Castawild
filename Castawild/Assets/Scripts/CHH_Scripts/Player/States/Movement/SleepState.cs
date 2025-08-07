@@ -1,6 +1,8 @@
 
 using UnityEngine;
 
+// StandToSleep 애니메이션 : SleepState Enter하면서 재생
+// SleepToStand 애니메이션 : SleepState Exit하면서 재생 -> 애니메이션 재생중일 땐 Idle 상태
 public class SleepState : MovementBaseState
 {
     public SleepState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
@@ -10,31 +12,25 @@ public class SleepState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.player.StopPlayer();
-
         movementManager.CurrentMoveState = MoveAnimationState.Sleep;
 
         movementManager.CanWakeUp = false;
 
-        if (movementManager.HasStateAuthority)
-        {
-            movementManager.player.RPC_TurnOffUI();
-            movementManager.player.RPC_AttachCameraToHead(true);
-        }
-
         movementManager.playerController.RPC_FreezePosition(true);
+        movementManager.player.RPC_TurnOffUI();
+        movementManager.player.RPC_AttachCameraToHead(true);
     }
 
     public override void UpdateState()
     {
-        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.interactInput) && movementManager.CanWakeUp)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.interactInput)
+            && movementManager.CanWakeUp)
             movementManager.ChangeState(movementManager.idleState);
     }
 
     public override void ExitState()
     {
-        if (movementManager.HasInputAuthority)
-            movementManager.player.playerInteractUI.TurnOffUI();
-        movementManager.playerController.RPC_FreezePosition(false);
+        movementManager.player.RPC_TurnOffUI();
+        movementManager.player.RPC_AttachCameraToHead(false);
     }
 }

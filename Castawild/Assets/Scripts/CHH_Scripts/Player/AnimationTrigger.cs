@@ -37,7 +37,7 @@ public class AnimationTrigger : MonoBehaviour
     public void Interact() => playercontroller.Interact();
     public void FinishSleep()
     {
-        player.PlayerCanMove();
+        playercontroller.RPC_FreezePosition(false);
 
         if (player.HasInputAuthority)
             player.FinishSleep();

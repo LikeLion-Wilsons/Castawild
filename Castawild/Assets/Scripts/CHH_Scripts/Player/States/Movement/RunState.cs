@@ -16,16 +16,13 @@ public class RunState : MovementBaseState
 
     public override void UpdateState()
     {
-        if (movementManager.HasStateAuthority)
+        if (movementManager.Stamina <= 0)
         {
-            if (movementManager.Stamina <= 0)
-            {
-                movementManager.ChangeState(movementManager.walkState);
-                return;
-            }
-            if (movementManager.Stamina > 0)
-                movementManager.Stamina -= movementManager.player.staminaRunDecreaseRate * movementManager.Runner.DeltaTime;
+            movementManager.ChangeState(movementManager.walkState);
+            return;
         }
+        else
+            movementManager.Stamina -= movementManager.player.staminaRunDecreaseRate * movementManager.Runner.DeltaTime;
 
         // Walk
         if (movementManager.input.IsUp(PlayerNetworkInputData.sprintInput) || movementManager.Stamina <= 0)
