@@ -381,7 +381,7 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 플레이어 공격을 받았을 때 호출
     /// </summary>
-    public void TakeDamage(float att)
+    public void TakeDamage(bool isAttack, float att)
     {
         if (!HasStateAuthority || Hp <= 0)
             return;
@@ -393,7 +393,7 @@ public class Player : NetworkBehaviour
             movementManager.ChangeState(movementManager.deathState);
             toolStateManager.ChangeState(toolStateManager.idleState);
         }
-        else
+        else if (Hp > 0 && isAttack)
         {
             Debug.Log("Hit");
             movementManager.ChangeState(movementManager.getHitState);
