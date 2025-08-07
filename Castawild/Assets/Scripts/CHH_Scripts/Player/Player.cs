@@ -27,7 +27,6 @@ public class Player : NetworkBehaviour
 
     #region Components
     [HideInInspector] public Animator anim;
-    [HideInInspector] public Rigidbody rigid;
     [HideInInspector] public PlayerInteractUI playerInteractUI;
     [HideInInspector] public PlayerController playerController;
     [HideInInspector] public PlayerInputManager inputManager;
@@ -118,7 +117,6 @@ public class Player : NetworkBehaviour
     private void InitComponents()
     {
         anim = GetComponentInChildren<Animator>();
-        rigid = GetComponent<Rigidbody>();
         playerController = GetComponent<PlayerController>();
         playerInteractUI = GetComponentInChildren<PlayerInteractUI>();
         inputManager = GetComponent<PlayerInputManager>();

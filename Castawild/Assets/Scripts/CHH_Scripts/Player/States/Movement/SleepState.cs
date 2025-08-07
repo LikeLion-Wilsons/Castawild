@@ -21,6 +21,8 @@ public class SleepState : MovementBaseState
             movementManager.player.RPC_TurnOffUI();
             movementManager.player.RPC_AttachCameraToHead(true);
         }
+
+        movementManager.playerController.RPC_FreezePosition(true);
     }
 
     public override void UpdateState()
@@ -33,5 +35,6 @@ public class SleepState : MovementBaseState
     {
         if (movementManager.HasInputAuthority)
             movementManager.player.playerInteractUI.TurnOffUI();
+        movementManager.playerController.RPC_FreezePosition(false);
     }
 }

@@ -15,6 +15,7 @@ public class DeathState : MovementBaseState
         movementManager.player.CanMove = false;
         movementManager.player.RPC_AttachCameraToHead(true);
         movementManager.Revived = false;
+        movementManager.playerController.RPC_FreezePosition(true);
     }
 
     public override void UpdateState()
@@ -28,5 +29,6 @@ public class DeathState : MovementBaseState
         movementManager.Revived = true;
         movementManager.RPC_TriggerSet(false);
         movementManager.player.CanMove = true;
+        movementManager.playerController.RPC_FreezePosition(false);
     }
 }
