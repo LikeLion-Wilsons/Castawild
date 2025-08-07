@@ -44,10 +44,10 @@ GameObject:
   m_Component:
   - component: {fileID: 3422889930185160430}
   - component: {fileID: 3145754271697299491}
-  - component: {fileID: 8099184634340808871}
   - component: {fileID: 7506032437821234157}
   - component: {fileID: 607429045050957429}
   - component: {fileID: 3951117910885314122}
+  - component: {fileID: -8567614372789640538}
   m_Layer: 8
   m_Name: Boulder_5(sand)
   m_TagString: Untagged
@@ -98,28 +98,6 @@ LODGroup:
     renderers:
     - renderer: {fileID: 2470332390787416426}
   m_Enabled: 1
---- !u!64 &8099184634340808871
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2558656689631132515}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4357663623705380258, guid: 977ed2c2cb1343b9bb928fc6e612c1a7, type: 3}
 --- !u!114 &7506032437821234157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,6 +149,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactableType: 2
   visualRoot: {fileID: 1525764378375427215}
+  reviveTime: 10
+--- !u!136 &-8567614372789640538
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2558656689631132515}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5389872710732557275
 GameObject:
   m_ObjectHideFlags: 0

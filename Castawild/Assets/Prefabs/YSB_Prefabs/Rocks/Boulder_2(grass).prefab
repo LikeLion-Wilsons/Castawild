@@ -96,10 +96,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1614589097360225209}
   - component: {fileID: 2731108853656359074}
-  - component: {fileID: 2216453021623748125}
   - component: {fileID: 3784190730968251097}
   - component: {fileID: 1485587528651094044}
   - component: {fileID: 7657638846271323286}
+  - component: {fileID: -9039576816379411828}
   m_Layer: 8
   m_Name: Boulder_2(grass)
   m_TagString: Untagged
@@ -150,28 +150,6 @@ LODGroup:
     renderers:
     - renderer: {fileID: 938653261350856313}
   m_Enabled: 1
---- !u!64 &2216453021623748125
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1161498324668031837}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -4267975542468120719, guid: 9a9076ab5936494aa6fa8145d1903c1b, type: 3}
 --- !u!114 &3784190730968251097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,6 +201,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactableType: 2
   visualRoot: {fileID: 0}
+  reviveTime: 10
+--- !u!136 &-9039576816379411828
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1161498324668031837}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1678214684040166676
 GameObject:
   m_ObjectHideFlags: 0
