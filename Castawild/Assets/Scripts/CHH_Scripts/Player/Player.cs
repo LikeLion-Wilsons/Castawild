@@ -136,17 +136,18 @@ public class Player : NetworkBehaviour
 
         if (HasStateAuthority)
         {
-            Hunger -= hungerDecreaseRate * Runner.DeltaTime;
-            Thirst -= thirstDecreaseRate * Runner.DeltaTime;
-
             if (Thirst <= 0)
                 Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
+            else
+                Thirst -= thirstDecreaseRate * Runner.DeltaTime;
 
             if (Hunger <= 0)
             {
                 Hp -= hpDecreaseRate * Runner.DeltaTime;
                 Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
             }
+            else
+                Hunger -= hungerDecreaseRate * Runner.DeltaTime;
 
             if (toolStateManager.CanRecoverStamina() && movementManager.CanRecoverStamina())
             {

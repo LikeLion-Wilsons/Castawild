@@ -199,10 +199,7 @@ public class MovementStateManager : BaseStateManager
     public bool HasEnoughStaminaToRun()
     {
         if (Stamina <= player.playerData.maxStamina * 0.3f)
-        {
-            Debug.Log("Stamina : " + Stamina);
             return false;
-        }
 
         return true;
     }

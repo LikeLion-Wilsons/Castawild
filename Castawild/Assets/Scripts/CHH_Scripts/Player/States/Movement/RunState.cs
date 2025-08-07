@@ -23,11 +23,12 @@ public class RunState : MovementBaseState
                 movementManager.ChangeState(movementManager.walkState);
                 return;
             }
-            movementManager.Stamina -= movementManager.player.staminaRunDecreaseRate * movementManager.Runner.DeltaTime;
+            if (movementManager.Stamina > 0)
+                movementManager.Stamina -= movementManager.player.staminaRunDecreaseRate * movementManager.Runner.DeltaTime;
         }
 
         // Walk
-        if (movementManager.input.IsUp(PlayerNetworkInputData.sprintInput))
+        if (movementManager.input.IsUp(PlayerNetworkInputData.sprintInput) || movementManager.Stamina <= 0)
             movementManager.ChangeState(movementManager.walkState);
 
         // Idle
