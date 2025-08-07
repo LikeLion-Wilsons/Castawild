@@ -1,4 +1,7 @@
 using Fusion;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 // 현재 들고있는 무기
@@ -40,6 +43,12 @@ public class ToolStateManager : BaseStateManager
     [SerializeField] private Transform thirdPersonArrowPos;
     [SerializeField] private Transform throwPos;
 
+    [Header("Hit")]
+    [SerializeField] private Vector3 fistPos;
+    [SerializeField] private Vector3 hitBox = new Vector3(1f, 1f, 1.0f);
+    public HashSet<GameObject> alreadyHit = new HashSet<GameObject>();
+    private bool canHit;
+
     #region Network
     [Networked, HideInInspector] public bool CanComboAttack { get; set; }
     [Networked, HideInInspector] public bool ComboAttack { get; set; }
@@ -76,6 +85,45 @@ public class ToolStateManager : BaseStateManager
     {
         ChangeState(idleState);
         CurrentToolType = ToolType.Fist;
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        if (canHit && HasStateAuthority && CurrentToolType == ToolType.Fist)
+            FistAttack();
+    }
+
+    public void FistAttack()
+    {
+        Collider[] hitObjects = Physics.OverlapBox(fistPos, hitBox, Quaternion.identity);
+        for (int i = 0; i < hitObjects.Length; i++)
+        {
+            if (player.CanPVP && hitObjects[i].TryGetComponent(out GameObject otherPlayer))
+            {
+                if (alreadyHit.Contains(otherPlayer))
+                    return;
+
+                otherPlayer.GetComponent<Player>().AttackPlayer(player.GetToolAtt());
+            }
+        }
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.matrix = Matrix4x4.TRS(fistPos, Quaternion.identity, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, hitBox * 2f);
+    }
+
+    public void StartHit()
+    {
+        canHit = true;
+    }
+
+    public void FinishHit()
+    {
+        canHit = false;
+        alreadyHit.Clear();
     }
 
     public void UpdateMoveAnimation()
@@ -268,4 +316,6 @@ public class ToolStateManager : BaseStateManager
     public bool CanRecoverStamina() => currentState != useToolState;
 
     public bool IsAiming() => CurrentToolUseState == ToolAnimationState.Aim || CurrentToolUseState == ToolAnimationState.FullAim;
+
+
 }

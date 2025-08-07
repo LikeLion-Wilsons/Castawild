@@ -65,4 +65,16 @@ public class AnimationTrigger : MonoBehaviour
         if (movementManager.HasInputAuthority)
             interactUI.ActiveDeathUI(true);
     }
+
+    public void StartHit()
+    {
+        if (toolManager.HasStateAuthority)
+            toolManager.StartHit();
+    }
+
+    public void FinishHit()
+    {
+        if (toolManager.HasStateAuthority)
+            toolManager.FinishHit();
+    }
 }

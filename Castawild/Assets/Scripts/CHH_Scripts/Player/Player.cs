@@ -58,6 +58,7 @@ public class Player : NetworkBehaviour
     public Coroutine fallingCoroutine;
 
     [Header("Networked")]
+    [Networked, HideInInspector] public bool CanPVP { get; set; } = true;
     [Networked, HideInInspector] public Vector3 RespawnPos { get; set; }
     [Networked, HideInInspector] public bool CanMove { get; set; } = true;
     [Networked, HideInInspector] public bool IsUIOpen { get; set; }
@@ -226,7 +227,7 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 현재 들고있는 도구 + 플레이어 공격력
     /// </summary>
-    public int GetToolAtt(string toolName)
+    public int GetToolAtt(string toolName = "")
     {
         if (CurrentToolName == string.Empty)
             return playerData.attack;
