@@ -86,6 +86,6 @@ Material:
     - _CloudsColor: {r: 0.37732878, g: 0.6339269, b: 0.745283, a: 1}
     - _DirectionSpeed: {r: -50, g: 15, b: 0, a: 60}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ScatteringColor: {r: 0.5695283, g: 0.5695283, b: 0.5695283, a: 0}
+    - _ScatteringColor: {r: 0.91517943, g: 0.91517943, b: 0.91517943, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
