@@ -46,7 +46,6 @@ public class ToolStateManager : BaseStateManager
     [Networked, HideInInspector] public bool CanReceiveInput { get; set; }
     [Networked] public ToolAnimationState CurrentToolUseState { get; set; }
     [Networked] public ToolType CurrentToolType { get; set; }
-    [Networked] public Vector3 RayTargetPos { get; set; }
     #endregion
 
 
@@ -212,22 +211,30 @@ public class ToolStateManager : BaseStateManager
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_BowShootAnimation() => bowAnim.SetTrigger("Shoot");
 
-    public void SetTargetPos()
+    public void SetTargetPos(int isArrow)
     {
         if (!HasInputAuthority)
             return;
 
         Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
         Ray ray = Camera.main.ScreenPointToRay(screenCenter);
-        RayTargetPos = ray.GetPoint(30f);
-        RPC_SetTargetPosValue(RayTargetPos);
+        Vector3 rayTargetPos = ray.GetPoint(30f);
+        RPC_Throw(isArrow, rayTargetPos);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_SetTargetPosValue(Vector3 targetPos) => RayTargetPos = targetPos;
+    public void RPC_Throw(int isArrow, Vector3 rayTargetPos)
+    {
+        SpawnThrowObject(isArrow == 0 ? false : true, rayTargetPos);
+
+        if (isArrow == 0)
+            player.CurrentToolActive(false);
+        else
+            player.arrow.SetActive(false);
+    }
 
     // 돌맹이 / 화살 생성
-    public void SpawnThrowObject(bool isArrow)
+    public void SpawnThrowObject(bool isArrow, Vector3 rayTargetPos)
     {
         if (!HasStateAuthority)
             return;
@@ -238,12 +245,12 @@ public class ToolStateManager : BaseStateManager
             if (input.currentView == ViewType.FirstPerson)
             {
                 throwObject = Runner.Spawn(arrowPrefab.gameObject, firstPersonArrowPos.position, cameraManager.firstPersonCam.transform.rotation);
-                throwObject?.GetComponent<ThrowObject>().AddForce(arrowForce, arrowUpForce, RayTargetPos);
+                throwObject?.GetComponent<ThrowObject>().AddForce(arrowForce, arrowUpForce, rayTargetPos);
             }
             else
             {
                 throwObject = Runner.Spawn(arrowPrefab.gameObject, thirdPersonArrowPos.position, cameraManager.thirdPersonCam.transform.rotation);
-                throwObject?.GetComponent<ThrowObject>().AddForce(arrowForce, arrowUpForce, RayTargetPos);
+                throwObject?.GetComponent<ThrowObject>().AddForce(arrowForce, arrowUpForce, rayTargetPos);
             }
         }
         else if (!isArrow)
@@ -252,7 +259,7 @@ public class ToolStateManager : BaseStateManager
                 throwObject = Runner.Spawn(throwableStonePrefab.gameObject, throwPos.position, cameraManager.firstPersonCam.transform.rotation);
             else
                 throwObject = Runner.Spawn(throwableStonePrefab.gameObject, throwPos.position, cameraManager.thirdPersonCam.transform.rotation);
-            throwObject?.GetComponent<ThrowObject>().AddForce(throwForce, throwUpForce, RayTargetPos);
+            throwObject?.GetComponent<ThrowObject>().AddForce(throwForce, throwUpForce, rayTargetPos);
         }
 
         // 돌맹이나 화살 개수 줄이기

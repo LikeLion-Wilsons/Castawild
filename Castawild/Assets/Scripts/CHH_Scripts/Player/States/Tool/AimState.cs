@@ -55,7 +55,7 @@ public class AimState : ToolBaseState
         else if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
             toolStateManager.player.isAimLocked = false;
-
+            toolStateManager.RPC_MoveAimCamera(false);
 
             if (toolStateManager.CurrentToolType == ToolType.Bow)
             {
@@ -84,7 +84,6 @@ public class AimState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
-        toolStateManager.RPC_MoveAimCamera(false);
     }
 
     private void LookForward()
