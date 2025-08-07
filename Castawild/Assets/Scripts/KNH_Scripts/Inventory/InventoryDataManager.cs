@@ -178,7 +178,7 @@ public class InventoryDataManager : NetworkBehaviour
         }
         if (Input.GetKeyDown(KeyCode.D))
         {
-            ThrowAllItem();
+            RPC_ThrowAllItem();
         }
 
         //테스트용
@@ -213,6 +213,12 @@ public class InventoryDataManager : NetworkBehaviour
     public void RPC_ThrowItem(int index)
     {
         ThrowItem(index);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_ThrowAllItem()
+    {
+        ThrowAllItem();
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -263,6 +269,12 @@ public class InventoryDataManager : NetworkBehaviour
         }
         Debug.Log("RPC_RequestStoreToChest");
         RPC_UpdateInventoryUI();
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetCanOpen(Chest chest ,bool tof)
+    {
+        chest.CanOpen = tof;
     }
 
 
@@ -416,7 +428,7 @@ public class InventoryDataManager : NetworkBehaviour
         {
             if (itemList[i].itemID != -1)
             {
-                ThrowItem(i);
+                RPC_ThrowItem(i);
             }
         }
     }
