@@ -69,6 +69,13 @@ public sealed class PlayerController : NetworkBehaviour
 
         if (HasStateAuthority)
         {
+            if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
+            {
+                Vector3 velocity = kcc.RealVelocity;
+                float jump = 7f;
+                kcc.Move(velocity, jump);
+            }
+
             ChangePosition();
 
             Falling();

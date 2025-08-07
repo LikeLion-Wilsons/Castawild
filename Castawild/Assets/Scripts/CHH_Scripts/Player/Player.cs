@@ -234,7 +234,7 @@ public class Player : NetworkBehaviour
         {
             currentBed.FinishSleep();
             currentBed = default;
-            cameraManager.ApplySleepCameraView(false);
+            cameraManager.AttachCameraToHead(false);
         }
     }
 
@@ -327,7 +327,7 @@ public class Player : NetworkBehaviour
     public void RPC_CursorLocked(bool isLocked) => IsCursorLocked = isLocked;
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ApplySleepCameraView() => cameraManager.ApplySleepCameraView(true);
+    public void RPC_AttachCameraToHead(bool attachCamera) => cameraManager.AttachCameraToHead(attachCamera);
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_TurnOffUI() => playerInteractUI.TurnOffUI();

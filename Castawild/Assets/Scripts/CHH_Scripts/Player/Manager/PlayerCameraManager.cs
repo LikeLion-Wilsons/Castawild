@@ -302,9 +302,9 @@ public class PlayerCameraManager : MonoBehaviour
             thirdPersonTarget.localPosition = targetPos;
     }
 
-    public void ApplySleepCameraView(bool isSleep)
+    public void AttachCameraToHead(bool attachCamera)
     {
-        if (isSleep)
+        if (attachCamera)
         {
             firstPersonCam.Follow = playerHead.transform;
             firstPersonCam.LookAt = playerHead.transform;

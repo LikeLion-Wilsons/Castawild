@@ -3011,7 +3011,7 @@ MonoBehaviour:
   jumpImpulse: 3
   maxSpeed: 2
   rotationSpeed: 15
-  fallThreshold: 13
+  fallThreshold: 20
   damagePerMeter: 10
   interactHeight: 10
   thirdPersonInteractPos: {fileID: 7467696255462433047}
