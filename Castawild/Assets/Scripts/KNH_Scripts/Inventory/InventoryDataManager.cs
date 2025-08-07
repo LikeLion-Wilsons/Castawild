@@ -176,6 +176,10 @@ public class InventoryDataManager : NetworkBehaviour
         {
             RPC_UseSelectedItem(1);
         }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            ThrowAllItem();
+        }
 
         //테스트용
         if (Object.HasInputAuthority && Input.GetKeyDown(KeyCode.B))
@@ -405,6 +409,18 @@ public class InventoryDataManager : NetworkBehaviour
         }
     }
 
+    //들고 있는 모든 아이템 버리기
+    public void ThrowAllItem()
+    {
+        for(int i = 0; i< 29; i++)
+        {
+            if (itemList[i].itemID != -1)
+            {
+                ThrowItem(i);
+            }
+        }
+    }
+
     public void UseItem(int id, int count)
     {
         for (int i = 0; i < itemList.Count; i++)
@@ -432,6 +448,8 @@ public class InventoryDataManager : NetworkBehaviour
             RPC_UpdateInventoryUI();
         }
     }
+
+
 
     // 아이템 소지 수량 확인
     public int GetItemCount(int id)

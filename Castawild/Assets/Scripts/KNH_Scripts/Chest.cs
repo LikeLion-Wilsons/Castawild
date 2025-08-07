@@ -47,13 +47,16 @@ public class Chest : InteractableObject
             canvasHolder.uiParts["Chest"].Open(player.inputManager);
             if (Object.HasStateAuthority)
                 CanOpen = false;
+            else if (player.HasInputAuthority)
+                RPC_SetCanOpen(false);
         }
     }
 
     public void FinishInteract()
     {
         int index = 29;
-        if (Object.HasStateAuthority)
+
+        if (Object.HasStateAuthority)        //호스트에서
         {
             CanOpen = true;
 
@@ -65,8 +68,9 @@ public class Chest : InteractableObject
             }
             inventoryData.RPC_UpdateInventoryUI();
         }
-        else if (player.HasInputAuthority)
+        else if (player.HasInputAuthority) //클라이언트에서
         {
+            RPC_SetCanOpen(true);
             Debug.Log("클라이언트 inventory -> chest");
             inventoryData.RPC_RequestStoreToChest(chestData);
         }
@@ -84,6 +88,12 @@ public class Chest : InteractableObject
             player.GetComponent<InventoryDataManager>().RPC_SetItem(i, item);
             index++;
         }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetCanOpen(bool tof)
+    {
+        CanOpen = tof;
     }
 
 }
