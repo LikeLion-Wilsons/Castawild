@@ -50,9 +50,6 @@ public class Canvas_Holder : MonoBehaviour
         if (currentOpenedChest != null)
         {
             currentOpenedChest.GetComponent<Chest>().FinishInteract();
-            ChestDataManager chestData = currentOpenedChest.GetComponent<ChestDataManager>();
-            if (player.HasInputAuthority)
-                player.GetComponent<InventoryDataManager>().RPC_RequestStoreToChest(chestData);
         }
     }
 

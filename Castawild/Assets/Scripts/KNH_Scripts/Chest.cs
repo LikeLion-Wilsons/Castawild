@@ -57,12 +57,18 @@ public class Chest : InteractableObject
         {
             CanOpen = true;
 
-            Debug.Log("inventory -> chest");
+            Debug.Log("호스트 inventory -> chest");
             for (int i = 0; i < 16; i++)
             {
                 chestData.itemList.Set(i, inventoryData.itemList[index]);
                 index++;
             }
+            inventoryData.RPC_UpdateInventoryUI();
+        }
+        else if (player.HasInputAuthority)
+        {
+            Debug.Log("클라이언트 inventory -> chest");
+            inventoryData.RPC_RequestStoreToChest(chestData);
             inventoryData.RPC_UpdateInventoryUI();
         }
 
