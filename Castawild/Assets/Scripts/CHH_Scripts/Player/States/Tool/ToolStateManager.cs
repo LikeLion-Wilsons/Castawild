@@ -136,7 +136,7 @@ public class ToolStateManager : BaseStateManager
 
         switch (itemIdx)
         {
-            case 400: // 짱돌 
+            case 202: // 짱돌 
                 CurrentToolType = ToolType.Throw;
                 break;
             case 401: // 방망이

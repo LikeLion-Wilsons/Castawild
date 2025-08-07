@@ -178,8 +178,10 @@ public class Player : NetworkBehaviour
 
     private void SetCurrentItemType(int _currentItemIdx)
     {
+        if (_currentItemIdx == 202)
+            currentItemType = ItemType.Tool;
         // 50 ~ 59 : Drink
-        if (_currentItemIdx >= 50 && _currentItemIdx < 60)
+        else if (_currentItemIdx >= 50 && _currentItemIdx < 60)
             currentItemType = ItemType.Drink;
         // 60 ~ 69 : Food
         else if (_currentItemIdx >= 60 && _currentItemIdx < 70)
@@ -220,7 +222,7 @@ public class Player : NetworkBehaviour
 
         if (CurrentToolName.Contains(toolName))
             return playerData.attack + CurrentToolAtt;
-        else if (CurrentToolID > 400)
+        else if (CurrentToolID > 400 || CurrentToolID == 202)
             return playerData.attack + 2;
         else
             return playerData.attack;
