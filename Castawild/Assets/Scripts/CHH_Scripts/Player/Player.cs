@@ -143,7 +143,7 @@ public class Player : NetworkBehaviour
 
             if (Hunger <= 0)
             {
-                Hp -= hpDecreaseRate * Runner.DeltaTime;
+                TakeDamage(hpDecreaseRate * Runner.DeltaTime);
                 Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
             }
             else
@@ -259,12 +259,6 @@ public class Player : NetworkBehaviour
             RPC_CursorLocked(isLocked);
     }
 
-    public void StopPlayer()
-    {
-        CanMove = false;
-        playerController.kcc.Move(Vector3.zero);
-    }
-
     private void SetCurrentTool(ToolInfo toolInfo = null)
     {
         if (toolInfo == null)
@@ -302,8 +296,6 @@ public class Player : NetworkBehaviour
             currentToolObject = null;
         }
     }
-
-    public void PlayerCanMove() => CanMove = true;
 
     public GameObject amarture;
 
@@ -389,7 +381,7 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 플레이어 공격을 받았을 때 호출
     /// </summary>
-    public void AttackPlayer(float att)
+    public void TakeDamage(float att)
     {
         if (!HasStateAuthority || Hp <= 0)
             return;

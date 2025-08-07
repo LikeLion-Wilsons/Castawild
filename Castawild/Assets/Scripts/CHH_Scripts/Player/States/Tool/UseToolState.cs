@@ -11,7 +11,7 @@ public class UseToolState : ToolBaseState
 
     public override void EnterState()
     {
-        toolStateManager.player.StopPlayer();
+        toolStateManager.playerController.RPC_FreezePosition(true);
         toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
 
         toolStateManager.CurrentToolUseState = ToolAnimationState.FullUse;
@@ -84,7 +84,7 @@ public class UseToolState : ToolBaseState
             toolStateManager.RPC_BowPullAnimation(false);
         toolStateManager.player.RPC_ActiveArrow(false);
 
-        toolStateManager.player.CanMove = true;
+        toolStateManager.playerController.RPC_FreezePosition(false);
         toolStateManager.player.isAimLocked = false;
 
         comboCount = 1;
@@ -115,7 +115,6 @@ public class UseToolState : ToolBaseState
 
     public void SetActiveArmMesh(bool isActive)
     {
-        if (toolStateManager.HasStateAuthority)
-            toolStateManager.RPC_ArmVisibleChanged(isActive);
+        toolStateManager.RPC_ArmVisibleChanged(isActive);
     }
 }
