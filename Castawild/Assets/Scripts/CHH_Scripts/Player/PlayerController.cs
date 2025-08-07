@@ -347,4 +347,18 @@ public sealed class PlayerController : NetworkBehaviour
         IsChangePos = true;
         ChangePos = position;
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_FreezePosition(bool freeze) => FreezePosition(freeze);
+
+    public void FreezePosition(bool freeze)
+    {
+        if (freeze)
+        {
+            kcc.ResetVelocity();
+            rigid.constraints = RigidbodyConstraints.FreezeAll;
+        }
+        else
+            rigid.constraints = RigidbodyConstraints.None;
+    }
 }
