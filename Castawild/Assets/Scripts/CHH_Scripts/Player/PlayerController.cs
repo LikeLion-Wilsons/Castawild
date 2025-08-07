@@ -24,7 +24,7 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private float damagePerMeter = 10f;
     private float startY;
     private bool isFalling;
-    private float fallingDeadTime = 10f;
+    [SerializeField] private float fallingDeadTime = 5f;
     private float fallingElapsed;
 
     [Header("Interact")]
