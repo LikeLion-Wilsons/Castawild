@@ -194,7 +194,6 @@ GameObject:
   - component: {fileID: 7314606208034799894}
   - component: {fileID: 812385311561008657}
   - component: {fileID: 916706855433387063}
-  - component: {fileID: 853609158307780645}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -275,52 +274,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 2
---- !u!114 &853609158307780645
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 103269256573068487}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe57b54053d48c1428bef86058bd057b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  item_panel: {fileID: 5499722178097758172}
-  content: {fileID: 7314606208034799894}
-  itemPanels:
-  - {fileID: 4116955428125253552}
-  - {fileID: 8201218117380741160}
-  - {fileID: 3317918460288798921}
-  - {fileID: 4624680466066783985}
-  - {fileID: 8006100596736423684}
-  - {fileID: 3411767029424368192}
-  - {fileID: 5121848766295210500}
-  - {fileID: 1523094748937888049}
-  - {fileID: 6910709303560333112}
-  - {fileID: 5499722178097758172}
-  - {fileID: 2396244161664100200}
-  - {fileID: 3409105636406209711}
-  - {fileID: 6778772784530861565}
-  - {fileID: 1123996119388661977}
-  - {fileID: 9042926145436143250}
-  - {fileID: 6896934216705735356}
-  - {fileID: 5094853412529866243}
-  - {fileID: 2977193242535970188}
-  - {fileID: 3286665542207981343}
-  - {fileID: 8965961306883209246}
-  - {fileID: 9133143584976307577}
-  - {fileID: 4927792841845171637}
-  - {fileID: 261959075288989916}
-  - {fileID: 4456063855540760862}
-  - {fileID: 2612081931398281804}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  itemClick: {fileID: 3937718113261005428}
-  inventoryData: {fileID: 0}
 --- !u!1 &105758234501431237
 GameObject:
   m_ObjectHideFlags: 0
@@ -4004,6 +3957,7 @@ MonoBehaviour:
   campfireUI: {fileID: 4258088933595057298}
   isDragging: 0
   uiStats: {fileID: 6076010028049235856}
+  currentOpenedChest: {fileID: 0}
   parts: []
   ui_Part_Parent: {fileID: 8740063373338327921}
 --- !u!1 &2880255821735908514
@@ -4435,6 +4389,22 @@ MonoBehaviour:
   - {fileID: 9162448404514429981}
   - {fileID: 2980054171178639542}
   - {fileID: 649074190746267365}
+  - {fileID: 5499722178097758172}
+  - {fileID: 2396244161664100200}
+  - {fileID: 3409105636406209711}
+  - {fileID: 6778772784530861565}
+  - {fileID: 1123996119388661977}
+  - {fileID: 9042926145436143250}
+  - {fileID: 6896934216705735356}
+  - {fileID: 5094853412529866243}
+  - {fileID: 2977193242535970188}
+  - {fileID: 3286665542207981343}
+  - {fileID: 8965961306883209246}
+  - {fileID: 9133143584976307577}
+  - {fileID: 4927792841845171637}
+  - {fileID: 261959075288989916}
+  - {fileID: 4456063855540760862}
+  - {fileID: 2612081931398281804}
   itemClick: {fileID: 3937718113261005428}
   inventoryData: {fileID: 0}
 --- !u!1 &3064503927403016091
@@ -11951,7 +11921,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
@@ -12088,7 +12058,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
@@ -12476,7 +12446,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
@@ -12750,7 +12720,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
@@ -13298,7 +13268,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
@@ -13435,7 +13405,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
@@ -13572,7 +13542,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
@@ -14371,7 +14341,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
@@ -14900,7 +14870,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
@@ -15315,7 +15285,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
@@ -15452,7 +15422,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
@@ -15863,7 +15833,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
@@ -16000,7 +15970,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
@@ -17511,7 +17481,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
@@ -17648,7 +17618,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 
@@ -17785,7 +17755,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: inventory
       value: 
-      objectReference: {fileID: 103269256573068487}
+      objectReference: {fileID: 2975444364218121219}
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: onDragParent
       value: 

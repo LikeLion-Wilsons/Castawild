@@ -4,13 +4,18 @@ using UnityEngine;
 
 public class ChestDataManager : NetworkBehaviour
 {
-    [Networked, Capacity(30)] public NetworkLinkedList<Item> itemList => default;
+    [Networked, Capacity(20)] public NetworkLinkedList<Item> itemList => default;
     GameObject uiCanvas;
     UIInventory uiInventory;
+    [SerializeField]Player player;
+    Chest chest;
+
+    public bool isSpawned = false;
+
     public override void Spawned()
     {
         if (Object.HasStateAuthority)
-        {
+        { 
             while (itemList.Count < 16)
             {
                 itemList.Add(new Item
@@ -20,16 +25,21 @@ public class ChestDataManager : NetworkBehaviour
                     durability = 1
                 });
             }
+            Debug.Log("Spawned");
         }
+        player = GetComponent<Chest>().player;
 
-        if (Object.HasInputAuthority)
-        {
-            //NetworkObject playerObj = Runner.GetPlayerObject(Object.InputAuthority);
-            //uiCanvas = playerObj.GetComponent<InventoryDataManager>().UICanvas;
-            //uiInventory = uiCanvas.GetComponentInChildren<UIInventory>();
-            //uiInventory.BindToInventoryData(this);
-        }
+        chest = GetComponent<Chest>();
+        isSpawned = true;
+        
     }
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_SetItem(int index, Item item)
+    {
+        itemList.Set(index, item);
+        Debug.Log("RPC_SetItem");
+    }
+
     public void SwapItems(int indexA, int indexB)
     {
         if (indexA >= itemList.Count && indexB >= itemList.Count) return;
@@ -52,4 +62,6 @@ public class ChestDataManager : NetworkBehaviour
             //RPC_UpdateInventoryUI();
         }
     }
+
+
 }

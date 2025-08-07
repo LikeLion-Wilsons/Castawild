@@ -1,41 +1,84 @@
 using Fusion;
+using System;
 using UnityEngine;
 
 public class Chest : InteractableObject
 {
     [Networked] private bool CanOpen { get; set; } = true;
     Canvas_Holder canvasHolder;
-
+    public Player player;
+    ChestDataManager chestData;
+    InventoryDataManager inventoryData;
     private void Awake()
     {
         interactableType = InteractableType.Box;
         isPlaceable = true;
     }
 
-    private void Update()
+    public override bool CanInteract()
     {
-        if (canvasHolder == null) return;
-        bool isInventoryOpen = canvasHolder.uiParts["Inventory"].IsOpen();
-        CanOpen = !isInventoryOpen;
-    }
-    public override bool CanInteract() => CanOpen;
-    public void FinishInteract() => CanOpen = true;
+        // Spawn되기 전에는 Networked 프로퍼티 접근 불가
+        if (!GetComponent<ChestDataManager>().isSpawned)
+            return false;
 
+        return CanOpen;
+    }
     public override void Interact(PlayerRef playerRef)
     {
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
 
-        Player player = playerObj.GetComponent<Player>();
+        player = playerObj.GetComponent<Player>();
 
         PlayerController playerController = playerObj.GetComponent<PlayerController>();
 
         canvasHolder = playerObj.GetComponent<InventoryDataManager>().canvasHolder;
+        chestData = GetComponent<ChestDataManager>();
+        inventoryData = player.GetComponent<InventoryDataManager>();
+        //현재 열고 있는 상자 설정
+        canvasHolder.SetOpenedChest(chestData);
+
+
+        //chest -> inventory
+        inventoryData.RPC_SetItemFromChest(chestData);
 
         if (CanOpen)
         {
             canvasHolder.uiParts["Inventory"].Open(player.inputManager);
             canvasHolder.uiParts["Chest"].Open(player.inputManager);
-            CanOpen = false;
+            if (Object.HasStateAuthority)
+                CanOpen = false;
         }
     }
+
+    public void FinishInteract()
+    {
+        int index = 29;
+        if (Object.HasStateAuthority)
+        {
+            CanOpen = true;
+
+            Debug.Log("inventory -> chest");
+            for (int i = 0; i < 16; i++)
+            {
+                chestData.itemList.Set(i, inventoryData.itemList[index]);
+                index++;
+            }
+            inventoryData.RPC_UpdateInventoryUI();
+        }
+
+        index = 0;
+        //inventory 초기화
+        Item item = new Item
+        {
+            itemID = -1,
+            count = 0,
+            durability = 1
+        };
+        for (int i = 29; i < 45; i++)
+        {
+            player.GetComponent<InventoryDataManager>().RPC_SetItem(i, item);
+            index++;
+        }
+    }
+
 }
