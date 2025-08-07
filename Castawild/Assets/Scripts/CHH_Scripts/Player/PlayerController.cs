@@ -23,6 +23,8 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private float damagePerMeter = 10f;
     private float startY;
     private bool isFalling;
+    private float fallingDeadTime = 10f;
+    private float fallingElapsed;
 
     [Header("Interact")]
     [SerializeField] private float interactHeight = 10f;
@@ -101,12 +103,25 @@ public sealed class PlayerController : NetworkBehaviour
     {
         Vector3 velocity = kcc.RealVelocity;
 
+        // 떨어지기 시작
         if (!isFalling && velocity.y < -0.1f && !Grounded)
         {
             isFalling = true;
             startY = transform.position.y;
         }
 
+        // 떨어지는 중
+        if (isFalling && !Grounded)
+        {
+            fallingElapsed += Runner.DeltaTime;
+            if (fallingElapsed > fallingDeadTime)
+            {
+                fallingElapsed = 0f;
+                player.AttackPlayer(10000f); // 일정 시간동안 착지하지 못하면 죽음
+            }
+        }
+
+        // 착지
         if (isFalling && Grounded)
         {
             isFalling = false;
