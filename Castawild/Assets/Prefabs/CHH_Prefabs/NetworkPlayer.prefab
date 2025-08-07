@@ -283,6 +283,37 @@ Transform:
   - {fileID: 5451364299048172164}
   m_Father: {fileID: 7192038657501666305}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &612893325876189224
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5180488209280489115}
+  m_Layer: 6
+  m_Name: FistPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5180488209280489115
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612893325876189224}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.028, z: 1.206}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6388187669656790763}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &753990701194878906
 GameObject:
   m_ObjectHideFlags: 0
@@ -2872,6 +2903,7 @@ Transform:
   - {fileID: 3860441751889761913}
   - {fileID: 8012178248796667738}
   - {fileID: 2414465423738557776}
+  - {fileID: 5180488209280489115}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7933685528624486573
@@ -2962,8 +2994,10 @@ MonoBehaviour:
   _Hunger: 0
   _Thirst: 0
   _Temperature: 0
+  hpDecreaseRate: 0.5
   staminaIncreaseRate: 2
-  staminaDecreaseRate: 1
+  staminaHungerDecreaseRate: 3
+  staminaRunDecreaseRate: 1
   hungerDecreaseRate: 1
   thirstDecreaseRate: 1
   anim: {fileID: 0}
@@ -2980,6 +3014,7 @@ MonoBehaviour:
   arrow: {fileID: 2432054003010317866}
   _HasArrow: 0
   currentBed: {fileID: 0}
+  _CanPVP: 1
   _RespawnPos: {x: 0, y: 0, z: 0}
   _CanMove: 1
   _IsUIOpen: 0
@@ -3006,8 +3041,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   kcc: {fileID: 5000463041039569134}
-  gravity: -20
-  jumpImpulse: 3
+  jumpImpulse: 200
   maxSpeed: 2
   rotationSpeed: 15
   fallThreshold: 20
@@ -3049,10 +3083,7 @@ MonoBehaviour:
   crouchSpeed: 2
   rotationSpeed: 10
   canJump: 1
-  gravity: -9.81
-  jumpForce: 8
   isJumping: 0
-  velocity: {x: 0, y: 0, z: 0}
   groundYOffset: 0
   groundCheckRadius: 0.3
   groundMask:
@@ -3149,6 +3180,8 @@ MonoBehaviour:
   firstPersonArrowPos: {fileID: 3011774156531074929}
   thirdPersonArrowPos: {fileID: 2414465423738557776}
   throwPos: {fileID: 8012178248796667738}
+  fistPos: {fileID: 5180488209280489115}
+  hitBox: {x: 0.64, y: 1.5, z: 0.85}
   _CanComboAttack: 0
   _ComboAttack: 0
   _CanReceiveInput: 0

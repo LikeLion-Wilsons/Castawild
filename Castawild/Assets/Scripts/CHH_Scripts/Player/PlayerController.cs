@@ -13,7 +13,6 @@ public sealed class PlayerController : NetworkBehaviour
     private PlayerCameraManager cameraManager;
 
     [Header("Movement")]
-    public float gravity = -20f;
     public float jumpImpulse = 3f;
     public float maxSpeed = 2f;
     public float rotationSpeed = 15f;
@@ -23,6 +22,8 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private float damagePerMeter = 10f;
     private float startY;
     private bool isFalling;
+    private float fallingDeadTime = 10f;
+    private float fallingElapsed;
 
     [Header("Interact")]
     [SerializeField] private float interactHeight = 10f;
@@ -81,13 +82,10 @@ public sealed class PlayerController : NetworkBehaviour
             Falling();
 
             HandleState(input);
-
-            if (!player.CanMove)
-            {
-                Gravity();
-                return;
-            }
         }
+
+        if (!player.CanMove)
+            return;
 
         HandleMovement(input);
 
@@ -101,12 +99,25 @@ public sealed class PlayerController : NetworkBehaviour
     {
         Vector3 velocity = kcc.RealVelocity;
 
+        // 떨어지기 시작
         if (!isFalling && velocity.y < -0.1f && !Grounded)
         {
             isFalling = true;
             startY = transform.position.y;
         }
 
+        // 떨어지는 중
+        if (isFalling && !Grounded)
+        {
+            fallingElapsed += Runner.DeltaTime;
+            if (fallingElapsed > fallingDeadTime)
+            {
+                fallingElapsed = 0f;
+                player.AttackPlayer(10000f); // 일정 시간동안 착지하지 못하면 죽음
+            }
+        }
+
+        // 착지
         if (isFalling && Grounded)
         {
             isFalling = false;
@@ -147,14 +158,6 @@ public sealed class PlayerController : NetworkBehaviour
         }
     }
 
-    private void Gravity()
-    {
-        Vector3 velocity = kcc.RealVelocity;
-        velocity.y += gravity * Runner.DeltaTime;
-        kcc.Move(velocity);
-        Grounded = kcc.IsGrounded;
-    }
-
     private void HandleMovement(PlayerNetworkInputData input)
     {
         maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
@@ -173,9 +176,6 @@ public sealed class PlayerController : NetworkBehaviour
 
         if (kcc.IsGrounded && velocity.y < 0f)
             velocity.y = 0f;
-
-        // 중력 
-        velocity.y += gravity * Runner.DeltaTime;
 
         // 수평 속도
         Vector3 horizontalVel = direction * maxSpeed;

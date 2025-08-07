@@ -1,4 +1,7 @@
 using Fusion;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 // 현재 들고있는 무기
@@ -40,6 +43,12 @@ public class ToolStateManager : BaseStateManager
     [SerializeField] private Transform thirdPersonArrowPos;
     [SerializeField] private Transform throwPos;
 
+    [Header("Hit")]
+    [SerializeField] private Transform fistPos;
+    [SerializeField] private Vector3 hitBox = new Vector3(1f, 1f, 1.0f);
+    public HashSet<Transform> alreadyHit = new HashSet<Transform>();
+    private bool canHit;
+
     #region Network
     [Networked, HideInInspector] public bool CanComboAttack { get; set; }
     [Networked, HideInInspector] public bool ComboAttack { get; set; }
@@ -76,6 +85,59 @@ public class ToolStateManager : BaseStateManager
     {
         ChangeState(idleState);
         CurrentToolType = ToolType.Fist;
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        if (canHit && HasStateAuthority && CurrentToolType == ToolType.Fist)
+            FistAttack();
+    }
+
+    public void FistAttack()
+    {
+        Collider[] hitObjects = Physics.OverlapBox(fistPos.position, hitBox, fistPos.rotation);
+
+        for (int i = 0; i < hitObjects.Length; i++)
+        {
+            Transform hitObject = hitObjects[i].transform.root;
+
+            if (hitObject.transform.root == this.transform.root)
+            {
+                Debug.Log("Ignore Self");
+                continue;
+            }
+
+            if (alreadyHit.Contains(hitObject.transform.root))
+            {
+                Debug.Log("Already Hit");
+                continue;
+            }
+
+            if (player.CanPVP && hitObject.TryGetComponent(out Player otherPlayer))
+            {
+                otherPlayer.AttackPlayer(player.GetToolAtt());
+                Debug.Log("Hit Player");
+                alreadyHit.Add(otherPlayer.transform.root);
+            }
+        }
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.matrix = Matrix4x4.TRS(fistPos.position, Quaternion.identity, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, hitBox * 2f);
+    }
+
+    public void StartHit()
+    {
+        canHit = true;
+    }
+
+    public void FinishHit()
+    {
+        canHit = false;
+        alreadyHit.Clear();
     }
 
     public void UpdateMoveAnimation()
@@ -136,7 +198,7 @@ public class ToolStateManager : BaseStateManager
 
         switch (itemIdx)
         {
-            case 400: // 짱돌 
+            case 202: // 짱돌 
                 CurrentToolType = ToolType.Throw;
                 break;
             case 401: // 방망이
@@ -268,4 +330,6 @@ public class ToolStateManager : BaseStateManager
     public bool CanRecoverStamina() => currentState != useToolState;
 
     public bool IsAiming() => CurrentToolUseState == ToolAnimationState.Aim || CurrentToolUseState == ToolAnimationState.FullAim;
+
+
 }
