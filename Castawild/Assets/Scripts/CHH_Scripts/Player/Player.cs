@@ -259,12 +259,6 @@ public class Player : NetworkBehaviour
             RPC_CursorLocked(isLocked);
     }
 
-    public void StopPlayer()
-    {
-        CanMove = false;
-        playerController.kcc.Move(Vector3.zero);
-    }
-
     private void SetCurrentTool(ToolInfo toolInfo = null)
     {
         if (toolInfo == null)
@@ -302,8 +296,6 @@ public class Player : NetworkBehaviour
             currentToolObject = null;
         }
     }
-
-    public void PlayerCanMove() => CanMove = true;
 
     public GameObject amarture;
 

@@ -21,8 +21,7 @@ public class AimState : ToolBaseState
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.runState)
             toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.walkState);
 
-        if (toolStateManager.HasStateAuthority)
-            toolStateManager.RPC_MoveAimCamera(true);
+        toolStateManager.RPC_MoveAimCamera(true);
 
         if (toolStateManager.CurrentToolType == ToolType.Bow)
         {

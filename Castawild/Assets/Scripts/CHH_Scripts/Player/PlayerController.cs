@@ -367,10 +367,15 @@ public sealed class PlayerController : NetworkBehaviour
     {
         if (freeze)
         {
-            kcc.ResetVelocity();
+            if (HasStateAuthority)
+                kcc.ResetVelocity();
+            player.CanMove = false;
             rigid.constraints = RigidbodyConstraints.FreezeAll;
         }
         else
+        {
+            player.CanMove = true;
             rigid.constraints = RigidbodyConstraints.None;
+        }
     }
 }
