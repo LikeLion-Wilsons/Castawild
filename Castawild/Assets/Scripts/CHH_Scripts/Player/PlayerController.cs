@@ -1,5 +1,6 @@
 using Fusion;
 using Fusion.Addons.SimpleKCC;
+using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -18,6 +19,7 @@ public sealed class PlayerController : NetworkBehaviour
     public float rotationSpeed = 15f;
 
     [Header("Falling")]
+    [SerializeField] private float gravity = -9.81f;
     [SerializeField] private float fallThreshold = 3f;
     [SerializeField] private float damagePerMeter = 10f;
     private float startY;
@@ -70,13 +72,6 @@ public sealed class PlayerController : NetworkBehaviour
 
         if (HasStateAuthority)
         {
-            if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
-            {
-                Vector3 velocity = kcc.RealVelocity;
-                float jump = 7f;
-                kcc.Move(velocity, jump);
-            }
-
             ChangePosition();
 
             Falling();
@@ -85,7 +80,16 @@ public sealed class PlayerController : NetworkBehaviour
         }
 
         if (!player.CanMove)
+        {
+            Gravity();
             return;
+        }
+
+        if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
+        {
+            Debug.Log("AttackPlayer");
+            player.AttackPlayer(30f);
+        }
 
         HandleMovement(input);
 
@@ -113,7 +117,7 @@ public sealed class PlayerController : NetworkBehaviour
             if (fallingElapsed > fallingDeadTime)
             {
                 fallingElapsed = 0f;
-                player.AttackPlayer(10000f); // 일정 시간동안 착지하지 못하면 죽음
+                player.AttackPlayer(10000f);
             }
         }
 
@@ -156,6 +160,14 @@ public sealed class PlayerController : NetworkBehaviour
             IsChangePos = false;
             kcc.SetPosition(ChangePos);
         }
+    }
+
+    private void Gravity()
+    {
+        Vector3 velocity = kcc.RealVelocity;
+        velocity.y += gravity * Runner.DeltaTime;
+        kcc.Move(velocity);
+        Grounded = kcc.IsGrounded;
     }
 
     private void HandleMovement(PlayerNetworkInputData input)
