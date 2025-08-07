@@ -35,10 +35,7 @@ public class MovementStateManager : BaseStateManager
     #endregion
 
     [Space]
-    public float gravity = -20f;
-    public float jumpForce = 10f;
     [HideInInspector] public bool isJumping;
-    [HideInInspector] public Vector3 velocity;
 
     #region GoundCheck
     [Header("GoundCheck")]

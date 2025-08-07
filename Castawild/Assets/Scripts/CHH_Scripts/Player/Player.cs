@@ -20,8 +20,10 @@ public class Player : NetworkBehaviour
     [Networked] public float Thirst { get; set; }
     [Networked] public float Temperature { get; set; }
 
+    public float hpDecreaseRate = 0.5f;
     public float staminaIncreaseRate = 2f;
-    public float staminaDecreaseRate = 1f;
+    public float staminaHungerDecreaseRate = 3f;
+    public float staminaRunDecreaseRate = 1f;
     public float hungerDecreaseRate = 1f;
     public float thirstDecreaseRate = 1f;
 
@@ -56,6 +58,7 @@ public class Player : NetworkBehaviour
     public Coroutine fallingCoroutine;
 
     [Header("Networked")]
+    [Networked, HideInInspector] public bool CanPVP { get; set; } = true;
     [Networked, HideInInspector] public Vector3 RespawnPos { get; set; }
     [Networked, HideInInspector] public bool CanMove { get; set; } = true;
     [Networked, HideInInspector] public bool IsUIOpen { get; set; }
@@ -136,6 +139,15 @@ public class Player : NetworkBehaviour
             Hunger -= hungerDecreaseRate * Runner.DeltaTime;
             Thirst -= thirstDecreaseRate * Runner.DeltaTime;
 
+            if (Thirst <= 0)
+                Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
+
+            if (Hunger <= 0)
+            {
+                Hp -= hpDecreaseRate * Runner.DeltaTime;
+                Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
+            }
+
             if (toolStateManager.CanRecoverStamina() && movementManager.CanRecoverStamina())
             {
                 if (Stamina < playerData.maxStamina)
@@ -178,8 +190,10 @@ public class Player : NetworkBehaviour
 
     private void SetCurrentItemType(int _currentItemIdx)
     {
+        if (_currentItemIdx == 202)
+            currentItemType = ItemType.Tool;
         // 50 ~ 59 : Drink
-        if (_currentItemIdx >= 50 && _currentItemIdx < 60)
+        else if (_currentItemIdx >= 50 && _currentItemIdx < 60)
             currentItemType = ItemType.Drink;
         // 60 ~ 69 : Food
         else if (_currentItemIdx >= 60 && _currentItemIdx < 70)
@@ -213,14 +227,14 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 현재 들고있는 도구 + 플레이어 공격력
     /// </summary>
-    public int GetToolAtt(string toolName)
+    public int GetToolAtt(string toolName = "")
     {
         if (CurrentToolName == string.Empty)
             return playerData.attack;
 
         if (CurrentToolName.Contains(toolName))
             return playerData.attack + CurrentToolAtt;
-        else if (CurrentToolID > 400)
+        else if (CurrentToolID > 400 || CurrentToolID == 202)
             return playerData.attack + 2;
         else
             return playerData.attack;

@@ -23,7 +23,7 @@ public class RunState : MovementBaseState
                 movementManager.ChangeState(movementManager.walkState);
                 return;
             }
-            movementManager.Stamina -= movementManager.player.staminaDecreaseRate * movementManager.Runner.DeltaTime;
+            movementManager.Stamina -= movementManager.player.staminaRunDecreaseRate * movementManager.Runner.DeltaTime;
         }
 
         // Walk
