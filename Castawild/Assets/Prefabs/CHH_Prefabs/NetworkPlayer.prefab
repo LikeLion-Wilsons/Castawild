@@ -2962,8 +2962,10 @@ MonoBehaviour:
   _Hunger: 0
   _Thirst: 0
   _Temperature: 0
+  hpDecreaseRate: 0.5
   staminaIncreaseRate: 2
-  staminaDecreaseRate: 1
+  staminaHungerDecreaseRate: 3
+  staminaRunDecreaseRate: 1
   hungerDecreaseRate: 1
   thirstDecreaseRate: 1
   anim: {fileID: 0}
@@ -3006,8 +3008,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   kcc: {fileID: 5000463041039569134}
-  gravity: -20
-  jumpImpulse: 3
+  jumpImpulse: 100
   maxSpeed: 2
   rotationSpeed: 15
   fallThreshold: 20
@@ -3049,10 +3050,7 @@ MonoBehaviour:
   crouchSpeed: 2
   rotationSpeed: 10
   canJump: 1
-  gravity: -9.81
-  jumpForce: 8
   isJumping: 0
-  velocity: {x: 0, y: 0, z: 0}
   groundYOffset: 0
   groundCheckRadius: 0.3
   groundMask:
