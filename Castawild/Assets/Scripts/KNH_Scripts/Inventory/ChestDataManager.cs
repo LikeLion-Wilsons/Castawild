@@ -33,11 +33,10 @@ public class ChestDataManager : NetworkBehaviour
         isSpawned = true;
         
     }
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_SetItem(int index, Item item)
     {
         itemList.Set(index, item);
-        Debug.Log("RPC_SetItem");
     }
 
     public void SwapItems(int indexA, int indexB)
