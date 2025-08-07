@@ -22,6 +22,7 @@ public class Bed : InteractableObject
 
         Player player = playerObj.GetComponent<Player>();
         player.currentBed = this;
+        player.SetRespawnPos(sleepPos.position);
         player.movementManager.RPC_ChangeSleepState(playerRef);
 
         PlayerController playerController = playerObj.GetComponent<PlayerController>();

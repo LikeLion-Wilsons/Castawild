@@ -1,6 +1,4 @@
 using Fusion;
-using NUnit.Framework;
-using Unity.VisualScripting;
 using UnityEngine;
 
 // 현재 들고있는 무기
@@ -51,7 +49,6 @@ public class ToolStateManager : BaseStateManager
     [Networked] public Vector3 RayTargetPos { get; set; }
     #endregion
 
-    [HideInInspector] public bool isTriggerSet = false;
 
     protected override void Awake()
     {
@@ -113,14 +110,14 @@ public class ToolStateManager : BaseStateManager
                 anim.SetBool("Carrying", true);
                 break;
             case ToolAnimationState.Eat:
-                if (!isTriggerSet)
+                if (!IsTriggerSet)
                     anim.SetTrigger("Eating");
-                isTriggerSet = true;
+                IsTriggerSet = true;
                 break;
             case ToolAnimationState.Drink:
-                if (!isTriggerSet)
+                if (!IsTriggerSet)
                     anim.SetTrigger("Drinking");
-                isTriggerSet = true;
+                IsTriggerSet = true;
                 break;
         }
 
@@ -260,6 +257,8 @@ public class ToolStateManager : BaseStateManager
 
         // 돌맹이나 화살 개수 줄이기
     }
+
+    public bool CanRecoverStamina() => currentState != useToolState;
 
     public bool IsAiming() => CurrentToolUseState == ToolAnimationState.Aim || CurrentToolUseState == ToolAnimationState.FullAim;
 }

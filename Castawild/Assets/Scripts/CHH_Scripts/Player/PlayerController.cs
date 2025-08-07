@@ -1,8 +1,6 @@
 using Fusion;
 using Fusion.Addons.SimpleKCC;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEditor.PlayerSettings;
 
 [DisallowMultipleComponent]
 public sealed class PlayerController : NetworkBehaviour
@@ -27,10 +25,10 @@ public sealed class PlayerController : NetworkBehaviour
     [HideInInspector] public EnvironmentObject currentInteractObject;
 
     [Networked, HideInInspector] public bool Grounded { get; set; }
+    [Networked, HideInInspector] public Vector3 ChangePos { get; set; }
+    [Networked, HideInInspector] public bool IsChangePos { get; set; }
 
     Collider[] _interactResult = new Collider[5];
-
-
 
     private NetworkButtons prevInputButtons;
 
@@ -62,6 +60,12 @@ public sealed class PlayerController : NetworkBehaviour
 
         if (HasStateAuthority)
         {
+            if (IsChangePos)
+            {
+                IsChangePos = false;
+                kcc.SetPosition(ChangePos);
+            }
+
             movementManager.SetInput(input);
             toolManager.SetInput(input);
 
@@ -83,6 +87,11 @@ public sealed class PlayerController : NetworkBehaviour
                 Grounded = kcc.IsGrounded;
             }
             return;
+        }
+
+        if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.crouchInput))
+        {
+            player.AttackPlayer(40);
         }
 
         maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
@@ -271,6 +280,13 @@ public sealed class PlayerController : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_SetPosition(Vector3 position)
     {
-        kcc.SetPosition(position);
+        IsChangePos = true;
+        ChangePos = position;
+    }
+
+    public void SetPosition(Vector3 position)
+    {
+        IsChangePos = true;
+        ChangePos = position;
     }
 }

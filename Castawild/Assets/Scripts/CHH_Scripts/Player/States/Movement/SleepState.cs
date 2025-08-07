@@ -15,7 +15,6 @@ public class SleepState : MovementBaseState
         movementManager.player.StopPlayer();
 
         movementManager.CurrentMoveState = MoveAnimationState.Sleep;
-        movementManager.currentMoveType = MoveType.Idle;
 
         movementManager.CanWakeUp = false;
 

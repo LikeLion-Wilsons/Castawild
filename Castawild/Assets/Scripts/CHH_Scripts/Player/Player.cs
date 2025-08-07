@@ -1,5 +1,6 @@
 using Fusion;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
@@ -21,6 +22,7 @@ public class Player : NetworkBehaviour
     [Networked] public float Thirst { get; set; }
     [Networked] public float Temperature { get; set; }
 
+    public float staminaIncreaseRate = 2f;
     public float staminaDecreaseRate = 1f;
     public float hungerDecreaseRate = 1f;
     public float thirstDecreaseRate = 1f;
@@ -55,6 +57,7 @@ public class Player : NetworkBehaviour
     #endregion
 
     [Header("Networked")]
+    [Networked, HideInInspector] public Vector3 RespawnPos { get; set; }
     [Networked, HideInInspector] public bool CanMove { get; set; } = true;
     [Networked, HideInInspector] public bool IsUIOpen { get; set; }
     [Networked, HideInInspector] public bool IsCursorLocked { get; set; }
@@ -102,6 +105,11 @@ public class Player : NetworkBehaviour
         }
     }
 
+    public void Init()
+    {
+        RespawnPos = transform.position;
+    }
+
     private void Awake()
     {
         InitComponents();
@@ -122,10 +130,21 @@ public class Player : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
+        if (movementManager.currentState == movementManager.deathState)
+            return;
+
         if (HasStateAuthority)
         {
             Hunger -= hungerDecreaseRate * Runner.DeltaTime;
             Thirst -= thirstDecreaseRate * Runner.DeltaTime;
+
+            if (toolStateManager.CanRecoverStamina() && movementManager.CanRecoverStamina())
+            {
+                if (Stamina < playerData.maxStamina)
+                    Stamina += staminaIncreaseRate * Runner.DeltaTime;
+                else
+                    Stamina = playerData.maxStamina;
+            }
         }
     }
 
@@ -344,4 +363,44 @@ public class Player : NetworkBehaviour
     public void RPC_HasArrow(bool hasArrow) => HasArrow = hasArrow;
 
     public void CurrentToolActive(bool active) => currentToolObject?.SetActive(active);
+
+    public void SetRespawnPos(Vector3 respawnPos)
+    {
+        if (HasInputAuthority)
+            RPC_SetRespawnPos(respawnPos);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetRespawnPos(Vector3 respawnPos) { RespawnPos = respawnPos; }
+
+    /// <summary>
+    /// 플레이어 공격을 받았을 때 호출
+    /// </summary>
+    public void AttackPlayer(int att)
+    {
+        if (!HasStateAuthority || Hp <= 0)
+            return;
+        Hp -= att;
+
+        if (Hp <= 0)
+        {
+            Debug.Log("Death");
+            movementManager.ChangeState(movementManager.deathState);
+            toolStateManager.ChangeState(toolStateManager.idleState);
+        }
+        else
+        {
+            Debug.Log("Hit");
+            movementManager.ChangeState(movementManager.getHitState);
+            toolStateManager.ChangeState(toolStateManager.idleState);
+        }
+    }
+
+    public void Revived()
+    {
+        Hp = playerData.maxHp * 0.2f;
+        Stamina = playerData.maxStamina;
+        Thirst = playerData.maxThirst * 0.2f;
+        Hunger = playerData.maxHunger * 0.2f;
+    }
 }

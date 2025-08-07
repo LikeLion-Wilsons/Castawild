@@ -37,6 +37,6 @@ public class JumpState : MovementBaseState
     public override void ExitState()
     {
         movementManager.canJump = true;
-        movementManager.isTriggerSet = false;
+        movementManager.RPC_TriggerSet(false);
     }
 }

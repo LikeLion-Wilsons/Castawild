@@ -17,7 +17,7 @@ public class PlayerInputManager : MonoBehaviour
     private InputAction aimAction;
     private InputAction sprintAction;
     private InputAction toolAction;
-    private InputAction interactAction;
+    public InputAction interactAction;
     private InputAction removeAction;
 
     [HideInInspector] public Vector2 lookInput;
