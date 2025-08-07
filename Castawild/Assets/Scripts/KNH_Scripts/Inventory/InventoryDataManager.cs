@@ -144,14 +144,14 @@ public class InventoryDataManager : NetworkBehaviour
         {
             if (scroll > 0f)
             {
-                if (player.toolStateManager.CurrentToolUseState == ToolAnimationState.Idle);
+                if (player != null && player.toolStateManager.CurrentToolUseState == ToolAnimationState.Idle);
                 int next = (selectedSlot - 1 + maxSlotCount) % maxSlotCount;
                 ChangeSelectedSlot(next);
                 nextScrollTime = Time.time + scrollCooldown;
             }
             else if (scroll < 0f)
             {
-                if (player.toolStateManager.CurrentToolUseState == ToolAnimationState.Idle) ;
+                if (player != null && player.toolStateManager.CurrentToolUseState == ToolAnimationState.Idle) ;
                 int next = (selectedSlot + 1) % maxSlotCount;
                 ChangeSelectedSlot(next);
                 nextScrollTime = Time.time + scrollCooldown;
@@ -356,6 +356,8 @@ public class InventoryDataManager : NetworkBehaviour
     public void SwapItems(int indexA, int indexB)
     {
         if (indexA >= itemList.Count || indexB >= itemList.Count) return;
+
+        //Debug.Log("Swap " + indexA + " " + indexB);
 
         // 슬롯 수 부족할 경우 확장
         while (itemList.Count <= Mathf.Max(indexA, indexB))

@@ -69,7 +69,6 @@ public class Chest : InteractableObject
         {
             Debug.Log("클라이언트 inventory -> chest");
             inventoryData.RPC_RequestStoreToChest(chestData);
-            inventoryData.RPC_UpdateInventoryUI();
         }
 
         index = 0;
