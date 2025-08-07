@@ -44,9 +44,9 @@ public class ToolStateManager : BaseStateManager
     [SerializeField] private Transform throwPos;
 
     [Header("Hit")]
-    [SerializeField] private Vector3 fistPos;
+    [SerializeField] private Transform fistPos;
     [SerializeField] private Vector3 hitBox = new Vector3(1f, 1f, 1.0f);
-    public HashSet<GameObject> alreadyHit = new HashSet<GameObject>();
+    public HashSet<Transform> alreadyHit = new HashSet<Transform>();
     private bool canHit;
 
     #region Network
@@ -95,15 +95,29 @@ public class ToolStateManager : BaseStateManager
 
     public void FistAttack()
     {
-        Collider[] hitObjects = Physics.OverlapBox(fistPos, hitBox, Quaternion.identity);
+        Collider[] hitObjects = Physics.OverlapBox(fistPos.position, hitBox, fistPos.rotation);
+
         for (int i = 0; i < hitObjects.Length; i++)
         {
-            if (player.CanPVP && hitObjects[i].TryGetComponent(out GameObject otherPlayer))
-            {
-                if (alreadyHit.Contains(otherPlayer))
-                    return;
+            Transform hitObject = hitObjects[i].transform.root;
 
-                otherPlayer.GetComponent<Player>().AttackPlayer(player.GetToolAtt());
+            if (hitObject.transform.root == this.transform.root)
+            {
+                Debug.Log("Ignore Self");
+                continue;
+            }
+
+            if (alreadyHit.Contains(hitObject.transform.root))
+            {
+                Debug.Log("Already Hit");
+                continue;
+            }
+
+            if (player.CanPVP && hitObject.TryGetComponent(out Player otherPlayer))
+            {
+                otherPlayer.AttackPlayer(player.GetToolAtt());
+                Debug.Log("Hit Player");
+                alreadyHit.Add(otherPlayer.transform.root);
             }
         }
     }
@@ -111,7 +125,7 @@ public class ToolStateManager : BaseStateManager
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.matrix = Matrix4x4.TRS(fistPos, Quaternion.identity, Vector3.one);
+        Gizmos.matrix = Matrix4x4.TRS(fistPos.position, Quaternion.identity, Vector3.one);
         Gizmos.DrawWireCube(Vector3.zero, hitBox * 2f);
     }
 
