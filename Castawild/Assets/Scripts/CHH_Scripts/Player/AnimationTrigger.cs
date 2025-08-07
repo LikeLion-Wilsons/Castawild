@@ -73,4 +73,9 @@ public class AnimationTrigger : MonoBehaviour
         if (movementManager.HasInputAuthority)
             interactUI.ActiveDeathUI(true);
     }
+
+    public void StartFalling()
+    {
+
+    }
 }

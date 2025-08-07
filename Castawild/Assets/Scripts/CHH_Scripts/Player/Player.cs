@@ -1,9 +1,7 @@
 using Fusion;
+using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
@@ -55,6 +53,8 @@ public class Player : NetworkBehaviour
     [Header("Interact")]
     [HideInInspector] public Bed currentBed;
     #endregion
+
+    public Coroutine fallingCoroutine;
 
     [Header("Networked")]
     [Networked, HideInInspector] public Vector3 RespawnPos { get; set; }
@@ -234,7 +234,7 @@ public class Player : NetworkBehaviour
         {
             currentBed.FinishSleep();
             currentBed = default;
-            cameraManager.ApplySleepCameraView(false);
+            cameraManager.AttachCameraToHead(false);
         }
     }
 
@@ -327,7 +327,7 @@ public class Player : NetworkBehaviour
     public void RPC_CursorLocked(bool isLocked) => IsCursorLocked = isLocked;
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ApplySleepCameraView() => cameraManager.ApplySleepCameraView(true);
+    public void RPC_AttachCameraToHead(bool attachCamera) => cameraManager.AttachCameraToHead(attachCamera);
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_TurnOffUI() => playerInteractUI.TurnOffUI();
@@ -376,7 +376,7 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 플레이어 공격을 받았을 때 호출
     /// </summary>
-    public void AttackPlayer(int att)
+    public void AttackPlayer(float att)
     {
         if (!HasStateAuthority || Hp <= 0)
             return;

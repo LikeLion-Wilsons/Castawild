@@ -8,6 +8,7 @@ public enum ViewType { None, FirstPerson, ThirdPerson }
 public class PlayerCameraManager : MonoBehaviour
 {
     #region Components
+    public CinemachineImpulseSource impulseSource;
     private PlayerController playerController;
     private PlayerInputManager inputManager;
     private MovementStateManager movementManager;
@@ -93,6 +94,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void InitComponents()
     {
+        impulseSource = GetComponentInParent<CinemachineImpulseSource>();
         player = GetComponentInParent<Player>();
         playerController = GetComponentInParent<PlayerController>();
         inputManager = GetComponentInParent<PlayerInputManager>();
@@ -300,9 +302,9 @@ public class PlayerCameraManager : MonoBehaviour
             thirdPersonTarget.localPosition = targetPos;
     }
 
-    public void ApplySleepCameraView(bool isSleep)
+    public void AttachCameraToHead(bool attachCamera)
     {
-        if (isSleep)
+        if (attachCamera)
         {
             firstPersonCam.Follow = playerHead.transform;
             firstPersonCam.LookAt = playerHead.transform;
@@ -312,5 +314,10 @@ public class PlayerCameraManager : MonoBehaviour
             firstPersonCam.Follow = firstPersonTarget;
             firstPersonCam.LookAt = firstPersonTarget;
         }
+    }
+
+    public void ShakeCamera()
+    {
+        impulseSource.GenerateImpulse();
     }
 }
