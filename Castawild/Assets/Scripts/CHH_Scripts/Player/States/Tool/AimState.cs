@@ -56,8 +56,6 @@ public class AimState : ToolBaseState
         {
             toolStateManager.player.isAimLocked = false;
 
-            if (toolStateManager.HasStateAuthority)
-                toolStateManager.RPC_MoveAimCamera(false);
 
             if (toolStateManager.CurrentToolType == ToolType.Bow)
             {
@@ -86,6 +84,7 @@ public class AimState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
+        toolStateManager.RPC_MoveAimCamera(false);
     }
 
     private void LookForward()
