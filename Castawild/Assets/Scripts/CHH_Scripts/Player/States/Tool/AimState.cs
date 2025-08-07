@@ -55,9 +55,7 @@ public class AimState : ToolBaseState
         else if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
             toolStateManager.player.isAimLocked = false;
-
-            if (toolStateManager.HasStateAuthority)
-                toolStateManager.RPC_MoveAimCamera(false);
+            toolStateManager.RPC_MoveAimCamera(false);
 
             if (toolStateManager.CurrentToolType == ToolType.Bow)
             {
