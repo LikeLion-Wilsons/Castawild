@@ -143,7 +143,7 @@ public class Player : NetworkBehaviour
 
             if (Hunger <= 0)
             {
-                TakeDamage(hpDecreaseRate * Runner.DeltaTime);
+                TakeDamage(false, hpDecreaseRate * Runner.DeltaTime);
                 Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
             }
             else
