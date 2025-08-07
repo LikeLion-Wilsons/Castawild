@@ -244,10 +244,12 @@ public class Player : NetworkBehaviour
     public void FinishSleep()
     {
         if (HasInputAuthority)
-        {
-            currentBed.FinishSleep();
-            currentBed = default;
             cameraManager.AttachCameraToHead(false);
+
+        if (HasStateAuthority)
+        {
+            currentBed.CanSleep = true;
+            currentBed = default;
         }
     }
 
@@ -408,4 +410,10 @@ public class Player : NetworkBehaviour
         Thirst = playerData.maxThirst * 0.2f;
         Hunger = playerData.maxHunger * 0.2f;
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_CanSleep_Bed(Bed bed, bool canSleep) => bed.CanSleep = canSleep;
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_CurrentBed(Bed bed) => currentBed = bed;
 }
