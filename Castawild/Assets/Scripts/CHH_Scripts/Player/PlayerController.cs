@@ -7,6 +7,7 @@ public sealed class PlayerController : NetworkBehaviour
 {
     public SimpleKCC kcc;
     private Player player;
+    private Rigidbody rigid;
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
     private PlayerCameraManager cameraManager;
@@ -16,6 +17,12 @@ public sealed class PlayerController : NetworkBehaviour
     public float jumpImpulse = 3f;
     public float maxSpeed = 2f;
     public float rotationSpeed = 15f;
+
+    [Header("Falling")]
+    [SerializeField] private float fallThreshold = 3f;
+    [SerializeField] private float damagePerMeter = 10f;
+    private float startY;
+    private bool isFalling;
 
     [Header("Interact")]
     [SerializeField] private float interactHeight = 10f;
@@ -51,6 +58,8 @@ public sealed class PlayerController : NetworkBehaviour
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
         if (!HasInputAuthority)
             cameraManager.SetNetworkCamera();
+
+        rigid = GetComponent<Rigidbody>();
     }
 
     public override void FixedUpdateNetwork()
@@ -60,51 +69,93 @@ public sealed class PlayerController : NetworkBehaviour
 
         if (HasStateAuthority)
         {
-            if (IsChangePos)
+            ChangePosition();
+
+            Falling();
+
+            HandleState(input);
+
+            if (!player.CanMove)
             {
-                IsChangePos = false;
-                kcc.SetPosition(ChangePos);
+                Gravity();
+                return;
             }
-
-            movementManager.SetInput(input);
-            toolManager.SetInput(input);
-
-            movementManager.currentState.UpdateState();
-            toolManager.currentState.UpdateState();
-
-            movementManager.SetPrevInputButton(input.Buttons);
-            toolManager.SetPrevInputButton(input.Buttons);
         }
 
-        if (!player.CanMove)
+        HandleMovement(input);
+
+        if (HasInputAuthority)
+            TestTryOverlap(input);
+
+        prevInputButtons = input.Buttons;
+    }
+
+    private void Falling()
+    {
+        Vector3 velocity = kcc.RealVelocity;
+
+        if (!isFalling && velocity.y < -0.1f && !Grounded)
         {
-            if (HasStateAuthority)
+            isFalling = true;
+            startY = transform.position.y;
+        }
+
+        if (isFalling && Grounded)
+        {
+            isFalling = false;
+
+            float endY = transform.position.y;
+            float fallDistance = startY - endY;
+
+            if (fallDistance > fallThreshold)
             {
-                // 중력만 적용해서 return
-                Vector3 velocity = kcc.RealVelocity;
-                velocity.y += gravity * Runner.DeltaTime;
-                kcc.Move(velocity);
-                Grounded = kcc.IsGrounded;
+                float damage = (fallDistance - fallThreshold) * damagePerMeter;
+                player.AttackPlayer(damage);
+                RPC_ShakeCamera();
             }
-            return;
         }
+    }
 
-        if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.crouchInput))
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ShakeCamera() => cameraManager.ShakeCamera();
+
+    private void HandleState(PlayerNetworkInputData input)
+    {
+        movementManager.SetInput(input);
+        toolManager.SetInput(input);
+
+        movementManager.currentState.UpdateState();
+        toolManager.currentState.UpdateState();
+
+        movementManager.SetPrevInputButton(input.Buttons);
+        toolManager.SetPrevInputButton(input.Buttons);
+    }
+
+    private void ChangePosition()
+    {
+        if (IsChangePos)
         {
-            player.AttackPlayer(40);
+            IsChangePos = false;
+            kcc.SetPosition(ChangePos);
         }
+    }
 
+    private void Gravity()
+    {
+        Vector3 velocity = kcc.RealVelocity;
+        velocity.y += gravity * Runner.DeltaTime;
+        kcc.Move(velocity);
+        Grounded = kcc.IsGrounded;
+    }
+
+    private void HandleMovement(PlayerNetworkInputData input)
+    {
         maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
         movementManager.MoveValue = input.moveValue;
 
         if (HasStateAuthority)
             Move(input.moveDir);
         Rotate(input);
-
-        if (HasInputAuthority)
-            TestTryOverlap(input);
-
-        prevInputButtons = input.Buttons;
     }
 
     public void Move(Vector3 direction)

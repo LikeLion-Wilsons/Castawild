@@ -73,6 +73,7 @@ GameObject:
   - component: {fileID: 7897038115889330701}
   - component: {fileID: 3849144779001713377}
   - component: {fileID: 4280083132703486045}
+  - component: {fileID: 6518889875519657115}
   m_Layer: 0
   m_Name: FirstPersonCam
   m_TagString: Untagged
@@ -159,6 +160,30 @@ MonoBehaviour:
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
   FollowOffset: {x: 0, y: 0, z: 0}
+--- !u!114 &6518889875519657115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 380963293214476524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00b2d199b96b516448144ab30fb26aed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ApplyAfter: 2
+  ChannelMask: 1
+  Gain: 1
+  Use2DDistance: 0
+  UseCameraSpace: 1
+  SignalCombinationMode: 0
+  ReactionSettings:
+    m_SecondaryNoise: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    Duration: 1
+    m_NoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1 &401308779718830453
 GameObject:
   m_ObjectHideFlags: 0
@@ -920,6 +945,7 @@ GameObject:
   - component: {fileID: 1706552347776469061}
   - component: {fileID: 5262230604855864005}
   - component: {fileID: 2950864819415640016}
+  - component: {fileID: 1338470713237604662}
   - component: {fileID: 5554648386053636451}
   m_Layer: 0
   m_Name: ThirdPersonCam
@@ -1078,6 +1104,30 @@ MonoBehaviour:
     Time: 0
     Smoothing: 0
     IgnoreY: 0
+--- !u!114 &1338470713237604662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2344188678965562170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00b2d199b96b516448144ab30fb26aed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ApplyAfter: 2
+  ChannelMask: 1
+  Gain: 1
+  Use2DDistance: 0
+  UseCameraSpace: 1
+  SignalCombinationMode: 0
+  ReactionSettings:
+    m_SecondaryNoise: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    Duration: 1
+    m_NoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!114 &5554648386053636451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2790,6 +2840,7 @@ GameObject:
   - component: {fileID: 6363259293620697004}
   - component: {fileID: 4022685551630965951}
   - component: {fileID: 1934811449108985206}
+  - component: {fileID: 1517099654388170568}
   m_Layer: 6
   m_Name: NetworkPlayer
   m_TagString: Player
@@ -2960,6 +3011,8 @@ MonoBehaviour:
   jumpImpulse: 3
   maxSpeed: 2
   rotationSpeed: 15
+  fallThreshold: 13
+  damagePerMeter: 10
   interactHeight: 10
   thirdPersonInteractPos: {fileID: 7467696255462433047}
   interactRadius: 1
@@ -2968,6 +3021,8 @@ MonoBehaviour:
     m_Bits: 256
   currentInteractObject: {fileID: 0}
   _Grounded: 0
+  _ChangePos: {x: 0, y: 0, z: 0}
+  _IsChangePos: 0
 --- !u!114 &3318766871343913700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3006,7 +3061,6 @@ MonoBehaviour:
     m_Bits: 8
   fallMultiplier: 1.5
   animationLerpSpeed: 10
-  isTriggerSet: 0
   isLyingOrGettingUp: 0
   _Revived: 0
   _CurrentMoveState: 0
@@ -3102,7 +3156,6 @@ MonoBehaviour:
   _CurrentToolUseState: 0
   _CurrentToolType: 0
   _RayTargetPos: {x: 0, y: 0, z: 0}
-  isTriggerSet: 0
 --- !u!114 &6363259293620697004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3192,6 +3245,59 @@ MonoBehaviour:
   - {fileID: 0}
   inventoryItemPrefab: {fileID: 0}
   _itemList: []
+--- !u!114 &1517099654388170568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ImpulseDefinition:
+    ImpulseChannel: 1
+    ImpulseShape: 3
+    CustomImpulseShape:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    ImpulseDuration: 0.2
+    ImpulseType: 0
+    DissipationRate: 0.25
+    RawSignal: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    RepeatMode: 0
+    Randomize: 1
+    TimeEnvelope:
+      AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      AttackTime: 0
+      SustainTime: 0.2
+      DecayTime: 0.7
+      ScaleWithImpact: 1
+      HoldForever: 0
+    ImpactRadius: 100
+    DirectionMode: 0
+    DissipationMode: 2
+    DissipationDistance: 100
+    PropagationSpeed: 343
+  DefaultVelocity: {x: 0, y: -1, z: 0}
 --- !u!1 &7288379860564303627
 GameObject:
   m_ObjectHideFlags: 0
@@ -3496,6 +3602,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a259483ff64fac74cbbb982d9d2fb0b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  impulseSource: {fileID: 0}
   isAiming: 0
   currentView: 1
   sensitivity: 0.5

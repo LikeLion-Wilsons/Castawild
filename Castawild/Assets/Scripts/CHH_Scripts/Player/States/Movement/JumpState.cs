@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class JumpState : MovementBaseState
 {
+    float fallingElapsed = 0f;
     public JumpState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
         : base(_movementManager, _inputManager)
     {
@@ -17,6 +18,8 @@ public class JumpState : MovementBaseState
         else if (movementManager.previousState == movementManager.walkState
             || movementManager.previousState == movementManager.runState)
             movementManager.CurrentMoveState = MoveAnimationState.RunJump;
+
+        fallingElapsed = 0f;
     }
 
     public override void UpdateState()
