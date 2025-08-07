@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Chest : InteractableObject
 {
-    [Networked] private bool CanOpen { get; set; } = true;
+    [Networked] public bool CanOpen { get; set; } = true;
     Canvas_Holder canvasHolder;
     public Player player;
     ChestDataManager chestData;
@@ -48,7 +48,7 @@ public class Chest : InteractableObject
             if (Object.HasStateAuthority)
                 CanOpen = false;
             else if (player.HasInputAuthority)
-                RPC_SetCanOpen(false);
+                inventoryData.RPC_SetCanOpen(this,false);
         }
     }
 
@@ -70,7 +70,7 @@ public class Chest : InteractableObject
         }
         else if (player.HasInputAuthority) //클라이언트에서
         {
-            RPC_SetCanOpen(true);
+            inventoryData.RPC_SetCanOpen(this, true);
             Debug.Log("클라이언트 inventory -> chest");
             inventoryData.RPC_RequestStoreToChest(chestData);
         }
@@ -89,11 +89,4 @@ public class Chest : InteractableObject
             index++;
         }
     }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_SetCanOpen(bool tof)
-    {
-        CanOpen = tof;
-    }
-
 }
