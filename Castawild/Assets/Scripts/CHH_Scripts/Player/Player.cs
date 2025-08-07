@@ -20,8 +20,10 @@ public class Player : NetworkBehaviour
     [Networked] public float Thirst { get; set; }
     [Networked] public float Temperature { get; set; }
 
+    public float hpDecreaseRate = 0.5f;
     public float staminaIncreaseRate = 2f;
-    public float staminaDecreaseRate = 1f;
+    public float staminaHungerDecreaseRate = 3f;
+    public float staminaRunDecreaseRate = 1f;
     public float hungerDecreaseRate = 1f;
     public float thirstDecreaseRate = 1f;
 
@@ -135,6 +137,15 @@ public class Player : NetworkBehaviour
         {
             Hunger -= hungerDecreaseRate * Runner.DeltaTime;
             Thirst -= thirstDecreaseRate * Runner.DeltaTime;
+
+            if (Thirst <= 0)
+                Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
+
+            if (Hunger <= 0)
+            {
+                Hp -= hpDecreaseRate * Runner.DeltaTime;
+                Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
+            }
 
             if (toolStateManager.CanRecoverStamina() && movementManager.CanRecoverStamina())
             {
