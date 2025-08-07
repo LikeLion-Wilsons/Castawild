@@ -17,16 +17,16 @@ public class InventoryDataManager : NetworkBehaviour
     public float scrollCooldown = 0.1f; // 100ms
     [SerializeField] GameObject playerUIPrefab; // 인스펙터에 연결
     public GameObject UICanvas;
-
-    public GameObject chest;//테스트용
+   
     [Networked, Capacity(50)] public NetworkLinkedList<Item> itemList => default;
 
-    // 수정한 부분
     private Player player;
+
+    [Header("테스트용")]
+    public GameObject chest;//나중에 삭제
 
     public override void Spawned()
     {
-        // 수정한 부분
         ChangeSelectedSlot(0);
 
         if (Object.HasStateAuthority)
@@ -144,12 +144,14 @@ public class InventoryDataManager : NetworkBehaviour
         {
             if (scroll > 0f)
             {
+                if (player.toolStateManager.CurrentToolUseState == ToolAnimationState.Idle);
                 int next = (selectedSlot - 1 + maxSlotCount) % maxSlotCount;
                 ChangeSelectedSlot(next);
                 nextScrollTime = Time.time + scrollCooldown;
             }
             else if (scroll < 0f)
             {
+                if (player.toolStateManager.CurrentToolUseState == ToolAnimationState.Idle) ;
                 int next = (selectedSlot + 1) % maxSlotCount;
                 ChangeSelectedSlot(next);
                 nextScrollTime = Time.time + scrollCooldown;
@@ -174,7 +176,7 @@ public class InventoryDataManager : NetworkBehaviour
         {
             RPC_UseSelectedItem(1);
         }
-        
+
         //테스트용
         if (Object.HasInputAuthority && Input.GetKeyDown(KeyCode.B))
         {
@@ -252,7 +254,7 @@ public class InventoryDataManager : NetworkBehaviour
         int index = 29;
         for (int i = 0; i < 16; i++)
         {
-            chestData.RPC_SetItem(i,itemList[index]);
+            chestData.RPC_SetItem(i, itemList[index]);
             index++;
         }
         Debug.Log("RPC_RequestStoreToChest");
@@ -290,6 +292,9 @@ public class InventoryDataManager : NetworkBehaviour
     // 아이템 획득
     public bool GetItem(int id, int amount)
     {
+        if (HasInputAuthority & id == 201)
+            player.RPC_HasArrow(true);
+
         // 이미 존재하는 아이템이면 개수만 증가
         for (int i = 0; i < itemList.Count; i++)
         {
@@ -352,7 +357,7 @@ public class InventoryDataManager : NetworkBehaviour
     {
         if (indexA >= itemList.Count || indexB >= itemList.Count) return;
 
-        Debug.Log("Swap "+indexA +" "+indexB);
+        Debug.Log("Swap " + indexA + " " + indexB);
 
         // 슬롯 수 부족할 경우 확장
         while (itemList.Count <= Mathf.Max(indexA, indexB))
