@@ -255,7 +255,7 @@ public class InventoryDataManager : NetworkBehaviour
             chestData.RPC_SetItem(i,itemList[index]);
             index++;
         }
-        Debug.Log("inventory -> chest");
+        Debug.Log("RPC_RequestStoreToChest");
         RPC_UpdateInventoryUI();
     }
 
@@ -353,18 +353,6 @@ public class InventoryDataManager : NetworkBehaviour
         if (indexA >= itemList.Count || indexB >= itemList.Count) return;
 
         Debug.Log("Swap "+indexA +" "+indexB);
-
-        //// 두 인덱스가 전부 보관함(상자) 영역일 경우
-        //bool isAChest = indexA >= 29;
-        //bool isBChest = indexB >= 29;
-
-
-        //// A와 B 모두 보관함일 경우 → ChestDataManager에서 스왑
-        //if (isAChest && isBChest)
-        //{
-        //    canvasHolder.currentOpenedChest.SwapItems(indexA - 29, indexB - 29); // 상자 내 인덱스로 조정
-        //    return;
-        //}
 
         // 슬롯 수 부족할 경우 확장
         while (itemList.Count <= Mathf.Max(indexA, indexB))

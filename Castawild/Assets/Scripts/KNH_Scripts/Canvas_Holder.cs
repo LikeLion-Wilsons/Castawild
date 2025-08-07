@@ -47,9 +47,12 @@ public class Canvas_Holder : MonoBehaviour
             if (part.name == "HotBar") continue;
             part.Close(player.inputManager);
         }
-        if(currentOpenedChest != null)
+        if (currentOpenedChest != null)
         {
             currentOpenedChest.GetComponent<Chest>().FinishInteract();
+            ChestDataManager chestData = currentOpenedChest.GetComponent<ChestDataManager>();
+            if (player.HasInputAuthority)
+                player.GetComponent<InventoryDataManager>().RPC_RequestStoreToChest(chestData);
         }
     }
 

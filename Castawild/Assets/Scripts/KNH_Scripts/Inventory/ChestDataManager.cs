@@ -29,14 +29,6 @@ public class ChestDataManager : NetworkBehaviour
         }
         player = GetComponent<Chest>().player;
 
-        if (Object.HasInputAuthority)
-        {
-            //NetworkObject playerObj = Runner.GetPlayerObject(Object.InputAuthority);
-            //uiCanvas = playerObj.GetComponent<InventoryDataManager>().UICanvas;
-            //uiInventory = uiCanvas.GetComponentInChildren<UIInventory>();
-            //uiInventory.BindToInventoryData(this);
-        }
-
         chest = GetComponent<Chest>();
         isSpawned = true;
         
@@ -45,7 +37,7 @@ public class ChestDataManager : NetworkBehaviour
     public void RPC_SetItem(int index, Item item)
     {
         itemList.Set(index, item);
-        Debug.Log(itemList[index]);
+        Debug.Log("RPC_SetItem");
     }
 
     public void SwapItems(int indexA, int indexB)

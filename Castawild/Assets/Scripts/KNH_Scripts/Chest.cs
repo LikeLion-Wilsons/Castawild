@@ -40,14 +40,6 @@ public class Chest : InteractableObject
 
         //chest -> inventory
         inventoryData.RPC_SetItemFromChest(chestData);
-        //int index = 0;
-        //for (int i = 29; i < 45; i++)
-        //{
-        //    inventoryData.RPC_SetItem(i, chestData.itemList[index]);
-        //    index++;
-        //}
-        //inventoryData.RPC_UpdateInventoryUI();
-
 
         if (CanOpen)
         {
@@ -60,24 +52,19 @@ public class Chest : InteractableObject
 
     public void FinishInteract()
     {
-
         int index = 29;
         if (Object.HasStateAuthority)
         {
             CanOpen = true;
-            //inventory -> chest
 
+            Debug.Log("inventory -> chest");
             for (int i = 0; i < 16; i++)
             {
-                chestData.RPC_SetItem(i, inventoryData.itemList[index]);
+                chestData.itemList.Set(i, inventoryData.itemList[index]);
                 index++;
             }
-            Debug.Log("inventory -> chest");
             inventoryData.RPC_UpdateInventoryUI();
         }
-            
-            //inventoryData.RPC_RequestStoreToChest(chestData);
-
 
         index = 0;
         //inventory 초기화
@@ -93,11 +80,5 @@ public class Chest : InteractableObject
             index++;
         }
     }
-    //// 클라이언트에서 호스트에 요청
-    //[Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    //public void RPC_RequestChestOpen()
-    //{
-    //    player.GetComponent<InventoryDataManager>().RPC_SetItemFromChest(chestData);
-    //}
 
 }
