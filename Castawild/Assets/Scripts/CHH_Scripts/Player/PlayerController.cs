@@ -88,7 +88,7 @@ public sealed class PlayerController : NetworkBehaviour
         if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
         {
             Debug.Log("AttackPlayer");
-            player.AttackPlayer(30f);
+            player.TakeDamage(30f);
         }
 
         HandleMovement(input);
@@ -117,7 +117,7 @@ public sealed class PlayerController : NetworkBehaviour
             if (fallingElapsed > fallingDeadTime)
             {
                 fallingElapsed = 0f;
-                player.AttackPlayer(10000f);
+                player.TakeDamage(10000f);
             }
         }
 
@@ -132,7 +132,7 @@ public sealed class PlayerController : NetworkBehaviour
             if (fallDistance > fallThreshold)
             {
                 float damage = (fallDistance - fallThreshold) * damagePerMeter;
-                player.AttackPlayer(damage);
+                player.TakeDamage(damage);
                 RPC_ShakeCamera();
             }
         }

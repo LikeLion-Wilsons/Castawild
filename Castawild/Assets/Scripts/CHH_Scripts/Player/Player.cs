@@ -143,7 +143,7 @@ public class Player : NetworkBehaviour
 
             if (Hunger <= 0)
             {
-                Hp -= hpDecreaseRate * Runner.DeltaTime;
+                TakeDamage(hpDecreaseRate * Runner.DeltaTime);
                 Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
             }
             else
@@ -381,7 +381,7 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 플레이어 공격을 받았을 때 호출
     /// </summary>
-    public void AttackPlayer(float att)
+    public void TakeDamage(float att)
     {
         if (!HasStateAuthority || Hp <= 0)
             return;
