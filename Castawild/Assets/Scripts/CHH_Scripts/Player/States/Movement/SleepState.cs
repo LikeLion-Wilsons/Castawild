@@ -17,20 +17,20 @@ public class SleepState : MovementBaseState
         movementManager.CanWakeUp = false;
 
         movementManager.playerController.RPC_FreezePosition(true);
-        movementManager.player.RPC_TurnOffUI();
-        movementManager.player.RPC_AttachCameraToHead(true);
+        movementManager.player.RPC_ApplyTurnOffUI();
+        movementManager.player.RPC_ApplyAttachCameraToHead(true);
     }
 
     public override void UpdateState()
     {
         if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.interactInput)
             && movementManager.CanWakeUp)
-            movementManager.ChangeState(MovementState.Idle);
+            movementManager.Host_ChangeState(MovementState.Idle);
     }
 
     public override void ExitState()
     {
-        movementManager.player.RPC_TurnOffUI();
-        movementManager.player.RPC_AttachCameraToHead(false);
+        movementManager.player.RPC_ApplyTurnOffUI();
+        movementManager.player.RPC_ApplyAttachCameraToHead(false);
     }
 }

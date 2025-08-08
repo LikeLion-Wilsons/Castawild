@@ -32,7 +32,7 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private Transform thirdPersonInteractPos;
     [SerializeField] private float interactRadius = 1f;
     [SerializeField] private LayerMask interactLayer;
-    [HideInInspector] public EnvironmentObject currentInteractObject;
+    [HideInInspector] public EnvironmentObject Client_currentInteractObject;
 
     [Networked, HideInInspector] public bool Grounded { get; set; }
     [Networked, HideInInspector] public Vector3 ChangePos { get; set; }
@@ -53,10 +53,10 @@ public sealed class PlayerController : NetworkBehaviour
 
         player = GetComponent<Player>();
         movementManager = GetComponent<MovementStateManager>();
-        movementManager.ChangeState(MovementState.Idle);
+        movementManager.Host_ChangeState(MovementState.Idle);
 
         toolManager = GetComponent<ToolStateManager>();
-        toolManager.ChangeState(ToolState.Idle);
+        toolManager.Host_ChangeState(ToolState.Idle);
 
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
         if (!HasInputAuthority)
@@ -179,7 +179,7 @@ public sealed class PlayerController : NetworkBehaviour
 
     private void HandleMovement(PlayerNetworkInputData input)
     {
-        maxSpeed = player.CanMoving() ? movementManager.currentMoveSpeed : 0f;
+        maxSpeed = player.All_CanMoving() ? movementManager.currentMoveSpeed : 0f;
         movementManager.MoveValue = input.moveValue;
 
         if (HasStateAuthority)
@@ -226,7 +226,7 @@ public sealed class PlayerController : NetworkBehaviour
             Quaternion yaw = Quaternion.Euler(0, input.lookValue.x * cameraManager.sensitivity, 0);
             kcc.SetLookRotation(kcc.Transform.rotation * yaw);
         }
-        else if (input.currentView == ViewType.ThirdPerson && (input.moveValue.sqrMagnitude > 0.001f || toolManager.IsAiming()))
+        else if (input.currentView == ViewType.ThirdPerson && (input.moveValue.sqrMagnitude > 0.001f || toolManager.All_IsAiming()))
         {
             if (input.camForward == Vector3.zero)
                 return;
@@ -244,8 +244,8 @@ public sealed class PlayerController : NetworkBehaviour
     {
         kcc.Render();
 
-        movementManager.UpdateMoveAnimation(Runner.DeltaTime);
-        toolManager.UpdateMoveAnimation();
+        movementManager.All_UpdateMoveAnimation(Runner.DeltaTime);
+        toolManager.All_UpdateMoveAnimation();
     }
 
     private void TestTryOverlap(PlayerNetworkInputData input)
@@ -271,7 +271,7 @@ public sealed class PlayerController : NetworkBehaviour
                     if (interactable.CanInteract())
                     {
                         player.playerInteractUI.InteractUI(interactable.interactableType);
-                        currentInteractObject = interactable;
+                        Client_currentInteractObject = interactable;
                         break;
                     }
                 }
@@ -303,7 +303,7 @@ public sealed class PlayerController : NetworkBehaviour
         else
         {
             player.playerInteractUI.InteractUI();
-            currentInteractObject = null;
+            Client_currentInteractObject = null;
         }
 
         Debug.DrawLine(point1, point2, Color.green, 1f);
@@ -336,21 +336,21 @@ public sealed class PlayerController : NetworkBehaviour
         }
     }
 
-    public void Interact()
+    public void Client_Interact()
     {
-        if (currentInteractObject == null)
+        if (Client_currentInteractObject == null)
             return;
-        if (currentInteractObject.interactableType == InteractableType.Tree && currentInteractObject.CanInteract())
+        if (Client_currentInteractObject.interactableType == InteractableType.Tree && Client_currentInteractObject.CanInteract())
         {
-            int att = player.GetToolAtt("Axe");
+            int att = player.All_GetToolAtt("Axe");
             Debug.Log("Player Att : " + att);
-            currentInteractObject?.Interact(Object.InputAuthority, att);
+            Client_currentInteractObject?.Interact(Object.InputAuthority, att);
         }
-        else if (currentInteractObject.interactableType == InteractableType.Stone && currentInteractObject.CanInteract())
+        else if (Client_currentInteractObject.interactableType == InteractableType.Stone && Client_currentInteractObject.CanInteract())
         {
-            int att = player.GetToolAtt("Pickaxe");
+            int att = player.All_GetToolAtt("Pickaxe");
             Debug.Log("Player Att : " + att);
-            currentInteractObject?.Interact(Object.InputAuthority, att);
+            Client_currentInteractObject?.Interact(Object.InputAuthority, att);
         }
     }
 

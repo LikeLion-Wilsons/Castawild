@@ -18,7 +18,7 @@ public class RunState : MovementBaseState
     {
         if (movementManager.Stamina <= 0)
         {
-            movementManager.ChangeState(MovementState.Walk);
+            movementManager.Host_ChangeState(MovementState.Walk);
             return;
         }
         else
@@ -26,22 +26,22 @@ public class RunState : MovementBaseState
 
         // Walk
         if (movementManager.input.IsUp(PlayerNetworkInputData.sprintInput) || movementManager.Stamina <= 0)
-            movementManager.ChangeState(MovementState.Walk);
+            movementManager.Host_ChangeState(MovementState.Walk);
 
         // Idle
         else if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
-            movementManager.ChangeState(MovementState.Idle);
+            movementManager.Host_ChangeState(MovementState.Idle);
 
         // Crouch
         else if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.crouchInput))
-            movementManager.ChangeState(MovementState.Crouch);
+            movementManager.Host_ChangeState(MovementState.Crouch);
 
         // Jump
         if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.CanJump)
         {
             movementManager.CanJump = false;
             movementManager.previousState = this;
-            movementManager.ChangeState(MovementState.Jump);
+            movementManager.Host_ChangeState(MovementState.Jump);
         }
     }
 

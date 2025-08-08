@@ -17,7 +17,7 @@ public class GetHitState : MovementBaseState
     public override void UpdateState()
     {
         if (movementManager.IsAnimationFinished == true)
-            movementManager.ChangeState(MovementState.Idle);
+            movementManager.Host_ChangeState(MovementState.Idle);
     }
 
     public override void ExitState()

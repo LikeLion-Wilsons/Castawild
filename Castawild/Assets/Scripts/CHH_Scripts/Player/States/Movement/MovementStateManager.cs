@@ -24,7 +24,7 @@ public class MovementStateManager : BaseStateManager
     public GetHitState getHitState;
     public DeathState deathState;
     public Dictionary<MovementState, MovementBaseState> movementStateDict;
-    public MovementBaseState currentState_Host; // 호스트용 변수
+    public MovementBaseState Host_currentState; // 호스트용 변수
     #endregion
 
     #region Movement
@@ -111,23 +111,29 @@ public class MovementStateManager : BaseStateManager
 
     public override void Spawned()
     {
-        ChangeState(MovementState.Idle);
+        Host_ChangeState(MovementState.Idle);
     }
 
-    public void ChangeState(MovementState newState)
+    /// <summary>
+    /// 상태 변경
+    /// </summary>
+    public void Host_ChangeState(MovementState newState)
     {
         if (!HasStateAuthority)
             return;
 
-        currentState_Host?.ExitState();
+        Host_currentState?.ExitState();
         CurrentMoveState = newState;
-        currentState_Host = movementStateDict[CurrentMoveState];
-        currentState_Host.EnterState();
+        Host_currentState = movementStateDict[CurrentMoveState];
+        Host_currentState.EnterState();
     }
 
-    public void UpdateMoveAnimation(float deltaTime)
+    /// <summary>
+    /// 애니메이션 업데이트
+    /// </summary>
+    public void All_UpdateMoveAnimation(float deltaTime)
     {
-        if (player.CanMoving())
+        if (player.All_CanMoving())
         {
             anim.SetFloat("Horizontal", MoveValue.x, 0.1f, deltaTime);
             anim.SetFloat("Vertical", MoveValue.y, 0.1f, deltaTime);
@@ -180,7 +186,7 @@ public class MovementStateManager : BaseStateManager
                 break;
         }
 
-        if (player.CanMoving())
+        if (player.All_CanMoving())
         {
             // 이 부분 없으면 착지할 때 애니메이션 전환 이상함
             if (input.moveValue != Vector2.zero)
@@ -194,7 +200,6 @@ public class MovementStateManager : BaseStateManager
         anim.SetBool("Falling", !playerController.Grounded);
     }
 
-
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -202,30 +207,9 @@ public class MovementStateManager : BaseStateManager
     }
 
     /// <summary>
-    /// 음식같은걸로 속도 바꿀 때 호출
+    /// 달릴 수 있는 기력 체크
     /// </summary>
-    public void ChangeMoveSpeedValues(float value, bool isIncreasing)
-    {
-        if (isIncreasing)
-        {
-            walkSpeed += value;
-            runSpeed += value;
-            crouchSpeed += value;
-        }
-        else
-        {
-            walkSpeed -= value;
-            runSpeed -= value;
-        }
-    }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_ChangeSleepState(PlayerRef playerRef)
-    {
-        ChangeState(MovementState.Sleep);
-    }
-
-    public bool HasEnoughStaminaToRun()
+    public bool All_HasEnoughStaminaToRun()
     {
         if (Stamina <= player.playerData.maxStamina * 0.3f)
             return false;
@@ -233,14 +217,27 @@ public class MovementStateManager : BaseStateManager
         return true;
     }
 
-    public bool IsDeath() => CurrentMoveState == MovementState.Death;
+    /// <summary>
+    /// 스테미나 회복가능한지 확인
+    /// </summary>
+    public bool All_CanRecoverStamina() => CurrentMoveState != MovementState.Run && CurrentMoveState != MovementState.Death;
 
+    /// <summary>
+    /// Sleep 상태로 변경하는 RPC
+    /// </summary>
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_Revived()
+    public void RPC_RequestChangeSleepState(PlayerRef playerRef)
     {
-        ChangeState(MovementState.Idle);
-        player.Revived();
+        Host_ChangeState(MovementState.Sleep);
     }
 
-    public bool CanRecoverStamina() => CurrentMoveState != MovementState.Run && CurrentMoveState != MovementState.Death;
+    /// <summary>
+    /// 부활하는 RPC
+    /// </summary>
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestRevived()
+    {
+        Host_ChangeState(MovementState.Idle);
+        player.Revived();
+    }
 }

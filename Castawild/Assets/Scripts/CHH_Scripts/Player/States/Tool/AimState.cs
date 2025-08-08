@@ -19,9 +19,9 @@ public class AimState : ToolBaseState
 
         // Movement상태
         if (toolStateManager.movementManager.CurrentMoveState == MovementState.Run)
-            toolStateManager.movementManager.ChangeState(MovementState.Walk);
+            toolStateManager.movementManager.Host_ChangeState(MovementState.Walk);
 
-        toolStateManager.StartAim(true);
+        toolStateManager.Host_StartAim(true);
     }
 
     public override void UpdateState()
@@ -36,15 +36,15 @@ public class AimState : ToolBaseState
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
         {
             if (toolStateManager.CurrentToolType == ToolType.Bow)
-                toolStateManager.RPC_BowShootAnimation();
+                toolStateManager.RPC_NotifyBowShootAnimation();
 
-            toolStateManager.ChangeState(ToolState.UseTool);
+            toolStateManager.Host_ChangeState(ToolState.UseTool);
         }
 
         else if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
-            toolStateManager.StartAim(false);
-            toolStateManager.ChangeState(ToolState.Idle);
+            toolStateManager.Host_StartAim(false);
+            toolStateManager.Host_ChangeState(ToolState.Idle);
         }
     }
 

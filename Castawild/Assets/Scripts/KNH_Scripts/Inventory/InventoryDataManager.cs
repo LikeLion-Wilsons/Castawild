@@ -309,7 +309,7 @@ public class InventoryDataManager : NetworkBehaviour
     public bool GetItem(int id, int amount)
     {
         if (HasInputAuthority & id == 201)
-            player.RPC_HasArrow(true);
+            player.RPC_NotifyHasArrow(true);
 
         // 이미 존재하는 아이템이면 개수만 증가
         for (int i = 0; i < itemList.Count; i++)

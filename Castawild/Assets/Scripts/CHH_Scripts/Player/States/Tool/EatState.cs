@@ -21,7 +21,7 @@ public class EatState : ToolBaseState
     public override void UpdateState()
     {
         if (toolStateManager.IsAnimationFinished)
-            toolStateManager.ChangeState(ToolState.Idle);
+            toolStateManager.Host_ChangeState(ToolState.Idle);
     }
 
     public override void ExitState()
