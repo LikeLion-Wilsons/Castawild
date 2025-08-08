@@ -4,7 +4,7 @@ using UnityEngine;
 public class Campfire : InteractableObject
 {
     [Networked] private bool CanOpen { get; set; } = true;
-    Canvas_Holder canvasHolder;
+    UI_Manager canvasHolder;
 
     private void Awake()
     {

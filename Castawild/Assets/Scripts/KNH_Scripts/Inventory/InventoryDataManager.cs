@@ -9,7 +9,7 @@ public delegate void OnItemGet();
 public class InventoryDataManager : NetworkBehaviour
 {
     [SerializeField] int maxStackCount;//아이템 최대 스택 개수
-    public Canvas_Holder canvasHolder;
+    public UI_Manager canvasHolder;
     private UIInventory uiInventory;
     private UITable uiTable;
     [SerializeField] GameObject itemBox;
@@ -54,7 +54,7 @@ public class InventoryDataManager : NetworkBehaviour
             uiTable = uiCanvas.GetComponentInChildren<UITable>();
             uiTable.BindToInventoryData(this);
 
-            canvasHolder = uiCanvas.GetComponent<Canvas_Holder>();
+            canvasHolder = uiCanvas.GetComponent<UI_Manager>();
             player = GetComponent<Player>();
             canvasHolder.SetPlayer(player);
 
