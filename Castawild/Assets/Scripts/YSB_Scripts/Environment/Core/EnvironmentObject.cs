@@ -44,7 +44,7 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, INetwork
         Health = MaxHP;
     }
 
-    protected void Die()
+    protected void  Die()
     {
         ReviveTimer = TickTimer.CreateFromSeconds(Runner, reviveTime);
     }

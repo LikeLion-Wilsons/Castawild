@@ -42,7 +42,7 @@ namespace YSB_Scripts
             if (Health > 0)
             {
                 float ratio = MaxHP > 0 ? (float)Health / MaxHP : 0;
-                string log = $"Tree[{InstanceId}] Health: {Health}/{MaxHP} ({ratio:P})";
+                string log = $"Stone[{InstanceId}] Health: {Health}/{MaxHP} ({ratio:P})";
                 NetworkLogManager.Instance.Log(log, player);
             }
             else
