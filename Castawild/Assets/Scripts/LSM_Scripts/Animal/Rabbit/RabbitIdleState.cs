@@ -1,14 +1,11 @@
-using Polyperfect.Common;
-using TMPro;
-using UnityEngine;
-using UnityEngine.AI;
+using UnityEngine; 
 
 /// <summary>
-/// 평상시 토끼를 나타내는 클래스
+/// 돌아다니는 평상시 토끼를 나타내는 클래스
 /// </summary>
 public class RabbitIdleState : RabbitState
 {  
-    public RabbitIdleState(RabbitAnim _rabbitAnim, AnimalStateMachine _stateMachine, CwRabbit _animalObject, string _animBoolName) : base(_rabbitAnim, _stateMachine, _animalObject, _animBoolName)     
+    public RabbitIdleState(RabbitAnim _rabbitAnim, AnimalStateMachine _stateMachine, CwRabbit _rabbitObject, string _animBoolName) : base(_rabbitAnim, _stateMachine, _rabbitObject, _animBoolName)     
     { 
     } 
     protected override void Awake()
@@ -29,15 +26,14 @@ public class RabbitIdleState : RabbitState
         base.Update();
         if (rabbitObject.IsPlayerDetection() != null) 
         {
-            stateMachine.ChangeState(rabbitAnim.alertState);
+            ChangeAlertState();
             return;
         }
         
         if (rabbitAnim.IdleMoveing)
         {
             rabbitAnim.anim.SetBool("IdleMove", true);
-
-            // 타겟이 아직 없으면 한 번만 설정
+             
             if (targetPosition == Vector3.zero)
             {  
                 rabbitAnim.agent.speed = animalObject.MoveSpeed;

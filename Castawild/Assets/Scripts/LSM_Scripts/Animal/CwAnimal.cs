@@ -159,7 +159,7 @@ public class CwAnimal : CwCharacter
     { 
     }
     /// <summary>    
-    /// [동물 공통 기능] 플레이어 감지 
+    /// [동물 공통 기능]
     /// 플레이어가 감지되면 거리를 반환하고, 감지되지 않으면 null 반환
     /// </summary>
     public virtual float? IsPlayerDetection()
@@ -180,6 +180,27 @@ public class CwAnimal : CwCharacter
     }
 
     /// <summary>
+    /// [동물 공통 기능]
+    /// 플레이어가 감지되면 해당 위치를 반환하고, 감지되지 않으면 null 반환
+    /// </summary>
+    public virtual Vector3 GetPlayerPosition()
+    {
+        Collider[] targets = Physics.OverlapSphere(transform.position, maxDetectionRadius, playerLayer);
+
+        foreach (Collider target in targets)
+        {
+            Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
+            float distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
+
+            if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleLayer))
+            {
+                return target.transform.position;
+            }
+        }
+        return Vector3.zero; // 플레이어가 감지되지 않으면 제자리 반환
+    }
+
+    /// <summary>
     /// 감지 범위 표시
     /// </summary>
     private void OnDrawGizmosSelected()
@@ -193,7 +214,7 @@ public class CwAnimal : CwCharacter
     }
 
     /// <summary>
-    /// [동물 공통 기능] 랜덤 위치 이동기능
+    /// [동물 공통 기능] 랜덤 위치 이동
     /// </summary>
     public virtual Vector3 RandomNavSphere(Vector3 origin, float minDist, float maxDist, int layermask)
     {

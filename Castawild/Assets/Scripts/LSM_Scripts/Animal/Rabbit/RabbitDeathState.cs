@@ -5,13 +5,11 @@ using UnityEngine;
 /// </summary>
 public class RabbitDeathState : RabbitState
 {  
-    public RabbitDeathState(RabbitAnim _animalAnim, AnimalStateMachine _stateMachine, CwRabbit _animalObject, string _animBoolName) : base(_animalAnim, _stateMachine, _animalObject, _animBoolName)     
+    public RabbitDeathState(RabbitAnim _rabbitAnim, AnimalStateMachine _stateMachine, CwRabbit _rabbitObject, string _animBoolName) : base(_rabbitAnim, _stateMachine, _rabbitObject, _animBoolName)     
     { 
-    } 
-
+    }  
     public override void Enter()
-    {
-        //현재 state 디버그
+    { 
         Debug.Log("RabbitDeathState Enter");
         base.Enter();
     }
@@ -24,6 +22,5 @@ public class RabbitDeathState : RabbitState
     public override void Exit()
     { 
         base.Exit();
-    }
-     
+    } 
 }

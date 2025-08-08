@@ -9,7 +9,9 @@ public class AnimalState
     #region Components // Animal의 인스펙터에 있는 컴포넌트들
     protected AnimalStateMachine stateMachine;
     protected AnimalAnim animalAnim; 
-    protected CwAnimal animalObject;     
+    protected CwAnimal animalObject;
+    protected Vector3 targetPosition = Vector3.zero;
+
     #endregion
 
     #region Variables // 상태를 나타내는 변수들

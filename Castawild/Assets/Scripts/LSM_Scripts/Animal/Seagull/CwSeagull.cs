@@ -5,18 +5,14 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 /// <summary>
 /// 논플레이어블 캐릭터 클래스
 /// </summary>
-public class CwRabbit : CwAnimal
+public class CwSeagull : CwAnimal
 {
     // Animal 전용 필드 추가
-    // 추후 선공몹 비선공몹으로 다시 나눌 예정
-    #region Rabbit Info  
-    protected Vector3 homeCenter;
-    protected float homeRadius = 5f; // 집 영역 반경 
+    #region Seagull Info   
+    protected SeagullAnim seagullAnim; // 갈메기 애니메이션 클래스
     #endregion
 
-    #region Setters and Getters
-    public Vector3 HomeCenter => homeCenter;
-    public float HomeRadius => homeRadius;
+    #region Setters and Getters 
     #endregion
 
     public override void Initialize(CharacterData baseData)
@@ -26,8 +22,7 @@ public class CwRabbit : CwAnimal
 
     protected override void Awake()
     {
-        AddrPath = "Assets/Scriptable Objects/Rabbit Data.asset";
-        homeCenter = transform.position; 
+        AddrPath = "Assets/Scriptable Objects/Seagull Data.asset";        
     }
 
     protected override async void Start()
@@ -53,8 +48,7 @@ public class CwRabbit : CwAnimal
     }
 
     protected override void Die()
-    {
-
+    { 
     }
 
     protected override void StatusEffect()

@@ -5,11 +5,10 @@ using UnityEngine;
 /// </summary>
 public class RabbitAlertState : RabbitState
 {  
-    public RabbitAlertState(RabbitAnim _animalAnim, AnimalStateMachine _stateMachine, CwRabbit _animalObject, string _animBoolName) : base(_animalAnim, _stateMachine, _animalObject, _animBoolName)     
+    public RabbitAlertState(RabbitAnim _rabbitAnim, AnimalStateMachine _stateMachine, CwRabbit _rabbitObject, string _animBoolName) : base(_rabbitAnim, _stateMachine, _rabbitObject, _animBoolName)     
     { 
     } 
     private float timer;
-
     public override void Enter()
     {
         //현재 state 디버그
@@ -24,17 +23,17 @@ public class RabbitAlertState : RabbitState
         timer -= Time.deltaTime;
         if (rabbitObject.IsPlayerDetection() == null)
         {
-            stateMachine.ChangeState(rabbitAnim.idleState);
+            ChangeIdleState();
             return;
         }
         else if (rabbitObject.IsPlayerDetection() < rabbitObject.MinDetectionRadius)
         {
-            stateMachine.ChangeState(rabbitAnim.escapeState);
+            ChangeEscapeState();
             return;
         }
         else if (timer <= 0f)
         {
-            stateMachine.ChangeState(rabbitAnim.escapeState);
+            ChangeEscapeState();
             return;
         }
     }
@@ -42,6 +41,5 @@ public class RabbitAlertState : RabbitState
     public override void Exit()
     { 
         base.Exit(); 
-    }
-     
+    } 
 }

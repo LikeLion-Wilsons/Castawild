@@ -1,21 +1,19 @@
 using UnityEngine;
-using UnityEngine.AI;
 
 /// <summary>
-/// 토끼 FSM 클래스
+/// 곰 상태 상위클래스
 /// </summary>
 public class RabbitState : AnimalState
 {  
-    public RabbitState(RabbitAnim _animalAnim, AnimalStateMachine _stateMachine, CwRabbit _animalObject, string _animBoolName) : base(_animalAnim, _stateMachine, _animalObject, _animBoolName)
+    public RabbitState(RabbitAnim _rabbitAnim, AnimalStateMachine _stateMachine, CwRabbit _rabbitObject, string _animBoolName) : base(_rabbitAnim, _stateMachine, _rabbitObject, _animBoolName)
     {
-        this.rabbitAnim = _animalAnim;
-        this.rabbitObject = _animalObject; 
+        this.rabbitAnim = _rabbitAnim;
+        this.rabbitObject = _rabbitObject; 
     }
 
     #region Components 
-    protected RabbitAnim rabbitAnim; // 토끼 애니메이션 클래스
-    protected CwRabbit rabbitObject; // 토끼 속성을 관리하는 객체 
-    protected Vector3 targetPosition = Vector3.zero; // 클래스 필드로 유지
+    protected RabbitAnim rabbitAnim; // 토끼 애니메이션 
+    protected CwRabbit rabbitObject; // 토끼 속성 
 
     protected virtual void Awake()
     {  
@@ -37,5 +35,30 @@ public class RabbitState : AnimalState
     { 
         base.Exit();
     }
-     
+
+    protected void ChangeIdleState()
+    {
+        rabbitAnim.stateMachine.ChangeState(rabbitAnim.idleState);
+    }
+
+    protected void ChangeAlertState()
+    {
+        rabbitAnim.stateMachine.ChangeState(rabbitAnim.alertState);
+    }
+
+    protected void ChangeEscapeState()
+    {
+        rabbitAnim.stateMachine.ChangeState(rabbitAnim.escapeState);
+    }
+
+    protected void ChangeReturnState()
+    {
+        rabbitAnim.stateMachine.ChangeState(rabbitAnim.returnState);
+    }
+
+    protected void ChangeDeathState()
+    {
+        rabbitAnim.stateMachine.ChangeState(rabbitAnim.deathState);
+    }   
+
 }
