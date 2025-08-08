@@ -29,13 +29,8 @@ public class UseToolState : ToolBaseState
 
     public override void UpdateState()
     {
-        if (toolStateManager.input.currentView == ViewType.ThirdPerson)
-            toolStateManager.playerController.LookForward_ThirdPerson(toolStateManager.input);
-
         if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
-        {
             toolStateManager.StartAim(false);
-        }
 
         // 곡괭이, 도끼는 손 때까지 상태 유지
         if (CraftingToolActionRelease())
