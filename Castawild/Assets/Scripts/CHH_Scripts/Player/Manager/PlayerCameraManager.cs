@@ -135,7 +135,7 @@ public class PlayerCameraManager : MonoBehaviour
     private void HandleViewChange()
     {
         if (inputManager.viewChangeAction.WasPressedThisFrame()
-            && (toolManager.CurrentToolUseState == ToolAnimationState.Idle || toolManager.CurrentToolUseState == ToolAnimationState.Carry))
+            && (toolManager.CurrentToolState == ToolState.Idle || toolManager.CurrentToolState == ToolState.Carry))
         {
             ViewChange(currentView == ViewType.FirstPerson ? ViewType.ThirdPerson : ViewType.FirstPerson);
         }
@@ -216,12 +216,12 @@ public class PlayerCameraManager : MonoBehaviour
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         // 자고있을 때 좌우회전 추가
-        if (movementManager.CurrentMoveState == MoveAnimationState.Sleep)
+        if (movementManager.CurrentMoveState == MovementState.Sleep)
         {
             yaw += inputManager.lookInput.x * sensitivity;
             yaw = Mathf.Clamp(yaw, minYaw, maxYaw);
         }
-        else if (movementManager.currentState != movementManager.sleepState && yaw != 0f)
+        else if (movementManager.CurrentMoveState != MovementState.Sleep && yaw != 0f)
             yaw = 0f;
 
         firstPersonCam.transform.localEulerAngles = new Vector3(pitch, yaw, 0f);

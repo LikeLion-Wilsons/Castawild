@@ -12,9 +12,9 @@ public class UseToolState : ToolBaseState
     public override void EnterState()
     {
         toolStateManager.playerController.RPC_FreezePosition(true);
-        toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
+        toolStateManager.movementManager.ChangeState(MovementState.Idle);
 
-        toolStateManager.CurrentToolUseState = ToolAnimationState.FullUse;
+        toolStateManager.CurrentToolAnimationState = ToolAnimationState.FullUse;
 
         if (toolStateManager.CurrentToolType == ToolType.Fist || toolStateManager.CurrentToolType == ToolType.Throw)
         {
@@ -50,10 +50,10 @@ public class UseToolState : ToolBaseState
         if (toolStateManager.IsAnimationFinished)
         {
             if (toolStateManager.input.IsDown(PlayerNetworkInputData.aimInput) && toolStateManager.HoldAimTool())
-                toolStateManager.ChangeState(toolStateManager.aimState);
+                toolStateManager.ChangeState(ToolState.Aim);
             else
             {
-                toolStateManager.ChangeState(toolStateManager.idleState);
+                toolStateManager.ChangeState(ToolState.Idle);
             }
         }
     }
@@ -79,7 +79,7 @@ public class UseToolState : ToolBaseState
         if (toolStateManager.HoldCraftingTool())
         {
             if (!toolStateManager.input.IsDown(PlayerNetworkInputData.toolUseInput) && toolStateManager.IsAnimationFinished)
-                toolStateManager.ChangeState(toolStateManager.idleState);
+                toolStateManager.ChangeState(ToolState.Idle);
             return true;
         }
         return false;

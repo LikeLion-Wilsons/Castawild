@@ -10,7 +10,7 @@ public class IdleState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.CurrentMoveState = MoveAnimationState.Idle;
+        movementManager.CurrentMoveAnimation = MoveAnimatoinState.Idle;
     }
 
     public override void UpdateState()
@@ -19,22 +19,22 @@ public class IdleState : MovementBaseState
         if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput) && movementManager.player.CanMoving())
         {
             if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.HasEnoughStaminaToRun()
-                && movementManager.toolStateManager.currentState != movementManager.toolStateManager.aimState)
-                movementManager.ChangeState(movementManager.runState);
+                && movementManager.toolStateManager.CurrentToolState != ToolState.Aim)
+                movementManager.ChangeState(MovementState.Run);
             else
-                movementManager.ChangeState(movementManager.walkState);
+                movementManager.ChangeState(MovementState.Walk);
         }
 
         // Crouch
         if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.crouchInput))
-            movementManager.ChangeState(movementManager.crouchState);
+            movementManager.ChangeState(MovementState.Crouch);
 
         // Jump
-        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.canJump)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.CanJump)
         {
-            movementManager.canJump = false;
+            movementManager.CanJump = false;
             movementManager.previousState = this;
-            movementManager.ChangeState(movementManager.jumpState);
+            movementManager.ChangeState(MovementState.Jump);
         }
     }
 

@@ -12,7 +12,7 @@ public class SleepState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.CurrentMoveState = MoveAnimationState.Sleep;
+        movementManager.CurrentMoveAnimation = MoveAnimatoinState.Sleep;
 
         movementManager.CanWakeUp = false;
 
@@ -25,7 +25,7 @@ public class SleepState : MovementBaseState
     {
         if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.interactInput)
             && movementManager.CanWakeUp)
-            movementManager.ChangeState(movementManager.idleState);
+            movementManager.ChangeState(MovementState.Idle);
     }
 
     public override void ExitState()

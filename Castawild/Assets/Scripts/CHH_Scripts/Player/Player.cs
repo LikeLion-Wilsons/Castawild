@@ -131,7 +131,7 @@ public class Player : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (movementManager.currentState == movementManager.deathState)
+        if (movementManager.CurrentMoveState == MovementState.Death)
             return;
 
         if (HasStateAuthority)
@@ -387,14 +387,24 @@ public class Player : NetworkBehaviour
 
         if (Hp <= 0)
         {
-            movementManager.ChangeState(movementManager.deathState);
-            toolStateManager.ChangeState(toolStateManager.idleState);
+            movementManager.ChangeState(MovementState.Death);
+            toolStateManager.ChangeState(ToolState.Idle);
         }
         else if (Hp > 0 && isAttack)
         {
-            movementManager.ChangeState(movementManager.getHitState);
-            toolStateManager.ChangeState(toolStateManager.idleState);
+            movementManager.ChangeState(MovementState.GetHit);
+            toolStateManager.ChangeState(ToolState.Idle);
         }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_Heal()
+    {
+        Hp = playerData.maxHp;
+        Stamina = playerData.maxStamina;
+        Thirst = playerData.maxThirst;
+        Hunger = playerData.maxHunger;
+        Temperature = playerData.maxTemperature;
     }
 
     public void Revived()

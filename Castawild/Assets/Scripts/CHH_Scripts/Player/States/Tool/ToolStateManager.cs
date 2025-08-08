@@ -5,8 +5,9 @@ using UnityEngine;
 // 현재 들고있는 무기
 public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife, Smash }
 
+public enum ToolState { None, Idle, Aim, UseTool, Carry, Eat, Drink }
 // 재생해야할 애니메이션 상태
-public enum ToolAnimationState { Idle, Aim, FullAim, FullUse, Carry, Eat, Drink }
+public enum ToolAnimationState { None, Idle, Aim, FullAim, FullUse, Carry, Eat, Drink }
 
 public class ToolStateManager : BaseStateManager
 {
@@ -21,6 +22,8 @@ public class ToolStateManager : BaseStateManager
     public AimState aimState;
     public CarryState carryState;
     public EatState eatState;
+    public Dictionary<ToolState, ToolBaseState> toolStateDict;
+    public ToolBaseState currentState_Host; // 호스트용 변수
     #endregion
 
     [Header("Player")]
@@ -48,11 +51,13 @@ public class ToolStateManager : BaseStateManager
     private bool canHit;
 
     #region Network
+    [Networked] public ToolState CurrentToolState { get; set; }
+    [Networked] public ToolAnimationState CurrentToolAnimationState { get; set; }
+    [Networked] public ToolType CurrentToolType { get; set; }
     [Networked, HideInInspector] public bool CanComboAttack { get; set; }
     [Networked, HideInInspector] public bool ComboAttack { get; set; }
     [Networked, HideInInspector] public bool CanReceiveInput { get; set; }
-    [Networked] public ToolAnimationState CurrentToolUseState { get; set; }
-    [Networked] public ToolType CurrentToolType { get; set; }
+
     #endregion
 
 
@@ -77,11 +82,20 @@ public class ToolStateManager : BaseStateManager
         aimState = new AimState(this, inputManager);
         carryState = new CarryState(this, inputManager);
         eatState = new EatState(this, inputManager);
+
+        toolStateDict = new Dictionary<ToolState, ToolBaseState>
+        {
+            { ToolState.Idle, idleState },
+            { ToolState.Aim, aimState },
+            { ToolState.UseTool, useToolState },
+            { ToolState.Carry, carryState },
+            { ToolState.Eat, eatState }
+        };
     }
 
     public override void Spawned()
     {
-        ChangeState(idleState);
+        ChangeState(ToolState.Idle);
         CurrentToolType = ToolType.Fist;
     }
 
@@ -113,6 +127,17 @@ public class ToolStateManager : BaseStateManager
         }
     }
 
+    public void ChangeState(ToolState newState)
+    {
+        if (!HasStateAuthority)
+            return;
+
+        currentState_Host?.ExitState();
+        CurrentToolState = newState;
+        currentState_Host = toolStateDict[CurrentToolState];
+        currentState_Host.EnterState();
+    }
+
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -138,7 +163,7 @@ public class ToolStateManager : BaseStateManager
         anim.SetBool("FullUseTool", false);
         anim.SetBool("Carrying", false);
 
-        switch (CurrentToolUseState)
+        switch (CurrentToolAnimationState)
         {
             case ToolAnimationState.Aim:
                 anim.SetInteger("WeaponType", (int)CurrentToolType);
@@ -183,7 +208,7 @@ public class ToolStateManager : BaseStateManager
         if (itemIdx >= 300 && itemIdx < 400)
         {
             if (HasStateAuthority)
-                ChangeState(carryState);
+                ChangeState(ToolState.Carry);
             return;
         }
 
@@ -323,9 +348,9 @@ public class ToolStateManager : BaseStateManager
         // 돌맹이나 화살 개수 줄이기
     }
 
-    public bool CanRecoverStamina() => currentState != useToolState;
+    public bool CanRecoverStamina() => currentState_Host != useToolState;
 
-    public bool IsAiming() => CurrentToolUseState == ToolAnimationState.Aim || CurrentToolUseState == ToolAnimationState.FullAim;
+    public bool IsAiming() => CurrentToolState == ToolState.Aim;
 
     public void StartAim(bool aimStart)
     {

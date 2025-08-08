@@ -9,7 +9,7 @@ public class ToolIdleState : ToolBaseState
 
     public override void EnterState()
     {
-        toolStateManager.CurrentToolUseState = ToolAnimationState.Idle;
+        toolStateManager.CurrentToolAnimationState = ToolAnimationState.Idle;
     }
 
     public override void UpdateState()
@@ -20,22 +20,22 @@ public class ToolIdleState : ToolBaseState
         // Aim
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.aimInput)
             && toolStateManager.HoldAimTool() && toolStateManager.player.CanUseTool())
-            toolStateManager.ChangeState(toolStateManager.aimState);
+            toolStateManager.ChangeState(ToolState.Aim);
 
         // UseTool
         else if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput)
             && toolStateManager.player.CanUseTool())
         {
-            toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
+            toolStateManager.movementManager.ChangeState(MovementState.Idle);
 
             // 음식 들고있을 땐 먹기
             if (toolStateManager.player.currentItemType == ItemType.Food || toolStateManager.player.currentItemType == ItemType.Drink)
             {
-                toolStateManager.ChangeState(toolStateManager.eatState);
+                toolStateManager.ChangeState(ToolState.Eat);
                 return;
             }
 
-            toolStateManager.ChangeState(toolStateManager.useToolState);
+            toolStateManager.ChangeState(ToolState.UseTool);
         }
     }
 

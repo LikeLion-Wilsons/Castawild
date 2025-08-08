@@ -53,10 +53,10 @@ public sealed class PlayerController : NetworkBehaviour
 
         player = GetComponent<Player>();
         movementManager = GetComponent<MovementStateManager>();
-        movementManager.ChangeState(movementManager.idleState);
+        movementManager.ChangeState(MovementState.Idle);
 
         toolManager = GetComponent<ToolStateManager>();
-        toolManager.ChangeState(toolManager.idleState);
+        toolManager.ChangeState(ToolState.Idle);
 
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
         if (!HasInputAuthority)
@@ -71,14 +71,18 @@ public sealed class PlayerController : NetworkBehaviour
         if (!GetInput<PlayerNetworkInputData>(out var input))
             return;
 
+        // 테스트용
+        if (HasInputAuthority && Input.GetKeyDown(KeyCode.H))
+            player.RPC_Heal();
+
         if (HasStateAuthority)
         {
             ChangePosition();
 
             Falling();
-
-            HandleState(input);
         }
+
+        HandleState(input);
 
         if (!player.CanMove)
         {
@@ -147,8 +151,10 @@ public sealed class PlayerController : NetworkBehaviour
         movementManager.SetInput(input);
         toolManager.SetInput(input);
 
-        movementManager.currentState.UpdateState();
-        toolManager.currentState.UpdateState();
+        if (movementManager.movementStateDict.TryGetValue(movementManager.CurrentMoveState, out var movementState))
+            movementState.UpdateState();
+        if (toolManager.toolStateDict.TryGetValue(toolManager.CurrentToolState, out var toolState))
+            movementState.UpdateState();
 
         movementManager.SetPrevInputButton(input.Buttons);
         toolManager.SetPrevInputButton(input.Buttons);

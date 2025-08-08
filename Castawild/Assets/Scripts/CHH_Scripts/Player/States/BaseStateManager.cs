@@ -13,9 +13,7 @@ public class BaseStateManager : NetworkBehaviour
     public PlayerNetworkInputData input { get; private set; }
     public NetworkButtons prevInputButtons;
 
-    public BaseState currentState;
-
-     protected bool IsTriggerSet { get; set; }
+    protected bool IsTriggerSet { get; set; }
     [Networked, HideInInspector] public bool IsAnimationFinished { get; set; }
 
     protected virtual void Awake()
@@ -27,17 +25,10 @@ public class BaseStateManager : NetworkBehaviour
         playerController = GetComponent<PlayerController>();
     }
 
-    public void ChangeState(BaseState newState)
-    {
-        currentState?.ExitState();
-        currentState = newState;
-        currentState.EnterState();
-    }
-
     public void SetInput(PlayerNetworkInputData inputData) => input = inputData;
     public void SetPrevInputButton(NetworkButtons _prevInputButtons) => prevInputButtons = _prevInputButtons;
 
-    
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_TriggerSet(bool isTriggerSet) => IsTriggerSet = isTriggerSet;
 }
