@@ -1,0 +1,113 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class UI_Manager : MonoBehaviour
+{
+    public GameObject hotBarUI;
+    public GameObject inventoryUI;
+    public GameObject tableUI;
+    public GameObject chestUI;
+    public GameObject campfireUI;
+
+    public bool isDragging = false;
+    // 수정한 부분
+    public Player player;
+    public UIStats uiStats;
+    [Header("상호작용중인 오브젝트")]
+    public ChestDataManager currentOpenedChest;
+    public GameObject currentCampFire;
+
+    public void SetOpenedChest(ChestDataManager chest)
+    {
+        currentOpenedChest = chest;
+    }
+
+    [SerializeField] UIPart[] parts;
+    public Dictionary<string, UIPart> uiParts = new Dictionary<string, UIPart>();
+    public void OpenUI(string uiName)
+    {
+        if (uiParts.ContainsKey(uiName))
+        {
+            uiParts[uiName].Open(player.inputManager);
+        }
+        else Debug.LogWarning($"UI {uiName} not found.");
+    }
+
+    public void CloseUI(string uiName)
+    {
+        if (uiParts.ContainsKey(uiName))
+        {
+            uiParts[uiName].Close(player.inputManager);
+        }
+    }
+
+    public void CloseAllUI()
+    {
+        foreach (var part in uiParts.Values)
+        {
+            if (part.name == "HotBar") continue;
+            part.Close(player.inputManager);
+        }
+        if (currentOpenedChest != null)
+        {
+            currentOpenedChest.GetComponent<Chest>().FinishInteract();
+        }
+    }
+
+    [SerializeField] private Transform ui_Part_Parent;
+    void Start()
+    {
+        parts = ui_Part_Parent.GetComponentsInChildren<UIPart>(true);//비활성화된 오브젝트도 찾기
+        foreach (var part in parts)
+        {
+            uiParts.Add(part.name, part);
+        }
+
+        // 수정한 부분
+        CloseAllUI();
+    }
+    public static event Action<bool> OnUIActive;
+    void Update()
+    {
+        // 수정한 부분
+        if (uiParts["Inventory"].IsOpen())
+            player.RPC_IsUIOpen(true);
+        else
+            player.RPC_IsUIOpen(false);
+
+        if (Input.GetKeyDown(KeyCode.Tab) && isDragging == false)
+        {
+            if (uiParts["Inventory"].IsOpen())
+            {
+                CloseAllUI();
+            }
+            else
+            {
+                uiParts["Inventory"].Toggle(player.inputManager);
+                uiParts["Table"].Toggle(player.inputManager);
+            }
+        }
+    }
+
+    public bool IsInventoryOpen()
+    {
+        return uiParts.ContainsKey("Inventory") && uiParts["Inventory"].IsOpen();
+    }
+
+    public bool AnyUIOpen()
+    {
+        foreach (var part in uiParts.Values)
+        {
+            if (part.IsOpen())
+                return true;
+        }
+        return false;
+    }
+
+    public void SetPlayer(Player _player)
+    {
+        player = _player;
+        uiStats.player = player;
+    }
+}

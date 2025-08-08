@@ -1,6 +1,4 @@
-using ExitGames.Client.Photon.StructWrapping;
 using Fusion;
-using NUnit.Framework.Interfaces;
 using System;
 using UnityEngine;
 
@@ -9,7 +7,7 @@ public delegate void OnItemGet();
 public class InventoryDataManager : NetworkBehaviour
 {
     [SerializeField] int maxStackCount;//아이템 최대 스택 개수
-    public Canvas_Holder canvasHolder;
+    public UI_Manager canvasHolder;
     private UIInventory uiInventory;
     private UITable uiTable;
     [SerializeField] GameObject itemBox;
@@ -54,7 +52,7 @@ public class InventoryDataManager : NetworkBehaviour
             uiTable = uiCanvas.GetComponentInChildren<UITable>();
             uiTable.BindToInventoryData(this);
 
-            canvasHolder = uiCanvas.GetComponent<Canvas_Holder>();
+            canvasHolder = uiCanvas.GetComponent<UI_Manager>();
             player = GetComponent<Player>();
             canvasHolder.SetPlayer(player);
 
@@ -166,20 +164,16 @@ public class InventoryDataManager : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            GetItem(0, 1);
+            AddItem(0, 1);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            GetItem(1, 1);
+            AddItem(1, 1);
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
             RPC_UseSelectedItem(1);
         }
-        //if (Input.GetKeyDown(KeyCode.D))
-        //{
-        //    RPC_ThrowAllItem();
-        //}
 
         //테스트용
         if (Object.HasInputAuthority && Input.GetKeyDown(KeyCode.B))
@@ -236,7 +230,7 @@ public class InventoryDataManager : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_GetItem(int itemId, int count)
     {
-        GetItem(itemId, count);
+        AddItem(itemId, count);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -306,7 +300,7 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
     // 아이템 획득
-    public bool GetItem(int id, int amount)
+    public bool AddItem(int id, int amount)
     {
         if (HasInputAuthority & id == 201)
             player.RPC_NotifyHasArrow(true);

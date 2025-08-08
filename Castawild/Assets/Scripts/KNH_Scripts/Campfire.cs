@@ -4,7 +4,9 @@ using UnityEngine;
 public class Campfire : InteractableObject
 {
     [Networked] private bool CanOpen { get; set; } = true;
-    Canvas_Holder canvasHolder;
+    public bool isFire { get; set; } = false;
+    UI_Manager canvasHolder;
+    [SerializeField] GameObject fireVFX;
 
     private void Awake()
     {
@@ -14,6 +16,8 @@ public class Campfire : InteractableObject
 
     private void Update()
     {
+        fireVFX.SetActive(isFire);//불 On/Off
+
         if (canvasHolder == null) return;
         bool isInventoryOpen = canvasHolder.uiParts["Inventory"].IsOpen();
         CanOpen = !isInventoryOpen;
@@ -30,6 +34,7 @@ public class Campfire : InteractableObject
         PlayerController playerController = playerObj.GetComponent<PlayerController>();
 
         canvasHolder = playerObj.GetComponent<InventoryDataManager>().canvasHolder;
+        canvasHolder.currentCampFire = gameObject;
 
         if (CanOpen)
         {
@@ -37,5 +42,10 @@ public class Campfire : InteractableObject
             canvasHolder.uiParts["Campfire"].Open(player.inputManager);
             CanOpen = false;
         }
+    }
+
+    public void SetFire(bool tof)
+    {
+        isFire = tof;
     }
 }
