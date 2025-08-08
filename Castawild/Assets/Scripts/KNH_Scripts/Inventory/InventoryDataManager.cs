@@ -176,6 +176,10 @@ public class InventoryDataManager : NetworkBehaviour
         {
             RPC_UseSelectedItem(1);
         }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            RPC_ThrowAllItem();
+        }
 
         //테스트용
         if (Object.HasInputAuthority && Input.GetKeyDown(KeyCode.B))
@@ -209,6 +213,12 @@ public class InventoryDataManager : NetworkBehaviour
     public void RPC_ThrowItem(int index)
     {
         ThrowItem(index);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_ThrowAllItem()
+    {
+        ThrowAllItem();
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -259,6 +269,12 @@ public class InventoryDataManager : NetworkBehaviour
         }
         Debug.Log("RPC_RequestStoreToChest");
         RPC_UpdateInventoryUI();
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetCanOpen(Chest chest ,bool tof)
+    {
+        chest.CanOpen = tof;
     }
 
 
@@ -405,6 +421,18 @@ public class InventoryDataManager : NetworkBehaviour
         }
     }
 
+    //들고 있는 모든 아이템 버리기
+    public void ThrowAllItem()
+    {
+        for(int i = 0; i< 29; i++)
+        {
+            if (itemList[i].itemID != -1)
+            {
+                RPC_ThrowItem(i);
+            }
+        }
+    }
+
     public void UseItem(int id, int count)
     {
         for (int i = 0; i < itemList.Count; i++)
@@ -432,6 +460,8 @@ public class InventoryDataManager : NetworkBehaviour
             RPC_UpdateInventoryUI();
         }
     }
+
+
 
     // 아이템 소지 수량 확인
     public int GetItemCount(int id)

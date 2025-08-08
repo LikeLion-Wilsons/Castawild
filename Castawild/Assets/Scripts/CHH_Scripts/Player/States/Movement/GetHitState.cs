@@ -12,7 +12,6 @@ public class GetHitState : MovementBaseState
     {
         movementManager.CurrentMoveState = MoveAnimationState.GetHit;
         movementManager.playerController.RPC_FreezePosition(true);
-        movementManager.player.CanMove = false;
     }
 
     public override void UpdateState()
@@ -25,6 +24,5 @@ public class GetHitState : MovementBaseState
     {
         movementManager.RPC_TriggerSet(false);
         movementManager.playerController.RPC_FreezePosition(false);
-        movementManager.player.CanMove = true;
     }
 }

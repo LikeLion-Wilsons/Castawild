@@ -136,17 +136,18 @@ public class Player : NetworkBehaviour
 
         if (HasStateAuthority)
         {
-            Hunger -= hungerDecreaseRate * Runner.DeltaTime;
-            Thirst -= thirstDecreaseRate * Runner.DeltaTime;
-
             if (Thirst <= 0)
                 Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
+            else
+                Thirst -= thirstDecreaseRate * Runner.DeltaTime;
 
             if (Hunger <= 0)
             {
-                Hp -= hpDecreaseRate * Runner.DeltaTime;
+                TakeDamage(false, hpDecreaseRate * Runner.DeltaTime);
                 Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
             }
+            else
+                Hunger -= hungerDecreaseRate * Runner.DeltaTime;
 
             if (toolStateManager.CanRecoverStamina() && movementManager.CanRecoverStamina())
             {
@@ -258,12 +259,6 @@ public class Player : NetworkBehaviour
             RPC_CursorLocked(isLocked);
     }
 
-    public void StopPlayer()
-    {
-        CanMove = false;
-        playerController.kcc.Move(Vector3.zero);
-    }
-
     private void SetCurrentTool(ToolInfo toolInfo = null)
     {
         if (toolInfo == null)
@@ -301,8 +296,6 @@ public class Player : NetworkBehaviour
             currentToolObject = null;
         }
     }
-
-    public void PlayerCanMove() => CanMove = true;
 
     public GameObject amarture;
 
@@ -388,7 +381,7 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 플레이어 공격을 받았을 때 호출
     /// </summary>
-    public void AttackPlayer(float att)
+    public void TakeDamage(bool isAttack, float att)
     {
         if (!HasStateAuthority || Hp <= 0)
             return;
@@ -400,7 +393,7 @@ public class Player : NetworkBehaviour
             movementManager.ChangeState(movementManager.deathState);
             toolStateManager.ChangeState(toolStateManager.idleState);
         }
-        else
+        else if (Hp > 0 && isAttack)
         {
             Debug.Log("Hit");
             movementManager.ChangeState(movementManager.getHitState);

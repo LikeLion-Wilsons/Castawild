@@ -17,7 +17,10 @@ public class Bed : InteractableObject
 
     public override void Interact(PlayerRef playerRef)
     {
+        if (!CanSleep)
+            return;
         CanSleep = false;
+
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
 
         Player player = playerObj.GetComponent<Player>();

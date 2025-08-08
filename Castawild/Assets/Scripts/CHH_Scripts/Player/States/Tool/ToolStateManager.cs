@@ -115,7 +115,7 @@ public class ToolStateManager : BaseStateManager
 
             if (player.CanPVP && hitObject.TryGetComponent(out Player otherPlayer))
             {
-                otherPlayer.AttackPlayer(player.GetToolAtt());
+                otherPlayer.TakeDamage(true, player.GetToolAtt());
                 Debug.Log("Hit Player");
                 alreadyHit.Add(otherPlayer.transform.root);
             }
