@@ -30,9 +30,8 @@ public class IdleState : MovementBaseState
             movementManager.Host_ChangeState(MovementState.Crouch);
 
         // Jump
-        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.CanJump)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.playerController.Grounded)
         {
-            movementManager.CanJump = false;
             movementManager.previousState = this;
             movementManager.Host_ChangeState(MovementState.Jump);
         }

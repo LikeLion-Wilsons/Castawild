@@ -28,6 +28,5 @@ public class EatState : ToolBaseState
     {
         base.ExitState();
         toolStateManager.playerController.Host_FreezePosition(false);
-        toolStateManager.Host_InitTriggerSet();
     }
 }

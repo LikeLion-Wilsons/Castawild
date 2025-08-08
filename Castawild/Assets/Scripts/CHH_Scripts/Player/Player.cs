@@ -64,7 +64,7 @@ public class Player : NetworkBehaviour
 
     [Header("Networked")]
     [Networked, HideInInspector] public Vector3 RespawnPos { get; set; }
-    [Networked, HideInInspector] public bool CanMove { get; set; } = true;
+    [Networked] public bool CanMove { get; set; } = true;
     [Networked, HideInInspector] public bool CanPVP { get; set; } = true;
     [Networked, HideInInspector] public bool IsUIOpen { get; set; }
     [Networked, HideInInspector] public bool IsCursorLocked { get; set; }
@@ -281,20 +281,9 @@ public class Player : NetworkBehaviour
     }
 
     /// <summary>
-    /// 활 활성화
+    /// 화살 위치 설정
     /// </summary>
-    public void All_ActiveArrow(bool visible)
-    {
-        if (HasArrow && visible)
-            arrow.SetActive(visible);
-        else
-            arrow.SetActive(false);
-    }
-
-    /// <summary>
-    /// 활 초기 위치 설정
-    /// </summary>
-    public void All_SetInitBowPos(bool isBowUse)
+    public void All_SetBowPos(bool isBowUse)
     {
         if (currentToolObject == null)
             return;
@@ -318,6 +307,17 @@ public class Player : NetworkBehaviour
 
         currentToolObject.transform.localPosition = Vector3.zero;
         currentToolObject.transform.localRotation = Quaternion.identity;
+    }
+
+    /// <summary>
+    /// 화살 활성화
+    /// </summary>
+    public void All_SetArrowActive(bool isBowUse)
+    {
+        if (HasArrow && isBowUse)
+            arrow.SetActive(isBowUse);
+        else
+            arrow.SetActive(false);
     }
 
     /// <summary>
@@ -465,19 +465,24 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 카메라 머리에 붙이거나 떼기 
     /// </summary>
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ApplyAttachCameraToHead(bool attachCamera) => cameraManager.AttachCameraToHead(attachCamera);
+    public void Client_AttachCameraToHead(bool attachCamera)
+    {
+        if (HasInputAuthority)
+            cameraManager.AttachCameraToHead(attachCamera);
+    }
 
     /// <summary>
     /// UI끄기
     /// </summary>
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ApplyTurnOffInteractiveUI() => playerInteractUI.TurnOffInteractiveUI();
+    public void Client_TurnOffInteractiveUI()
+    {
+        if (HasInputAuthority)
+            playerInteractUI.TurnOffInteractiveUI();
+    }
 
     /// <summary>
     /// 활 있는지
     /// </summary>
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_NotifyHasArrow(bool hasArrow) => HasArrow = hasArrow;
 
     /// <summary>
@@ -498,12 +503,6 @@ public class Player : NetworkBehaviour
         Hunger = playerData.maxHunger;
         Temperature = playerData.maxTemperature;
     }
-
-    /// <summary>
-    /// 에임 UI 활성화
-    /// </summary>
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ApplyActiveAimUI(bool isAiming) => playerInteractUI.SetAimCrosshair(isAiming);
 
     /// <summary>
     /// Bed.CanSleep 설정

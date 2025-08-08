@@ -23,7 +23,7 @@ public class AnimationTrigger : MonoBehaviour
     public void ToolAnimationStartTrigger() => toolManager.IsAnimationFinished = false;
     public void MoveAnimationFinishTrigger() => movementManager.IsAnimationFinished = true;
     public void MoveAnimationStartTrigger() => movementManager.IsAnimationFinished = false;
-    public void Jumped() => movementManager.isJumping = true;
+    public void CanLanding() => movementManager.CanLanding = true;
     public void ReceiveInput() => toolManager.CanReceiveInput = true;
     public void StopReceiveInput()
     {
@@ -65,13 +65,11 @@ public class AnimationTrigger : MonoBehaviour
 
     public void StartHit()
     {
-        if (toolManager.HasStateAuthority)
-            toolManager.Host_StartHit();
+        toolManager.Host_StartHit();
     }
 
     public void FinishHit()
     {
-        if (toolManager.HasStateAuthority)
-            toolManager.Host_FinishHit();
+        toolManager.Host_FinishHit();
     }
 }

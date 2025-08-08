@@ -21,7 +21,10 @@ public class AimState : ToolBaseState
         if (toolStateManager.movementManager.CurrentMoveState == MovementState.Run)
             toolStateManager.movementManager.Host_ChangeState(MovementState.Walk);
 
-        toolStateManager.All_StartAim(true);
+        toolStateManager.Client_SetAimCameraAndUI(true);
+
+        if (toolStateManager.CurrentToolType == ToolType.Bow)
+            toolStateManager.player.All_SetBowPos(true);
     }
 
     public override void UpdateState()
@@ -36,17 +39,26 @@ public class AimState : ToolBaseState
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
         {
             if (toolStateManager.CurrentToolType == ToolType.Bow)
-                toolStateManager.BowShootAnimation();
+                toolStateManager.All_BowShootAnimation();
 
             toolStateManager.Host_ChangeState(ToolState.UseTool);
         }
 
         else if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
-            if (toolStateManager.HasInputAuthority)
-                toolStateManager.All_StartAim(false);
+            if (toolStateManager.CurrentToolType == ToolType.Bow)
+            {
+                toolStateManager.player.All_SetBowPos(true);
+                toolStateManager.All_SetArrowPull(false);
+            }
+            toolStateManager.Client_SetAimCameraAndUI(false);
             toolStateManager.Host_ChangeState(ToolState.Idle);
         }
+    }
+
+    public override void ExitState()
+    {
+        base.ExitState();
     }
 
     private void RotatePlayer()
@@ -59,11 +71,6 @@ public class AimState : ToolBaseState
             Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
             toolStateManager.transform.rotation = Quaternion.Slerp(toolStateManager.transform.rotation, targetRotation, Time.deltaTime * 10f);
         }
-    }
-
-    public override void ExitState()
-    {
-        base.ExitState();
     }
 
     private void LookForward()

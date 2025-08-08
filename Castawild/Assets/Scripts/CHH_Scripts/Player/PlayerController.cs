@@ -1,6 +1,5 @@
 using Fusion;
 using Fusion.Addons.SimpleKCC;
-using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -26,6 +25,7 @@ public sealed class PlayerController : NetworkBehaviour
     private bool isFalling;
     [SerializeField] private float fallingDeadTime = 5f;
     private float fallingElapsed;
+    [Networked] public bool Grounded { get; set; }
 
     [Header("Interact")]
     [SerializeField] private float interactHeight = 10f;
@@ -34,7 +34,6 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private LayerMask interactLayer;
     [HideInInspector] public EnvironmentObject Client_currentInteractObject;
 
-    [Networked, HideInInspector] public bool Grounded { get; set; }
     [Networked, HideInInspector] public Vector3 ChangePos { get; set; }
     [Networked, HideInInspector] public bool IsChangePos { get; set; }
 
@@ -67,14 +66,17 @@ public sealed class PlayerController : NetworkBehaviour
         rigid.isKinematic = false;
     }
 
+    private void Update()
+    {
+        // 테스트용
+        if (HasInputAuthority && Input.GetKeyDown(KeyCode.H))
+            player.RPC_RequestHeal();
+    }
+
     public override void FixedUpdateNetwork()
     {
         if (!GetInput<PlayerNetworkInputData>(out var input))
             return;
-
-        // 테스트용
-        if (HasInputAuthority && Input.GetKeyDown(KeyCode.H))
-            player.RPC_RequestHeal();
 
         if (HasStateAuthority)
         {
@@ -117,6 +119,7 @@ public sealed class PlayerController : NetworkBehaviour
     private void Host_Falling()
     {
         Vector3 velocity = kcc.RealVelocity;
+        Grounded = kcc.IsGrounded;
 
         // 떨어지기 시작
         if (!isFalling && velocity.y < -0.1f && !Grounded)
@@ -179,9 +182,10 @@ public sealed class PlayerController : NetworkBehaviour
     private void Host_Gravity()
     {
         Vector3 velocity = kcc.RealVelocity;
+        velocity.x = 0;
+        velocity.z = 0;
         velocity.y += gravity * Runner.DeltaTime;
         kcc.Move(velocity);
-        Grounded = kcc.IsGrounded;
     }
 
     private void All_HandleMovement(PlayerNetworkInputData input)
@@ -223,7 +227,6 @@ public sealed class PlayerController : NetworkBehaviour
         // Move 함수의 ManualFixedUpdate 내부에서 DeltaTime 곱하기 때문에 여기서는 곱하지 말기
 
         kcc.Move(velocity, jump);
-        Grounded = kcc.IsGrounded;
     }
 
     private void All_Rotate(PlayerNetworkInputData input)
@@ -237,11 +240,11 @@ public sealed class PlayerController : NetworkBehaviour
         {
             if (input.camForward == Vector3.zero)
                 return;
-            All_LookForward_ThirdPerson(input);
+            All_RotateForward(input);
         }
     }
 
-    private void All_LookForward_ThirdPerson(PlayerNetworkInputData input)
+    public void All_RotateForward(PlayerNetworkInputData input)
     {
         Quaternion target = Quaternion.LookRotation(input.camForward);
         kcc.SetLookRotation(Quaternion.Slerp(kcc.Transform.rotation, target, rotationSpeed * Runner.DeltaTime));
@@ -366,8 +369,13 @@ public sealed class PlayerController : NetworkBehaviour
         ChangePos = position;
     }
 
+    /// <summary>
+    /// 위치 고정
+    /// </summary>
     public void Host_FreezePosition(bool freeze)
     {
+        if (!HasStateAuthority)
+            return;
         if (freeze)
         {
             kcc.ResetVelocity();

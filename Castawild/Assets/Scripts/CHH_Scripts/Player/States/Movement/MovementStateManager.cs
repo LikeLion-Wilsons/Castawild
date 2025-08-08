@@ -24,7 +24,7 @@ public class MovementStateManager : BaseStateManager
     public GetHitState getHitState;
     public DeathState deathState;
     public Dictionary<MovementState, MovementBaseState> movementStateDict;
-    public MovementBaseState Host_currentState; // 호스트용 변수
+    public MovementBaseState currentState; // 호스트용 변수
     #endregion
 
     #region Movement
@@ -35,9 +35,6 @@ public class MovementStateManager : BaseStateManager
     public float crouchSpeed = 2f;
     public float rotationSpeed = 10f;
     #endregion
-
-    [Space]
-    [HideInInspector] public bool isJumping;
 
     #region GoundCheck
     [Header("GoundCheck")]
@@ -50,16 +47,16 @@ public class MovementStateManager : BaseStateManager
 
     #region Animation
     [Header("Animation")]
-    [SerializeField] private float animationLerpSpeed = 10f;
     [HideInInspector] public bool isLyingOrGettingUp; // 눕거나 일어나는 애니메이션 도중 카메라 못움직이게 확인하는 불변수
     #endregion
 
     #region Network
     [Header("Networked")]
-    [Networked] public MovementState CurrentMoveState { get; set; }
+    [Networked, OnChangedRender(nameof(OnCurrentMoveStateChanged))]
+    public MovementState CurrentMoveState { get; set; }
+    [Networked] public bool CanLanding { get; set; }
     [Networked] public MoveAnimatoinState CurrentMoveAnimation { get; set; }
     [Networked] public float currentMoveSpeed { get; set; }
-    [Networked, HideInInspector] public bool CanJump { get; set; } = true;
     [Networked, HideInInspector] public bool Revived { get; set; }
     [Networked, HideInInspector] public bool JumpTriggered { get; set; }
     [Networked, HideInInspector] public bool CanWakeUp { get; set; }
@@ -122,10 +119,19 @@ public class MovementStateManager : BaseStateManager
         if (!HasStateAuthority)
             return;
 
-        Host_currentState?.ExitState();
+        currentState?.ExitState();
         CurrentMoveState = newState;
-        Host_currentState = movementStateDict[CurrentMoveState];
-        Host_currentState.EnterState();
+        currentState = movementStateDict[CurrentMoveState];
+    }
+
+    private void OnCurrentMoveStateChanged()
+    {
+        if (movementStateDict.TryGetValue(CurrentMoveState, out var newState))
+        {
+            currentState?.ExitState();
+            currentState = newState;
+            currentState.EnterState();
+        }
     }
 
     /// <summary>
@@ -162,27 +168,23 @@ public class MovementStateManager : BaseStateManager
                 anim.SetBool("Walking", true);
                 break;
             case MoveAnimatoinState.IdleJump:
-                if (!IsTriggerSet)
-                    anim.SetTrigger("IdleJump");
-                IsTriggerSet = true;
+                anim.SetTrigger("IdleJump");
+                CurrentMoveAnimation = MoveAnimatoinState.None;
                 break;
             case MoveAnimatoinState.RunJump:
-                if (!IsTriggerSet)
-                    anim.SetTrigger("RunJump");
-                IsTriggerSet = true;
+                anim.SetTrigger("RunJump");
+                CurrentMoveAnimation = MoveAnimatoinState.None;
                 break;
             case MoveAnimatoinState.Sleep:
                 anim.SetBool("Sleeping", true);
                 break;
             case MoveAnimatoinState.GetHit:
-                if (!IsTriggerSet)
-                    anim.SetTrigger("GetHit");
-                IsTriggerSet = true;
+                anim.SetTrigger("GetHit");
+                CurrentMoveAnimation = MoveAnimatoinState.None;
                 break;
             case MoveAnimatoinState.Death:
-                if (!IsTriggerSet)
-                    anim.SetTrigger("Death");
-                IsTriggerSet = true;
+                anim.SetTrigger("Death");
+                CurrentMoveAnimation = MoveAnimatoinState.None;
                 break;
         }
 
@@ -191,7 +193,7 @@ public class MovementStateManager : BaseStateManager
             // 이 부분 없으면 착지할 때 애니메이션 전환 이상함
             if (input.moveValue != Vector2.zero)
             {
-                if (input.IsDown(PlayerNetworkInputData.sprintInput) && isJumping)
+                if (input.IsDown(PlayerNetworkInputData.sprintInput))
                     anim.SetBool("Running", true);
                 else
                     anim.SetBool("Walking", true);

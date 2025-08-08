@@ -16,13 +16,13 @@ public class GetHitState : MovementBaseState
 
     public override void UpdateState()
     {
-        if (movementManager.IsAnimationFinished == true)
+        if (movementManager.IsAnimationFinished)
             movementManager.Host_ChangeState(MovementState.Idle);
     }
 
     public override void ExitState()
     {
-        movementManager.Host_InitTriggerSet();
+        movementManager.IsAnimationFinished = false;
         movementManager.playerController.Host_FreezePosition(false);
     }
 }
