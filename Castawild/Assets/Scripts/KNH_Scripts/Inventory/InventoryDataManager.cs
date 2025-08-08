@@ -166,19 +166,15 @@ public class InventoryDataManager : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            GetItem(0, 1);
+            AddItem(0, 1);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            GetItem(1, 1);
+            AddItem(1, 1);
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
             RPC_UseSelectedItem(1);
-        }
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            RPC_ThrowAllItem();
         }
 
         //테스트용
@@ -236,7 +232,7 @@ public class InventoryDataManager : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_GetItem(int itemId, int count)
     {
-        GetItem(itemId, count);
+        AddItem(itemId, count);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -306,7 +302,7 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
     // 아이템 획득
-    public bool GetItem(int id, int amount)
+    public bool AddItem(int id, int amount)
     {
         if (HasInputAuthority & id == 201)
             player.RPC_HasArrow(true);
