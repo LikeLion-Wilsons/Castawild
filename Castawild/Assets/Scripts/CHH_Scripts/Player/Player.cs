@@ -56,6 +56,7 @@ public class Player : NetworkBehaviour
     #endregion
 
     public Coroutine fallingCoroutine;
+    public GameObject amarture;
 
     [Header("Networked")]
     [Networked, HideInInspector] public bool CanPVP { get; set; } = true;
@@ -299,7 +300,6 @@ public class Player : NetworkBehaviour
         }
     }
 
-    public GameObject amarture;
 
     // false : 공격 끝났을 때, 조준 끝났을 때
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

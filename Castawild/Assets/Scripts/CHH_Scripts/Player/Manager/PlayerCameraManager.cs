@@ -306,11 +306,15 @@ public class PlayerCameraManager : MonoBehaviour
     {
         if (attachCamera)
         {
+            player.AttachToCamera(false);
+
             firstPersonCam.Follow = playerHead.transform;
             firstPersonCam.LookAt = playerHead.transform;
         }
         else
         {
+            player.AttachToCamera(true);
+
             firstPersonCam.Follow = firstPersonTarget;
             firstPersonCam.LookAt = firstPersonTarget;
         }
