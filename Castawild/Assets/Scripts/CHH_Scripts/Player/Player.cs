@@ -407,6 +407,24 @@ public class Player : NetworkBehaviour
         Hunger = playerData.maxHunger * 0.2f;
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!HasStateAuthority)
+            return;
+
+        if (CanPVP && collision.gameObject.TryGetComponent<AttackObject>(out AttackObject attackObject))
+        {
+            if (attackObject.canAttack)
+            {
+                TakeDamage(true, attackObject.att);
+                if (attackObject is ThrowObject throwObject)
+                {
+                    throwObject.canAttack = false;
+                }
+            }
+        }
+    }
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_ActiveAimUI(bool isAiming) => playerInteractUI.Aim(isAiming);
 

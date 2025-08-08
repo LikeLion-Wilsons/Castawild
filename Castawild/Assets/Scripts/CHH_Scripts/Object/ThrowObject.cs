@@ -1,21 +1,15 @@
-using Fusion;
 using UnityEngine;
 
-public class ThrowObject : NetworkBehaviour
+public class ThrowObject : AttackObject
 {
-    private Vector3 targetPos;
     private Rigidbody rigid;
 
     public override void Spawned()
     {
         rigid = GetComponent<Rigidbody>();
         rigid.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        canAttack = true;
     }
-
-    //public void AddForce(Vector3 forward, float force)
-    //{
-    //    rigid.AddForce(forward * force, ForceMode.Impulse);
-    //}
 
     public void AddForce(float force, float upForce, Vector3 targetPos)
     {
@@ -23,5 +17,14 @@ public class ThrowObject : NetworkBehaviour
         Vector3 forceDir = direction + Vector3.up * upForce;
 
         rigid.AddForce(forceDir.normalized * force, ForceMode.Impulse);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!HasStateAuthority)
+            return;
+
+        if (!collision.gameObject.CompareTag("Player") /*&& collision.gameObject.CompareTag("Animal")*/)
+            canAttack = false;
     }
 }

@@ -1,7 +1,5 @@
 using Fusion;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditor.EditorTools;
 using UnityEngine;
 
 // 현재 들고있는 무기
@@ -216,7 +214,7 @@ public class ToolStateManager : BaseStateManager
             case 405: // 돌곡괭이
                 CurrentToolType = ToolType.Pickaxe;
                 break;
-            case 406: // 화살
+            case 406: // 활
                 {
                     CurrentToolType = ToolType.Bow;
                     player.arrow.SetActive(false);

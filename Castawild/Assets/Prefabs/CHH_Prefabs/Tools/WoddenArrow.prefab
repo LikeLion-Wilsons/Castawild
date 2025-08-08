@@ -14,9 +14,10 @@ GameObject:
   - component: {fileID: 6816373399062841026}
   - component: {fileID: 1729619496713581637}
   - component: {fileID: 5704711624164741022}
+  - component: {fileID: -9159624633706797396}
   m_Layer: 7
   m_Name: WoddenArrow
-  m_TagString: Untagged
+  m_TagString: PlayerAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -50,6 +51,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5e17082a9a03164fba2555363e6842f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  att: 0
+  canAttack: 1
+  canAttack: 1
 --- !u!54 &8622259840791141071
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -119,6 +123,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 8716954291783428198}
   - {fileID: 6816373399062841026}
+  - {fileID: -9159624633706797396}
   ForceRemoteRenderTimeframe: 0
 --- !u!65 &5704711624164741022
 BoxCollider:
@@ -141,6 +146,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.05, y: 0.05, z: 0.10912171}
   m_Center: {x: 0, y: 0, z: 0.00043915212}
+--- !u!114 &-9159624633706797396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4440053365999147483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2351bf621323f142bb04057a24d1f9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  att: 5
+  canAttack: 1
 --- !u!1 &5048089319961023910
 GameObject:
   m_ObjectHideFlags: 0
