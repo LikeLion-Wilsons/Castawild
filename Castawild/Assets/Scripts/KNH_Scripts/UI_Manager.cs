@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Canvas_Holder : MonoBehaviour
+public class UI_Manager : MonoBehaviour
 {
     public GameObject hotBarUI;
     public GameObject inventoryUI;
@@ -12,7 +12,7 @@ public class Canvas_Holder : MonoBehaviour
 
     public bool isDragging = false;
     // 수정한 부분
-    private Player player;
+    public Player player;
     public UIStats uiStats;
     public ChestDataManager currentOpenedChest;
 
@@ -86,8 +86,6 @@ public class Canvas_Holder : MonoBehaviour
                 uiParts["Table"].Toggle(player.inputManager);
             }
         }
-
-
     }
 
     public bool IsInventoryOpen()

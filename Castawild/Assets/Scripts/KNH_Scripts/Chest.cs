@@ -5,7 +5,7 @@ using UnityEngine;
 public class Chest : InteractableObject
 {
     [Networked] public bool CanOpen { get; set; } = true;
-    Canvas_Holder canvasHolder;
+    UI_Manager canvasHolder;
     public Player player;
     ChestDataManager chestData;
     InventoryDataManager inventoryData;
