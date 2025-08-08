@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 33229055108078904}
   - component: {fileID: 23411166652760648}
   - component: {fileID: 50826114150153693}
+  - component: {fileID: -7498477608500860873}
+  - component: {fileID: -8968120805878920706}
   m_Layer: 0
   m_Name: 405_StonePickaxe
   m_TagString: Untagged
@@ -101,4 +103,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   toolName: StonePickaxe
   itemID: 405
-  att: 5
+  interactAtt: 5
+--- !u!114 &-7498477608500860873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1683656624262994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2351bf621323f142bb04057a24d1f9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  att: 12
+  canAttack: 0
+--- !u!114 &-8968120805878920706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1683656624262994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 1137949850
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: -7498477608500860873}
+  ForceRemoteRenderTimeframe: 0

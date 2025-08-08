@@ -9,25 +9,19 @@ public class AimState : ToolBaseState
 
     public override void EnterState()
     {
-        LookForward();
-
-        toolStateManager.player.isAimLocked = true;
-
+        // 애니메이션
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
             toolStateManager.CurrentToolUseState = ToolAnimationState.FullAim;
         else
             toolStateManager.CurrentToolUseState = ToolAnimationState.Aim;
 
+        LookForward();
+
+        // Movement상태
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.runState)
             toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.walkState);
 
-        if (toolStateManager.HasStateAuthority)
-            toolStateManager.RPC_MoveAimCamera(true);
-
-        if (toolStateManager.CurrentToolType == ToolType.Bow)
-            toolStateManager.RPC_BowSetting(true);
-
-        toolStateManager.player.playerInteractUI.crosshairImage.gameObject.SetActive(true);
+        toolStateManager.StartAim(true);
     }
 
     public override void UpdateState()
@@ -42,21 +36,14 @@ public class AimState : ToolBaseState
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
         {
             if (toolStateManager.CurrentToolType == ToolType.Bow)
-                toolStateManager.RPC_BowShoot();
+                toolStateManager.RPC_BowShootAnimation();
 
             toolStateManager.ChangeState(toolStateManager.useToolState);
         }
 
         else if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
-            toolStateManager.player.isAimLocked = false;
-
-            if (toolStateManager.HasStateAuthority)
-                toolStateManager.RPC_MoveAimCamera(false);
-
-            if (toolStateManager.CurrentToolType == ToolType.Bow)
-                toolStateManager.RPC_BowSetting(false);
-
+            toolStateManager.StartAim(false);
             toolStateManager.ChangeState(toolStateManager.idleState);
         }
     }

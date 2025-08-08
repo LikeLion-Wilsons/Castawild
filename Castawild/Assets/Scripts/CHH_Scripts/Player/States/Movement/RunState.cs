@@ -12,23 +12,20 @@ public class RunState : MovementBaseState
     {
         movementManager.CurrentMoveState = MoveAnimationState.Run;
         movementManager.currentMoveSpeed = movementManager.runSpeed;
-        movementManager.currentMoveType = MoveType.Run;
     }
 
     public override void UpdateState()
     {
-        if (movementManager.HasStateAuthority)
+        if (movementManager.Stamina <= 0)
         {
-            if (movementManager.Stamina <= 0)
-            {
-                movementManager.ChangeState(movementManager.walkState);
-                return;
-            }
-            movementManager.Stamina -= movementManager.player.staminaDecreaseRate * movementManager.Runner.DeltaTime;
+            movementManager.ChangeState(movementManager.walkState);
+            return;
         }
+        else
+            movementManager.Stamina -= movementManager.player.staminaRunDecreaseRate * movementManager.Runner.DeltaTime;
 
         // Walk
-        if (movementManager.input.IsUp(PlayerNetworkInputData.sprintInput))
+        if (movementManager.input.IsUp(PlayerNetworkInputData.sprintInput) || movementManager.Stamina <= 0)
             movementManager.ChangeState(movementManager.walkState);
 
         // Idle

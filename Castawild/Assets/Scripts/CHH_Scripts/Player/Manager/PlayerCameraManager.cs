@@ -8,6 +8,7 @@ public enum ViewType { None, FirstPerson, ThirdPerson }
 public class PlayerCameraManager : MonoBehaviour
 {
     #region Components
+    public CinemachineImpulseSource impulseSource;
     private PlayerController playerController;
     private PlayerInputManager inputManager;
     private MovementStateManager movementManager;
@@ -56,7 +57,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     #region Third Person Camera Zoom
     [Header("3인칭 Zoom")]
-    [SerializeField] private float aimZoomDuration = 0.3f;
+    [SerializeField] public float aimZoomDuration = 0.3f;
     [SerializeField] private float zoomSpeed = 2f;
     [SerializeField] private float zoomLerpSpeed = 10f;
     [SerializeField] private float minDistance = 3f;
@@ -93,6 +94,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void InitComponents()
     {
+        impulseSource = GetComponentInParent<CinemachineImpulseSource>();
         player = GetComponentInParent<Player>();
         playerController = GetComponentInParent<PlayerController>();
         inputManager = GetComponentInParent<PlayerInputManager>();
@@ -133,7 +135,7 @@ public class PlayerCameraManager : MonoBehaviour
     private void HandleViewChange()
     {
         if (inputManager.viewChangeAction.WasPressedThisFrame()
-            && (toolManager.currentState == toolManager.idleState || toolManager.currentState == toolManager.carryState))
+            && (toolManager.CurrentToolUseState == ToolAnimationState.Idle || toolManager.CurrentToolUseState == ToolAnimationState.Carry))
         {
             ViewChange(currentView == ViewType.FirstPerson ? ViewType.ThirdPerson : ViewType.FirstPerson);
         }
@@ -158,6 +160,7 @@ public class PlayerCameraManager : MonoBehaviour
                 }
                 firstPersonCam.Priority = 10;
                 thirdPersonCam.Priority = 0;
+                player.AttachToCamera(true);
             }
         }
 
@@ -175,6 +178,7 @@ public class PlayerCameraManager : MonoBehaviour
                 }
                 firstPersonCam.Priority = 0;
                 thirdPersonCam.Priority = 10;
+                player.AttachToCamera(false);
             }
         }
     }
@@ -298,17 +302,26 @@ public class PlayerCameraManager : MonoBehaviour
             thirdPersonTarget.localPosition = targetPos;
     }
 
-    public void ApplySleepCameraView(bool isSleep)
+    public void AttachCameraToHead(bool attachCamera)
     {
-        if (isSleep)
+        if (attachCamera)
         {
+            player.AttachToCamera(false);
+
             firstPersonCam.Follow = playerHead.transform;
             firstPersonCam.LookAt = playerHead.transform;
         }
         else
         {
+            player.AttachToCamera(true);
+
             firstPersonCam.Follow = firstPersonTarget;
             firstPersonCam.LookAt = firstPersonTarget;
         }
+    }
+
+    public void ShakeCamera()
+    {
+        impulseSource.GenerateImpulse();
     }
 }

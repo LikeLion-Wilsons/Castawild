@@ -15,7 +15,7 @@ public class EatState : ToolBaseState
         if (toolStateManager.player.currentItemType == ItemType.Drink)
             toolStateManager.CurrentToolUseState = ToolAnimationState.Drink;
 
-        toolStateManager.player.StopPlayer();
+        toolStateManager.playerController.RPC_FreezePosition(true);
     }
 
     public override void UpdateState()
@@ -27,7 +27,7 @@ public class EatState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
-        toolStateManager.player.CanMove = true;
-        toolStateManager.isTriggerSet = false;
+        toolStateManager.playerController.RPC_FreezePosition(false);
+        toolStateManager.RPC_TriggerSet(false);
     }
 }

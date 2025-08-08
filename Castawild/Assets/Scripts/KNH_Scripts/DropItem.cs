@@ -1,36 +1,32 @@
 using Fusion;
-using Test;
-using UnityEngine.Splines;
 
-public class DropItem : NetworkBehaviour, IInteractable
+
+public class DropItem : InteractableObject
 {
+    [Networked] private bool canInteract { get; set; } = true;
     public Item item;
 
-    [Networked] private TickTimer reviveTimer { get; set; }
-
-    public bool CanInteract()
+    private void Awake()
     {
-        return true;
+        interactableType = InteractableType.Item;
+        isPlaceable = true;
     }
 
     public void Init(Item _item)
     {
         item = _item;
-    }
-    public void Interact(PlayerRef player)
-    {
-        RPC_Request(player);
+        text = item.GetData().name;//아이템 이름 설정
     }
 
-    //클라->서버
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    void RPC_Request(PlayerRef player)
-    {
-        var playerObj = Runner.GetPlayerObject(player);
-        var inven = playerObj.GetComponent<InventoryDataManager>();
-        inven.GetItem(item.itemID, item.count);
-        reviveTimer = TickTimer.CreateFromSeconds(Runner, 2f);
+    public override bool CanInteract() => canInteract;
 
+    public override void Interact(PlayerRef playerRef)
+    {
+        NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
+
+        Player player = playerObj.GetComponent<Player>();
+        InventoryDataManager inventoryData = player.GetComponent<InventoryDataManager>();
+        inventoryData.AddItem(item.itemID, item.count);//아이템 획득
         Destroy(gameObject);
     }
 }

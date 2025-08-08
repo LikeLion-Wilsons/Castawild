@@ -108,8 +108,6 @@ public class YSB_Player : NetworkBehaviour
         }
     }
 
-
-
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     private void RPC_SetNickname(string nickname)
     {

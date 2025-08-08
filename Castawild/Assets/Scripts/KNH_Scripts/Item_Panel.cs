@@ -42,12 +42,12 @@ public class Item_Panel :
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
         uiInventory = inventory.GetComponent<UIInventory>();
-        Canvas_Holder.OnUIActive+= OnUIActive;
+        UI_Manager.OnUIActive+= OnUIActive;
     }
 
     void OnDestroy()
     {
-        Canvas_Holder.OnUIActive -= OnUIActive;
+        UI_Manager.OnUIActive -= OnUIActive;
     }
 
     void OnUIActive(bool active)
@@ -267,7 +267,6 @@ public class Item_Panel :
             {
                 transform.SetParent(originalParent);
                 rectTransform.anchoredPosition = originalAnchoredPos;
-                Debug.Log("좌클릭 드래그: 원래 위치로");
             }
         }
         canvasGroup.blocksRaycasts = true;
@@ -278,7 +277,6 @@ public class Item_Panel :
 
     public void OnDrop(PointerEventData eventData)
     {
-        Debug.Log(isInveontoryOpen);
         if (!isInveontoryOpen) return;
 
         var droppedObj = eventData.pointerDrag;

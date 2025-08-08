@@ -15,7 +15,7 @@ public class UIPart : MonoBehaviour
     {
         if (isActive == false)
         {
-            Debug.LogWarning("Not Active this UI");
+            //Debug.LogWarning("Not Active this UI");
             return;
         }
         inputManager?.LockCursor();

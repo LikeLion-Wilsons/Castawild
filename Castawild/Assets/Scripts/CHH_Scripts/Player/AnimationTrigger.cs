@@ -8,6 +8,7 @@ public class AnimationTrigger : MonoBehaviour
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
     private PlayerCameraManager cameraManager;
+    private PlayerInteractUI interactUI;
 
     private void Awake()
     {
@@ -16,6 +17,7 @@ public class AnimationTrigger : MonoBehaviour
         movementManager = GetComponentInParent<MovementStateManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
         cameraManager = transform.parent.GetComponentInChildren<PlayerCameraManager>();
+        interactUI = transform.parent.GetComponentInChildren<PlayerInteractUI>();
     }
 
     public void ToolAnimationFinishTrigger() => toolManager.IsAnimationFinished = true;
@@ -35,10 +37,8 @@ public class AnimationTrigger : MonoBehaviour
     public void Interact() => playercontroller.Interact();
     public void FinishSleep()
     {
-        player.PlayerCanMove();
-
-        if (player.HasInputAuthority)
-            player.FinishSleep();
+        playercontroller.RPC_FreezePosition(false);
+        player.FinishSleep();
     }
 
     public void CanWakeUp()
@@ -54,4 +54,25 @@ public class AnimationTrigger : MonoBehaviour
     }
 
     public void LyingOrGettingUp(int playing) => movementManager.isLyingOrGettingUp = (playing != 0);
+
+    public void Throw(int isArrow) => toolManager.SetTargetPos(isArrow);
+
+    //public void SetTargetPos() => toolManager.SetTargetPos();
+    public void ActiveDeathUI()
+    {
+        if (movementManager.HasInputAuthority)
+            interactUI.ActiveDeathUI(true);
+    }
+
+    public void StartHit()
+    {
+        if (toolManager.HasStateAuthority)
+            toolManager.StartHit();
+    }
+
+    public void FinishHit()
+    {
+        if (toolManager.HasStateAuthority)
+            toolManager.FinishHit();
+    }
 }
