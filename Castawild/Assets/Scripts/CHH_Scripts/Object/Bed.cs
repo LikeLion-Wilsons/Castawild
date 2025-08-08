@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Bed : InteractableObject
 {
-    [Networked] private bool CanSleep { get; set; } = true;
+    [Networked] public bool CanSleep { get; set; } = true;
     [SerializeField] private Transform sleepPos;
 
     private void Awake()
@@ -19,12 +19,21 @@ public class Bed : InteractableObject
     {
         if (!CanSleep)
             return;
-        CanSleep = false;
 
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
-
         Player player = playerObj.GetComponent<Player>();
-        player.currentBed = this;
+
+        if (playerObj.HasStateAuthority)
+        {
+            CanSleep = false;
+            player.currentBed = this;
+        }
+        else
+        {
+            player.RPC_CanSleep_Bed(this, false);
+            player.RPC_CurrentBed(this);
+        }
+
         player.SetRespawnPos(sleepPos.position);
         player.movementManager.RPC_ChangeSleepState(playerRef);
 

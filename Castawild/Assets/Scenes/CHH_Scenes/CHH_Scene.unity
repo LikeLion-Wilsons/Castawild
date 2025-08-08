@@ -422,9 +422,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e7b630ddc35fcd4db78102273a56db7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactableType: 0
+  interactableType: 3
   text: Sleep
   isPlaceable: 0
+  _CanSleep: 1
   sleepPos: {fileID: 793429960}
 --- !u!65 &1258649156
 BoxCollider:
