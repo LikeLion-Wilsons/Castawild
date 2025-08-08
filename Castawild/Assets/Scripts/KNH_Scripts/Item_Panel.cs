@@ -42,12 +42,12 @@ public class Item_Panel :
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
         uiInventory = inventory.GetComponent<UIInventory>();
-        Canvas_Holder.OnUIActive+= OnUIActive;
+        UI_Manager.OnUIActive+= OnUIActive;
     }
 
     void OnDestroy()
     {
-        Canvas_Holder.OnUIActive -= OnUIActive;
+        UI_Manager.OnUIActive -= OnUIActive;
     }
 
     void OnUIActive(bool active)
