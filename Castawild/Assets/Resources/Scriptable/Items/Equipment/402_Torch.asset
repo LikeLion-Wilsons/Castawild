@@ -20,5 +20,5 @@ MonoBehaviour:
   range: {x: 5, y: 4}
   stackable: 0
   ingredient:
-  - {fileID: 11400000, guid: 176d0c5eb05bf3147ad211a462b7b002, type: 2}
+  - {fileID: 11400000, guid: 8a4a708c8d089da419ff325b52b9a76e, type: 2}
   ingredientCount: 03000000
