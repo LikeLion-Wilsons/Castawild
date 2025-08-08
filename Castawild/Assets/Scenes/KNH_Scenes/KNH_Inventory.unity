@@ -378,6 +378,8 @@ MonoBehaviour:
   itemBox: {fileID: 0}
   scrollCooldown: 0.1
   playerUIPrefab: {fileID: 0}
+  UICanvas: {fileID: 0}
+  chest: {fileID: 0}
   inventorySlots:
   - {fileID: 1499725588}
   - {fileID: 1150114375}

@@ -10,15 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b7b30c7c93af76c46acd2b93a24d37fb, type: 3}
-  m_Name: 406_WoodenBow
+  m_Name: 201_WoodenArrow
   m_EditorClassIdentifier: 
-  itemID: 406
-  image: {fileID: 21300000, guid: bbf8638a8a75d9c42b93639213c92c9b, type: 3}
-  itemName: "\uD65C"
-  description: "\uD654\uC0B4\uC744 \uC3E0 \uC218 \uC788\uB2E4."
-  type: 0
+  itemID: 201
+  image: {fileID: 21300000, guid: 59c8cd2a91ad7f846b9efd79b945c356, type: 3}
+  itemName: "\uD654\uC0B4"
+  description: "\uD654\uC0B4"
+  type: 1
   range: {x: 5, y: 4}
   stackable: 0
   ingredient:
-  - {fileID: 11400000, guid: 176d0c5eb05bf3147ad211a462b7b002, type: 2}
-  ingredientCount: 0300000002000000
+  - {fileID: 11400000, guid: 8a4a708c8d089da419ff325b52b9a76e, type: 2}
+  - {fileID: 11400000, guid: 8ccfabe31517e0d47933bfacd2423433, type: 2}
+  ingredientCount: 0100000001000000

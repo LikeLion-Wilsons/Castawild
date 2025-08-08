@@ -50,7 +50,7 @@ namespace YSB_Scripts
             {
                 var playerObj = Runner.GetPlayerObject(player);
                 var inven = playerObj.GetComponent<InventoryDataManager>();
-                inven.GetItem(0, 1);
+                inven.AddItem(0, 1);
 
                 Die();
 

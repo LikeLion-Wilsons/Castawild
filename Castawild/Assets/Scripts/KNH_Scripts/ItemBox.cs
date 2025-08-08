@@ -1,7 +1,7 @@
 using Fusion;
+using UnityEngine;
 
-
-public class DropItem : InteractableObject
+public class ItemBox : InteractableObject
 {
     [Networked] private bool canInteract { get; set; } = true;
     public Item item;
@@ -15,17 +15,18 @@ public class DropItem : InteractableObject
     public void Init(Item _item)
     {
         item = _item;
-        text = item.GetData().name;//아이템 이름 설정
     }
 
     public override bool CanInteract() => canInteract;
 
     public override void Interact(PlayerRef playerRef)
     {
+        text = item.GetData().name;//아이템 이름 설정
+
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
 
         Player player = playerObj.GetComponent<Player>();
-        InventoryDataManager inventoryData = player.GetComponent<InventoryDataManager>();
+        InventoryDataManager inventoryData =  player.GetComponent<InventoryDataManager>();
         inventoryData.AddItem(item.itemID, item.count);//아이템 획득
         Destroy(gameObject);
     }

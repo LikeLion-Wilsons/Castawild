@@ -42,7 +42,7 @@ public class NetworkStone : NetworkBehaviour, IInteractable
             //막타 플레이어에게 아이템지급.
             var playerObj = Runner.GetPlayerObject(player);
             var inven = playerObj.GetComponent<InventoryDataManager>();
-            inven.GetItem(1, 1);
+            inven.AddItem(1, 1);
             reviveTimer = TickTimer.CreateFromSeconds(Runner, 2f);
         }
     }

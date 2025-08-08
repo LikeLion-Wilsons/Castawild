@@ -10,16 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b7b30c7c93af76c46acd2b93a24d37fb, type: 3}
-  m_Name: 404_StoneAxe
+  m_Name: 402_Torch
   m_EditorClassIdentifier: 
-  itemID: 403
-  image: {fileID: 21300000, guid: 6a08ec4b334ea1c46b8171679417a74f, type: 3}
-  itemName: "\uB3CC\uB3C4\uB07C"
-  description: "\uB098\uBB34\uB97C \uD330 \uC218 \uC788\uB2E4."
+  itemID: 402
+  image: {fileID: 21300000, guid: 68e1f3d1470827b49b3b3347af0e4f6d, type: 3}
+  itemName: "\uD683\uBD88"
+  description: "\uBE5B\uC744 \uBE44\uCD9C \uC218 \uC788\uB2E4."
   type: 0
   range: {x: 5, y: 4}
   stackable: 0
   ingredient:
-  - {fileID: 11400000, guid: 176d0c5eb05bf3147ad211a462b7b002, type: 2}
-  - {fileID: 11400000, guid: cc1b9373518131b41ab3d19ff2754a6c, type: 2}
-  ingredientCount: 0100000001000000
+  - {fileID: 11400000, guid: 8a4a708c8d089da419ff325b52b9a76e, type: 2}
+  ingredientCount: 03000000
