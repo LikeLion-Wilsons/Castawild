@@ -16,9 +16,10 @@ public class SleepState : MovementBaseState
 
         movementManager.CanWakeUp = false;
 
-        movementManager.playerController.RPC_FreezePosition(true);
-        movementManager.player.RPC_ApplyTurnOffUI();
-        movementManager.player.RPC_ApplyAttachCameraToHead(true);
+        movementManager.playerController.Host_FreezePosition(true);
+
+        movementManager.player.Client_TurnOffInteractiveUI();
+        movementManager.player.Client_AttachCameraToHead(true);
     }
 
     public override void UpdateState()
@@ -30,7 +31,7 @@ public class SleepState : MovementBaseState
 
     public override void ExitState()
     {
-        movementManager.player.RPC_ApplyTurnOffUI();
-        movementManager.player.RPC_ApplyAttachCameraToHead(false);
+        movementManager.player.Client_TurnOffInteractiveUI();
+        movementManager.player.Client_AttachCameraToHead(false);
     }
 }

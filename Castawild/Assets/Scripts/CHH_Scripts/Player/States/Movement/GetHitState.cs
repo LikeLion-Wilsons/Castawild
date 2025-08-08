@@ -11,18 +11,18 @@ public class GetHitState : MovementBaseState
     public override void EnterState()
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.GetHit;
-        movementManager.playerController.RPC_FreezePosition(true);
+        movementManager.playerController.Host_FreezePosition(true);
     }
 
     public override void UpdateState()
     {
-        if (movementManager.IsAnimationFinished == true)
+        if (movementManager.IsAnimationFinished)
             movementManager.Host_ChangeState(MovementState.Idle);
     }
 
     public override void ExitState()
     {
-        movementManager.RPC_TriggerSet(false);
-        movementManager.playerController.RPC_FreezePosition(false);
+        movementManager.IsAnimationFinished = false;
+        movementManager.playerController.Host_FreezePosition(false);
     }
 }

@@ -141,13 +141,16 @@ public class PlayerCameraManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 다른 플레이어 카메라 우선순위 설정
+    /// </summary>
     public void SetNetworkCamera()
     {
         firstPersonCam.Priority = 1;
         thirdPersonCam.Priority = 0;
     }
 
-    public void ViewChange(ViewType viewType)
+    private void ViewChange(ViewType viewType)
     {
         if (viewType == ViewType.FirstPerson)
         {
@@ -302,6 +305,9 @@ public class PlayerCameraManager : MonoBehaviour
             thirdPersonTarget.localPosition = targetPos;
     }
 
+    /// <summary>
+    /// 플레이어의 머리에 카메라를 붙이거나 떼는 함수
+    /// </summary>
     public void AttachCameraToHead(bool attachCamera)
     {
         if (attachCamera)
@@ -320,6 +326,9 @@ public class PlayerCameraManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 카메라 쉐이크
+    /// </summary>
     public void ShakeCamera()
     {
         impulseSource.GenerateImpulse();

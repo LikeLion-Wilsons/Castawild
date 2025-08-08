@@ -1,5 +1,4 @@
 using Fusion;
-using Fusion.Addons.Physics;
 using UnityEngine;
 
 public enum ThrowType { stone, arrow }
@@ -29,10 +28,9 @@ public class ThrowObject : AttackObject
         if (!HasStateAuthority)
             return;
 
-
         if (throwType == ThrowType.arrow)
         {
-            RPC_Fall();
+            RPC_NotifyFall();
 
             if (collision.gameObject.CompareTag("Player") /*&& collision.gameObject.CompareTag("Animal")*/)
             {
@@ -51,7 +49,7 @@ public class ThrowObject : AttackObject
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_Fall()
+    private void RPC_NotifyFall()
     {
         rigid.linearVelocity = Vector3.zero;
         rigid.angularVelocity = Vector3.zero;

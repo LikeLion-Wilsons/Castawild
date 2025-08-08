@@ -1,6 +1,5 @@
 using Fusion;
 using Fusion.Addons.SimpleKCC;
-using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -26,6 +25,7 @@ public sealed class PlayerController : NetworkBehaviour
     private bool isFalling;
     [SerializeField] private float fallingDeadTime = 5f;
     private float fallingElapsed;
+    [Networked] public bool Grounded { get; set; }
 
     [Header("Interact")]
     [SerializeField] private float interactHeight = 10f;
@@ -34,7 +34,6 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private LayerMask interactLayer;
     [HideInInspector] public EnvironmentObject Client_currentInteractObject;
 
-    [Networked, HideInInspector] public bool Grounded { get; set; }
     [Networked, HideInInspector] public Vector3 ChangePos { get; set; }
     [Networked, HideInInspector] public bool IsChangePos { get; set; }
 
@@ -47,7 +46,7 @@ public sealed class PlayerController : NetworkBehaviour
         InitComponents();
     }
 
-    void InitComponents()
+    private void InitComponents()
     {
         kcc = GetComponent<SimpleKCC>();
 
@@ -59,6 +58,7 @@ public sealed class PlayerController : NetworkBehaviour
         toolManager.Host_ChangeState(ToolState.Idle);
 
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
+
         if (!HasInputAuthority)
             cameraManager.SetNetworkCamera();
 
@@ -66,47 +66,60 @@ public sealed class PlayerController : NetworkBehaviour
         rigid.isKinematic = false;
     }
 
+    private void Update()
+    {
+        // 테스트용
+        if (HasInputAuthority && Input.GetKeyDown(KeyCode.H))
+            player.RPC_RequestHeal();
+    }
+
     public override void FixedUpdateNetwork()
     {
         if (!GetInput<PlayerNetworkInputData>(out var input))
             return;
 
-        // 테스트용
-        if (HasInputAuthority && Input.GetKeyDown(KeyCode.H))
-            player.RPC_Heal();
-
         if (HasStateAuthority)
         {
-            ChangePosition();
+            Host_ChangePosition();
 
-            Falling();
+            Host_Falling();
         }
 
-        HandleState(input);
+        All_HandleState(input);
 
         if (!player.CanMove)
         {
-            Gravity();
+            if (HasStateAuthority)
+                Host_Gravity();
             return;
         }
 
         if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
         {
             Debug.Log("AttackPlayer");
-            player.TakeDamage(true, 30f);
+            player.Host_TakeDamage(true, 30f);
         }
 
-        HandleMovement(input);
+        All_HandleMovement(input);
 
         if (HasInputAuthority)
-            TestTryOverlap(input);
+            Client_TestTryOverlap(input);
 
         prevInputButtons = input.Buttons;
     }
 
-    private void Falling()
+    public override void Render()
+    {
+        kcc.Render();
+
+        movementManager.All_UpdateMoveAnimation(Runner.DeltaTime);
+        toolManager.All_UpdateMoveAnimation();
+    }
+
+    private void Host_Falling()
     {
         Vector3 velocity = kcc.RealVelocity;
+        Grounded = kcc.IsGrounded;
 
         // 떨어지기 시작
         if (!isFalling && velocity.y < -0.1f && !Grounded)
@@ -122,7 +135,7 @@ public sealed class PlayerController : NetworkBehaviour
             if (fallingElapsed > fallingDeadTime)
             {
                 fallingElapsed = 0f;
-                player.TakeDamage(false, 10000f);
+                player.Host_TakeDamage(false, 10000f);
             }
         }
 
@@ -137,16 +150,13 @@ public sealed class PlayerController : NetworkBehaviour
             if (fallDistance > fallThreshold)
             {
                 float damage = (fallDistance - fallThreshold) * damagePerMeter;
-                player.TakeDamage(false, damage);
-                RPC_ShakeCamera();
+                player.Host_TakeDamage(false, damage);
+                RPC_ApplyShakeCamera();
             }
         }
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ShakeCamera() => cameraManager.ShakeCamera();
-
-    private void HandleState(PlayerNetworkInputData input)
+    private void All_HandleState(PlayerNetworkInputData input)
     {
         movementManager.SetInput(input);
         toolManager.SetInput(input);
@@ -154,13 +164,13 @@ public sealed class PlayerController : NetworkBehaviour
         if (movementManager.movementStateDict.TryGetValue(movementManager.CurrentMoveState, out var movementState))
             movementState.UpdateState();
         if (toolManager.toolStateDict.TryGetValue(toolManager.CurrentToolState, out var toolState))
-            movementState.UpdateState();
+            toolState.UpdateState();
 
         movementManager.SetPrevInputButton(input.Buttons);
         toolManager.SetPrevInputButton(input.Buttons);
     }
 
-    private void ChangePosition()
+    private void Host_ChangePosition()
     {
         if (IsChangePos)
         {
@@ -169,25 +179,26 @@ public sealed class PlayerController : NetworkBehaviour
         }
     }
 
-    private void Gravity()
+    private void Host_Gravity()
     {
         Vector3 velocity = kcc.RealVelocity;
+        velocity.x = 0;
+        velocity.z = 0;
         velocity.y += gravity * Runner.DeltaTime;
         kcc.Move(velocity);
-        Grounded = kcc.IsGrounded;
     }
 
-    private void HandleMovement(PlayerNetworkInputData input)
+    private void All_HandleMovement(PlayerNetworkInputData input)
     {
         maxSpeed = player.All_CanMoving() ? movementManager.currentMoveSpeed : 0f;
         movementManager.MoveValue = input.moveValue;
 
         if (HasStateAuthority)
-            Move(input.moveDir);
-        Rotate(input);
+            Host_Move(input.moveDir);
+        All_Rotate(input);
     }
 
-    public void Move(Vector3 direction)
+    private void Host_Move(Vector3 direction)
     {
         direction = direction.normalized;
 
@@ -216,10 +227,9 @@ public sealed class PlayerController : NetworkBehaviour
         // Move 함수의 ManualFixedUpdate 내부에서 DeltaTime 곱하기 때문에 여기서는 곱하지 말기
 
         kcc.Move(velocity, jump);
-        Grounded = kcc.IsGrounded;
     }
 
-    private void Rotate(PlayerNetworkInputData input)
+    private void All_Rotate(PlayerNetworkInputData input)
     {
         if (input.currentView == ViewType.FirstPerson)
         {
@@ -230,25 +240,17 @@ public sealed class PlayerController : NetworkBehaviour
         {
             if (input.camForward == Vector3.zero)
                 return;
-            LookForward_ThirdPerson(input);
+            All_RotateForward(input);
         }
     }
 
-    public void LookForward_ThirdPerson(PlayerNetworkInputData input)
+    public void All_RotateForward(PlayerNetworkInputData input)
     {
         Quaternion target = Quaternion.LookRotation(input.camForward);
         kcc.SetLookRotation(Quaternion.Slerp(kcc.Transform.rotation, target, rotationSpeed * Runner.DeltaTime));
     }
 
-    public override void Render()
-    {
-        kcc.Render();
-
-        movementManager.All_UpdateMoveAnimation(Runner.DeltaTime);
-        toolManager.All_UpdateMoveAnimation();
-    }
-
-    private void TestTryOverlap(PlayerNetworkInputData input)
+    private void Client_TestTryOverlap(PlayerNetworkInputData input)
     {
         Camera cam = Camera.main;
 
@@ -336,10 +338,14 @@ public sealed class PlayerController : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// 돌/나무 등 Interact UI가 바뀔 때 애니메이션 재생되면 호출되는 함수
+    /// </summary>
     public void Client_Interact()
     {
-        if (Client_currentInteractObject == null)
+        if (Client_currentInteractObject == null || !HasInputAuthority)
             return;
+
         if (Client_currentInteractObject.interactableType == InteractableType.Tree && Client_currentInteractObject.CanInteract())
         {
             int att = player.All_GetToolAtt("Axe");
@@ -354,31 +360,44 @@ public sealed class PlayerController : NetworkBehaviour
         }
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    public void RPC_SetPosition(Vector3 position)
+    /// <summary>
+    /// 위치 변경
+    /// </summary>
+    public void Host_SetPosition(Vector3 position)
     {
         IsChangePos = true;
         ChangePos = position;
     }
 
-    public void SetPosition(Vector3 position)
+    /// <summary>
+    /// 위치 고정
+    /// </summary>
+    public void Host_FreezePosition(bool freeze)
     {
-        IsChangePos = true;
-        ChangePos = position;
-    }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_FreezePosition(bool freeze) => FreezePosition(freeze);
-
-    public void FreezePosition(bool freeze)
-    {
+        if (!HasStateAuthority)
+            return;
         if (freeze)
         {
-            if (HasStateAuthority)
-                kcc.ResetVelocity();
+            kcc.ResetVelocity();
             player.CanMove = false;
         }
         else
             player.CanMove = true;
     }
+
+    /// <summary>
+    /// 위치 변경
+    /// </summary>
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_NotifySetPosition(Vector3 position)
+    {
+        IsChangePos = true;
+        ChangePos = position;
+    }
+
+    /// <summary>
+    /// 카메라 쉐이크
+    /// </summary>
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplyShakeCamera() => cameraManager.ShakeCamera();
 }

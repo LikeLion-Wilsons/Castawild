@@ -10,6 +10,7 @@ public class JumpState : MovementBaseState
     public override void EnterState()
     {
         movementManager.JumpTriggered = true;
+        movementManager.CanLanding = false;
 
         if (movementManager.previousState == movementManager.idleState)
             movementManager.CurrentMoveAnimation = MoveAnimatoinState.IdleJump;
@@ -21,10 +22,8 @@ public class JumpState : MovementBaseState
 
     public override void UpdateState()
     {
-        if (movementManager.isJumping && movementManager.playerController.Grounded)
+        if (movementManager.playerController.Grounded && movementManager.CanLanding)
         {
-            movementManager.isJumping = false;
-
             if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
                 movementManager.Host_ChangeState(MovementState.Idle);
             else if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.All_HasEnoughStaminaToRun())
@@ -36,7 +35,6 @@ public class JumpState : MovementBaseState
 
     public override void ExitState()
     {
-        movementManager.CanJump = true;
-        movementManager.RPC_TriggerSet(false);
+        movementManager.CanLanding = false;
     }
 }

@@ -14,7 +14,7 @@ public class ToolIdleState : ToolBaseState
 
     public override void UpdateState()
     {
-        if (toolStateManager.player.IsDeath())
+        if (toolStateManager.player.All_IsDead())
             return;
 
         // Aim
@@ -26,8 +26,6 @@ public class ToolIdleState : ToolBaseState
         else if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput)
             && toolStateManager.player.All_CanUseTool())
         {
-            toolStateManager.movementManager.Host_ChangeState(MovementState.Idle);
-
             // 음식 들고있을 땐 먹기
             if (toolStateManager.player.currentItemType == ItemType.Food || toolStateManager.player.currentItemType == ItemType.Drink)
             {
@@ -35,6 +33,7 @@ public class ToolIdleState : ToolBaseState
                 return;
             }
 
+            toolStateManager.movementManager.Host_ChangeState(MovementState.Idle);
             toolStateManager.Host_ChangeState(ToolState.UseTool);
         }
     }
