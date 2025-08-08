@@ -10,31 +10,30 @@ public class IdleState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.CurrentMoveState = MoveAnimationState.Idle;
+        movementManager.CurrentMoveAnimation = MoveAnimatoinState.Idle;
     }
 
     public override void UpdateState()
     {
         // Move
-        if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput) && movementManager.player.CanMoving())
+        if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput) && movementManager.player.All_CanMoving())
         {
-            if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.HasEnoughStaminaToRun()
-                && movementManager.toolStateManager.currentState != movementManager.toolStateManager.aimState)
-                movementManager.ChangeState(movementManager.runState);
+            if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.All_HasEnoughStaminaToRun()
+                && movementManager.toolStateManager.CurrentToolState != ToolState.Aim)
+                movementManager.Host_ChangeState(MovementState.Run);
             else
-                movementManager.ChangeState(movementManager.walkState);
+                movementManager.Host_ChangeState(MovementState.Walk);
         }
 
         // Crouch
         if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.crouchInput))
-            movementManager.ChangeState(movementManager.crouchState);
+            movementManager.Host_ChangeState(MovementState.Crouch);
 
         // Jump
-        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.canJump)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.playerController.Grounded)
         {
-            movementManager.canJump = false;
             movementManager.previousState = this;
-            movementManager.ChangeState(movementManager.jumpState);
+            movementManager.Host_ChangeState(MovementState.Jump);
         }
     }
 

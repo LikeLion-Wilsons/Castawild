@@ -60,7 +60,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6388187669656790763}
+  m_Father: {fileID: 5694693715151805272}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &380963293214476524
 GameObject:
@@ -2118,7 +2118,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6388187669656790763}
+  m_Father: {fileID: 5694693715151805272}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4790727959444358280
 GameObject:
@@ -2276,7 +2276,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6388187669656790763}
+  m_Father: {fileID: 5694693715151805272}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5354115658579860438
 GameObject:
@@ -2436,6 +2436,41 @@ Transform:
   m_Children:
   - {fileID: 4805541945307918767}
   m_Father: {fileID: 1287323105947238445}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5754783290443593914
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5694693715151805272}
+  m_Layer: 6
+  m_Name: CameraTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5694693715151805272
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5754783290443593914}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3312262715438081692}
+  - {fileID: 5508614353083602396}
+  - {fileID: 3533680929014235342}
+  - {fileID: 3517969266310779276}
+  m_Father: {fileID: 6388187669656790763}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5764454837785803283
 GameObject:
@@ -2895,10 +2930,7 @@ Transform:
   - {fileID: 7813269517312369915}
   - {fileID: 6893158983951836988}
   - {fileID: 1537898097600247738}
-  - {fileID: 3312262715438081692}
-  - {fileID: 5508614353083602396}
-  - {fileID: 3533680929014235342}
-  - {fileID: 3517969266310779276}
+  - {fileID: 5694693715151805272}
   - {fileID: 7467696255462433047}
   - {fileID: 3860441751889761913}
   - {fileID: 8012178248796667738}
@@ -2995,17 +3027,17 @@ MonoBehaviour:
     maxHunger: 100
     maxThirst: 100
     maxTemperature: 100
-  _Hp: 0
-  _Stamina: 0
-  _Hunger: 0
-  _Thirst: 0
-  _Temperature: 0
   hpDecreaseRate: 0.5
   staminaIncreaseRate: 2
   staminaHungerDecreaseRate: 3
   staminaRunDecreaseRate: 1
   hungerDecreaseRate: 1
   thirstDecreaseRate: 1
+  _Hp: 0
+  _Stamina: 0
+  _Hunger: 0
+  _Thirst: 0
+  _Temperature: 0
   anim: {fileID: 0}
   playerInteractUI: {fileID: 0}
   playerController: {fileID: 0}
@@ -3019,17 +3051,17 @@ MonoBehaviour:
   bowUseLocalParent: {fileID: 3555937060719847740}
   arrow: {fileID: 2432054003010317866}
   _HasArrow: 0
-  currentBed: {fileID: 0}
+  Host_currentBed: {fileID: 0}
   amarture: {fileID: 762437358709272171}
-  _CanPVP: 1
   _RespawnPos: {x: 0, y: 0, z: 0}
   _CanMove: 1
+  _CanPVP: 1
   _IsUIOpen: 0
   _IsCursorLocked: 0
+  _IsSleeping: 0
   _CurrentToolName: 
   _CurrentToolAtt: 0
   _CurrentToolID: 0
-  _IsSleeping: 0
   inventory: {fileID: 0}
   isSpawned: 0
   currentItemType: 0
@@ -3046,7 +3078,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   kcc: {fileID: 5000463041039569134}
-  jumpImpulse: 200
+  jumpImpulse: 10
   maxSpeed: 2
   rotationSpeed: 15
   gravity: -9.81
@@ -3059,7 +3091,7 @@ MonoBehaviour:
   interactLayer:
     serializedVersion: 2
     m_Bits: 256
-  currentInteractObject: {fileID: 0}
+  Client_currentInteractObject: {fileID: 0}
   _Grounded: 0
   _ChangePos: {x: 0, y: 0, z: 0}
   _IsChangePos: 0
@@ -3083,13 +3115,11 @@ MonoBehaviour:
   _IsAnimationFinished: 0
   interactUI: {fileID: 0}
   toolStateManager: {fileID: 0}
-  currentMoveSpeed: 3
   airSpeedMuliplier: 0.7
   walkSpeed: 5
   runSpeed: 10
   crouchSpeed: 2
   rotationSpeed: 10
-  canJump: 1
   isJumping: 0
   groundYOffset: 0
   groundCheckRadius: 0.3
@@ -3099,8 +3129,11 @@ MonoBehaviour:
   fallMultiplier: 1.5
   animationLerpSpeed: 10
   isLyingOrGettingUp: 0
-  _Revived: 0
   _CurrentMoveState: 0
+  _CurrentMoveAnimation: 0
+  _currentMoveSpeed: 0
+  _CanJump: 1
+  _Revived: 0
   _JumpTriggered: 0
   _CanWakeUp: 0
   _MoveValue: {x: 0, y: 0}
@@ -3176,7 +3209,7 @@ MonoBehaviour:
   movementManager: {fileID: 0}
   animTrigger: {fileID: 0}
   armature: {fileID: 7813269517312369915}
-  armMesh: {fileID: 3201401248480740544}
+  Client_armMesh: {fileID: 3201401248480740544}
   bowAnim: {fileID: 1436198795544721307}
   throwUpForce: 0.3
   arrowUpForce: 0.2
@@ -3189,11 +3222,12 @@ MonoBehaviour:
   throwPos: {fileID: 8012178248796667738}
   fistPos: {fileID: 5180488209280489115}
   hitBox: {x: 0.64, y: 1.5, z: 0.85}
+  _CurrentToolState: 0
+  _CurrentToolAnimationState: 0
+  _CurrentToolType: 0
   _CanComboAttack: 0
   _ComboAttack: 0
   _CanReceiveInput: 0
-  _CurrentToolUseState: 0
-  _CurrentToolType: 0
 --- !u!114 &6363259293620697004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3214,7 +3248,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7137290088832178523}
   serializedVersion: 4
-  m_Mass: 100
+  m_Mass: 5
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -3251,7 +3285,7 @@ MonoBehaviour:
   scrollCooldown: 0.1
   playerUIPrefab: {fileID: 2839189812646824299, guid: e749cc6fe2a853349bb3f6bb330140f7, type: 3}
   UICanvas: {fileID: 0}
-  chest: {fileID: 1534066118601383972, guid: 36f0b95c8afb6ca49b8e112cc8fba58d, type: 3}
+  chest: {fileID: 6167062138974328233, guid: b3205841b2c54e84e941859841c61959, type: 3}
   inventorySlots:
   - {fileID: 0}
   - {fileID: 0}
@@ -3871,7 +3905,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6388187669656790763}
+  m_Father: {fileID: 5694693715151805272}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8586754752780306059
 GameObject:

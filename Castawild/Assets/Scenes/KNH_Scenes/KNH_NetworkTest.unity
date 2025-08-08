@@ -694,6 +694,7 @@ MonoBehaviour:
   interactableType: 0
   text: Sleep
   isPlaceable: 0
+  _CanSleep: 1
   sleepPos: {fileID: 205279650}
 --- !u!65 &473620276
 BoxCollider:
@@ -1839,9 +1840,17 @@ PrefabInstance:
       propertyPath: 'NetworkedBehaviours.Array.data[0]'
       value: 
       objectReference: {fileID: 9800520}
+    - target: {fileID: 5839911783318004443, guid: b3205841b2c54e84e941859841c61959, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6167062138974328233, guid: b3205841b2c54e84e941859841c61959, type: 3}
       propertyPath: m_Name
       value: Campfire
+      objectReference: {fileID: 0}
+    - target: {fileID: 6167062138974328233, guid: b3205841b2c54e84e941859841c61959, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6835935351536815891, guid: b3205841b2c54e84e941859841c61959, type: 3}
       propertyPath: m_LocalPosition.x

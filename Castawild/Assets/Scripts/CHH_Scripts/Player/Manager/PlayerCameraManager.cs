@@ -135,19 +135,22 @@ public class PlayerCameraManager : MonoBehaviour
     private void HandleViewChange()
     {
         if (inputManager.viewChangeAction.WasPressedThisFrame()
-            && (toolManager.CurrentToolUseState == ToolAnimationState.Idle || toolManager.CurrentToolUseState == ToolAnimationState.Carry))
+            && (toolManager.CurrentToolState == ToolState.Idle || toolManager.CurrentToolState == ToolState.Carry))
         {
             ViewChange(currentView == ViewType.FirstPerson ? ViewType.ThirdPerson : ViewType.FirstPerson);
         }
     }
 
+    /// <summary>
+    /// 다른 플레이어 카메라 우선순위 설정
+    /// </summary>
     public void SetNetworkCamera()
     {
         firstPersonCam.Priority = 1;
         thirdPersonCam.Priority = 0;
     }
 
-    public void ViewChange(ViewType viewType)
+    private void ViewChange(ViewType viewType)
     {
         if (viewType == ViewType.FirstPerson)
         {
@@ -160,7 +163,7 @@ public class PlayerCameraManager : MonoBehaviour
                 }
                 firstPersonCam.Priority = 10;
                 thirdPersonCam.Priority = 0;
-                player.AttachToCamera(true);
+                player.Client_AttachToCamera(true);
             }
         }
 
@@ -178,7 +181,7 @@ public class PlayerCameraManager : MonoBehaviour
                 }
                 firstPersonCam.Priority = 0;
                 thirdPersonCam.Priority = 10;
-                player.AttachToCamera(false);
+                player.Client_AttachToCamera(false);
             }
         }
     }
@@ -209,19 +212,19 @@ public class PlayerCameraManager : MonoBehaviour
             return;
         }
 
-        if (currentView == ViewType.ThirdPerson || !player.IsCursorLocked || !player.CanMoving())
+        if (currentView == ViewType.ThirdPerson || !player.IsCursorLocked || !player.All_CanMoving())
             return;
 
         pitch -= inputManager.lookInput.y * sensitivity;
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         // 자고있을 때 좌우회전 추가
-        if (movementManager.CurrentMoveState == MoveAnimationState.Sleep)
+        if (movementManager.CurrentMoveState == MovementState.Sleep)
         {
             yaw += inputManager.lookInput.x * sensitivity;
             yaw = Mathf.Clamp(yaw, minYaw, maxYaw);
         }
-        else if (movementManager.currentState != movementManager.sleepState && yaw != 0f)
+        else if (movementManager.CurrentMoveState != MovementState.Sleep && yaw != 0f)
             yaw = 0f;
 
         firstPersonCam.transform.localEulerAngles = new Vector3(pitch, yaw, 0f);
@@ -243,9 +246,9 @@ public class PlayerCameraManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 3인칭 조준할 때 카메라 움직이는 함수
+    /// 조준할 때 카메라 움직이는 함수
     /// </summary>
-    public void MoveCamera(bool _isAiming)
+    public void MoveAimCamera(bool _isAiming)
     {
         if (isAiming == _isAiming)
             return;
@@ -302,24 +305,30 @@ public class PlayerCameraManager : MonoBehaviour
             thirdPersonTarget.localPosition = targetPos;
     }
 
+    /// <summary>
+    /// 플레이어의 머리에 카메라를 붙이거나 떼는 함수
+    /// </summary>
     public void AttachCameraToHead(bool attachCamera)
     {
         if (attachCamera)
         {
-            player.AttachToCamera(false);
+            player.Client_AttachToCamera(false);
 
             firstPersonCam.Follow = playerHead.transform;
             firstPersonCam.LookAt = playerHead.transform;
         }
         else
         {
-            player.AttachToCamera(true);
+            player.Client_AttachToCamera(true);
 
             firstPersonCam.Follow = firstPersonTarget;
             firstPersonCam.LookAt = firstPersonTarget;
         }
     }
 
+    /// <summary>
+    /// 카메라 쉐이크
+    /// </summary>
     public void ShakeCamera()
     {
         impulseSource.GenerateImpulse();

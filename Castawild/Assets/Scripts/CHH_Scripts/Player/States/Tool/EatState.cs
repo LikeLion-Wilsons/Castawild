@@ -11,23 +11,22 @@ public class EatState : ToolBaseState
     {
         // 나중에 아이템 인덱스 제대로 설정하기
         if (toolStateManager.player.currentItemType == ItemType.Food)
-            toolStateManager.CurrentToolUseState = ToolAnimationState.Eat;
+            toolStateManager.CurrentToolAnimationState = ToolAnimationState.Eat;
         if (toolStateManager.player.currentItemType == ItemType.Drink)
-            toolStateManager.CurrentToolUseState = ToolAnimationState.Drink;
+            toolStateManager.CurrentToolAnimationState = ToolAnimationState.Drink;
 
-        toolStateManager.playerController.RPC_FreezePosition(true);
+        toolStateManager.playerController.Host_FreezePosition(true);
     }
 
     public override void UpdateState()
     {
         if (toolStateManager.IsAnimationFinished)
-            toolStateManager.ChangeState(toolStateManager.idleState);
+            toolStateManager.Host_ChangeState(ToolState.Idle);
     }
 
     public override void ExitState()
     {
         base.ExitState();
-        toolStateManager.playerController.RPC_FreezePosition(false);
-        toolStateManager.RPC_TriggerSet(false);
+        toolStateManager.playerController.Host_FreezePosition(false);
     }
 }

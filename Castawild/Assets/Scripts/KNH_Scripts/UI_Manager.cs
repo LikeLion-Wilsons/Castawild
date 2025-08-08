@@ -14,7 +14,9 @@ public class UI_Manager : MonoBehaviour
     // 수정한 부분
     public Player player;
     public UIStats uiStats;
+    [Header("상호작용중인 오브젝트")]
     public ChestDataManager currentOpenedChest;
+    public GameObject currentCampFire;
 
     public void SetOpenedChest(ChestDataManager chest)
     {
@@ -70,9 +72,9 @@ public class UI_Manager : MonoBehaviour
     {
         // 수정한 부분
         if (uiParts["Inventory"].IsOpen())
-            player.RPC_IsUIOpen(true);
+            player.RPC_RequestSetUIOpen(true);
         else
-            player.RPC_IsUIOpen(false);
+            player.RPC_RequestSetUIOpen(false);
 
         if (Input.GetKeyDown(KeyCode.Tab) && isDragging == false)
         {
