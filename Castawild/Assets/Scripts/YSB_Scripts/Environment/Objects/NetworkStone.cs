@@ -52,8 +52,6 @@ namespace YSB_Scripts
                 inven.AddItem(definition.dropItemID, definition.dropAmount);
 
                 Die();
-
-                ReviveTimer = TickTimer.CreateFromSeconds(Runner, 10f);
             }
         }
     }

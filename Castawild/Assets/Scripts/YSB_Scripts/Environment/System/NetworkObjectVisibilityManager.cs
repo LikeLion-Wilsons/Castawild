@@ -4,18 +4,26 @@ using UnityEngine;
 
 public class NetworkObjectVisibilityManager : NetworkSingleton<NetworkObjectVisibilityManager>
 {
-    private Dictionary<PlayerRef, Transform> playerTransforms = new();
-    private List<INetworkVisibilityObject> visibilityObjects = new();
-
     [SerializeField] private float visibleRange = 50f;
     [SerializeField] private float updateInterval = 0.5f;
 
     private float timer = 0f;
+    private Dictionary<PlayerRef, Transform> playerTransforms = new();
+    private readonly List<INetworkVisibilityObject> a_allVisibilityObjects = new();
 
-    public override void Spawned()
+    public void RegisterObject(INetworkVisibilityObject obj)
     {
-        base.Spawned();
-        Debug.Log($"[Spawned] VisibilityManager instance: {NetworkObjectVisibilityManager.Instance}");
+        if (!a_allVisibilityObjects.Contains(obj))
+        {
+            a_allVisibilityObjects.Add(obj);
+            obj.OnDestroyed += HandleObjectDestroyed;
+        }
+    }
+
+    private void HandleObjectDestroyed(INetworkVisibilityObject obj)
+    {
+        obj.OnDestroyed -= HandleObjectDestroyed;
+        a_allVisibilityObjects.Remove(obj);
     }
 
     public void SetPlayerTransform(PlayerRef playerRef, Transform playerTransform)
@@ -26,20 +34,12 @@ public class NetworkObjectVisibilityManager : NetworkSingleton<NetworkObjectVisi
             playerTransforms.Add(playerRef, playerTransform);
     }
 
-    public void RegisterObject(INetworkVisibilityObject obj)
+    private void Update()
     {
-        if (!visibilityObjects.Contains(obj))
-        {
-            visibilityObjects.Add(obj);
-        }
-    }
-
-    public override void FixedUpdateNetwork()
-    {
-        if (!Runner.IsRunning)
+        if (Runner == null || !Runner.IsRunning)
             return;
 
-        timer += Runner.DeltaTime;
+        timer += Time.deltaTime;
         if (timer < updateInterval) return;
         timer = 0f;
 
@@ -48,29 +48,36 @@ public class NetworkObjectVisibilityManager : NetworkSingleton<NetworkObjectVisi
         if (!playerTransforms.TryGetValue(localPlayer, out Transform playerTransform) || playerTransform == null)
             return;
 
-        for (int i = visibilityObjects.Count - 1; i >= 0; i--)
+        Vector3 playerPos = playerTransform.position;
+        float sqrVisibleRange = visibleRange * visibleRange;
+
+        // 모든 등록된 오브젝트를 순회하며 가시성 결정
+        for (int i = a_allVisibilityObjects.Count - 1; i >= 0; i--)
         {
-            var obj = visibilityObjects[i];
-            if (obj == null)
-            {
-                visibilityObjects.RemoveAt(i);
+            var obj = a_allVisibilityObjects[i];
+            if (obj == null || obj.GameObject == null)
+            { 
+                a_allVisibilityObjects.RemoveAt(i);
                 continue;
             }
 
-            var netObj = obj.GetNetworkObject();
-            var visualRoot = obj.VisualRoot;
+            Vector3 objPos = obj.GameObject.transform.position;
+            float distSqr = (objPos - playerPos).sqrMagnitude;
+            bool shouldBeVisible = obj.CanBeVisible() && distSqr <= sqrVisibleRange;
 
-            if (netObj == null || visualRoot == null)
-            {
-                visibilityObjects.RemoveAt(i);
-                continue;
-            }
+            SetObjectVisibility(obj, shouldBeVisible);
+        }
+    }
 
-            bool canShow = obj.CanBeVisible() &&
-                Vector3.Distance(playerTransform.position, netObj.transform.position) <= visibleRange;
+    private void SetObjectVisibility(INetworkVisibilityObject obj, bool isVisible)
+    {
+        if (obj.VisualRoot == null) return;
 
-            if (visualRoot.gameObject.activeSelf != canShow)
-                visualRoot.gameObject.SetActive(canShow);
+        if (obj.VisualRoot.activeSelf != isVisible)
+        {
+            obj.VisualRoot.SetActive(isVisible);
+            if (obj.Collider != null)
+                obj.Collider.enabled = isVisible;
         }
     }
 }
