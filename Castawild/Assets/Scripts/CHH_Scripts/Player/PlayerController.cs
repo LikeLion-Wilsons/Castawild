@@ -24,7 +24,7 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private float damagePerMeter = 10f;
     private float startY;
     private bool isFalling;
-    private float fallingDeadTime = 10f;
+    [SerializeField] private float fallingDeadTime = 5f;
     private float fallingElapsed;
 
     [Header("Interact")]
@@ -88,7 +88,7 @@ public sealed class PlayerController : NetworkBehaviour
         if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
         {
             Debug.Log("AttackPlayer");
-            player.TakeDamage(30f);
+            player.TakeDamage(true, 30f);
         }
 
         HandleMovement(input);
@@ -117,7 +117,7 @@ public sealed class PlayerController : NetworkBehaviour
             if (fallingElapsed > fallingDeadTime)
             {
                 fallingElapsed = 0f;
-                player.TakeDamage(10000f);
+                player.TakeDamage(false, 10000f);
             }
         }
 
@@ -132,7 +132,7 @@ public sealed class PlayerController : NetworkBehaviour
             if (fallDistance > fallThreshold)
             {
                 float damage = (fallDistance - fallThreshold) * damagePerMeter;
-                player.TakeDamage(damage);
+                player.TakeDamage(false, damage);
                 RPC_ShakeCamera();
             }
         }
