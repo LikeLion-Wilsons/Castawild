@@ -1,10 +1,7 @@
-using Fusion;
-using NUnit.Framework;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static Unity.Collections.Unicode;
 
 public class UICampfire : UIPart
 {
