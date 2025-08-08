@@ -86,17 +86,20 @@ public class YSB_Player : NetworkBehaviour
     void TryInteract()
     {
         Vector3 pos = transform.position + transform.forward * 1.5f;
+        int layerMask = 1 << LayerMask.NameToLayer("Interactable");
+
         var hits = Runner.GetPhysicsScene()
-            .OverlapSphere(pos, _interactRadius, _interactResult, 1, QueryTriggerInteraction.UseGlobal);
+            .OverlapSphere(pos, _interactRadius, _interactResult, layerMask, QueryTriggerInteraction.UseGlobal);
+
         if (hits > 0)
         {
             for (int i = 0; i < hits && i < _interactResult.Length; i++)
             {
-                if (_interactResult[i].TryGetComponent<IInteractable>(out var interactable))
+                if (_interactResult[i].TryGetComponent<YSB_Scripts.IInteractable>(out var interactable))
                 {
                     if (interactable.CanInteract())
                     {
-                        //interactable.Interact(Object.InputAuthority);
+                        interactable.Interact(Object.InputAuthority, 10); // 임시로 10 데미지
                         interactTimer = TickTimer.CreateFromSeconds(Runner, 1f);
                         break;
                     }
@@ -104,7 +107,6 @@ public class YSB_Player : NetworkBehaviour
             }
         }
     }
-
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     private void RPC_SetNickname(string nickname)

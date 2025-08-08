@@ -11,15 +11,32 @@ public class UseToolState : ToolBaseState
 
     public override void EnterState()
     {
-        toolStateManager.player.StopPlayer();
+        toolStateManager.playerController.RPC_FreezePosition(true);
         toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
 
         toolStateManager.CurrentToolUseState = ToolAnimationState.FullUse;
-        SetActiveArmMesh(true);
+
+        if (toolStateManager.CurrentToolType == ToolType.Fist || toolStateManager.CurrentToolType == ToolType.Throw)
+        {
+            SetActiveArmMesh(true);
+            if (toolStateManager.CurrentToolType == ToolType.Throw)
+                toolStateManager.player.CurrentToolActive(true);
+        }
+
+        else if (toolStateManager.CurrentToolType == ToolType.Bow)
+            toolStateManager.RPC_BowAim(true);
     }
 
     public override void UpdateState()
     {
+        if (toolStateManager.input.currentView == ViewType.ThirdPerson)
+            toolStateManager.playerController.LookForward_ThirdPerson(toolStateManager.input);
+
+        if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
+        {
+            toolStateManager.StartAim(false);
+        }
+
         // 곡괭이, 도끼는 손 때까지 상태 유지
         if (CraftingToolActionRelease())
             return;
@@ -40,17 +57,23 @@ public class UseToolState : ToolBaseState
             if (toolStateManager.input.IsDown(PlayerNetworkInputData.aimInput) && toolStateManager.HoldAimTool())
                 toolStateManager.ChangeState(toolStateManager.aimState);
             else
+            {
                 toolStateManager.ChangeState(toolStateManager.idleState);
+            }
         }
     }
 
     public override void ExitState()
     {
         base.ExitState();
-        SetActiveArmMesh(false);
 
-        toolStateManager.player.CanMove = true;
-        toolStateManager.player.isAimLocked = false;
+        if (toolStateManager.CurrentToolType == ToolType.Fist)
+            SetActiveArmMesh(false);
+
+        else if (toolStateManager.CurrentToolType == ToolType.Bow)
+            toolStateManager.RPC_BowAim(false);
+
+        toolStateManager.playerController.RPC_FreezePosition(false);
 
         comboCount = 1;
         toolStateManager.ComboAttack = false;
@@ -80,24 +103,6 @@ public class UseToolState : ToolBaseState
 
     public void SetActiveArmMesh(bool isActive)
     {
-        toolStateManager.ArmVisibleChanged(isActive);
-
-        if (toolStateManager.CurrentToolType == ToolType.Fist && toolStateManager.cameraManager.currentView == ViewType.FirstPerson
-            && toolStateManager.HasInputAuthority)
-        {
-            if (isActive)
-            {
-                toolStateManager.armature.SetParent(toolStateManager.cameraManager.firstPersonCam.transform);
-                toolStateManager.armature.localPosition = new Vector3(0f, -3f, 0f);
-                toolStateManager.armature.localRotation = Quaternion.identity;
-            }
-
-            if (!isActive)
-            {
-                toolStateManager.armature.SetParent(toolStateManager.player.transform);
-                toolStateManager.armature.localPosition = Vector3.zero;
-                toolStateManager.armature.localRotation = Quaternion.identity;
-            }
-        }
+        toolStateManager.RPC_ArmVisibleChanged(isActive);
     }
 }

@@ -27,6 +27,7 @@ namespace YSB_Scripts
 
         public override void Interact(PlayerRef player, int att)
         {
+            Debug.Log($"Tree[{InstanceId}] Interact with player: {player} for {att} damage");
             if (!IsAlive()) return;
 
             RPC_RequestDamage(player, att);
@@ -49,7 +50,7 @@ namespace YSB_Scripts
             {
                 var playerObj = Runner.GetPlayerObject(player);
                 var inven = playerObj.GetComponent<InventoryDataManager>();
-                inven.GetItem(0, 1);
+                inven.AddItem(0, 1);
 
                 Die();
 

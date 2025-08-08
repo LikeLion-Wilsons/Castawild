@@ -42,7 +42,12 @@ public class Item_Panel :
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
         uiInventory = inventory.GetComponent<UIInventory>();
-        Canvas_Holder.OnUIActive+= OnUIActive;
+        UI_Manager.OnUIActive+= OnUIActive;
+    }
+
+    void OnDestroy()
+    {
+        UI_Manager.OnUIActive -= OnUIActive;
     }
 
     void OnUIActive(bool active)
@@ -107,9 +112,10 @@ public class Item_Panel :
         if (item.itemID != -1 && item.count != 0)
         {
             itemData.gameObject.SetActive(true);
-            //임시
             item_icon.sprite = item.GetData().image;
-            itemCountText.text = item.count.ToString();
+            //도구형 아이템은 개수 표시 안함
+            if (item.itemID / 100 == 4) itemCountText.gameObject.SetActive(false);
+            else itemCountText.text = item.count.ToString();
             durabilityBar.fillAmount = item.durability;
         }
         else
@@ -256,6 +262,7 @@ public class Item_Panel :
         }
         else
         {
+            //좌클릭 드래그: 원래 위치로
             if (transform.parent == onDragParent)
             {
                 transform.SetParent(originalParent);
@@ -337,6 +344,7 @@ public class Item_Panel :
                 }
 
             }
+            //위치 교환
             inventoryData.RPC_SwapItems(indexA, indexB);
         }
     }

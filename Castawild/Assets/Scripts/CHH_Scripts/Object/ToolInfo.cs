@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// 400 : 짱돌
+// 202 : 짱돌
 // 401 : 방망이
 // 402 : 횃불
 // 403 : 돌 도끼
@@ -10,8 +10,9 @@ public class ToolInfo : MonoBehaviour
 {
     [SerializeField] private string toolName;
     [SerializeField] private int itemID;
-    [SerializeField] private int att;
+    [Tooltip("제대로 호환되는 오브젝트 때렸을 시 공격력")]
+    [SerializeField] private int interactAtt;
     public string ToolName => toolName;
     public int ItemID => itemID;
-    public int Att => att;
+    public int Att => interactAtt;
 }

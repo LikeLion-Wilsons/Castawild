@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class JumpState : MovementBaseState
 {
+    float fallingElapsed = 0f;
     public JumpState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
         : base(_movementManager, _inputManager)
     {
@@ -17,6 +18,8 @@ public class JumpState : MovementBaseState
         else if (movementManager.previousState == movementManager.walkState
             || movementManager.previousState == movementManager.runState)
             movementManager.CurrentMoveState = MoveAnimationState.RunJump;
+
+        fallingElapsed = 0f;
     }
 
     public override void UpdateState()
@@ -27,7 +30,7 @@ public class JumpState : MovementBaseState
 
             if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
                 movementManager.ChangeState(movementManager.idleState);
-            else if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput))
+            else if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.HasEnoughStaminaToRun())
                 movementManager.ChangeState(movementManager.runState);
             else
                 movementManager.ChangeState(movementManager.walkState);
@@ -37,6 +40,6 @@ public class JumpState : MovementBaseState
     public override void ExitState()
     {
         movementManager.canJump = true;
-        movementManager.isTriggerSet = false;
+        movementManager.RPC_TriggerSet(false);
     }
 }

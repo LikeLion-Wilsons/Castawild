@@ -8,17 +8,20 @@ using static UnityEngine.Rendering.DebugUI.Table;
 public class TestPlayerSpawner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 {
     [SerializeField] private NetworkObject playerPrefab;
+    [SerializeField] private Vector3 spawnPos = new Vector3(0f, 2f, 0f);
 
     public void PlayerJoined(PlayerRef playerRef)
     {
         if (!HasStateAuthority)
             return;
 
-        Vector3 spawnPos = new Vector3(0f, 2f, 0f);
-
         // 1. 플레이어 오브젝트 생성
         Debug.Log($"Spawning player for {playerRef}");
-        var playerObj = Runner.Spawn(playerPrefab, spawnPos, Quaternion.identity, playerRef);
+        var playerObj = Runner.Spawn(playerPrefab, spawnPos, Quaternion.identity, playerRef, (runner, player) =>
+        {
+            player.GetComponent<Player>().Init();
+        });
+
         if (playerObj == null)
             Debug.LogError("Spawned player is NULL");
         else

@@ -1,4 +1,6 @@
+using ExitGames.Client.Photon.StructWrapping;
 using Fusion;
+using NUnit.Framework.Interfaces;
 using System;
 using UnityEngine;
 
@@ -7,26 +9,29 @@ public delegate void OnItemGet();
 public class InventoryDataManager : NetworkBehaviour
 {
     [SerializeField] int maxStackCount;//아이템 최대 스택 개수
-    public Canvas_Holder canvasHolder;
+    public UI_Manager canvasHolder;
     private UIInventory uiInventory;
     private UITable uiTable;
     [SerializeField] GameObject itemBox;
-    private int nextScrollTick = 0;
-    private int scrollCooldownTick = 6; // 0.2초 쿨타임 (60 tick 기준)
+    private float nextScrollTime = 0f;
+    public float scrollCooldown = 0.1f; // 100ms
     [SerializeField] GameObject playerUIPrefab; // 인스펙터에 연결
-    [Networked, Capacity(30)] public NetworkLinkedList<Item> itemList => default;
+    public GameObject UICanvas;
+   
+    [Networked, Capacity(50)] public NetworkLinkedList<Item> itemList => default;
 
-    // 수정한 부분
     private Player player;
+
+    [Header("테스트용")]
+    public GameObject chest;//나중에 삭제
 
     public override void Spawned()
     {
-        // 수정한 부분
         ChangeSelectedSlot(0);
 
         if (Object.HasStateAuthority)
         {
-            while (itemList.Count < 29)
+            while (itemList.Count < 45)
             {
                 itemList.Add(new Item
                 {
@@ -43,14 +48,15 @@ public class InventoryDataManager : NetworkBehaviour
             // 본인의 UI만 생성
             GameObject uiCanvas = Instantiate(playerUIPrefab);
             uiCanvas.transform.SetParent(null); // 루트로 이동
+            UICanvas = uiCanvas;
             uiInventory = uiCanvas.GetComponentInChildren<UIInventory>();
             uiInventory.BindToInventoryData(this);
             uiTable = uiCanvas.GetComponentInChildren<UITable>();
             uiTable.BindToInventoryData(this);
 
-            canvasHolder = uiCanvas.GetComponent<Canvas_Holder>();
+            canvasHolder = uiCanvas.GetComponent<UI_Manager>();
             player = GetComponent<Player>();
-            canvasHolder.player = player;
+            canvasHolder.SetPlayer(player);
 
             int i = 0;
             while (i < 9)
@@ -62,6 +68,13 @@ public class InventoryDataManager : NetworkBehaviour
             while (i < 29)
             {
                 inventorySlots[i] = canvasHolder.inventoryUI.transform.GetChild(index).GetComponent<Item_Panel>();
+                i++;
+                index++;
+            }
+            index = 0;
+            while (i < 45)
+            {
+                inventorySlots[i] = canvasHolder.chestUI.transform.GetChild(4).GetChild(index).GetComponent<Item_Panel>();
                 i++;
                 index++;
             }
@@ -80,7 +93,7 @@ public class InventoryDataManager : NetworkBehaviour
     int selectedSlot = 0;
     int maxSlotCount = 9; // 총 슬롯 수
     public static InventoryDataManager Instance { get; set; }
-
+    public static event Action<int> onItemSelected;
     void ChangeSelectedSlot(int newValue)
     {
         if (Object.HasInputAuthority)
@@ -94,6 +107,7 @@ public class InventoryDataManager : NetworkBehaviour
             }
             inventorySlots[newValue].Select();
             selectedSlot = newValue;
+            onItemSelected?.Invoke(inventorySlots[newValue].item.itemID);
 
             // 수정한 부분
             if (inventorySlots[selectedSlot].IsEmpty())
@@ -113,7 +127,7 @@ public class InventoryDataManager : NetworkBehaviour
         // ChangeSelectedSlot(0);
     }
 
-    public override void FixedUpdateNetwork()
+    private void Update()
     {
         if (Input.inputString != null)
         {
@@ -123,24 +137,27 @@ public class InventoryDataManager : NetworkBehaviour
                 ChangeSelectedSlot(number - 1);
             }
         }
-        // 마우스 휠 입력
 
-        if (Runner.Tick >= nextScrollTick)
+        // 마우스 휠 입력
+        float scroll = Input.GetAxisRaw("Mouse ScrollWheel");
+        if (Time.time >= nextScrollTime)
         {
-            float scroll = Input.GetAxisRaw("Mouse ScrollWheel");
             if (scroll > 0f)
             {
+                if (player != null && player.toolStateManager.CurrentToolUseState == ToolAnimationState.Idle);
                 int next = (selectedSlot - 1 + maxSlotCount) % maxSlotCount;
                 ChangeSelectedSlot(next);
-                nextScrollTick = Runner.Tick + scrollCooldownTick;
+                nextScrollTime = Time.time + scrollCooldown;
             }
             else if (scroll < 0f)
             {
+                if (player != null && player.toolStateManager.CurrentToolUseState == ToolAnimationState.Idle) ;
                 int next = (selectedSlot + 1) % maxSlotCount;
                 ChangeSelectedSlot(next);
-                nextScrollTick = Runner.Tick + scrollCooldownTick;
+                nextScrollTime = Time.time + scrollCooldown;
             }
         }
+
         //선택된 아이템 버리기
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -149,16 +166,34 @@ public class InventoryDataManager : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            GetItem(0, 1);
+            AddItem(0, 1);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            GetItem(1, 1);
+            AddItem(1, 1);
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            RPC_UseSelectedItem(1);
+        }
+
+        //테스트용
+        if (Object.HasInputAuthority && Input.GetKeyDown(KeyCode.B))
+        {
+            RPCRequestBuild();
         }
     }
 
+    //테스트용
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    void RPCRequestBuild()
+    {
+        PlayerRef playerRef = Runner.LocalPlayer;
+        Runner.Spawn(chest, chest.transform.position, Quaternion.identity, null);
+    }
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    void RPC_UpdateInventoryUI()
+    public void RPC_UpdateInventoryUI()
     {
         uiInventory.SetItemList();
         uiTable.GetComponent<UITable>().SetTableUI();
@@ -177,15 +212,27 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_ThrowAllItem()
+    {
+        ThrowAllItem();
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_UseItem(int index, int count)
     {
         UseItem(index, count);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_UseSelectedItem(int count)
+    {
+        UseItem(itemList[selectedSlot].itemID, count);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_GetItem(int itemId, int count)
     {
-        GetItem(itemId, count);
+        AddItem(itemId, count);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -193,6 +240,39 @@ public class InventoryDataManager : NetworkBehaviour
     {
         itemList.Set(index, item);
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetItemFromChest(ChestDataManager chestData)
+    {
+        int index = 0;
+        for (int i = 29; i < 45; i++)
+        {
+            itemList.Set(i, chestData.itemList[index]);
+            index++;
+        }
+        RPC_UpdateInventoryUI();
+        Debug.Log("chest -> inventory");
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestStoreToChest(ChestDataManager chestData)
+    {
+        int index = 29;
+        for (int i = 0; i < 16; i++)
+        {
+            chestData.RPC_SetItem(i, itemList[index]);
+            index++;
+        }
+        Debug.Log("RPC_RequestStoreToChest");
+        RPC_UpdateInventoryUI();
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetCanOpen(Chest chest ,bool tof)
+    {
+        chest.CanOpen = tof;
+    }
+
 
     public Item_Scriptable GetSeletedItem(bool use)
     {
@@ -209,7 +289,6 @@ public class InventoryDataManager : NetworkBehaviour
                     item.itemID = -1;
                     item.count = 0;
                     itemList.Set(selectedSlot, item);
-                    //itemList[selectedSlot] = null;
                 }
                 if (Object.HasStateAuthority)
                 {
@@ -223,9 +302,10 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
     // 아이템 획득
-    public bool GetItem(int id, int amount)
+    public bool AddItem(int id, int amount)
     {
-        //Debug.Log("GetItem");
+        if (HasInputAuthority & id == 201)
+            player.RPC_HasArrow(true);
 
         // 이미 존재하는 아이템이면 개수만 증가
         for (int i = 0; i < itemList.Count; i++)
@@ -243,7 +323,6 @@ public class InventoryDataManager : NetworkBehaviour
 
                     if (Object.HasStateAuthority)
                     {
-                        //onInventoryUpdated?.Invoke();
                         RPC_UpdateInventoryUI();
                     }
 
@@ -262,7 +341,6 @@ public class InventoryDataManager : NetworkBehaviour
 
                 if (Object.HasStateAuthority)
                 {
-                    //onInventoryUpdated?.Invoke();
                     RPC_UpdateInventoryUI();
                 }
                 return true;
@@ -272,10 +350,27 @@ public class InventoryDataManager : NetworkBehaviour
 
     }
 
+    // 추가한 부분
+    // 아이템 있는지 확인
+    public bool HasItem(int id)
+    {
+        for (int i = 0; i < itemList.Count; i++)
+        {
+            if (itemList[i].itemID == id)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void SwapItems(int indexA, int indexB)
     {
-        if (indexA >= itemList.Count && indexB >= itemList.Count) return;
-        Debug.Log("Swap");
+        if (indexA >= itemList.Count || indexB >= itemList.Count) return;
+
+        //Debug.Log("Swap " + indexA + " " + indexB);
+
         // 슬롯 수 부족할 경우 확장
         while (itemList.Count <= Mathf.Max(indexA, indexB))
         {
@@ -283,6 +378,7 @@ public class InventoryDataManager : NetworkBehaviour
             itemList.Add(item);
         }
 
+        //교환
         var tempA = itemList[indexA];
         var tempB = itemList[indexB];
 
@@ -291,9 +387,9 @@ public class InventoryDataManager : NetworkBehaviour
 
         if (Object.HasStateAuthority)
         {
-            //onInventoryUpdated?.Invoke();
             RPC_UpdateInventoryUI();
         }
+
     }
 
     //아이템 버리기
@@ -316,8 +412,19 @@ public class InventoryDataManager : NetworkBehaviour
             itemList.Set(index, item);
             if (Object.HasStateAuthority)
             {
-                //onInventoryUpdated?.Invoke();
                 RPC_UpdateInventoryUI();
+            }
+        }
+    }
+
+    //들고 있는 모든 아이템 버리기
+    public void ThrowAllItem()
+    {
+        for(int i = 0; i< 29; i++)
+        {
+            if (itemList[i].itemID != -1)
+            {
+                RPC_ThrowItem(i);
             }
         }
     }
@@ -348,18 +455,9 @@ public class InventoryDataManager : NetworkBehaviour
         {
             RPC_UpdateInventoryUI();
         }
-        //if (index >= 0 && index < itemList.Count)
-        //{
-        //    if (itemList[index].itemID == -1) return;
-        //    Debug.Log(itemList[index].GetData().name + " 사용!");
-        //    var item = itemList.Get(index);
-
-        //    item.count -= count;
-        //    if (item.count <= 0) item.itemID = -1;
-        //    itemList.Set(index, item);
-
-        //}
     }
+
+
 
     // 아이템 소지 수량 확인
     public int GetItemCount(int id)

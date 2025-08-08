@@ -11,11 +11,11 @@ public class CraftableItemUI : MonoBehaviour
     public GameObject itemDesc;
 
     UITable table;
-    public Canvas_Holder canvasHolder;
+    public UI_Manager canvasHolder;
     public InventoryDataManager inventoryData;
     public void Start()
     {
-        canvasHolder = GetComponentInParent<Canvas_Holder>();
+        canvasHolder = GetComponentInParent<UI_Manager>();
         table = canvasHolder.tableUI.GetComponent<UITable>();
 
     }

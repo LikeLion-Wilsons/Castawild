@@ -11,8 +11,10 @@ GameObject:
   - component: {fileID: 4089537146240186}
   - component: {fileID: 33055262620053440}
   - component: {fileID: 23257414329055714}
-  - component: {fileID: 6961593972771876712}
   - component: {fileID: 1343107979902281790}
+  - component: {fileID: 2944684159316543000}
+  - component: {fileID: 6091583828393369892}
+  - component: {fileID: 8396945342319442179}
   m_Layer: 0
   m_Name: 403_StoneAxe
   m_TagString: Untagged
@@ -88,27 +90,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &6961593972771876712
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1444140402882792}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.43612275, y: 0.7792238, z: 0.13520157}
-  m_Center: {x: -0.033164997, y: 0.053278133, z: -0.00058222556}
 --- !u!114 &1343107979902281790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,4 +104,58 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   toolName: StoneAxe
   itemID: 403
-  att: 0
+  interactAtt: 5
+--- !u!114 &2944684159316543000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1444140402882792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2351bf621323f142bb04057a24d1f9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  att: 12
+  canAttack: 0
+--- !u!114 &6091583828393369892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1444140402882792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 1775221721
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 2944684159316543000}
+  ForceRemoteRenderTimeframe: 0
+--- !u!65 &8396945342319442179
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1444140402882792}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.53, y: 0.37690958, z: 0.18}
+  m_Center: {x: -0.033165, y: 0.3014367, z: -0.0005822255}

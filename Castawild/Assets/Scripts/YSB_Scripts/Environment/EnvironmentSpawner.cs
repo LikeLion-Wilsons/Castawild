@@ -17,7 +17,6 @@ public abstract class EnvironmentSpawner<T, U> : NetworkBehaviour
     [Header("Spawn Settings")]
     [SerializeField] protected int maxSpawnAttempts = 20;
     [SerializeField] protected float checkInterval = 5f;
-    [SerializeField] protected float reviveDelay = 10f;
 
     protected Dictionary<Terrain, float[,,]> terrainAlphaMapCache = new();
     protected Dictionary<Terrain, int> terrainTextureIndexCache = new();
@@ -25,20 +24,12 @@ public abstract class EnvironmentSpawner<T, U> : NetworkBehaviour
     protected List<GameObject> loadedPrefabs = new();
     protected int nextInstanceId = 1;
 
-    protected class DeadObjectEntry
-    {
-        public T spawnableObject;
-        public float reviveAtTime;
-    }
-    protected List<DeadObjectEntry> deadObjects = new();
-
     public override void Spawned()
     {
         if (HasStateAuthority)
             StartCoroutine(InitAndSpawnLoop());
     }
 
-    // virtual 키워드 추가
     protected virtual IEnumerator InitAndSpawnLoop()
     {
         yield return CacheTerrainAlphamaps();
@@ -94,22 +85,12 @@ public abstract class EnvironmentSpawner<T, U> : NetworkBehaviour
             {
                 // 살아있는 객체만 카운트 (EnvironmentObject 기반)
                 int aliveCount = 0;
-                for (int i = setting.activeTrees.Count - 1; i >= 0; i--)
+                foreach (var obj in setting.activeTrees)
                 {
-                    var obj = setting.activeTrees[i];
-                    if (obj == null)
+                    if (obj != null && obj.GetComponent<T>().IsAlive())
                     {
-                        setting.activeTrees.RemoveAt(i);
-                        continue;
+                        aliveCount++;
                     }
-
-                    var envObj = obj.GetComponent<T>();
-                    if (envObj == null || !envObj.IsAlive())
-                    {
-                        setting.activeTrees.RemoveAt(i);
-                        continue;
-                    }
-                    aliveCount++;
                 }
 
                 int needed = setting.maxTrees - aliveCount;
@@ -167,7 +148,7 @@ public abstract class EnvironmentSpawner<T, U> : NetworkBehaviour
     {
         foreach (var obj in setting.activeTrees)
         {
-            if (Vector3.Distance(obj.transform.position, pos) < setting.minDistanceBetweenTrees)
+            if (obj != null && obj.GetComponent<T>().IsAlive() && Vector3.Distance(obj.transform.position, pos) < setting.minDistanceBetweenTrees)
                 return true;
         }
         return false;
@@ -186,7 +167,6 @@ public abstract class EnvironmentSpawner<T, U> : NetworkBehaviour
             {
                 var spawnable = obj.GetComponent<T>();
                 spawnable.Init(def, nextInstanceId++);
-                spawnable.OnDied += OnObjectDied;
             }
         );
 
@@ -196,42 +176,6 @@ public abstract class EnvironmentSpawner<T, U> : NetworkBehaviour
             if (netObj.HasStateAuthority)
             {
                 setting.activeTrees.Add(netObj);
-            }
-        }
-    }
-
-    protected void OnObjectDied(NetworkBehaviour obj)
-    {
-        if (obj is T spawnable)
-        {
-            deadObjects.Add(new DeadObjectEntry
-            {
-                spawnableObject = spawnable,
-                reviveAtTime = Time.time + reviveDelay
-            });
-
-            foreach (var setting in terrainSettings)
-            {
-                if (setting.activeTrees.Remove(obj.GetComponent<NetworkObject>()))
-                {
-                    break;
-                }
-            }
-        }
-    }
-
-    public override void FixedUpdateNetwork()
-    {
-        if (!HasStateAuthority) return;
-
-        for (int i = deadObjects.Count - 1; i >= 0; i--)
-        {
-            if (Time.time >= deadObjects[i].reviveAtTime)
-            {
-                var entry = deadObjects[i];
-                entry.spawnableObject.Revive();
-
-                deadObjects.RemoveAt(i);
             }
         }
     }
