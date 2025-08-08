@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -7,7 +8,6 @@ public class AnimationTrigger : MonoBehaviour
     private PlayerController playercontroller;
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
-    private PlayerCameraManager cameraManager;
     private PlayerInteractUI interactUI;
 
     private void Awake()
@@ -16,7 +16,6 @@ public class AnimationTrigger : MonoBehaviour
         playercontroller = GetComponentInParent<PlayerController>();
         movementManager = GetComponentInParent<MovementStateManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
-        cameraManager = transform.parent.GetComponentInChildren<PlayerCameraManager>();
         interactUI = transform.parent.GetComponentInChildren<PlayerInteractUI>();
     }
 
@@ -37,7 +36,8 @@ public class AnimationTrigger : MonoBehaviour
     public void Interact() => playercontroller.Client_Interact();
     public void FinishSleep()
     {
-        playercontroller.RPC_FreezePosition(false);
+        if (player.HasStateAuthority)
+            playercontroller.Host_FreezePosition(false);
         player.All_FinishSleep();
     }
 

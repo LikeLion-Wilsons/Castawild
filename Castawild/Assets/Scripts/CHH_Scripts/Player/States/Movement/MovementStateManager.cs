@@ -79,6 +79,11 @@ public class MovementStateManager : BaseStateManager
         InitStates();
     }
 
+    public override void Spawned()
+    {
+        Host_ChangeState(MovementState.Idle);
+    }
+
     private void InitComponents()
     {
         interactUI = GetComponentInChildren<PlayerInteractUI>();
@@ -107,11 +112,6 @@ public class MovementStateManager : BaseStateManager
             { MovementState.GetHit, getHitState },
             { MovementState.Death, deathState }
         };
-    }
-
-    public override void Spawned()
-    {
-        Host_ChangeState(MovementState.Idle);
     }
 
     /// <summary>
@@ -238,6 +238,6 @@ public class MovementStateManager : BaseStateManager
     public void RPC_RequestRevived()
     {
         Host_ChangeState(MovementState.Idle);
-        player.Revived();
+        player.Host_RevivedStatus();
     }
 }

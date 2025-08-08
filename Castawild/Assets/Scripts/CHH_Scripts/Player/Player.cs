@@ -1,5 +1,4 @@
 using Fusion;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -78,11 +77,87 @@ public class Player : NetworkBehaviour
     [HideInInspector] public bool isSpawned;
     [HideInInspector] public ItemType currentItemType;
 
+    private void Awake()
+    {
+        InitComponents();
+    }
+
     override public void Spawned()
     {
         isSpawned = true;
         InitStatus();
         InitTools();
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        if (movementManager.CurrentMoveState == MovementState.Death)
+            return;
+
+        if (HasStateAuthority)
+        {
+            if (Thirst <= 0)
+                Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
+            else
+                Thirst -= thirstDecreaseRate * Runner.DeltaTime;
+
+            if (Hunger <= 0)
+            {
+                Host_TakeDamage(false, hpDecreaseRate * Runner.DeltaTime);
+                Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
+            }
+            else
+                Hunger -= hungerDecreaseRate * Runner.DeltaTime;
+
+            if (toolStateManager.All_CanRecoverStamina() && movementManager.All_CanRecoverStamina())
+            {
+                if (Stamina < playerData.maxStamina)
+                    Stamina += staminaIncreaseRate * Runner.DeltaTime;
+                else
+                    Stamina = playerData.maxStamina;
+            }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!HasStateAuthority)
+            return;
+
+        if (CanPVP && other.TryGetComponent<AttackObject>(out AttackObject attackObject))
+        {
+            if (attackObject.canAttack)
+            {
+                Host_TakeDamage(true, attackObject.att);
+            }
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!HasStateAuthority)
+            return;
+
+        if (CanPVP && collision.gameObject.TryGetComponent<ThrowObject>(out ThrowObject throwObject))
+        {
+            if (throwObject.canAttack)
+            {
+                Host_TakeDamage(true, throwObject.att);
+                throwObject.canAttack = false;
+            }
+        }
+    }
+
+    private void InitComponents()
+    {
+        anim = GetComponentInChildren<Animator>();
+        playerController = GetComponent<PlayerController>();
+        playerInteractUI = GetComponentInChildren<PlayerInteractUI>();
+        inputManager = GetComponent<PlayerInputManager>();
+        movementManager = GetComponent<MovementStateManager>();
+        toolStateManager = GetComponent<ToolStateManager>();
+        cameraManager = GetComponentInChildren<PlayerCameraManager>();
+        inventory = GetComponent<InventoryDataManager>();
     }
 
     private void InitStatus()
@@ -110,56 +185,6 @@ public class Player : NetworkBehaviour
         }
     }
 
-    private void Awake()
-    {
-        InitComponents();
-    }
-
-    private void InitComponents()
-    {
-        anim = GetComponentInChildren<Animator>();
-        playerController = GetComponent<PlayerController>();
-        playerInteractUI = GetComponentInChildren<PlayerInteractUI>();
-        inputManager = GetComponent<PlayerInputManager>();
-        movementManager = GetComponent<MovementStateManager>();
-        toolStateManager = GetComponent<ToolStateManager>();
-        cameraManager = GetComponentInChildren<PlayerCameraManager>();
-        inventory = GetComponent<InventoryDataManager>();
-    }
-
-    public override void FixedUpdateNetwork()
-    {
-        if (movementManager.CurrentMoveState == MovementState.Death)
-            return;
-
-        if (HasStateAuthority)
-        {
-            if (Thirst <= 0)
-                Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
-            else
-                Thirst -= thirstDecreaseRate * Runner.DeltaTime;
-
-            if (Hunger <= 0)
-            {
-                TakeDamage(false, hpDecreaseRate * Runner.DeltaTime);
-                Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
-            }
-            else
-                Hunger -= hungerDecreaseRate * Runner.DeltaTime;
-
-            if (toolStateManager.All_CanRecoverStamina() && movementManager.All_CanRecoverStamina())
-            {
-                if (Stamina < playerData.maxStamina)
-                    Stamina += staminaIncreaseRate * Runner.DeltaTime;
-                else
-                    Stamina = playerData.maxStamina;
-            }
-        }
-    }
-
-    /// <summary>
-    /// 스폰할 때 초기화
-    /// </summary>
     public void Init()
     {
         RespawnPos = transform.position;
@@ -179,7 +204,8 @@ public class Player : NetworkBehaviour
             {
                 if (HasInputAuthority)
                     RPC_NotifyEquipmentTool(itemIdx);
-                RPC_RequestSetCurrentTool(currentToolGameObject.GetComponent<ToolInfo>());
+                ToolInfo toolInfo = currentToolGameObject.GetComponent<ToolInfo>();
+                RPC_RequestSetCurrentTool(toolInfo.ItemID, toolInfo.ToolName, toolInfo.Att);
             }
             else
                 Debug.LogWarning($"{itemIdx} 인덱스 없음");
@@ -240,14 +266,23 @@ public class Player : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// 움직일 수 있는지 확인
+    /// </summary>
     public bool All_CanMoving() => CanMove && IsCursorLocked;
 
+    /// <summary>
+    /// 커서 잠구기
+    /// </summary>
     public void Client_SetCursorLocked(bool isLocked)
     {
         if (HasInputAuthority)
             RPC_RequestCursorLocked(isLocked);
     }
 
+    /// <summary>
+    /// 활 활성화
+    /// </summary>
     public void All_ActiveArrow(bool visible)
     {
         if (HasArrow && visible)
@@ -256,6 +291,9 @@ public class Player : NetworkBehaviour
             arrow.SetActive(false);
     }
 
+    /// <summary>
+    /// 활 초기 위치 설정
+    /// </summary>
     public void All_SetInitBowPos(bool isBowUse)
     {
         if (currentToolObject == null)
@@ -282,6 +320,9 @@ public class Player : NetworkBehaviour
         currentToolObject.transform.localRotation = Quaternion.identity;
     }
 
+    /// <summary>
+    /// 매쉬 카메라에 붙이기
+    /// </summary>
     public void Client_AttachToCamera(bool attach)
     {
         if (attach && cameraManager.currentView == ViewType.FirstPerson)
@@ -298,16 +339,24 @@ public class Player : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// 현재 도구 활성화
+    /// </summary>
+    public void All_SetCurrentToolActive(bool active) => currentToolObject?.SetActive(active);
 
-    public void All_CurrentToolActive(bool active) => currentToolObject?.SetActive(active);
-
-    public void SetRespawnPos(Vector3 respawnPos)
+    /// <summary>
+    /// 리스폰 위치 설정
+    /// </summary>
+    public void Client_SetRespawnPos(Vector3 respawnPos)
     {
         if (HasInputAuthority)
-            RPC_SetRespawnPos(respawnPos);
+            RPC_RequestSetRespawnPos(respawnPos);
     }
 
-    public void Revived()
+    /// <summary>
+    /// 부활 스테이터스
+    /// </summary>
+    public void Host_RevivedStatus()
     {
         Hp = playerData.maxHp * 0.2f;
         Stamina = playerData.maxStamina;
@@ -315,39 +364,10 @@ public class Player : NetworkBehaviour
         Hunger = playerData.maxHunger * 0.2f;
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!HasStateAuthority)
-            return;
-
-        if (CanPVP && other.TryGetComponent<AttackObject>(out AttackObject attackObject))
-        {
-            if (attackObject.canAttack)
-            {
-                TakeDamage(true, attackObject.att);
-            }
-        }
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (!HasStateAuthority)
-            return;
-
-        if (CanPVP && collision.gameObject.TryGetComponent<ThrowObject>(out ThrowObject throwObject))
-        {
-            if (throwObject.canAttack)
-            {
-                TakeDamage(true, throwObject.att);
-                throwObject.canAttack = false;
-            }
-        }
-    }
-
     /// <summary>
     /// 플레이어 공격을 받았을 때 호출
     /// </summary>
-    public void TakeDamage(bool isAttack, float att)
+    public void Host_TakeDamage(bool isAttack, float att)
     {
         if (!HasStateAuthority || Hp <= 0)
             return;
@@ -365,8 +385,10 @@ public class Player : NetworkBehaviour
         }
     }
 
-    // 죽었는지 확인 
-    public bool IsDeath() => movementManager.CurrentMoveState == MovementState.Death;
+    /// <summary>
+    /// 죽었는지 확인
+    /// </summary>
+    public bool All_IsDead() => movementManager.CurrentMoveState == MovementState.Death || Hp <= 0;
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     private void RPC_NotifySetCurrentItemType(int _currentItemIdx)
@@ -389,9 +411,10 @@ public class Player : NetworkBehaviour
             currentItemType = ItemType.Default;
     }
 
-    private void RPC_RequestSetCurrentTool(ToolInfo toolInfo = null)
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_RequestSetCurrentTool(int toolID = -1, string toolName = "", int toolAtt = 0)
     {
-        if (toolInfo == null)
+        if (toolID == -1)
         {
             CurrentToolID = -1;
             CurrentToolName = string.Empty;
@@ -399,9 +422,9 @@ public class Player : NetworkBehaviour
             return;
         }
 
-        CurrentToolID = toolInfo.ItemID;
-        CurrentToolName = toolInfo.ToolName;
-        CurrentToolAtt = toolInfo.Att;
+        CurrentToolID = toolID;
+        CurrentToolName = toolName;
+        CurrentToolAtt = toolAtt;
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
@@ -427,26 +450,47 @@ public class Player : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// UI 열림상태 설정
+    /// </summary>
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestSetUIOpen(bool isOpen) => IsUIOpen = isOpen;
 
+    /// <summary>
+    /// 커서 잠금상태 설정
+    /// </summary>
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestCursorLocked(bool isLocked) => IsCursorLocked = isLocked;
 
+    /// <summary>
+    /// 카메라 머리에 붙이거나 떼기 
+    /// </summary>
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_ApplyAttachCameraToHead(bool attachCamera) => cameraManager.AttachCameraToHead(attachCamera);
 
+    /// <summary>
+    /// UI끄기
+    /// </summary>
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ApplyTurnOffUI() => playerInteractUI.TurnOffUI();
+    public void RPC_ApplyTurnOffInteractiveUI() => playerInteractUI.TurnOffInteractiveUI();
 
+    /// <summary>
+    /// 활 있는지
+    /// </summary>
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_NotifyHasArrow(bool hasArrow) => HasArrow = hasArrow;
 
+    /// <summary>
+    /// 리스폰 장소 설정
+    /// </summary>
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_SetRespawnPos(Vector3 respawnPos) { RespawnPos = respawnPos; }
+    public void RPC_RequestSetRespawnPos(Vector3 respawnPos) { RespawnPos = respawnPos; }
 
+    /// <summary>
+    /// 스테이터스 회복
+    /// </summary>
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_Heal()
+    public void RPC_RequestHeal()
     {
         Hp = playerData.maxHp;
         Stamina = playerData.maxStamina;
@@ -455,12 +499,21 @@ public class Player : NetworkBehaviour
         Temperature = playerData.maxTemperature;
     }
 
+    /// <summary>
+    /// 에임 UI 활성화
+    /// </summary>
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ActiveAimUI(bool isAiming) => playerInteractUI.Aim(isAiming);
+    public void RPC_ApplyActiveAimUI(bool isAiming) => playerInteractUI.SetAimCrosshair(isAiming);
 
+    /// <summary>
+    /// Bed.CanSleep 설정
+    /// </summary>
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_CanSleep_Bed(Bed bed, bool canSleep) => bed.CanSleep = canSleep;
+    public void RPC_RequestCanSleep_Bed(Bed bed, bool canSleep) => bed.CanSleep = canSleep;
 
+    /// <summary>
+    /// 현재 침대 설정
+    /// </summary>
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_CurrentBed(Bed bed) => Host_currentBed = bed;
+    public void RPC_RequestCurrentBed(Bed bed) => Host_currentBed = bed;
 }

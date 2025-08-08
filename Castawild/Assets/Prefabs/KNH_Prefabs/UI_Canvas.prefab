@@ -3958,6 +3958,7 @@ MonoBehaviour:
   player: {fileID: 0}
   uiStats: {fileID: 6076010028049235856}
   currentOpenedChest: {fileID: 0}
+  currentCampFire: {fileID: 0}
   parts: []
   ui_Part_Parent: {fileID: 8740063373338327921}
 --- !u!1 &2880255821735908514
@@ -6412,7 +6413,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiCanvas: {fileID: 2839189812646824299}
-  isFire: 0
   fireImage: {fileID: 4336805274880291625}
   selectedFuelIndex: 0
   fuelList: 0000000003000000
@@ -9173,7 +9173,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &359818907397510219
 RectTransform:
   m_ObjectHideFlags: 0

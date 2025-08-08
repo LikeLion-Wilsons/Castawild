@@ -3027,17 +3027,17 @@ MonoBehaviour:
     maxHunger: 100
     maxThirst: 100
     maxTemperature: 100
-  _Hp: 0
-  _Stamina: 0
-  _Hunger: 0
-  _Thirst: 0
-  _Temperature: 0
   hpDecreaseRate: 0.5
   staminaIncreaseRate: 2
   staminaHungerDecreaseRate: 3
   staminaRunDecreaseRate: 1
   hungerDecreaseRate: 1
   thirstDecreaseRate: 1
+  _Hp: 0
+  _Stamina: 0
+  _Hunger: 0
+  _Thirst: 0
+  _Temperature: 0
   anim: {fileID: 0}
   playerInteractUI: {fileID: 0}
   playerController: {fileID: 0}
@@ -3051,17 +3051,17 @@ MonoBehaviour:
   bowUseLocalParent: {fileID: 3555937060719847740}
   arrow: {fileID: 2432054003010317866}
   _HasArrow: 0
-  currentBed: {fileID: 0}
+  Host_currentBed: {fileID: 0}
   amarture: {fileID: 762437358709272171}
-  _CanPVP: 1
   _RespawnPos: {x: 0, y: 0, z: 0}
   _CanMove: 1
+  _CanPVP: 1
   _IsUIOpen: 0
   _IsCursorLocked: 0
+  _IsSleeping: 0
   _CurrentToolName: 
   _CurrentToolAtt: 0
   _CurrentToolID: 0
-  _IsSleeping: 0
   inventory: {fileID: 0}
   isSpawned: 0
   currentItemType: 0
@@ -3091,7 +3091,7 @@ MonoBehaviour:
   interactLayer:
     serializedVersion: 2
     m_Bits: 256
-  currentInteractObject: {fileID: 0}
+  Client_currentInteractObject: {fileID: 0}
   _Grounded: 0
   _ChangePos: {x: 0, y: 0, z: 0}
   _IsChangePos: 0
@@ -3115,13 +3115,11 @@ MonoBehaviour:
   _IsAnimationFinished: 0
   interactUI: {fileID: 0}
   toolStateManager: {fileID: 0}
-  currentMoveSpeed: 3
   airSpeedMuliplier: 0.7
   walkSpeed: 5
   runSpeed: 10
   crouchSpeed: 2
   rotationSpeed: 10
-  canJump: 1
   isJumping: 0
   groundYOffset: 0
   groundCheckRadius: 0.3
@@ -3131,8 +3129,11 @@ MonoBehaviour:
   fallMultiplier: 1.5
   animationLerpSpeed: 10
   isLyingOrGettingUp: 0
-  _Revived: 0
   _CurrentMoveState: 0
+  _CurrentMoveAnimation: 0
+  _currentMoveSpeed: 0
+  _CanJump: 1
+  _Revived: 0
   _JumpTriggered: 0
   _CanWakeUp: 0
   _MoveValue: {x: 0, y: 0}
@@ -3208,7 +3209,7 @@ MonoBehaviour:
   movementManager: {fileID: 0}
   animTrigger: {fileID: 0}
   armature: {fileID: 7813269517312369915}
-  armMesh: {fileID: 3201401248480740544}
+  Client_armMesh: {fileID: 3201401248480740544}
   bowAnim: {fileID: 1436198795544721307}
   throwUpForce: 0.3
   arrowUpForce: 0.2
@@ -3221,11 +3222,12 @@ MonoBehaviour:
   throwPos: {fileID: 8012178248796667738}
   fistPos: {fileID: 5180488209280489115}
   hitBox: {x: 0.64, y: 1.5, z: 0.85}
+  _CurrentToolState: 0
+  _CurrentToolAnimationState: 0
+  _CurrentToolType: 0
   _CanComboAttack: 0
   _ComboAttack: 0
   _CanReceiveInput: 0
-  _CurrentToolUseState: 0
-  _CurrentToolType: 0
 --- !u!114 &6363259293620697004
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -11,16 +11,16 @@ public class UseToolState : ToolBaseState
 
     public override void EnterState()
     {
-        toolStateManager.playerController.RPC_FreezePosition(true);
+        toolStateManager.CurrentToolAnimationState = ToolAnimationState.UseTool;
         toolStateManager.movementManager.Host_ChangeState(MovementState.Idle);
+        toolStateManager.playerController.Host_FreezePosition(true);
 
-        toolStateManager.CurrentToolAnimationState = ToolAnimationState.FullUse;
 
         if (toolStateManager.CurrentToolType == ToolType.Fist || toolStateManager.CurrentToolType == ToolType.Throw)
         {
             SetActiveArmMesh(true);
             if (toolStateManager.CurrentToolType == ToolType.Throw)
-                toolStateManager.player.All_CurrentToolActive(true);
+                toolStateManager.player.All_SetCurrentToolActive(true);
         }
 
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
@@ -29,8 +29,8 @@ public class UseToolState : ToolBaseState
 
     public override void UpdateState()
     {
-        if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
-            toolStateManager.Host_StartAim(false);
+        if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput) && toolStateManager.HasInputAuthority)
+            toolStateManager.All_StartAim(false);
 
         // 곡괭이, 도끼는 손 때까지 상태 유지
         if (CraftingToolActionRelease())
@@ -68,7 +68,7 @@ public class UseToolState : ToolBaseState
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
             toolStateManager.RPC_NotifyBowAim(false);
 
-        toolStateManager.playerController.RPC_FreezePosition(false);
+        toolStateManager.playerController.Host_FreezePosition(false);
 
         comboCount = 1;
         toolStateManager.ComboAttack = false;

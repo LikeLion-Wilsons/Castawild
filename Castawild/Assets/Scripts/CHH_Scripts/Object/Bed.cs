@@ -30,14 +30,14 @@ public class Bed : InteractableObject
         }
         else
         {
-            player.RPC_CanSleep_Bed(this, false);
-            player.RPC_CurrentBed(this);
+            player.RPC_RequestCanSleep_Bed(this, false);
+            player.RPC_RequestCurrentBed(this);
         }
 
-        player.SetRespawnPos(sleepPos.position);
+        player.Client_SetRespawnPos(sleepPos.position);
         player.movementManager.RPC_RequestChangeSleepState(playerRef);
 
         PlayerController playerController = playerObj.GetComponent<PlayerController>();
-        playerController.RPC_SetPosition(sleepPos.position);
+        playerController.RPC_NotifySetPosition(sleepPos.position);
     }
 }

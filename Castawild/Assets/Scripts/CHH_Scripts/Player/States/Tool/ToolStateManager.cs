@@ -7,7 +7,7 @@ public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife
 
 public enum ToolState { None, Idle, Aim, UseTool, Carry, Eat, Drink }
 // 재생해야할 애니메이션 상태
-public enum ToolAnimationState { None, Idle, Aim, FullAim, FullUse, Carry, Eat, Drink }
+public enum ToolAnimationState { None, Idle, Aim, FullAim, UseTool, Carry, Eat, Drink }
 
 public class ToolStateManager : BaseStateManager
 {
@@ -68,6 +68,18 @@ public class ToolStateManager : BaseStateManager
         InitStates();
     }
 
+    public override void Spawned()
+    {
+        Host_ChangeState(ToolState.Idle);
+        CurrentToolType = ToolType.Fist;
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        if (Host_canHit && HasStateAuthority && CurrentToolType == ToolType.Fist)
+            Host_FistAttack();
+    }
+
     private void InitComponents()
     {
         movementManager = GetComponent<MovementStateManager>();
@@ -92,18 +104,6 @@ public class ToolStateManager : BaseStateManager
         };
     }
 
-    public override void Spawned()
-    {
-        Host_ChangeState(ToolState.Idle);
-        CurrentToolType = ToolType.Fist;
-    }
-
-    public override void FixedUpdateNetwork()
-    {
-        if (Host_canHit && HasStateAuthority && CurrentToolType == ToolType.Fist)
-            Host_FistAttack();
-    }
-
     /// <summary>
     /// 주먹 공격
     /// </summary>
@@ -123,7 +123,7 @@ public class ToolStateManager : BaseStateManager
 
             if (player.CanPVP && hitObject.TryGetComponent(out Player otherPlayer))
             {
-                otherPlayer.TakeDamage(true, player.All_GetToolAtt());
+                otherPlayer.Host_TakeDamage(true, player.All_GetToolAtt());
                 Host_alreadyHit.Add(otherPlayer.transform.root);
             }
         }
@@ -184,7 +184,7 @@ public class ToolStateManager : BaseStateManager
                 anim.SetInteger("WeaponType", (int)CurrentToolType);
                 anim.SetBool("FullAiming", true);
                 break;
-            case ToolAnimationState.FullUse:
+            case ToolAnimationState.UseTool:
                 if (input.IsDown(PlayerNetworkInputData.aimInput) && All_HoldAimTool())
                 {
                     anim.SetInteger("WeaponType", (int)CurrentToolType);
@@ -286,10 +286,19 @@ public class ToolStateManager : BaseStateManager
     /// <summary>
     /// Aim 시작/마무리 설정
     /// </summary>
-    public void Host_StartAim(bool aimStart)
+    public void All_StartAim(bool aimStart)
     {
-        RPC_ApplyMoveAimCamera(aimStart);
-        player.RPC_ActiveAimUI(aimStart);
+        if (HasStateAuthority)
+        {
+            RPC_ApplyMoveAimCamera(aimStart);
+            player.RPC_ApplyActiveAimUI(aimStart);
+        }
+
+        if (HasInputAuthority)
+        {
+            cameraManager.MoveAimCamera(aimStart);
+            player.playerInteractUI.SetAimCrosshair(aimStart);
+        }
 
         if (CurrentToolType == ToolType.Bow)
             RPC_NotifyBowAim(aimStart);
@@ -387,8 +396,7 @@ public class ToolStateManager : BaseStateManager
     /// <summary>
     /// 활 쏘는 애니메이션 트리거
     /// </summary>
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_NotifyBowShootAnimation() => bowAnim.SetTrigger("Shoot");
+    public void BowShootAnimation() => bowAnim.SetTrigger("Shoot");
 
     /// <summary>
     /// 던지기
@@ -399,7 +407,7 @@ public class ToolStateManager : BaseStateManager
         Host_SpawnThrowObject(isArrow == 0 ? false : true, rayTargetPos);
 
         if (isArrow == 0)
-            player.All_CurrentToolActive(false);
+            player.All_SetCurrentToolActive(false);
         else
             player.arrow.SetActive(false);
     }
