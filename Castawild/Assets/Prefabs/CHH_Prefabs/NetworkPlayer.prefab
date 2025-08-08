@@ -2921,7 +2921,8 @@ MonoBehaviour:
   SortKey: 4259071542
   ObjectInterest: 1
   Flags: 262145
-  NestedObjects: []
+  NestedObjects:
+  - {fileID: 5817460883332391729}
   NetworkedBehaviours:
   - {fileID: 5000463041039569134}
   - {fileID: 3669695777030045323}
@@ -3014,6 +3015,7 @@ MonoBehaviour:
   arrow: {fileID: 2432054003010317866}
   _HasArrow: 0
   currentBed: {fileID: 0}
+  amarture: {fileID: 762437358709272171}
   _CanPVP: 1
   _RespawnPos: {x: 0, y: 0, z: 0}
   _CanMove: 1
@@ -3027,7 +3029,6 @@ MonoBehaviour:
   isAimLocked: 0
   isSpawned: 0
   currentItemType: 0
-  amarture: {fileID: 762437358709272171}
 --- !u!114 &8380833186685685926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3044,8 +3045,10 @@ MonoBehaviour:
   jumpImpulse: 200
   maxSpeed: 2
   rotationSpeed: 15
+  gravity: -9.81
   fallThreshold: 20
   damagePerMeter: 10
+  fallingDeadTime: 5
   interactHeight: 10
   thirdPersonInteractPos: {fileID: 7467696255462433047}
   interactRadius: 1
@@ -4781,6 +4784,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6388187669656790763}
     m_Modifications:
+    - target: {fileID: 2104819346928773925, guid: 7f391b05290322546b0e48b8eb7efd85, type: 3}
+      propertyPath: SortKey
+      value: 1011332940
+      objectReference: {fileID: 0}
     - target: {fileID: 6622678291212269720, guid: 7f391b05290322546b0e48b8eb7efd85, type: 3}
       propertyPath: m_Name
       value: InteracableCanvas
@@ -4875,6 +4882,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8655105409297096301, guid: 7f391b05290322546b0e48b8eb7efd85, type: 3}
   m_PrefabInstance: {fileID: 5588430381407717396}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5817460883332391729 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2104819346928773925, guid: 7f391b05290322546b0e48b8eb7efd85, type: 3}
+  m_PrefabInstance: {fileID: 5588430381407717396}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6486286278863924394
 PrefabInstance:
   m_ObjectHideFlags: 0

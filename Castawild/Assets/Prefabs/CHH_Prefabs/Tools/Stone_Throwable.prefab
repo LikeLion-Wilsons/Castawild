@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 4567678241715135965}
   - component: {fileID: -5464149178672703112}
   - component: {fileID: -6086179150262626737}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Stone_Throwable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33,8 +33,8 @@ Transform:
   m_GameObject: {fileID: 1703291259242920242}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.20909733, y: 0.0010353792, z: 1.1382731}
-  m_LocalScale: {x: 0.25000066, y: 0.25000048, z: 0.25000042}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -297,7 +297,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1703291259242920242}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 5e370205b20bc36409fd1366a5a409f2, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

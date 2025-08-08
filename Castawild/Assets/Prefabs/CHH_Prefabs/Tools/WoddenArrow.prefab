@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6816373399062841026}
   - component: {fileID: 1729619496713581637}
   - component: {fileID: 5704711624164741022}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WoddenArrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

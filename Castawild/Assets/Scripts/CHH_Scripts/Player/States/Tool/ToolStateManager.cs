@@ -268,7 +268,12 @@ public class ToolStateManager : BaseStateManager
     public void RPC_MoveAimCamera(bool _isAiming) => cameraManager.MoveCamera(_isAiming);
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_BowPullAnimation(bool pull) => bowAnim.SetBool("Pull", pull);
+    public void RPC_BowAim(bool isAiming)
+    {
+        bowAnim.SetBool("Pull", isAiming);
+        player.SetBowPos(isAiming);
+        player.ActiveArrow(isAiming);
+    }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_BowShootAnimation() => bowAnim.SetTrigger("Shoot");
@@ -331,5 +336,12 @@ public class ToolStateManager : BaseStateManager
 
     public bool IsAiming() => CurrentToolUseState == ToolAnimationState.Aim || CurrentToolUseState == ToolAnimationState.FullAim;
 
+    public void StartAim(bool aimStart)
+    {
+        RPC_MoveAimCamera(aimStart);
+        player.RPC_ActiveAimUI(aimStart);
 
+        if (CurrentToolType == ToolType.Bow)
+            RPC_BowAim(aimStart);
+    }
 }

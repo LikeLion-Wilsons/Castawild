@@ -57,7 +57,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     #region Third Person Camera Zoom
     [Header("3인칭 Zoom")]
-    [SerializeField] private float aimZoomDuration = 0.3f;
+    [SerializeField] public float aimZoomDuration = 0.3f;
     [SerializeField] private float zoomSpeed = 2f;
     [SerializeField] private float zoomLerpSpeed = 10f;
     [SerializeField] private float minDistance = 3f;

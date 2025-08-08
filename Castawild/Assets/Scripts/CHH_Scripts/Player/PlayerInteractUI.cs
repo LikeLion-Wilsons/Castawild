@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,6 +26,11 @@ public class PlayerInteractUI : MonoBehaviour
     [SerializeField] private Image revivedBar;
     [SerializeField] private CanvasGroup deathText;
     private Animator deathAnim;
+
+    [Header("Aim")]
+    [SerializeField] private CanvasGroup aimCrosshairGroup;
+    [SerializeField] public float aimZoomDuration = 0.3f;
+    private Coroutine aimCrosshairCoroutine;
 
     private bool canRevived = false;
     private float pressedRevivedElapsed;
@@ -153,6 +159,35 @@ public class PlayerInteractUI : MonoBehaviour
             deathAnim.SetBool("Death", false);
         }
     }
+
+
+    public void Aim(bool isAiming)
+    {
+        if (aimCrosshairCoroutine != null)
+            StopCoroutine(aimCrosshairCoroutine);
+
+        if (isAiming)
+            aimCrosshairCoroutine = StartCoroutine(ShowAimCrosshairCoroutine(aimCrosshairGroup.alpha, 1f));
+        else
+            aimCrosshairCoroutine = StartCoroutine(ShowAimCrosshairCoroutine(aimCrosshairGroup.alpha, 0f));
+    }
+
+    private IEnumerator ShowAimCrosshairCoroutine(float startAlpha, float endAlpha)
+    {
+        float elapsedTime = 0f;
+
+        while (elapsedTime < aimZoomDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            aimCrosshairGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, elapsedTime / aimZoomDuration);
+            yield return null;
+        }
+
+        aimCrosshairGroup.alpha = endAlpha;
+    }
+
+
+
 
     // 애니메이션 트리거용
     public void ShowDeathUI()

@@ -71,7 +71,6 @@ public class Player : NetworkBehaviour
     [Networked, HideInInspector] public bool IsSleeping { get; set; }
 
     [HideInInspector] public InventoryDataManager inventory;
-    [HideInInspector] public bool isAimLocked = false;
     [HideInInspector] public bool isSpawned;
 
     [HideInInspector] public ItemType currentItemType;
@@ -301,9 +300,7 @@ public class Player : NetworkBehaviour
     }
 
 
-    // false : 공격 끝났을 때, 조준 끝났을 때
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_ActiveArrow(bool visible)
+    public void ActiveArrow(bool visible)
     {
         if (HasArrow && visible)
             arrow.SetActive(visible);
@@ -339,8 +336,7 @@ public class Player : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_TurnOffUI() => playerInteractUI.TurnOffUI();
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_SetBowPos(bool isBowUse)
+    public void SetBowPos(bool isBowUse)
     {
         if (currentToolObject == null)
             return;
@@ -410,6 +406,9 @@ public class Player : NetworkBehaviour
         Thirst = playerData.maxThirst * 0.2f;
         Hunger = playerData.maxHunger * 0.2f;
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ActiveAimUI(bool isAiming) => playerInteractUI.Aim(isAiming);
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_CanSleep_Bed(Bed bed, bool canSleep) => bed.CanSleep = canSleep;

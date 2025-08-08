@@ -9,29 +9,19 @@ public class AimState : ToolBaseState
 
     public override void EnterState()
     {
-        LookForward();
-
-        toolStateManager.player.isAimLocked = true;
-
+        // 애니메이션
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
             toolStateManager.CurrentToolUseState = ToolAnimationState.FullAim;
         else
             toolStateManager.CurrentToolUseState = ToolAnimationState.Aim;
 
+        LookForward();
+
+        // Movement상태
         if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.runState)
             toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.walkState);
 
-        toolStateManager.RPC_MoveAimCamera(true);
-
-        if (toolStateManager.CurrentToolType == ToolType.Bow)
-        {
-            toolStateManager.RPC_BowPullAnimation(true);
-            toolStateManager.player.RPC_SetBowPos(true);
-        }
-
-        toolStateManager.player.RPC_ActiveArrow(true);
-
-        toolStateManager.player.playerInteractUI.crosshairImage.gameObject.SetActive(true);
+        toolStateManager.StartAim(true);
     }
 
     public override void UpdateState()
@@ -53,17 +43,7 @@ public class AimState : ToolBaseState
 
         else if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
-            toolStateManager.player.isAimLocked = false;
-            toolStateManager.RPC_MoveAimCamera(false);
-
-            if (toolStateManager.CurrentToolType == ToolType.Bow)
-            {
-                toolStateManager.RPC_BowPullAnimation(false);
-                toolStateManager.player.RPC_SetBowPos(false);
-            }
-
-            toolStateManager.player.RPC_ActiveArrow(false);
-
+            toolStateManager.StartAim(false);
             toolStateManager.ChangeState(toolStateManager.idleState);
         }
     }
