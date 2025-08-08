@@ -17,7 +17,6 @@ GameObject:
   - component: {fileID: 4567678241715135965}
   - component: {fileID: -5464149178672703112}
   - component: {fileID: -6086179150262626737}
-  - component: {fileID: 7341971407920654057}
   m_Layer: 7
   m_Name: Stone_Throwable
   m_TagString: PlayerAttack
@@ -105,9 +104,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5e17082a9a03164fba2555363e6842f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  att: 0
+  att: 3
   canAttack: 1
-  canAttack: 1
+  throwType: 0
+  stuckArrowPrefab: {fileID: 0}
 --- !u!54 &6347856803962350306
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -177,7 +177,6 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 3276171059478812674}
   - {fileID: 7690318514587061484}
-  - {fileID: 7341971407920654057}
   ForceRemoteRenderTimeframe: 0
 --- !u!96 &-5464149178672703112
 TrailRenderer:
@@ -316,17 +315,3 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.5394122, y: 0.4571409, z: 0.46558017}
   m_Center: {x: -0.0060076257, y: 0.24481662, z: -0.010816556}
---- !u!114 &7341971407920654057
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1703291259242920242}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2351bf621323f142bb04057a24d1f9d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  att: 3
-  canAttack: 1

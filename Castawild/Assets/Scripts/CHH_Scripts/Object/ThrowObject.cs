@@ -1,13 +1,18 @@
+using Fusion;
+using Fusion.Addons.Physics;
 using UnityEngine;
 
+public enum ThrowType { stone, arrow }
 public class ThrowObject : AttackObject
 {
+    public ThrowType throwType;
     private Rigidbody rigid;
 
     public override void Spawned()
     {
         rigid = GetComponent<Rigidbody>();
-        rigid.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        rigid.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        rigid.interpolation = RigidbodyInterpolation.Interpolate;
         canAttack = true;
     }
 
@@ -24,7 +29,35 @@ public class ThrowObject : AttackObject
         if (!HasStateAuthority)
             return;
 
-        if (!collision.gameObject.CompareTag("Player") /*&& collision.gameObject.CompareTag("Animal")*/)
+
+        if (throwType == ThrowType.arrow)
+        {
+            RPC_Fall();
+
+            if (collision.gameObject.CompareTag("Player") /*&& collision.gameObject.CompareTag("Animal")*/)
+            {
+                NetworkObject networkObject = collision.gameObject.GetComponent<NetworkObject>();
+
+                if (collision.gameObject.CompareTag("Player"))
+                    Runner.Despawn(Object);
+                else
+                    transform.SetParent(networkObject.transform);
+            }
+        }
+
+        // 사람이나 동물일 경우 canAttack false 처리는 그쪽에서
+        if (!collision.gameObject.CompareTag("Player") /*&& !collision.gameObject.CompareTag("Animal")*/)
             canAttack = false;
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_Fall()
+    {
+        rigid.linearVelocity = Vector3.zero;
+        rigid.angularVelocity = Vector3.zero;
+        rigid.isKinematic = true;
+
+        GetComponent<Collider>().enabled = false;
+        GetComponentInChildren<TrailRenderer>().enabled = false;
     }
 }

@@ -11,8 +11,8 @@ public class DeathState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.CurrentMoveState = MoveAnimationState.Death;
-        movementManager.player.RPC_AttachCameraToHead(true);
+        movementManager.CurrentMoveAnimation = MoveAnimatoinState.Death;
+        movementManager.player.RPC_ApplyAttachCameraToHead(true);
         movementManager.Revived = false;
         movementManager.playerController.RPC_FreezePosition(true);
     }
@@ -23,7 +23,7 @@ public class DeathState : MovementBaseState
 
     public override void ExitState()
     {
-        movementManager.player.RPC_AttachCameraToHead(false);
+        movementManager.player.RPC_ApplyAttachCameraToHead(false);
         movementManager.playerController.SetPosition(movementManager.player.RespawnPos);
         movementManager.Revived = true;
         movementManager.RPC_TriggerSet(false);

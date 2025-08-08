@@ -69,7 +69,7 @@ public class PlayerInteractUI : MonoBehaviour
             autoRevivedElapsed = 0f;
             pressedRevivedElapsed = 0f;
 
-            movementStateManager.RPC_Revived();
+            movementStateManager.RPC_RequestRevived();
             ActiveDeathUI(false);
         }
     }

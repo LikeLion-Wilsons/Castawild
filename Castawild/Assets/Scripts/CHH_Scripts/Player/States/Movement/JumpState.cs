@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class JumpState : MovementBaseState
 {
-    float fallingElapsed = 0f;
     public JumpState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
         : base(_movementManager, _inputManager)
     {
@@ -13,13 +12,11 @@ public class JumpState : MovementBaseState
         movementManager.JumpTriggered = true;
 
         if (movementManager.previousState == movementManager.idleState)
-            movementManager.CurrentMoveState = MoveAnimationState.IdleJump;
+            movementManager.CurrentMoveAnimation = MoveAnimatoinState.IdleJump;
 
         else if (movementManager.previousState == movementManager.walkState
             || movementManager.previousState == movementManager.runState)
-            movementManager.CurrentMoveState = MoveAnimationState.RunJump;
-
-        fallingElapsed = 0f;
+            movementManager.CurrentMoveAnimation = MoveAnimatoinState.RunJump;
     }
 
     public override void UpdateState()
@@ -29,17 +26,17 @@ public class JumpState : MovementBaseState
             movementManager.isJumping = false;
 
             if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
-                movementManager.ChangeState(movementManager.idleState);
-            else if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.HasEnoughStaminaToRun())
-                movementManager.ChangeState(movementManager.runState);
+                movementManager.Host_ChangeState(MovementState.Idle);
+            else if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.All_HasEnoughStaminaToRun())
+                movementManager.Host_ChangeState(MovementState.Run);
             else
-                movementManager.ChangeState(movementManager.walkState);
+                movementManager.Host_ChangeState(MovementState.Walk);
         }
     }
 
     public override void ExitState()
     {
-        movementManager.canJump = true;
+        movementManager.CanJump = true;
         movementManager.RPC_TriggerSet(false);
     }
 }

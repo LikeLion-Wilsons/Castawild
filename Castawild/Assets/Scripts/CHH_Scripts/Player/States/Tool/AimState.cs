@@ -10,41 +10,41 @@ public class AimState : ToolBaseState
     public override void EnterState()
     {
         // 애니메이션
-        if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
-            toolStateManager.CurrentToolUseState = ToolAnimationState.FullAim;
+        if (toolStateManager.movementManager.CurrentMoveState == MovementState.Idle)
+            toolStateManager.CurrentToolAnimationState = ToolAnimationState.FullAim;
         else
-            toolStateManager.CurrentToolUseState = ToolAnimationState.Aim;
+            toolStateManager.CurrentToolAnimationState = ToolAnimationState.Aim;
 
         LookForward();
 
         // Movement상태
-        if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.runState)
-            toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.walkState);
+        if (toolStateManager.movementManager.CurrentMoveState == MovementState.Run)
+            toolStateManager.movementManager.Host_ChangeState(MovementState.Walk);
 
-        toolStateManager.StartAim(true);
+        toolStateManager.Host_StartAim(true);
     }
 
     public override void UpdateState()
     {
         RotatePlayer();
 
-        if (toolStateManager.movementManager.currentState == toolStateManager.movementManager.idleState)
-            toolStateManager.CurrentToolUseState = ToolAnimationState.FullAim;
+        if (toolStateManager.movementManager.CurrentMoveState == MovementState.Idle)
+            toolStateManager.CurrentToolAnimationState = ToolAnimationState.FullAim;
         else
-            toolStateManager.CurrentToolUseState = ToolAnimationState.Aim;
+            toolStateManager.CurrentToolAnimationState = ToolAnimationState.Aim;
 
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
         {
             if (toolStateManager.CurrentToolType == ToolType.Bow)
-                toolStateManager.RPC_BowShootAnimation();
+                toolStateManager.RPC_NotifyBowShootAnimation();
 
-            toolStateManager.ChangeState(toolStateManager.useToolState);
+            toolStateManager.Host_ChangeState(ToolState.UseTool);
         }
 
         else if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
-            toolStateManager.StartAim(false);
-            toolStateManager.ChangeState(toolStateManager.idleState);
+            toolStateManager.Host_StartAim(false);
+            toolStateManager.Host_ChangeState(ToolState.Idle);
         }
     }
 

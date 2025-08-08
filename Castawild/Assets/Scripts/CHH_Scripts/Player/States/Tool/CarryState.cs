@@ -9,13 +9,13 @@ public class CarryState : ToolBaseState
 
     public override void EnterState()
     {
-        toolStateManager.CurrentToolUseState = ToolAnimationState.Carry;
+        toolStateManager.CurrentToolAnimationState = ToolAnimationState.Carry;
     }
 
     public override void UpdateState()
     {
         if (toolStateManager.player.currentItemType != ItemType.Placeable)
-            toolStateManager.ChangeState(toolStateManager.idleState);
+            toolStateManager.Host_ChangeState(ToolState.Idle);
     }
 
     public override void ExitState()

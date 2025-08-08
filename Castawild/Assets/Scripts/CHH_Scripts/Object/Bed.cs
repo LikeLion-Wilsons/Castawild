@@ -26,7 +26,7 @@ public class Bed : InteractableObject
         if (playerObj.HasStateAuthority)
         {
             CanSleep = false;
-            player.currentBed = this;
+            player.Host_currentBed = this;
         }
         else
         {
@@ -35,7 +35,7 @@ public class Bed : InteractableObject
         }
 
         player.SetRespawnPos(sleepPos.position);
-        player.movementManager.RPC_ChangeSleepState(playerRef);
+        player.movementManager.RPC_RequestChangeSleepState(playerRef);
 
         PlayerController playerController = playerObj.GetComponent<PlayerController>();
         playerController.RPC_SetPosition(sleepPos.position);

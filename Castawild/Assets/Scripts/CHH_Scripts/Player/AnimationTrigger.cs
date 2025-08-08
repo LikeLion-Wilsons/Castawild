@@ -34,11 +34,11 @@ public class AnimationTrigger : MonoBehaviour
         toolManager.CanReceiveInput = false;
     }
 
-    public void Interact() => playercontroller.Interact();
+    public void Interact() => playercontroller.Client_Interact();
     public void FinishSleep()
     {
         playercontroller.RPC_FreezePosition(false);
-        player.FinishSleep();
+        player.All_FinishSleep();
     }
 
     public void CanWakeUp()
@@ -55,9 +55,8 @@ public class AnimationTrigger : MonoBehaviour
 
     public void LyingOrGettingUp(int playing) => movementManager.isLyingOrGettingUp = (playing != 0);
 
-    public void Throw(int isArrow) => toolManager.SetTargetPos(isArrow);
+    public void Throw(int isArrow) => toolManager.Client_SetTargetPos(isArrow);
 
-    //public void SetTargetPos() => toolManager.SetTargetPos();
     public void ActiveDeathUI()
     {
         if (movementManager.HasInputAuthority)
@@ -67,12 +66,12 @@ public class AnimationTrigger : MonoBehaviour
     public void StartHit()
     {
         if (toolManager.HasStateAuthority)
-            toolManager.StartHit();
+            toolManager.Host_StartHit();
     }
 
     public void FinishHit()
     {
         if (toolManager.HasStateAuthority)
-            toolManager.FinishHit();
+            toolManager.Host_FinishHit();
     }
 }
