@@ -24,12 +24,7 @@ public class UseToolState : ToolBaseState
         }
 
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
-        {
-            toolStateManager.RPC_BowPullAnimation(true);
-            toolStateManager.player.RPC_SetBowPos(true);
-        }
-
-        toolStateManager.player.RPC_ActiveArrow(true);
+            toolStateManager.RPC_BowAim(true);
     }
 
     public override void UpdateState()
@@ -38,7 +33,9 @@ public class UseToolState : ToolBaseState
             toolStateManager.playerController.LookForward_ThirdPerson(toolStateManager.input);
 
         if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
-            toolStateManager.RPC_MoveAimCamera(false);
+        {
+            toolStateManager.StartAim(false);
+        }
 
         // 곡괭이, 도끼는 손 때까지 상태 유지
         if (CraftingToolActionRelease())
@@ -62,13 +59,6 @@ public class UseToolState : ToolBaseState
             else
             {
                 toolStateManager.ChangeState(toolStateManager.idleState);
-                if (toolStateManager.CurrentToolType == ToolType.Bow)
-                {
-                    toolStateManager.RPC_BowPullAnimation(false);
-                    toolStateManager.player.RPC_SetBowPos(false);
-                }
-
-                toolStateManager.player.RPC_ActiveArrow(false);
             }
         }
     }
@@ -81,11 +71,9 @@ public class UseToolState : ToolBaseState
             SetActiveArmMesh(false);
 
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
-            toolStateManager.RPC_BowPullAnimation(false);
-        toolStateManager.player.RPC_ActiveArrow(false);
+            toolStateManager.RPC_BowAim(false);
 
         toolStateManager.playerController.RPC_FreezePosition(false);
-        toolStateManager.player.isAimLocked = false;
 
         comboCount = 1;
         toolStateManager.ComboAttack = false;

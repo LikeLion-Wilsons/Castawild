@@ -176,10 +176,10 @@ public class InventoryDataManager : NetworkBehaviour
         {
             RPC_UseSelectedItem(1);
         }
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            RPC_ThrowAllItem();
-        }
+        //if (Input.GetKeyDown(KeyCode.D))
+        //{
+        //    RPC_ThrowAllItem();
+        //}
 
         //테스트용
         if (Object.HasInputAuthority && Input.GetKeyDown(KeyCode.B))

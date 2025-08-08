@@ -57,7 +57,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     #region Third Person Camera Zoom
     [Header("3인칭 Zoom")]
-    [SerializeField] private float aimZoomDuration = 0.3f;
+    [SerializeField] public float aimZoomDuration = 0.3f;
     [SerializeField] private float zoomSpeed = 2f;
     [SerializeField] private float zoomLerpSpeed = 10f;
     [SerializeField] private float minDistance = 3f;
@@ -306,11 +306,15 @@ public class PlayerCameraManager : MonoBehaviour
     {
         if (attachCamera)
         {
+            player.AttachToCamera(false);
+
             firstPersonCam.Follow = playerHead.transform;
             firstPersonCam.LookAt = playerHead.transform;
         }
         else
         {
+            player.AttachToCamera(true);
+
             firstPersonCam.Follow = firstPersonTarget;
             firstPersonCam.LookAt = firstPersonTarget;
         }
