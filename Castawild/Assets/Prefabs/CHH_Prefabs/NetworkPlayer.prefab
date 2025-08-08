@@ -3018,6 +3018,7 @@ MonoBehaviour:
   bowUseParent: {fileID: 1542822223830889626}
   bowUseLocalParent: {fileID: 3555937060719847740}
   arrow: {fileID: 2432054003010317866}
+  arrowHitPos: {fileID: 8353487371722670480}
   _HasArrow: 0
   currentBed: {fileID: 0}
   amarture: {fileID: 762437358709272171}

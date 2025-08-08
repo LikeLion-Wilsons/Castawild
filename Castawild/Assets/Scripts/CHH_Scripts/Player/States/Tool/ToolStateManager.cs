@@ -100,21 +100,14 @@ public class ToolStateManager : BaseStateManager
             Transform hitObject = hitObjects[i].transform.root;
 
             if (hitObject.transform.root == this.transform.root)
-            {
-                Debug.Log("Ignore Self");
                 continue;
-            }
 
             if (alreadyHit.Contains(hitObject.transform.root))
-            {
-                Debug.Log("Already Hit");
                 continue;
-            }
 
             if (player.CanPVP && hitObject.TryGetComponent(out Player otherPlayer))
             {
                 otherPlayer.TakeDamage(true, player.GetToolAtt());
-                Debug.Log("Hit Player");
                 alreadyHit.Add(otherPlayer.transform.root);
             }
         }
