@@ -1,13 +1,16 @@
 using UnityEngine;
 
+public enum ThrowType { stone, arrow }
 public class ThrowObject : AttackObject
 {
+    public ThrowType throwType;
     private Rigidbody rigid;
 
     public override void Spawned()
     {
         rigid = GetComponent<Rigidbody>();
-        rigid.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        rigid.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        rigid.interpolation = RigidbodyInterpolation.Interpolate;
         canAttack = true;
     }
 

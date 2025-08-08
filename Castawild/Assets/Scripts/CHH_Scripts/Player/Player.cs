@@ -387,13 +387,11 @@ public class Player : NetworkBehaviour
 
         if (Hp <= 0)
         {
-            Debug.Log("Death");
             movementManager.ChangeState(movementManager.deathState);
             toolStateManager.ChangeState(toolStateManager.idleState);
         }
         else if (Hp > 0 && isAttack)
         {
-            Debug.Log("Hit");
             movementManager.ChangeState(movementManager.getHitState);
             toolStateManager.ChangeState(toolStateManager.idleState);
         }
@@ -407,20 +405,32 @@ public class Player : NetworkBehaviour
         Hunger = playerData.maxHunger * 0.2f;
     }
 
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!HasStateAuthority)
+            return;
+
+        if (CanPVP && other.TryGetComponent<AttackObject>(out AttackObject attackObject))
+        {
+            if (attackObject.canAttack)
+            {
+                TakeDamage(true, attackObject.att);
+            }
+        }
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (!HasStateAuthority)
             return;
 
-        if (CanPVP && collision.gameObject.TryGetComponent<AttackObject>(out AttackObject attackObject))
+        if (CanPVP && collision.gameObject.TryGetComponent<ThrowObject>(out ThrowObject throwObject))
         {
-            if (attackObject.canAttack)
+            if (throwObject.canAttack)
             {
-                TakeDamage(true, attackObject.att);
-                if (attackObject is ThrowObject throwObject)
-                {
-                    throwObject.canAttack = false;
-                }
+                TakeDamage(true, throwObject.att);
+                throwObject.canAttack = false;
             }
         }
     }

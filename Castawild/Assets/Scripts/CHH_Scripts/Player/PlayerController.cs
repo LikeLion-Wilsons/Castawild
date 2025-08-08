@@ -63,6 +63,7 @@ public sealed class PlayerController : NetworkBehaviour
             cameraManager.SetNetworkCamera();
 
         rigid = GetComponent<Rigidbody>();
+        rigid.isKinematic = false;
     }
 
     public override void FixedUpdateNetwork()
@@ -370,12 +371,8 @@ public sealed class PlayerController : NetworkBehaviour
             if (HasStateAuthority)
                 kcc.ResetVelocity();
             player.CanMove = false;
-            rigid.constraints = RigidbodyConstraints.FreezeAll;
         }
         else
-        {
             player.CanMove = true;
-            rigid.constraints = RigidbodyConstraints.None;
-        }
     }
 }
