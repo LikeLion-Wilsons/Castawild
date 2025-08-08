@@ -3251,7 +3251,7 @@ MonoBehaviour:
   scrollCooldown: 0.1
   playerUIPrefab: {fileID: 2839189812646824299, guid: e749cc6fe2a853349bb3f6bb330140f7, type: 3}
   UICanvas: {fileID: 0}
-  chest: {fileID: 1534066118601383972, guid: 36f0b95c8afb6ca49b8e112cc8fba58d, type: 3}
+  chest: {fileID: 6167062138974328233, guid: b3205841b2c54e84e941859841c61959, type: 3}
   inventorySlots:
   - {fileID: 0}
   - {fileID: 0}

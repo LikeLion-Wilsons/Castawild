@@ -3950,7 +3950,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hotBarUI: {fileID: 233261468776329381}
-  inventoryUI: {fileID: 2975444364218121219}
+  inventoryUI: {fileID: 862843738221293036}
   tableUI: {fileID: 5968180590557479756}
   chestUI: {fileID: 4637669684222355577}
   campfireUI: {fileID: 4258088933595057298}
