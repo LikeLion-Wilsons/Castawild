@@ -15,7 +15,7 @@ public class InventoryDataManager : NetworkBehaviour
     public float scrollCooldown = 0.1f; // 100ms
     [SerializeField] GameObject playerUIPrefab; // 인스펙터에 연결
     public GameObject UICanvas;
-   
+
     [Networked, Capacity(50)] public NetworkLinkedList<Item> itemList => default;
 
     private Player player;
@@ -108,10 +108,13 @@ public class InventoryDataManager : NetworkBehaviour
             onItemSelected?.Invoke(inventorySlots[newValue].item.itemID);
 
             // 수정한 부분
-            if (inventorySlots[selectedSlot].IsEmpty())
-                player.RemoveSelectedItem();
-            else
-                player.ApplySelectedItem(itemList[selectedSlot].itemID);
+            if (Object.HasInputAuthority)
+            {
+                if (inventorySlots[selectedSlot].IsEmpty())
+                    player.Client_RemoveSelectedItem();
+                else
+                    player.Client_ApplySelectedItem(itemList[selectedSlot].itemID);
+            }
         }
     }
 
@@ -142,14 +145,14 @@ public class InventoryDataManager : NetworkBehaviour
         {
             if (scroll > 0f)
             {
-                if (player != null && player.toolStateManager.CurrentToolUseState == ToolAnimationState.Idle);
+                if (player != null && player.toolStateManager.CurrentToolState == ToolState.Idle) ;
                 int next = (selectedSlot - 1 + maxSlotCount) % maxSlotCount;
                 ChangeSelectedSlot(next);
                 nextScrollTime = Time.time + scrollCooldown;
             }
             else if (scroll < 0f)
             {
-                if (player != null && player.toolStateManager.CurrentToolUseState == ToolAnimationState.Idle) ;
+                if (player != null && player.toolStateManager.CurrentToolState == ToolState.Idle) ;
                 int next = (selectedSlot + 1) % maxSlotCount;
                 ChangeSelectedSlot(next);
                 nextScrollTime = Time.time + scrollCooldown;
@@ -266,7 +269,7 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_SetCanOpen(Chest chest ,bool tof)
+    public void RPC_SetCanOpen(Chest chest, bool tof)
     {
         chest.CanOpen = tof;
     }
@@ -418,7 +421,7 @@ public class InventoryDataManager : NetworkBehaviour
     //들고 있는 모든 아이템 버리기
     public void ThrowAllItem()
     {
-        for(int i = 0; i< 29; i++)
+        for (int i = 0; i < 29; i++)
         {
             if (itemList[i].itemID != -1)
             {

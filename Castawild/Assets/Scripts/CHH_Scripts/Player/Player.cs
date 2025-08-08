@@ -168,7 +168,7 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 도구 장착
     /// </summary>
-    public void ApplySelectedItem(int itemIdx)
+    public void Client_ApplySelectedItem(int itemIdx)
     {
         RPC_NotifySetCurrentItemType(itemIdx);
 
@@ -193,31 +193,10 @@ public class Player : NetworkBehaviour
         toolStateManager.RPC_NotifyChangeSelectedItem(itemIdx);
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    private void RPC_NotifySetCurrentItemType(int _currentItemIdx)
-    {
-        if (_currentItemIdx == 202)
-            currentItemType = ItemType.Tool;
-        // 50 ~ 59 : Drink
-        else if (_currentItemIdx >= 50 && _currentItemIdx < 60)
-            currentItemType = ItemType.Drink;
-        // 60 ~ 69 : Food
-        else if (_currentItemIdx >= 60 && _currentItemIdx < 70)
-            currentItemType = ItemType.Food;
-        // 300 ~ 400 : Placeable
-        else if (_currentItemIdx >= 300 && _currentItemIdx < 400)
-            currentItemType = ItemType.Placeable;
-        // 400 ~ : Tool
-        else if (_currentItemIdx >= 400)
-            currentItemType = ItemType.Tool;
-        else
-            currentItemType = ItemType.Default;
-    }
-
     /// <summary>
     /// 도구 해제
     /// </summary>
-    public void RemoveSelectedItem()
+    public void Client_RemoveSelectedItem()
     {
         RPC_NotifyEquipmentTool();
         RPC_RequestSetCurrentTool();
@@ -269,45 +248,6 @@ public class Player : NetworkBehaviour
             RPC_RequestCursorLocked(isLocked);
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_RequestSetCurrentTool(ToolInfo toolInfo = null)
-    {
-        if (toolInfo == null)
-        {
-            CurrentToolID = -1;
-            CurrentToolName = string.Empty;
-            CurrentToolAtt = 0;
-            return;
-        }
-
-        CurrentToolID = toolInfo.ItemID;
-        CurrentToolName = toolInfo.ToolName;
-        CurrentToolAtt = toolInfo.Att;
-    }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    private void RPC_NotifyEquipmentTool(int itemIdx = -1)
-    {
-        foreach (var tool in toolDict)
-        {
-            if (tool.Value != null)
-                tool.Value.SetActive(false);
-        }
-
-        if (itemIdx == -1)
-            return;
-
-        if (toolDict.TryGetValue(itemIdx, out GameObject currentToolGameObject))
-        {
-            currentToolGameObject.SetActive(true);
-            currentToolObject = currentToolGameObject;
-        }
-        else
-        {
-            currentToolObject = null;
-        }
-    }
-
     public void All_ActiveArrow(bool visible)
     {
         if (HasArrow && visible)
@@ -315,34 +255,6 @@ public class Player : NetworkBehaviour
         else
             arrow.SetActive(false);
     }
-
-    public void Client_AttachToCamera(bool attach)
-    {
-        if (attach && cameraManager.currentView == ViewType.FirstPerson)
-        {
-            amarture.transform.SetParent(cameraManager.firstPersonCam.transform);
-            amarture.transform.localPosition = new Vector3(0f, -3f, 0f);
-            amarture.transform.localRotation = Quaternion.identity;
-        }
-        else
-        {
-            amarture.transform.SetParent(transform);
-            amarture.transform.localPosition = Vector3.zero;
-            amarture.transform.localRotation = Quaternion.identity;
-        }
-    }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_IsUIOpen(bool isOpen) => IsUIOpen = isOpen;
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_RequestCursorLocked(bool isLocked) => IsCursorLocked = isLocked;
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ApplyAttachCameraToHead(bool attachCamera) => cameraManager.AttachCameraToHead(attachCamera);
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ApplyTurnOffUI() => playerInteractUI.TurnOffUI();
 
     public void All_SetInitBowPos(bool isBowUse)
     {
@@ -370,8 +282,22 @@ public class Player : NetworkBehaviour
         currentToolObject.transform.localRotation = Quaternion.identity;
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_NotifyHasArrow(bool hasArrow) => HasArrow = hasArrow;
+    public void Client_AttachToCamera(bool attach)
+    {
+        if (attach && cameraManager.currentView == ViewType.FirstPerson)
+        {
+            amarture.transform.SetParent(cameraManager.firstPersonCam.transform);
+            amarture.transform.localPosition = new Vector3(0f, -3f, 0f);
+            amarture.transform.localRotation = Quaternion.identity;
+        }
+        else
+        {
+            amarture.transform.SetParent(transform);
+            amarture.transform.localPosition = Vector3.zero;
+            amarture.transform.localRotation = Quaternion.identity;
+        }
+    }
+
 
     public void All_CurrentToolActive(bool active) => currentToolObject?.SetActive(active);
 
@@ -379,40 +305,6 @@ public class Player : NetworkBehaviour
     {
         if (HasInputAuthority)
             RPC_SetRespawnPos(respawnPos);
-    }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_SetRespawnPos(Vector3 respawnPos) { RespawnPos = respawnPos; }
-
-    /// <summary>
-    /// 플레이어 공격을 받았을 때 호출
-    /// </summary>
-    public void TakeDamage(bool isAttack, float att)
-    {
-        if (!HasStateAuthority || Hp <= 0)
-            return;
-        Hp -= att;
-
-        if (Hp <= 0)
-        {
-            movementManager.Host_ChangeState(MovementState.Death);
-            toolStateManager.Host_ChangeState(ToolState.Idle);
-        }
-        else if (Hp > 0 && isAttack)
-        {
-            movementManager.Host_ChangeState(MovementState.GetHit);
-            toolStateManager.Host_ChangeState(ToolState.Idle);
-        }
-    }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_Heal()
-    {
-        Hp = playerData.maxHp;
-        Stamina = playerData.maxStamina;
-        Thirst = playerData.maxThirst;
-        Hunger = playerData.maxHunger;
-        Temperature = playerData.maxTemperature;
     }
 
     public void Revived()
@@ -452,8 +344,116 @@ public class Player : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// 플레이어 공격을 받았을 때 호출
+    /// </summary>
+    public void TakeDamage(bool isAttack, float att)
+    {
+        if (!HasStateAuthority || Hp <= 0)
+            return;
+        Hp -= att;
+
+        if (Hp <= 0)
+        {
+            movementManager.Host_ChangeState(MovementState.Death);
+            toolStateManager.Host_ChangeState(ToolState.Idle);
+        }
+        else if (Hp > 0 && isAttack)
+        {
+            movementManager.Host_ChangeState(MovementState.GetHit);
+            toolStateManager.Host_ChangeState(ToolState.Idle);
+        }
+    }
+
     // 죽었는지 확인 
     public bool IsDeath() => movementManager.CurrentMoveState == MovementState.Death;
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    private void RPC_NotifySetCurrentItemType(int _currentItemIdx)
+    {
+        if (_currentItemIdx == 202)
+            currentItemType = ItemType.Tool;
+        // 50 ~ 59 : Drink
+        else if (_currentItemIdx >= 50 && _currentItemIdx < 60)
+            currentItemType = ItemType.Drink;
+        // 60 ~ 69 : Food
+        else if (_currentItemIdx >= 60 && _currentItemIdx < 70)
+            currentItemType = ItemType.Food;
+        // 300 ~ 400 : Placeable
+        else if (_currentItemIdx >= 300 && _currentItemIdx < 400)
+            currentItemType = ItemType.Placeable;
+        // 400 ~ : Tool
+        else if (_currentItemIdx >= 400)
+            currentItemType = ItemType.Tool;
+        else
+            currentItemType = ItemType.Default;
+    }
+
+    private void RPC_RequestSetCurrentTool(ToolInfo toolInfo = null)
+    {
+        if (toolInfo == null)
+        {
+            CurrentToolID = -1;
+            CurrentToolName = string.Empty;
+            CurrentToolAtt = 0;
+            return;
+        }
+
+        CurrentToolID = toolInfo.ItemID;
+        CurrentToolName = toolInfo.ToolName;
+        CurrentToolAtt = toolInfo.Att;
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    private void RPC_NotifyEquipmentTool(int itemIdx = -1)
+    {
+        foreach (var tool in toolDict)
+        {
+            if (tool.Value != null)
+                tool.Value.SetActive(false);
+        }
+
+        if (itemIdx == -1)
+            return;
+
+        if (toolDict.TryGetValue(itemIdx, out GameObject currentToolGameObject))
+        {
+            currentToolGameObject.SetActive(true);
+            currentToolObject = currentToolGameObject;
+        }
+        else
+        {
+            currentToolObject = null;
+        }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestSetUIOpen(bool isOpen) => IsUIOpen = isOpen;
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestCursorLocked(bool isLocked) => IsCursorLocked = isLocked;
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplyAttachCameraToHead(bool attachCamera) => cameraManager.AttachCameraToHead(attachCamera);
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplyTurnOffUI() => playerInteractUI.TurnOffUI();
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_NotifyHasArrow(bool hasArrow) => HasArrow = hasArrow;
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetRespawnPos(Vector3 respawnPos) { RespawnPos = respawnPos; }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_Heal()
+    {
+        Hp = playerData.maxHp;
+        Stamina = playerData.maxStamina;
+        Thirst = playerData.maxThirst;
+        Hunger = playerData.maxHunger;
+        Temperature = playerData.maxTemperature;
+    }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_ActiveAimUI(bool isAiming) => playerInteractUI.Aim(isAiming);

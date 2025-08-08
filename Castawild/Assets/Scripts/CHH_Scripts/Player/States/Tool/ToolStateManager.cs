@@ -60,9 +60,6 @@ public class ToolStateManager : BaseStateManager
     [Networked, HideInInspector] public bool CanReceiveInput { get; set; }
     #endregion
 
-    public ToolAnimationState CurrentToolUseState { get; set; } // 오류 안나게 임시로 넣어놓은거
-
-
     protected override void Awake()
     {
         base.Awake();
