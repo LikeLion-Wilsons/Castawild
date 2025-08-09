@@ -51,6 +51,7 @@ public class Player : NetworkBehaviour
     public GameObject arrow;
 
     [Networked, HideInInspector] public bool HasArrow { get; set; }
+    [Networked, HideInInspector] public bool HasPebble { get; set; }
     private GameObject currentToolObject;
     #endregion
 
@@ -288,6 +289,7 @@ public class Player : NetworkBehaviour
         if (currentToolObject == null)
             return;
 
+        Debug.Log("Set Bow Pos" + isBowUse);
         if (HasInputAuthority)
         {
             if (isBowUse && cameraManager.currentView == ViewType.FirstPerson)
@@ -483,7 +485,22 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 활 있는지
     /// </summary>
-    public void RPC_NotifyHasArrow(bool hasArrow) => HasArrow = hasArrow;
+    public void Host_SetHasArrow(bool hasArrow) => HasArrow = hasArrow;
+
+    /// <summary>
+    /// 던지는 돌맹이 있는지
+    /// </summary>
+    public void Host_SetHasPebble(bool hasPebble) => HasPebble = hasPebble;
+
+    /// <summary>
+    /// 활 있는지
+    /// </summary>
+    public void RPC_RequestSetHasArrow(bool hasArrow) => HasArrow = hasArrow;
+
+    /// <summary>
+    /// 던지는 돌맹이 있는지
+    /// </summary>
+    public void RPC_RequestSetHasPebble(bool hasPebble) => HasPebble = hasPebble;
 
     /// <summary>
     /// 리스폰 장소 설정

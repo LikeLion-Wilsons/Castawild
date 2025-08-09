@@ -24,7 +24,10 @@ public class UseToolState : ToolBaseState
         }
 
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
+        {
+            toolStateManager.player.All_SetBowPos(true);
             toolStateManager.All_SetArrowPull(true);
+        }
 
         elapsed = 0f;
     }
@@ -41,7 +44,6 @@ public class UseToolState : ToolBaseState
         if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
             toolStateManager.Client_SetAimCameraAndUI(false);
-            toolStateManager.player.All_SetBowPos(false);
         }
 
         // 곡괭이, 도끼는 손 때까지 상태 유지
@@ -73,6 +75,8 @@ public class UseToolState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
+        if (toolStateManager.CurrentToolType == ToolType.Bow && toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
+            toolStateManager.player.All_SetBowPos(false);
 
         if (toolStateManager.CurrentToolType == ToolType.Fist)
             toolStateManager.Client_ArmVisibleChanged(false);

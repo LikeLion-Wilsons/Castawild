@@ -24,7 +24,11 @@ public class AimState : ToolBaseState
         toolStateManager.Client_SetAimCameraAndUI(true);
 
         if (toolStateManager.CurrentToolType == ToolType.Bow)
+        {
             toolStateManager.player.All_SetBowPos(true);
+            toolStateManager.player.All_SetArrowActive(true);
+            toolStateManager.All_SetArrowPull(true);
+        }
     }
 
     public override void UpdateState()
@@ -48,7 +52,7 @@ public class AimState : ToolBaseState
         {
             if (toolStateManager.CurrentToolType == ToolType.Bow)
             {
-                toolStateManager.player.All_SetBowPos(true);
+                toolStateManager.player.All_SetBowPos(false);
                 toolStateManager.All_SetArrowPull(false);
             }
             toolStateManager.Client_SetAimCameraAndUI(false);
