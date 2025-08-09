@@ -286,6 +286,13 @@ public class ToolStateManager : BaseStateManager
                 throwObject = Runner.Spawn(arrowPrefab.gameObject, thirdPersonArrowPos.position, cameraManager.thirdPersonCam.transform.rotation);
                 throwObject?.GetComponent<ThrowObject>().AddForce(arrowForce, arrowUpForce, rayTargetPos);
             }
+
+            player.inventory.UseItem(201, 1);
+            if (player.inventory.GetItemCount(201) <= 0)
+            {
+                player.HasArrow = false;
+                player.RPC_NotifyArrowActive(false);
+            }
         }
         else if (!isArrow)
         {

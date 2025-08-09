@@ -408,6 +408,9 @@ public class Player : NetworkBehaviour
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_NotifyArrowActive(bool isActive) => arrow.SetActive(false);
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_NotifyInitCurrentToolObject()
     {
         currentToolObject.SetActive(false);
