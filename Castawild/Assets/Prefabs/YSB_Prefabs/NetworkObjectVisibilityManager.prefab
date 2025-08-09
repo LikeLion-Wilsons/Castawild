@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98bd65b05f45e00479b8ef88400f3c3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visibleRange: 50
-  updateInterval: 0.5
+  visibleRange: 100
+  updateInterval: 1
 --- !u!114 &6275592738214374975
 MonoBehaviour:
   m_ObjectHideFlags: 0
