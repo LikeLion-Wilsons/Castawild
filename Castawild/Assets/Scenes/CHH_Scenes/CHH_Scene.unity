@@ -324,9 +324,17 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1496196775546166724, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
+      propertyPath: SortKey
+      value: 3154076755
+      objectReference: {fileID: 0}
     - target: {fileID: 1517099654388170568, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1641190144395957784, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
+      propertyPath: SortKey
+      value: 3360100787
       objectReference: {fileID: 0}
     - target: {fileID: 1934811449108985206, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
       propertyPath: m_Enabled
@@ -340,9 +348,17 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4613252683524904954, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
+      propertyPath: SortKey
+      value: 3893278702
+      objectReference: {fileID: 0}
     - target: {fileID: 5000463041039569134, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5817460883332391729, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
+      propertyPath: SortKey
+      value: 2146354294
       objectReference: {fileID: 0}
     - target: {fileID: 6363259293620697004, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
       propertyPath: m_Enabled
@@ -392,6 +408,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: NetworkPlayer
       objectReference: {fileID: 0}
+    - target: {fileID: 7164057091827259235, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
+      propertyPath: SortKey
+      value: 1025067020
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933685528624486573, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
+      propertyPath: SortKey
+      value: 3918206626
+      objectReference: {fileID: 0}
     - target: {fileID: 8225308212403291209, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -399,6 +423,10 @@ PrefabInstance:
     - target: {fileID: 8380833186685685926, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8585607360678226885, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
+      propertyPath: SortKey
+      value: 603042145
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

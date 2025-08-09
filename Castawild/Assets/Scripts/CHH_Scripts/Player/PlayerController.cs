@@ -282,7 +282,7 @@ public sealed class PlayerController : NetworkBehaviour
                 else if (_interactResult[i].TryGetComponent<InteractableObject>(out var interactableObject))
                 {
                     player.playerInteractUI.InteractUI(interactableObject.interactableType);
-                    player.playerInteractUI.interactableText.text = interactableObject.text;
+                    player.playerInteractUI.SetInteractText(interactableObject.text);
 
                     // 설치가능한 오브젝트
                     if (interactableObject.isPlaceable)

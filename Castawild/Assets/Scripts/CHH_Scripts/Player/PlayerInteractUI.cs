@@ -13,6 +13,7 @@ public class PlayerInteractUI : MonoBehaviour
     [SerializeField] private CanvasGroup placeableUI;
     public Image crosshairImage;
 
+    private string originalText;
     public TextMeshProUGUI interactableText;
     [SerializeField] private Sprite originImage;
     [SerializeField] private Sprite axeImage;
@@ -41,6 +42,7 @@ public class PlayerInteractUI : MonoBehaviour
         inputManager = GetComponentInParent<PlayerInputManager>();
         movementStateManager = GetComponentInParent<MovementStateManager>();
         deathAnim = GetComponent<Animator>();
+        originalText = interactableText.text;
     }
 
     private void Update()
@@ -145,7 +147,7 @@ public class PlayerInteractUI : MonoBehaviour
     {
         interactableUI.alpha = 1f;
         placeableUI.alpha = 0f;
-        interactableText.text = "Wake Up";
+        SetInteractText("Wake Up");
     }
 
     /// <summary>
@@ -212,4 +214,6 @@ public class PlayerInteractUI : MonoBehaviour
         deathText.alpha = 1f;
         canRevived = true;
     }
+
+    public void SetInteractText(string text) => interactableText.text = originalText + text;
 }
