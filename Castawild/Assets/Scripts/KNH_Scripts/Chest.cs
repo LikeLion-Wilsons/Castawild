@@ -37,7 +37,6 @@ public class Chest : InteractableObject
         //현재 열고 있는 상자 설정
         canvasHolder.SetOpenedChest(chestData);
 
-
         //chest -> inventory
         inventoryData.RPC_SetItemFromChest(chestData);
 
