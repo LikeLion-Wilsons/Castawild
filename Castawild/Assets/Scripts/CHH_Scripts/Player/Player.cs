@@ -508,7 +508,7 @@ public class Player : NetworkBehaviour
     public void Client_TurnOffInteractiveUI()
     {
         if (HasInputAuthority)
-            playerInteractUI.TurnOffInteractiveUI();
+            playerInteractUI.Client_TurnOffInteractiveUI();
     }
 
     /// <summary>

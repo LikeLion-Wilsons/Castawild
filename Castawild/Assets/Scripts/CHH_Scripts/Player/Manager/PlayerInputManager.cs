@@ -31,6 +31,15 @@ public class PlayerInputManager : MonoBehaviour
 
     private PlayerCameraManager cameraManager;
     private Player player;
+    void Start()
+    {
+        UIPart.openUI += HandleCursor;
+    }
+
+    void OnDestroy()
+    {
+        UIPart.openUI += HandleCursor;
+    }
 
     private void OnEnable()
     {
@@ -84,6 +93,14 @@ public class PlayerInputManager : MonoBehaviour
             UnlockCursor();
 
         HandleCameraInput();
+    }
+
+    private void HandleCursor(bool uiOpen)
+    {
+        if (uiOpen)
+            UnlockCursor();
+        else
+            LockCursor();
     }
 
     public void LockCursor()

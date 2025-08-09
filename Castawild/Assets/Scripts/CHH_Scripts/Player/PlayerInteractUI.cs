@@ -45,6 +45,16 @@ public class PlayerInteractUI : MonoBehaviour
         originalText = interactableText.text;
     }
 
+    void Start()
+    {
+        UIPart.openUI += Client_TurnOffInteractiveUI;
+    }
+
+    void OnDestroy()
+    {
+        UIPart.openUI += Client_TurnOffInteractiveUI;
+    }
+
     private void Update()
     {
         if (!canRevived || !movementStateManager.HasInputAuthority)
@@ -134,10 +144,13 @@ public class PlayerInteractUI : MonoBehaviour
     /// <summary>
     /// 상호작용가능한 UI 끄기
     /// </summary>
-    public void TurnOffInteractiveUI()
+    public void Client_TurnOffInteractiveUI(bool turnOff = true)
     {
-        interactableUI.alpha = 0f;
-        placeableUI.alpha = 0f;
+        if (turnOff)
+        {
+            interactableUI.alpha = 0f;
+            placeableUI.alpha = 0f;
+        }
     }
 
     /// <summary>
