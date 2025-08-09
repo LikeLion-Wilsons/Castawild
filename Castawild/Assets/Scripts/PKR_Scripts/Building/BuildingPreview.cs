@@ -8,7 +8,7 @@ public class BuildingPreview : MonoBehaviour
     [SerializeField] private LayerMask obstacleLayerMask = 1; // 장애물 레이어 마스크
 
     private GameObject previewObject;
-    private Renderer previewRenderer;
+    private Renderer[] previewRenderers;
     private Camera cam;
     private Material validMaterial;
     private Material invalidMaterial;
@@ -59,7 +59,7 @@ public class BuildingPreview : MonoBehaviour
     {
         isPreviewing = true;
         previewObject = Instantiate(prefab);
-        previewRenderer = previewObject.GetComponent<Renderer>();
+        previewRenderers = previewObject.GetComponentsInChildren<Renderer>();
 
         // 미리보기 오브젝트의 콜라이더를 비활성화하여 자기 자신과 충돌하지 않도록 함
         SetupPreviewObject();
@@ -175,14 +175,26 @@ public class BuildingPreview : MonoBehaviour
             previewObject.transform.position = ray.GetPoint(10f);
             onAirPos = true;
         }
-        
+
         savedPosition = previewObject.transform.position;
     }
 
     private void UpdatePreviewColor()
     {
         bool canBuild = CheckBuildable();
-        previewRenderer.material = canBuild ? validMaterial : invalidMaterial;
+
+        foreach (Renderer renderer in previewRenderers)
+        {
+            if (renderer == null)
+                continue;
+
+            Material[] materials = renderer.materials;
+            for (int i = 0; i < materials.Length; i++)
+            {
+                materials[i] = canBuild ? validMaterial : invalidMaterial;
+            }
+            renderer.materials = materials;
+        }
     }
 
     public Vector3 GetPreviewPosition()

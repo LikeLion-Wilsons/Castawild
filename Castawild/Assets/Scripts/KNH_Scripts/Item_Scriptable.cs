@@ -13,5 +13,6 @@ public class Item_Scriptable : ScriptableObject
     public bool stackable = true;
     public List<Item_Scriptable> ingredient;//재료 아이템 
     public List<int> ingredientCount;//재료 아이템 수량
+    public GameObject buildPreviewPrefab;
     public GameObject buildPrefab;
 }

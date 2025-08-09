@@ -2907,6 +2907,8 @@ GameObject:
   - component: {fileID: 4022685551630965951}
   - component: {fileID: 1934811449108985206}
   - component: {fileID: 1517099654388170568}
+  - component: {fileID: -2412737605465488693}
+  - component: {fileID: -7957345436698639499}
   m_Layer: 6
   m_Name: NetworkPlayer
   m_TagString: Player
@@ -2968,6 +2970,7 @@ MonoBehaviour:
   - {fileID: 230939324335428207}
   - {fileID: 6363259293620697004}
   - {fileID: 1934811449108985206}
+  - {fileID: -2412737605465488693}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &5000463041039569134
 MonoBehaviour:
@@ -3386,6 +3389,41 @@ MonoBehaviour:
     DissipationDistance: 100
     PropagationSpeed: 343
   DefaultVelocity: {x: 0, y: -1, z: 0}
+--- !u!114 &-2412737605465488693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04d3cb0176ef64b4390c82643d37f05b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buildingPreview: {fileID: -7957345436698639499}
+  previewPrefab: {fileID: 3489290178109122348, guid: 1b286a461984f6a4da2d833ec13f0534, type: 3}
+  networkPrefab: {fileID: 8647573889241653394, guid: 2c606c55e0a15e94dbd46b809c50c60a, type: 3}
+--- !u!114 &-7957345436698639499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1f539cfdbc781c4a8315e513d5969b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  validColor: {r: 0, g: 0.08572531, b: 1, a: 0.16862746}
+  invalidColor: {r: 1, g: 0, b: 0, a: 0.23921569}
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 9
+  obstacleLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!1 &7288379860564303627
 GameObject:
   m_ObjectHideFlags: 0
