@@ -147,8 +147,11 @@ public class ToolStateManager : BaseStateManager
 
             if (player.CanPVP && hitObject.TryGetComponent(out Player otherPlayer))
             {
-                otherPlayer.Host_TakeDamage(true, player.All_GetToolAtt());
                 Host_alreadyHit.Add(otherPlayer.transform.root);
+
+                int attack = player.All_GetToolAtt();
+                otherPlayer.Host_TakeDamage(true, attack);
+                playerController.RPC_ApplyHitInvoke(attack);
             }
         }
     }
@@ -301,6 +304,8 @@ public class ToolStateManager : BaseStateManager
             else
                 throwObject = Runner.Spawn(throwableStonePrefab.gameObject, throwPos.position, cameraManager.thirdPersonCam.transform.rotation);
             throwObject?.GetComponent<ThrowObject>().AddForce(throwForce, throwUpForce, rayTargetPos);
+
+            throwObject.GetComponent<ThrowObject>().thrower = player.gameObject;
 
             player.inventory.UseItem(202, 1);
 

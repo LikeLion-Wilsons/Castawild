@@ -1,5 +1,6 @@
 using Fusion;
 using Fusion.Addons.SimpleKCC;
+using System;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -41,6 +42,7 @@ public sealed class PlayerController : NetworkBehaviour
     Collider[] _interactResult = new Collider[5];
 
     private NetworkButtons prevInputButtons;
+    public event Action<int> Hit;
 
     public override void Spawned()
     {
@@ -344,18 +346,20 @@ public sealed class PlayerController : NetworkBehaviour
         if (Client_currentInteractObject == null || !HasInputAuthority)
             return;
 
+        int att = 0;
         if (Client_currentInteractObject.interactableType == InteractableType.Tree && Client_currentInteractObject.CanInteract())
         {
-            int att = player.All_GetToolAtt("Axe");
-            Debug.Log("Player Att : " + att);
+            att = player.All_GetToolAtt("Axe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
         }
         else if (Client_currentInteractObject.interactableType == InteractableType.Stone && Client_currentInteractObject.CanInteract())
         {
-            int att = player.All_GetToolAtt("Pickaxe");
-            Debug.Log("Player Att : " + att);
+            att = player.All_GetToolAtt("Pickaxe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
         }
+
+        if (att != 0)
+            Hit?.Invoke(att);
     }
 
     /// <summary>
@@ -382,6 +386,9 @@ public sealed class PlayerController : NetworkBehaviour
         else
             player.CanMove = true;
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplyHitInvoke(int dmg) => Hit?.Invoke(dmg);
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     private void RPC_DespawnObject(NetworkObject despawnObject) => Runner.Despawn(despawnObject);

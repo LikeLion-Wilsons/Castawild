@@ -2,6 +2,6 @@ using Fusion;
 
 public class AttackObject : NetworkBehaviour
 {
-    public float att;
+    public int att;
     public bool canAttack;
 }
