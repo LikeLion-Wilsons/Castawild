@@ -6,6 +6,7 @@ public class BuildingPreview : MonoBehaviour
     [SerializeField] private Color invalidColor;
     [SerializeField] private LayerMask groundLayerMask = 1; // 지면 레이어 마스크
     [SerializeField] private LayerMask obstacleLayerMask = 1; // 장애물 레이어 마스크
+    [SerializeField] private float maxSlopeAngle = 70f; // 장애물 레이어 마스크
 
     private GameObject previewObject;
     private Renderer[] previewRenderers;
@@ -149,22 +150,25 @@ public class BuildingPreview : MonoBehaviour
             // 콜라이더의 크기를 고려하여 높이 조정
             if (hasSavedBounds)
             {
-                // normal 벡터를 고려하여 건설물을 지면에 올바르게 배치
-                float colliderHeight = savedBounds.size.y;
+                //// normal 벡터를 고려하여 건설물을 지면에 올바르게 배치
+                //float colliderHeight = savedBounds.size.y;
 
-                // normal 벡터가 위쪽을 향하는지 확인 (지면인지 확인)
-                if (normal.y > 0.5f) // 대략 30도 이내의 경사면
-                {
-                    // 지면에 수직으로 배치
-                    targetPosition.y += colliderHeight * 0.5f;
-                }
-                else
-                {
-                    // 경사면에 맞춰서 배치
-                    // normal 벡터 방향으로 콜라이더 높이의 절반만큼 이동
-                    Vector3 offset = normal * (colliderHeight * 0.5f);
-                    targetPosition += offset;
-                }
+                //// normal 벡터가 위쪽을 향하는지 확인 (지면인지 확인)
+                //if (normal.y > 0.5f) // 대략 30도 이내의 경사면
+                //{
+                //    // 지면에 수직으로 배치
+                //    //targetPosition.y += colliderHeight * 0.5f;
+                //}
+                //else
+                //{
+                //    // 경사면에 맞춰서 배치
+                //    // normal 벡터 방향으로 콜라이더 높이의 절반만큼 이동
+                //    Vector3 offset = normal * (colliderHeight * 0.5f);
+                //    targetPosition += offset;
+                //}
+                float slopeAngle = Vector3.Angle(Vector3.up, normal);
+                if (slopeAngle <= maxSlopeAngle)
+                    previewObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, normal);
             }
 
             previewObject.transform.position = targetPosition;
@@ -173,9 +177,11 @@ public class BuildingPreview : MonoBehaviour
         else
         {
             previewObject.transform.position = ray.GetPoint(10f);
+
             onAirPos = true;
         }
 
+        savedRotation = previewObject.transform.rotation;
         savedPosition = previewObject.transform.position;
     }
 
