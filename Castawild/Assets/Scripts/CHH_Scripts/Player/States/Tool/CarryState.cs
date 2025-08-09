@@ -14,6 +14,8 @@ public class CarryState : ToolBaseState
 
     public override void UpdateState()
     {
+        toolStateManager.All_RotatePlayer();
+
         if (toolStateManager.player.currentItemType != ItemType.Placeable)
             toolStateManager.Host_ChangeState(ToolState.Idle);
     }

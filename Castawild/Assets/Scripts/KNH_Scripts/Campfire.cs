@@ -38,8 +38,8 @@ public class Campfire : InteractableObject
 
         if (CanOpen)
         {
-            canvasHolder.uiParts["Inventory"].Open(player.inputManager);
-            canvasHolder.uiParts["Campfire"].Open(player.inputManager);
+            canvasHolder.uiParts["Inventory"].Open();
+            canvasHolder.uiParts["Campfire"].Open();
             CanOpen = false;
         }
     }

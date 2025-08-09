@@ -29,7 +29,7 @@ public class UI_Manager : MonoBehaviour
     {
         if (uiParts.ContainsKey(uiName))
         {
-            uiParts[uiName].Open(player.inputManager);
+            uiParts[uiName].Open();
         }
         else Debug.LogWarning($"UI {uiName} not found.");
     }
@@ -38,7 +38,7 @@ public class UI_Manager : MonoBehaviour
     {
         if (uiParts.ContainsKey(uiName))
         {
-            uiParts[uiName].Close(player.inputManager);
+            uiParts[uiName].Close();
         }
     }
 
@@ -47,7 +47,7 @@ public class UI_Manager : MonoBehaviour
         foreach (var part in uiParts.Values)
         {
             if (part.name == "HotBar") continue;
-            part.Close(player.inputManager);
+            part.Close();
         }
         if (currentOpenedChest != null)
         {
@@ -84,8 +84,8 @@ public class UI_Manager : MonoBehaviour
             }
             else
             {
-                uiParts["Inventory"].Toggle(player.inputManager);
-                uiParts["Table"].Toggle(player.inputManager);
+                uiParts["Inventory"].Toggle();
+                uiParts["Table"].Toggle();
             }
         }
     }
@@ -99,6 +99,8 @@ public class UI_Manager : MonoBehaviour
     {
         foreach (var part in uiParts.Values)
         {
+            if (part.name == "HotBar")
+                continue;
             if (part.IsOpen())
                 return true;
         }

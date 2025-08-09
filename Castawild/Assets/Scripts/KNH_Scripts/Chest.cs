@@ -43,8 +43,8 @@ public class Chest : InteractableObject
 
         if (CanOpen)
         {
-            canvasHolder.uiParts["Inventory"].Open(player.inputManager);
-            canvasHolder.uiParts["Chest"].Open(player.inputManager);
+            canvasHolder.uiParts["Inventory"].Open();
+            canvasHolder.uiParts["Chest"].Open();
             if (Object.HasStateAuthority)
                 CanOpen = false;
             else if (player.HasInputAuthority)

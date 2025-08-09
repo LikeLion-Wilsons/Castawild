@@ -7,6 +7,7 @@ public sealed class PlayerController : NetworkBehaviour
 {
     public SimpleKCC kcc;
     private Player player;
+    private PlayerInteractUI playerInteractUI;
     private Rigidbody rigid;
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
@@ -51,6 +52,7 @@ public sealed class PlayerController : NetworkBehaviour
         kcc = GetComponent<SimpleKCC>();
 
         player = GetComponent<Player>();
+        playerInteractUI = GetComponentInChildren<PlayerInteractUI>();
         movementManager = GetComponent<MovementStateManager>();
         movementManager.Host_ChangeState(MovementState.Idle);
 
@@ -102,7 +104,7 @@ public sealed class PlayerController : NetworkBehaviour
 
         All_HandleMovement(input);
 
-        if (HasInputAuthority)
+        if (HasInputAuthority && !player.inventory.canvasHolder.AnyUIOpen())
             Client_TestTryOverlap(input);
 
         prevInputButtons = input.Buttons;
@@ -272,7 +274,7 @@ public sealed class PlayerController : NetworkBehaviour
                 {
                     if (interactable.CanInteract())
                     {
-                        player.playerInteractUI.InteractUI(interactable.interactableType);
+                        playerInteractUI.InteractUI(interactable.interactableType);
                         Client_currentInteractObject = interactable;
                         break;
                     }
@@ -281,8 +283,8 @@ public sealed class PlayerController : NetworkBehaviour
                 // 다른 오브젝트 
                 else if (_interactResult[i].TryGetComponent<InteractableObject>(out var interactableObject))
                 {
-                    player.playerInteractUI.InteractUI(interactableObject.interactableType);
-                    player.playerInteractUI.interactableText.text = interactableObject.text;
+                    playerInteractUI.InteractUI(interactableObject.interactableType);
+                    playerInteractUI.SetInteractText(interactableObject.text);
 
                     // 설치가능한 오브젝트
                     if (interactableObject.isPlaceable)
@@ -304,7 +306,7 @@ public sealed class PlayerController : NetworkBehaviour
         }
         else
         {
-            player.playerInteractUI.InteractUI();
+            playerInteractUI.InteractUI();
             Client_currentInteractObject = null;
         }
 

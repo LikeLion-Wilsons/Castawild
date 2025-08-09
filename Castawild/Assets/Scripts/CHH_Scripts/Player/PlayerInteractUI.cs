@@ -13,6 +13,7 @@ public class PlayerInteractUI : MonoBehaviour
     [SerializeField] private CanvasGroup placeableUI;
     public Image crosshairImage;
 
+    private string originalText;
     public TextMeshProUGUI interactableText;
     [SerializeField] private Sprite originImage;
     [SerializeField] private Sprite axeImage;
@@ -41,6 +42,17 @@ public class PlayerInteractUI : MonoBehaviour
         inputManager = GetComponentInParent<PlayerInputManager>();
         movementStateManager = GetComponentInParent<MovementStateManager>();
         deathAnim = GetComponent<Animator>();
+        originalText = interactableText.text;
+    }
+
+    void Start()
+    {
+        UIPart.openUI += Client_TurnOffInteractiveUI;
+    }
+
+    void OnDestroy()
+    {
+        UIPart.openUI += Client_TurnOffInteractiveUI;
     }
 
     private void Update()
@@ -132,10 +144,13 @@ public class PlayerInteractUI : MonoBehaviour
     /// <summary>
     /// 상호작용가능한 UI 끄기
     /// </summary>
-    public void TurnOffInteractiveUI()
+    public void Client_TurnOffInteractiveUI(bool turnOff = true)
     {
-        interactableUI.alpha = 0f;
-        placeableUI.alpha = 0f;
+        if (turnOff)
+        {
+            interactableUI.alpha = 0f;
+            placeableUI.alpha = 0f;
+        }
     }
 
     /// <summary>
@@ -145,7 +160,7 @@ public class PlayerInteractUI : MonoBehaviour
     {
         interactableUI.alpha = 1f;
         placeableUI.alpha = 0f;
-        interactableText.text = "Wake Up";
+        SetInteractText("Wake Up");
     }
 
     /// <summary>
@@ -212,4 +227,6 @@ public class PlayerInteractUI : MonoBehaviour
         deathText.alpha = 1f;
         canRevived = true;
     }
+
+    public void SetInteractText(string text) => interactableText.text = originalText + text;
 }
