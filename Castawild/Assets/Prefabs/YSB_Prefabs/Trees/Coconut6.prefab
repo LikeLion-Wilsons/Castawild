@@ -51,11 +51,11 @@ LODGroup:
   m_AnimateCrossFading: 0
   m_LastLODIsBillboard: 0
   m_LODs:
-  - screenRelativeHeight: 0.25
+  - screenRelativeHeight: 0.9
     fadeTransitionWidth: 0.5
     renderers:
     - renderer: {fileID: 1473170042099923538}
-  - screenRelativeHeight: 0.125
+  - screenRelativeHeight: 0.75
     fadeTransitionWidth: 0.5
     renderers:
     - renderer: {fileID: 4484930964789089940}
@@ -78,6 +78,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactableType: 1
   visualRoot: {fileID: 7578240401573347610}
+  reviveTime: 10
 --- !u!114 &4973858626686696035
 MonoBehaviour:
   m_ObjectHideFlags: 0
