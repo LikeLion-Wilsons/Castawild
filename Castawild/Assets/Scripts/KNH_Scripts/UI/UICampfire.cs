@@ -1,18 +1,15 @@
-using Fusion;
-using NUnit.Framework;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static Unity.Collections.Unicode;
 
 public class UICampfire : UIPart
 {
     [SerializeField] GameObject uiCanvas;
     UI_Manager uiManager;
     InventoryDataManager inventoryData;
+    Campfire campFire;
 
-    public bool isFire = false;
     [SerializeField] GameObject fireImage;
     [Header("연료")]
     [SerializeField] int selectedFuelIndex = 0;//선택된 연료
@@ -34,16 +31,21 @@ public class UICampfire : UIPart
 
     void Update()
     {
+        if (uiManager == null) return;
+        if (uiManager.currentCampFire != null)
+            campFire = uiManager.currentCampFire.GetComponent<Campfire>();
+        if (campFire == null) return;
+
         if (currentTime > 0)
         {
-            isFire = true;
             currentTime -= Time.deltaTime;
             fireImage.SetActive(true);
+            campFire.SetFire(false);
             SetTimerText();
         }
         else
         {
-            isFire = false;
+            campFire.SetFire(false);
             fireImage.SetActive(false);
         }
     }
@@ -81,7 +83,7 @@ public class UICampfire : UIPart
     void AddTime(float time)
     {
         currentTime += time;
-        
+
 
         //시간 텍스트 설정
         SetTimerText();

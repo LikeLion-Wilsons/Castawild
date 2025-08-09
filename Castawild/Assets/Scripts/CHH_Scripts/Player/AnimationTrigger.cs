@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -7,7 +8,6 @@ public class AnimationTrigger : MonoBehaviour
     private PlayerController playercontroller;
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
-    private PlayerCameraManager cameraManager;
     private PlayerInteractUI interactUI;
 
     private void Awake()
@@ -16,7 +16,6 @@ public class AnimationTrigger : MonoBehaviour
         playercontroller = GetComponentInParent<PlayerController>();
         movementManager = GetComponentInParent<MovementStateManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
-        cameraManager = transform.parent.GetComponentInChildren<PlayerCameraManager>();
         interactUI = transform.parent.GetComponentInChildren<PlayerInteractUI>();
     }
 
@@ -24,7 +23,7 @@ public class AnimationTrigger : MonoBehaviour
     public void ToolAnimationStartTrigger() => toolManager.IsAnimationFinished = false;
     public void MoveAnimationFinishTrigger() => movementManager.IsAnimationFinished = true;
     public void MoveAnimationStartTrigger() => movementManager.IsAnimationFinished = false;
-    public void Jumped() => movementManager.isJumping = true;
+    public void CanLanding() => movementManager.CanLanding = true;
     public void ReceiveInput() => toolManager.CanReceiveInput = true;
     public void StopReceiveInput()
     {
@@ -34,11 +33,12 @@ public class AnimationTrigger : MonoBehaviour
         toolManager.CanReceiveInput = false;
     }
 
-    public void Interact() => playercontroller.Interact();
+    public void Interact() => playercontroller.Client_Interact();
     public void FinishSleep()
     {
-        playercontroller.RPC_FreezePosition(false);
-        player.FinishSleep();
+        if (player.HasStateAuthority)
+            playercontroller.Host_FreezePosition(false);
+        player.All_FinishSleep();
     }
 
     public void CanWakeUp()
@@ -55,9 +55,8 @@ public class AnimationTrigger : MonoBehaviour
 
     public void LyingOrGettingUp(int playing) => movementManager.isLyingOrGettingUp = (playing != 0);
 
-    public void Throw(int isArrow) => toolManager.SetTargetPos(isArrow);
+    public void Throw(int isArrow) => toolManager.Client_SetTargetPos(isArrow);
 
-    //public void SetTargetPos() => toolManager.SetTargetPos();
     public void ActiveDeathUI()
     {
         if (movementManager.HasInputAuthority)
@@ -66,13 +65,11 @@ public class AnimationTrigger : MonoBehaviour
 
     public void StartHit()
     {
-        if (toolManager.HasStateAuthority)
-            toolManager.StartHit();
+        toolManager.Host_StartHit();
     }
 
     public void FinishHit()
     {
-        if (toolManager.HasStateAuthority)
-            toolManager.FinishHit();
+        toolManager.Host_FinishHit();
     }
 }

@@ -90,7 +90,7 @@ public class PlayerInputManager : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        player.SetCursorLocked(true);
+        player.Client_SetCursorLocked(true);
 
         cursorLocked?.Invoke();
     }
@@ -99,7 +99,7 @@ public class PlayerInputManager : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        player.SetCursorLocked(false);
+        player.Client_SetCursorLocked(false);
 
         cursorUnLocked?.Invoke();
     }
@@ -139,7 +139,7 @@ public class PlayerInputManager : MonoBehaviour
             inputData.camForward = new Vector3(camForward.x, 0f, camForward.z);
         }
 
-        if (player.CanMoving())
+        if (player.All_CanMoving())
         {
             if (cameraManager.currentView == ViewType.FirstPerson)
             {

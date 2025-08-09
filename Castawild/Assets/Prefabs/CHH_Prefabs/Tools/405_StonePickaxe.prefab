@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 50826114150153693}
   - component: {fileID: -7498477608500860873}
   - component: {fileID: -8968120805878920706}
+  - component: {fileID: 161044584548148208}
   m_Layer: 0
   m_Name: 405_StonePickaxe
   m_TagString: Untagged
@@ -137,3 +138,24 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: -7498477608500860873}
   ForceRemoteRenderTimeframe: 0
+--- !u!65 &161044584548148208
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1683656624262994}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.87, y: 0.53825355, z: 0.26}
+  m_Center: {x: 0.013548343, y: 0.640567, z: -0.0026383458}

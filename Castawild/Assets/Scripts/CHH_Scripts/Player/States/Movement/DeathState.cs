@@ -11,10 +11,13 @@ public class DeathState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.CurrentMoveState = MoveAnimationState.Death;
-        movementManager.player.RPC_AttachCameraToHead(true);
+        movementManager.CurrentMoveAnimation = MoveAnimatoinState.Death;
+
+        if (movementManager.HasInputAuthority)
+            movementManager.player.Client_AttachCameraToHead(true);
+
         movementManager.Revived = false;
-        movementManager.playerController.RPC_FreezePosition(true);
+        movementManager.playerController.Host_FreezePosition(true);
     }
 
     public override void UpdateState()
@@ -23,10 +26,13 @@ public class DeathState : MovementBaseState
 
     public override void ExitState()
     {
-        movementManager.player.RPC_AttachCameraToHead(false);
-        movementManager.playerController.SetPosition(movementManager.player.RespawnPos);
+        if (movementManager.HasInputAuthority)
+            movementManager.player.Client_AttachCameraToHead(false);
+
+        if (movementManager.HasStateAuthority)
+            movementManager.playerController.Host_SetPosition(movementManager.player.RespawnPos);
+
         movementManager.Revived = true;
-        movementManager.RPC_TriggerSet(false);
-        movementManager.playerController.RPC_FreezePosition(false);
+        movementManager.playerController.Host_FreezePosition(false);
     }
 }

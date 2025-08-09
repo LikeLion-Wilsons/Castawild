@@ -9,33 +9,32 @@ public class ToolIdleState : ToolBaseState
 
     public override void EnterState()
     {
-        toolStateManager.CurrentToolUseState = ToolAnimationState.Idle;
+        toolStateManager.CurrentToolAnimationState = ToolAnimationState.Idle;
     }
 
     public override void UpdateState()
     {
-        if (toolStateManager.movementManager.IsDeath())
+        if (toolStateManager.player.All_IsDead())
             return;
 
         // Aim
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.aimInput)
-            && toolStateManager.HoldAimTool() && toolStateManager.player.CanUseTool())
-            toolStateManager.ChangeState(toolStateManager.aimState);
+            && toolStateManager.All_HoldAimTool() && toolStateManager.player.All_CanUseTool())
+            toolStateManager.Host_ChangeState(ToolState.Aim);
 
         // UseTool
         else if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput)
-            && toolStateManager.player.CanUseTool())
+            && toolStateManager.player.All_CanUseTool())
         {
-            toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
-
             // 음식 들고있을 땐 먹기
             if (toolStateManager.player.currentItemType == ItemType.Food || toolStateManager.player.currentItemType == ItemType.Drink)
             {
-                toolStateManager.ChangeState(toolStateManager.eatState);
+                toolStateManager.Host_ChangeState(ToolState.Eat);
                 return;
             }
 
-            toolStateManager.ChangeState(toolStateManager.useToolState);
+            toolStateManager.movementManager.Host_ChangeState(MovementState.Idle);
+            toolStateManager.Host_ChangeState(ToolState.UseTool);
         }
     }
 

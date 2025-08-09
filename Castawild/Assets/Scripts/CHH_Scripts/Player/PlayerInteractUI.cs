@@ -69,31 +69,14 @@ public class PlayerInteractUI : MonoBehaviour
             autoRevivedElapsed = 0f;
             pressedRevivedElapsed = 0f;
 
-            movementStateManager.RPC_Revived();
+            movementStateManager.RPC_RequestRevived();
             ActiveDeathUI(false);
         }
     }
 
-    public void ChangeCrosshairUI(InteractableType type = InteractableType.None)
-    {
-        switch (type)
-        {
-            case InteractableType.Tree:
-                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
-                crosshairImage.sprite = axeImage;
-                break;
-            case InteractableType.Stone:
-                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
-                crosshairImage.sprite = pickaxeImage;
-                break;
-            case InteractableType.None:
-            default:
-                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(10f, 10f);
-                crosshairImage.sprite = originImage;
-                break;
-        }
-    }
-
+    /// <summary>
+    /// Interactable UI 변경
+    /// </summary>
     public void InteractUI(InteractableType interactableType = InteractableType.None)
     {
         if (interactableType == InteractableType.Bed ||
@@ -126,12 +109,38 @@ public class PlayerInteractUI : MonoBehaviour
         ChangeCrosshairUI(interactableType);
     }
 
-    public void TurnOffUI()
+    private void ChangeCrosshairUI(InteractableType type = InteractableType.None)
+    {
+        switch (type)
+        {
+            case InteractableType.Tree:
+                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
+                crosshairImage.sprite = axeImage;
+                break;
+            case InteractableType.Stone:
+                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 70f);
+                crosshairImage.sprite = pickaxeImage;
+                break;
+            case InteractableType.None:
+            default:
+                crosshairImage.GetComponent<RectTransform>().sizeDelta = new Vector2(10f, 10f);
+                crosshairImage.sprite = originImage;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 상호작용가능한 UI 끄기
+    /// </summary>
+    public void TurnOffInteractiveUI()
     {
         interactableUI.alpha = 0f;
         placeableUI.alpha = 0f;
     }
 
+    /// <summary>
+    /// WakeUp UI 
+    /// </summary>
     public void SetWakeUpUI()
     {
         interactableUI.alpha = 1f;
@@ -139,6 +148,9 @@ public class PlayerInteractUI : MonoBehaviour
         interactableText.text = "Wake Up";
     }
 
+    /// <summary>
+    /// 사망 UI
+    /// </summary>
     public void ActiveDeathUI(bool active)
     {
         if (active)
@@ -160,8 +172,10 @@ public class PlayerInteractUI : MonoBehaviour
         }
     }
 
-
-    public void Aim(bool isAiming)
+    /// <summary>
+    /// 에임 Crosshair UI 설정
+    /// </summary>
+    public void SetAimCrosshair(bool isAiming)
     {
         if (aimCrosshairCoroutine != null)
             StopCoroutine(aimCrosshairCoroutine);
@@ -186,10 +200,9 @@ public class PlayerInteractUI : MonoBehaviour
         aimCrosshairGroup.alpha = endAlpha;
     }
 
-
-
-
-    // 애니메이션 트리거용
+    /// <summary>
+    /// 사망UI 알파값 유지 - 애니메이션 트리거용 
+    /// </summary>
     public void ShowDeathUI()
     {
         Color backgroundColor = deathBackground.color;

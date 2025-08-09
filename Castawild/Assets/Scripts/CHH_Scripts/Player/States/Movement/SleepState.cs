@@ -12,25 +12,26 @@ public class SleepState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.CurrentMoveState = MoveAnimationState.Sleep;
+        movementManager.CurrentMoveAnimation = MoveAnimatoinState.Sleep;
 
         movementManager.CanWakeUp = false;
 
-        movementManager.playerController.RPC_FreezePosition(true);
-        movementManager.player.RPC_TurnOffUI();
-        movementManager.player.RPC_AttachCameraToHead(true);
+        movementManager.playerController.Host_FreezePosition(true);
+
+        movementManager.player.Client_TurnOffInteractiveUI();
+        movementManager.player.Client_AttachCameraToHead(true);
     }
 
     public override void UpdateState()
     {
         if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.interactInput)
             && movementManager.CanWakeUp)
-            movementManager.ChangeState(movementManager.idleState);
+            movementManager.Host_ChangeState(MovementState.Idle);
     }
 
     public override void ExitState()
     {
-        movementManager.player.RPC_TurnOffUI();
-        movementManager.player.RPC_AttachCameraToHead(false);
+        movementManager.player.Client_TurnOffInteractiveUI();
+        movementManager.player.Client_AttachCameraToHead(false);
     }
 }
