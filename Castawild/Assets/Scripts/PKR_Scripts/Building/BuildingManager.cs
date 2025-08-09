@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class BuildingManager : NetworkBehaviour
 {
+    InventoryDataManager inventory;
     [SerializeField] private BuildingPreview buildingPreview;
     [SerializeField] private GameObject previewPrefab;
     [SerializeField] private NetworkObject networkPrefab;
@@ -13,6 +14,7 @@ public class BuildingManager : NetworkBehaviour
     void Start()
     {
         InventoryDataManager.onItemSelected += OnItemSelected;
+        inventory = GetComponent<InventoryDataManager>();
     }
 
     void OnDestroy()
@@ -23,14 +25,16 @@ public class BuildingManager : NetworkBehaviour
     private void OnItemSelected(int itemID)
     {
         if (HasInputAuthority == false) return;
-        
+
         Debug.Log("Selected item ID: " + itemID);
         if (isPreviewing) PreviewStop();
 
-        bool isBuildingItem = true; //todo: itemID -> 건설 아이템 판별.
-        if (isBuildingItem == false) return;
+        if (itemID < 300 || itemID >= 400)
+            return;
 
-        GameObject prefab = previewPrefab;//todo: itemID -> 건설 프리팹 구하기.
+        GameObject prefab = ItemDataBase.Instance.GetItemByID(itemID).buildPrefab;
+        if (prefab == null)
+            Debug.Log("Build Prefab 없음");
         PreviewStart(prefab);
     }
 
