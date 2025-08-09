@@ -294,9 +294,16 @@ public class ToolStateManager : BaseStateManager
             else
                 throwObject = Runner.Spawn(throwableStonePrefab.gameObject, throwPos.position, cameraManager.thirdPersonCam.transform.rotation);
             throwObject?.GetComponent<ThrowObject>().AddForce(throwForce, throwUpForce, rayTargetPos);
-        }
 
-        // 돌맹이나 화살 개수 줄이기
+            player.inventory.UseItem(202, 1);
+
+            if (player.inventory.GetItemCount(202) <= 0)
+            {
+                Debug.Log("돌맹이 없음, 주먹으로 변경");
+                player.Host_InitCurrentTool();
+                CurrentToolType = ToolType.Fist;
+            }
+        }
     }
 
     /// <summary>
@@ -407,7 +414,7 @@ public class ToolStateManager : BaseStateManager
         Host_SpawnThrowObject(isArrow == 0 ? false : true, rayTargetPos);
 
         if (isArrow == 0)
-            player.All_SetCurrentToolActive(false);
+            player.All_SetPebbleActive(false);
         else
             player.arrow.SetActive(false);
     }

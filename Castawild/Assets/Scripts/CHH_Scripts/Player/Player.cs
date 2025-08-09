@@ -76,7 +76,7 @@ public class Player : NetworkBehaviour
 
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isSpawned;
-    [HideInInspector] public ItemType currentItemType;
+    public ItemType currentItemType;
 
     private void Awake()
     {
@@ -344,7 +344,13 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 현재 도구 활성화
     /// </summary>
-    public void All_SetCurrentToolActive(bool active) => currentToolObject?.SetActive(active);
+    public void All_SetPebbleActive(bool active)
+    {
+        if (HasPebble && active)
+            currentToolObject?.SetActive(true);
+        else if (!active)
+            currentToolObject?.SetActive(false);
+    }
 
     /// <summary>
     /// 리스폰 위치 설정
@@ -392,6 +398,33 @@ public class Player : NetworkBehaviour
     /// </summary>
     public bool All_IsDead() => movementManager.CurrentMoveState == MovementState.Death || Hp <= 0;
 
+    public void Host_InitCurrentTool()
+    {
+        CurrentToolID = -1;
+        CurrentToolName = string.Empty;
+        CurrentToolAtt = 0;
+
+        RPC_NotifyInitCurrentToolObject();
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_NotifyInitCurrentToolObject()
+    {
+        currentToolObject.SetActive(false);
+        currentToolObject = null;
+
+        All_AllToolInActive();
+    }
+
+    private void All_AllToolInActive()
+    {
+        foreach (var tool in toolDict)
+        {
+            if (tool.Value != null)
+                tool.Value.SetActive(false);
+        }
+    }
+
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     private void RPC_NotifySetCurrentItemType(int _currentItemIdx)
     {
@@ -432,11 +465,7 @@ public class Player : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     private void RPC_NotifyEquipmentTool(int itemIdx = -1)
     {
-        foreach (var tool in toolDict)
-        {
-            if (tool.Value != null)
-                tool.Value.SetActive(false);
-        }
+        All_AllToolInActive();
 
         if (itemIdx == -1)
             return;

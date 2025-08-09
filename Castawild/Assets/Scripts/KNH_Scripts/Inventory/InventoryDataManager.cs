@@ -305,8 +305,23 @@ public class InventoryDataManager : NetworkBehaviour
     // 아이템 획득
     public bool AddItem(int id, int amount)
     {
-        if (HasInputAuthority & id == 201)
-            player.RPC_NotifyHasArrow(true);
+        if (HasStateAuthority)
+        {
+            if (player == null)
+                player = GetComponent<Player>();
+
+            if (id == 201)
+                player.Host_SetHasArrow(true);
+            else if (id == 202)
+                player.Host_SetHasPebble(true);
+        }
+        else if (HasInputAuthority)
+        {
+            if (id == 201)
+                player.RPC_RequestSetHasArrow(true);
+            else if (id == 202)
+                player.RPC_RequestSetHasPebble(true);
+        }
 
         // 이미 존재하는 아이템이면 개수만 증가
         for (int i = 0; i < itemList.Count; i++)
@@ -349,21 +364,6 @@ public class InventoryDataManager : NetworkBehaviour
         }
         return false;
 
-    }
-
-    // 추가한 부분
-    // 아이템 있는지 확인
-    public bool HasItem(int id)
-    {
-        for (int i = 0; i < itemList.Count; i++)
-        {
-            if (itemList[i].itemID == id)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public void SwapItems(int indexA, int indexB)

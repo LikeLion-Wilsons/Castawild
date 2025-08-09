@@ -1,3 +1,4 @@
+using UnityEditor.Purchasing;
 using UnityEngine;
 
 public class UseToolState : ToolBaseState
@@ -19,8 +20,6 @@ public class UseToolState : ToolBaseState
         if (toolStateManager.CurrentToolType == ToolType.Fist || toolStateManager.CurrentToolType == ToolType.Throw)
         {
             toolStateManager.Client_ArmVisibleChanged(true);
-            if (toolStateManager.CurrentToolType == ToolType.Throw)
-                toolStateManager.player.All_SetCurrentToolActive(true);
         }
 
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
@@ -68,6 +67,8 @@ public class UseToolState : ToolBaseState
             else
             {
                 toolStateManager.Host_ChangeState(ToolState.Idle);
+                if (toolStateManager.HasInputAuthority)
+                    toolStateManager.Client_SetAimCameraAndUI(false);
             }
         }
     }
@@ -75,8 +76,12 @@ public class UseToolState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
+
         if (toolStateManager.CurrentToolType == ToolType.Bow && toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
             toolStateManager.player.All_SetBowPos(false);
+
+        if (toolStateManager.CurrentToolType == ToolType.Throw)
+            toolStateManager.player.All_SetPebbleActive(true);
 
         if (toolStateManager.CurrentToolType == ToolType.Fist)
             toolStateManager.Client_ArmVisibleChanged(false);
