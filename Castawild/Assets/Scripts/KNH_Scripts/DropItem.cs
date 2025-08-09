@@ -15,7 +15,7 @@ public class DropItem : InteractableObject
     public void Init(Item _item)
     {
         item = _item;
-        text = item.GetData().name;//아이템 이름 설정
+        text = item.GetData().itemName;//아이템 이름 설정
     }
 
     public override bool CanInteract() => canInteract;
@@ -27,6 +27,6 @@ public class DropItem : InteractableObject
         Player player = playerObj.GetComponent<Player>();
         InventoryDataManager inventoryData = player.GetComponent<InventoryDataManager>();
         inventoryData.AddItem(item.itemID, item.count);//아이템 획득
-        Destroy(gameObject);
+        Runner.Despawn(GetComponent<NetworkObject>());
     }
 }
