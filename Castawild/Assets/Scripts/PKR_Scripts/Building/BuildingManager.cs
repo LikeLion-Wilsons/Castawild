@@ -5,16 +5,13 @@ using UnityEngine.SceneManagement;
 
 public class BuildingManager : NetworkBehaviour
 {
-    InventoryDataManager inventory;
     [SerializeField] private BuildingPreview buildingPreview;
-    [SerializeField] private GameObject previewPrefab;
-    [SerializeField] private NetworkObject networkPrefab;
+    private NetworkObject networkPrefab;
     private bool isPreviewing = false;
 
     void Start()
     {
         InventoryDataManager.onItemSelected += OnItemSelected;
-        inventory = GetComponent<InventoryDataManager>();
     }
 
     void OnDestroy()
@@ -32,10 +29,10 @@ public class BuildingManager : NetworkBehaviour
         if (itemID < 300 || itemID >= 400)
             return;
 
-        GameObject prefab = ItemDataBase.Instance.GetItemByID(itemID).buildPrefab;
-        if (prefab == null)
-            Debug.Log("Build Prefab 없음");
-        PreviewStart(prefab);
+        GameObject previewPrefab = ItemDataBase.Instance.GetItemByID(itemID).buildPreviewPrefab;
+        networkPrefab = ItemDataBase.Instance.GetItemByID(itemID).buildPrefab.GetComponent<NetworkObject>();
+
+        PreviewStart(previewPrefab);
     }
 
     void Update()

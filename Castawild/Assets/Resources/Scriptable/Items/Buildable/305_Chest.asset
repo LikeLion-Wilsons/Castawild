@@ -22,3 +22,5 @@ MonoBehaviour:
   ingredient:
   - {fileID: 11400000, guid: 8a4a708c8d089da419ff325b52b9a76e, type: 2}
   ingredientCount: 05000000
+  buildPreviewPrefab: {fileID: 3204104950006235884, guid: 009ee63c3c1593b45a4266653acebf88, type: 3}
+  buildPrefab: {fileID: 1534066118601383972, guid: 36f0b95c8afb6ca49b8e112cc8fba58d, type: 3}
