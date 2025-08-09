@@ -60,6 +60,9 @@ public class Player : NetworkBehaviour
     [HideInInspector] public Bed Host_currentBed;
     #endregion
 
+    [Header("Effect")]
+    [SerializeField] private Animator takeDamageEffectAnim;
+
     public Coroutine fallingCoroutine;
     public GameObject amarture;
 
@@ -397,6 +400,9 @@ public class Player : NetworkBehaviour
         {
             movementManager.Host_ChangeState(MovementState.GetHit);
             toolStateManager.Host_ChangeState(ToolState.Idle);
+
+            if (isAttack)
+                RPC_ApplyPlayDamageEffect();
         }
     }
 
@@ -413,6 +419,9 @@ public class Player : NetworkBehaviour
 
         RPC_NotifyInitCurrentToolObject();
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    private void RPC_ApplyPlayDamageEffect() => takeDamageEffectAnim.SetTrigger("Damaged");
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_NotifyArrowActive(bool isActive) => arrow.SetActive(false);
