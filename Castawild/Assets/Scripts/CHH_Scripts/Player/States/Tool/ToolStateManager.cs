@@ -364,11 +364,8 @@ public class ToolStateManager : BaseStateManager
         Vector3 lookDirection = cameraManager.CurrenCam.transform.forward;
         lookDirection.y = 0f;
 
-        if (lookDirection.sqrMagnitude > 0.001f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-        }
+        Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
     }
 
     /// <summary>

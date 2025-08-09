@@ -33,7 +33,8 @@ public class AimState : ToolBaseState
 
     public override void UpdateState()
     {
-        toolStateManager.All_RotatePlayer();
+        if (toolStateManager.input.currentView == ViewType.ThirdPerson)
+            toolStateManager.All_RotatePlayer();
 
         if (toolStateManager.movementManager.CurrentMoveState == MovementState.Idle)
             toolStateManager.CurrentToolAnimationState = ToolAnimationState.FullAim;

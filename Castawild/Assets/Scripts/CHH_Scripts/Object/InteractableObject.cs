@@ -5,6 +5,7 @@ public enum InteractableType { None, Tree, Stone, Bed, Box, Campfire, WaterPurif
 public abstract class InteractableObject : NetworkBehaviour
 {
     public InteractableType interactableType;
+    public int itemIndex;
     public string text;
     public bool isPlaceable;
 

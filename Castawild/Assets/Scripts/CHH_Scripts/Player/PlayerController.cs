@@ -96,12 +96,6 @@ public sealed class PlayerController : NetworkBehaviour
             return;
         }
 
-        if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
-        {
-            Debug.Log("AttackPlayer");
-            player.Host_TakeDamage(true, 30f);
-        }
-
         All_HandleMovement(input);
 
         if (HasInputAuthority && !player.inventory.canvasHolder.AnyUIOpen())
@@ -292,7 +286,9 @@ public sealed class PlayerController : NetworkBehaviour
                         if (interactableObject.CanInteract()
                             && input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
                         {
-                            // 제거하고 템창에 넣는 로직 추가하기
+                            player.inventory.RPC_GetItem(interactableObject.itemIndex, 1);
+                            RPC_DespawnObject(interactableObject.GetComponent<NetworkObject>());
+                            return;
                         }
                     }
 
@@ -386,6 +382,9 @@ public sealed class PlayerController : NetworkBehaviour
         else
             player.CanMove = true;
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_DespawnObject(NetworkObject despawnObject) => Runner.Despawn(despawnObject);
 
     /// <summary>
     /// 위치 변경

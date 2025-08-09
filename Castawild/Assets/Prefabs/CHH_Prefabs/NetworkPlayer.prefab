@@ -3421,6 +3421,7 @@ MonoBehaviour:
   obstacleLayerMask:
     serializedVersion: 2
     m_Bits: 1
+  maxSlopeAngle: 70
 --- !u!1 &7288379860564303627
 GameObject:
   m_ObjectHideFlags: 0
@@ -4972,8 +4973,20 @@ PrefabInstance:
       value: -151.82727
       objectReference: {fileID: 0}
     - target: {fileID: 917690023558389716, guid: 7f391b05290322546b0e48b8eb7efd85, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c05743071b24ff347a866f4a6b34f08c, type: 2}
+    - target: {fileID: 917690023558389716, guid: 7f391b05290322546b0e48b8eb7efd85, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -2970054923645637632, guid: c05743071b24ff347a866f4a6b34f08c, type: 2}
+    - target: {fileID: 917690023558389716, guid: 7f391b05290322546b0e48b8eb7efd85, type: 3}
       propertyPath: m_VerticalAlignment
       value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 917690023558389716, guid: 7f391b05290322546b0e48b8eb7efd85, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1050507204357047267, guid: 7f391b05290322546b0e48b8eb7efd85, type: 3}
       propertyPath: m_Alpha
