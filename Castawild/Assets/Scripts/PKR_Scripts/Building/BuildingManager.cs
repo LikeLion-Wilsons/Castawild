@@ -30,10 +30,13 @@ public class BuildingManager : NetworkBehaviour
             return;
 
         GameObject previewPrefab = ItemDataBase.Instance.GetItemByID(itemID).buildPreviewPrefab;
-        networkPrefab = ItemDataBase.Instance.GetItemByID(itemID).buildPrefab.GetComponent<NetworkObject>();
+        RPC_SetNetworkPrefab(itemID);
 
         PreviewStart(previewPrefab);
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_SetNetworkPrefab(int itemID) => networkPrefab = ItemDataBase.Instance.GetItemByID(itemID).buildPrefab.GetComponent<NetworkObject>();
 
     void Update()
     {
