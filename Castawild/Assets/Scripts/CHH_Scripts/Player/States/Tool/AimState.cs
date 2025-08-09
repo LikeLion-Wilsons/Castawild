@@ -33,7 +33,7 @@ public class AimState : ToolBaseState
 
     public override void UpdateState()
     {
-        RotatePlayer();
+        toolStateManager.All_RotatePlayer();
 
         if (toolStateManager.movementManager.CurrentMoveState == MovementState.Idle)
             toolStateManager.CurrentToolAnimationState = ToolAnimationState.FullAim;
@@ -65,17 +65,7 @@ public class AimState : ToolBaseState
         base.ExitState();
     }
 
-    private void RotatePlayer()
-    {
-        Vector3 lookDirection = toolStateManager.cameraManager.CurrenCam.transform.forward;
-        lookDirection.y = 0f;
 
-        if (lookDirection.sqrMagnitude > 0.001f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-            toolStateManager.transform.rotation = Quaternion.Slerp(toolStateManager.transform.rotation, targetRotation, Time.deltaTime * 10f);
-        }
-    }
 
     private void LookForward()
     {

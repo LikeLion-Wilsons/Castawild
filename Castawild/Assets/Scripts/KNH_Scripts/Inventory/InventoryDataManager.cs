@@ -112,8 +112,7 @@ public class InventoryDataManager : NetworkBehaviour
             {
                 if (inventorySlots[selectedSlot].IsEmpty())
                     player.Client_RemoveSelectedItem();
-                else
-                    player.Client_ApplySelectedItem(itemList[selectedSlot].itemID);
+                player.Client_ApplySelectedItem(itemList[selectedSlot].itemID);
             }
         }
     }
