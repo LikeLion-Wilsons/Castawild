@@ -33,7 +33,7 @@ public class UseToolState : ToolBaseState
 
     public override void UpdateState()
     {
-        if (elapsed <= rotateTime && toolStateManager.CurrentToolType != ToolType.Bow)
+        if (elapsed <= rotateTime)
         {
             elapsed += toolStateManager.Runner.DeltaTime;
             if (toolStateManager.input.currentView == ViewType.ThirdPerson)
