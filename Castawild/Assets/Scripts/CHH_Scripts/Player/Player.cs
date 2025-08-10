@@ -60,6 +60,9 @@ public class Player : NetworkBehaviour
     [HideInInspector] public Bed Host_currentBed;
     #endregion
 
+    [Header("Effect")]
+    [SerializeField] private Animator takeDamageEffectAnim;
+
     public Coroutine fallingCoroutine;
     public GameObject amarture;
 
@@ -130,6 +133,12 @@ public class Player : NetworkBehaviour
             if (attackObject.canAttack)
             {
                 Host_TakeDamage(true, attackObject.att);
+
+                Transform parent = other.transform;
+                while (other.transform.parent != null)
+                    parent = parent.parent;
+
+                parent.GetComponent<PlayerController>().RPC_ApplyHitInvoke(attackObject.att);
             }
         }
     }
@@ -145,6 +154,7 @@ public class Player : NetworkBehaviour
             {
                 Host_TakeDamage(true, throwObject.att);
                 throwObject.canAttack = false;
+                throwObject.thrower.GetComponent<PlayerController>().RPC_ApplyHitInvoke(throwObject.att);
             }
         }
     }
@@ -390,6 +400,12 @@ public class Player : NetworkBehaviour
         {
             movementManager.Host_ChangeState(MovementState.GetHit);
             toolStateManager.Host_ChangeState(ToolState.Idle);
+
+            if (isAttack)
+            {
+                RPC_ApplyPlayDamagedEffect();
+                RPC_NotifyPlayDamagedAnim();
+            }
         }
     }
 
@@ -406,6 +422,15 @@ public class Player : NetworkBehaviour
 
         RPC_NotifyInitCurrentToolObject();
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    private void RPC_ApplyPlayDamagedEffect() => takeDamageEffectAnim.SetTrigger("Damaged");
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_NotifyPlayDamagedAnim() => anim.SetTrigger("GetHit");
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_NotifyArrowActive(bool isActive) => arrow.SetActive(false);
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_NotifyInitCurrentToolObject()

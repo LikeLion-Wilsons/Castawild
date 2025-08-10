@@ -3967,8 +3967,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1f539cfdbc781c4a8315e513d5969b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  validColor: {r: 0, g: 0.08572531, b: 1, a: 0.16862746}
-  invalidColor: {r: 1, g: 0, b: 0, a: 0.23921569}
+  validColor: {r: 0, g: 0, b: 1, a: 0.78431374}
+  invalidColor: {r: 1, g: 0, b: 0, a: 0.78431374}
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 9

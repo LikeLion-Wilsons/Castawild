@@ -113,15 +113,16 @@ public class ToolStateManager : BaseStateManager
         if (!HasStateAuthority)
             return;
 
-        currentState?.ExitState();
         CurrentToolState = newState;
-        currentState = toolStateDict[CurrentToolState];
     }
 
     private void OnCurrentToolStateChanged()
     {
         if (toolStateDict.TryGetValue(CurrentToolState, out var newState))
         {
+            if (currentState == newState)
+                return;
+
             currentState?.ExitState();
             currentState = newState;
             currentState.EnterState();
@@ -147,8 +148,11 @@ public class ToolStateManager : BaseStateManager
 
             if (player.CanPVP && hitObject.TryGetComponent(out Player otherPlayer))
             {
-                otherPlayer.Host_TakeDamage(true, player.All_GetToolAtt());
                 Host_alreadyHit.Add(otherPlayer.transform.root);
+
+                int attack = player.All_GetToolAtt();
+                otherPlayer.Host_TakeDamage(true, attack);
+                playerController.RPC_ApplyHitInvoke(attack);
             }
         }
     }
@@ -286,6 +290,13 @@ public class ToolStateManager : BaseStateManager
                 throwObject = Runner.Spawn(arrowPrefab.gameObject, thirdPersonArrowPos.position, cameraManager.thirdPersonCam.transform.rotation);
                 throwObject?.GetComponent<ThrowObject>().AddForce(arrowForce, arrowUpForce, rayTargetPos);
             }
+
+            player.inventory.UseItem(201, 1);
+            if (player.inventory.GetItemCount(201) <= 0)
+            {
+                player.HasArrow = false;
+                player.RPC_NotifyArrowActive(false);
+            }
         }
         else if (!isArrow)
         {
@@ -294,6 +305,8 @@ public class ToolStateManager : BaseStateManager
             else
                 throwObject = Runner.Spawn(throwableStonePrefab.gameObject, throwPos.position, cameraManager.thirdPersonCam.transform.rotation);
             throwObject?.GetComponent<ThrowObject>().AddForce(throwForce, throwUpForce, rayTargetPos);
+
+            throwObject.GetComponent<ThrowObject>().thrower = player.gameObject;
 
             player.inventory.UseItem(202, 1);
 

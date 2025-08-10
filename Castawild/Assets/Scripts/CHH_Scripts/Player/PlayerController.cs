@@ -1,5 +1,6 @@
 using Fusion;
 using Fusion.Addons.SimpleKCC;
+using System;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -26,7 +27,10 @@ public sealed class PlayerController : NetworkBehaviour
     private bool isFalling;
     [SerializeField] private float fallingDeadTime = 5f;
     private float fallingElapsed;
-    [Networked] public bool Grounded { get; set; }
+    [SerializeField] private Transform checkStartPoint;
+    [SerializeField] private float checkDistance = 0.2f;
+    [Networked] public bool Grounded_Physics { get; set; }
+    public bool Grounded { get; set; }
 
     [Header("Interact")]
     [SerializeField] private float interactHeight = 10f;
@@ -41,6 +45,7 @@ public sealed class PlayerController : NetworkBehaviour
     Collider[] _interactResult = new Collider[5];
 
     private NetworkButtons prevInputButtons;
+    public event Action<int> Hit;
 
     public override void Spawned()
     {
@@ -73,7 +78,20 @@ public sealed class PlayerController : NetworkBehaviour
         // 테스트용
         if (HasInputAuthority && Input.GetKeyDown(KeyCode.H))
             player.RPC_RequestHeal();
+
+        Grounded = Physics.Raycast(checkStartPoint.position, Vector3.down, out RaycastHit hit, checkDistance);
+
+        Vector3 start = checkStartPoint.position;
+        Vector3 end = start + Vector3.down * checkDistance;
+
+        Debug.DrawLine(start, end, Grounded ? Color.green : Color.red);
     }
+
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.color = Grounded ? Color.green : Color.red;
+    //    Gizmos.DrawLine(checkStartPoint.position, checkStartPoint.position + Vector3.down * checkDistance);
+    //}
 
     public override void FixedUpdateNetwork()
     {
@@ -115,17 +133,17 @@ public sealed class PlayerController : NetworkBehaviour
     private void Host_Falling()
     {
         Vector3 velocity = kcc.RealVelocity;
-        Grounded = kcc.IsGrounded;
+        Grounded_Physics = kcc.IsGrounded;
 
         // 떨어지기 시작
-        if (!isFalling && velocity.y < -0.1f && !Grounded)
+        if (!isFalling && velocity.y < -0.1f && !Grounded_Physics)
         {
             isFalling = true;
             startY = transform.position.y;
         }
 
         // 떨어지는 중
-        if (isFalling && !Grounded)
+        if (isFalling && !Grounded_Physics)
         {
             fallingElapsed += Runner.DeltaTime;
             if (fallingElapsed > fallingDeadTime)
@@ -136,7 +154,7 @@ public sealed class PlayerController : NetworkBehaviour
         }
 
         // 착지
-        if (isFalling && Grounded)
+        if (isFalling && Grounded_Physics)
         {
             isFalling = false;
 
@@ -170,6 +188,7 @@ public sealed class PlayerController : NetworkBehaviour
     {
         if (IsChangePos)
         {
+            Debug.Log("ChangePos" + IsChangePos);
             IsChangePos = false;
             kcc.SetPosition(ChangePos);
         }
@@ -344,18 +363,20 @@ public sealed class PlayerController : NetworkBehaviour
         if (Client_currentInteractObject == null || !HasInputAuthority)
             return;
 
+        int att = 0;
         if (Client_currentInteractObject.interactableType == InteractableType.Tree && Client_currentInteractObject.CanInteract())
         {
-            int att = player.All_GetToolAtt("Axe");
-            Debug.Log("Player Att : " + att);
+            att = player.All_GetToolAtt("Axe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
         }
         else if (Client_currentInteractObject.interactableType == InteractableType.Stone && Client_currentInteractObject.CanInteract())
         {
-            int att = player.All_GetToolAtt("Pickaxe");
-            Debug.Log("Player Att : " + att);
+            att = player.All_GetToolAtt("Pickaxe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
         }
+
+        if (att != 0)
+            Hit?.Invoke(att);
     }
 
     /// <summary>
@@ -363,6 +384,7 @@ public sealed class PlayerController : NetworkBehaviour
     /// </summary>
     public void Host_SetPosition(Vector3 position)
     {
+        Debug.Log(IsChangePos);
         IsChangePos = true;
         ChangePos = position;
     }
@@ -383,6 +405,9 @@ public sealed class PlayerController : NetworkBehaviour
             player.CanMove = true;
     }
 
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplyHitInvoke(int dmg) => Hit?.Invoke(dmg);
+
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     private void RPC_DespawnObject(NetworkObject despawnObject) => Runner.Despawn(despawnObject);
 
@@ -392,6 +417,7 @@ public sealed class PlayerController : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_NotifySetPosition(Vector3 position)
     {
+        Debug.Log(IsChangePos);
         IsChangePos = true;
         ChangePos = position;
     }

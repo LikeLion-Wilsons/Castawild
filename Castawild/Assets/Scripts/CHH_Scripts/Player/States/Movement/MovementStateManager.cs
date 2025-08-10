@@ -39,7 +39,6 @@ public class MovementStateManager : BaseStateManager
     #region GoundCheck
     [Header("GoundCheck")]
     [SerializeField] private float groundYOffset;
-    [SerializeField] private float groundCheckRadius = 0.3f;
     [SerializeField] private LayerMask groundMask;
     [SerializeField] private float fallMultiplier = 1.5f;
     private Vector3 spherePos;
@@ -119,15 +118,16 @@ public class MovementStateManager : BaseStateManager
         if (!HasStateAuthority)
             return;
 
-        currentState?.ExitState();
         CurrentMoveState = newState;
-        currentState = movementStateDict[CurrentMoveState];
     }
 
     private void OnCurrentMoveStateChanged()
     {
         if (movementStateDict.TryGetValue(CurrentMoveState, out var newState))
         {
+            if (currentState == newState)
+                return;
+
             currentState?.ExitState();
             currentState = newState;
             currentState.EnterState();
@@ -178,10 +178,10 @@ public class MovementStateManager : BaseStateManager
             case MoveAnimatoinState.Sleep:
                 anim.SetBool("Sleeping", true);
                 break;
-            case MoveAnimatoinState.GetHit:
-                anim.SetTrigger("GetHit");
-                CurrentMoveAnimation = MoveAnimatoinState.None;
-                break;
+            //case MoveAnimatoinState.GetHit:
+            //    anim.SetTrigger("GetHit");
+            //    CurrentMoveAnimation = MoveAnimatoinState.None;
+            //    break;
             case MoveAnimatoinState.Death:
                 anim.SetTrigger("Death");
                 CurrentMoveAnimation = MoveAnimatoinState.None;
@@ -200,12 +200,6 @@ public class MovementStateManager : BaseStateManager
             }
         }
         anim.SetBool("Falling", !playerController.Grounded);
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(spherePos, groundCheckRadius);
     }
 
     /// <summary>

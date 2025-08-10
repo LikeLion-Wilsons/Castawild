@@ -5,13 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class BuildingManager : NetworkBehaviour
 {
+    private InventoryDataManager inventory;
     [SerializeField] private BuildingPreview buildingPreview;
     private NetworkObject networkPrefab;
     private bool isPreviewing = false;
+    [Networked] private int CurrentItemId { get; set; } = -1;
 
     void Start()
     {
         InventoryDataManager.onItemSelected += OnItemSelected;
+        inventory = GetComponent<InventoryDataManager>();
     }
 
     void OnDestroy()
@@ -22,6 +25,7 @@ public class BuildingManager : NetworkBehaviour
     private void OnItemSelected(int itemID)
     {
         if (HasInputAuthority == false) return;
+        CurrentItemId = itemID;
 
         Debug.Log("Selected item ID: " + itemID);
         if (isPreviewing) PreviewStop();
@@ -94,5 +98,6 @@ public class BuildingManager : NetworkBehaviour
         var retryRot = buildingPreview.GetPreviewRotation();
         Debug.Log($" pos:{pos},retryPos:{retryPos}, rot:{rot},retryRot:{retryRot}");
         Runner.Spawn(networkPrefab, pos, rot);
+        inventory.UseItem(CurrentItemId, 1);
     }
 }

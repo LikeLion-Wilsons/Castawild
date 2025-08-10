@@ -532,6 +532,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8420336244843244148, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8585607360678226885, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
       propertyPath: SortKey
       value: 603042145
@@ -660,6 +664,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactableType: 3
+  itemIndex: 0
   text: Sleep
   isPlaceable: 0
   _CanSleep: 1
@@ -1179,7 +1184,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0

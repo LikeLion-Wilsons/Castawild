@@ -1,10 +1,13 @@
+using Fusion;
 using System.Collections;
+using Test.Shoot;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerInteractUI : MonoBehaviour
 {
+    private PlayerController playerController;
     private PlayerInputManager inputManager;
     private MovementStateManager movementStateManager;
 
@@ -28,10 +31,11 @@ public class PlayerInteractUI : MonoBehaviour
     [SerializeField] private CanvasGroup deathText;
     private Animator deathAnim;
 
-    [Header("Aim")]
+    [Header("Aim & Hit")]
     [SerializeField] private CanvasGroup aimCrosshairGroup;
     [SerializeField] public float aimZoomDuration = 0.3f;
     private Coroutine aimCrosshairCoroutine;
+    [SerializeField] private UIHitNumbers _hitNumber;
 
     private bool canRevived = false;
     private float pressedRevivedElapsed;
@@ -39,6 +43,7 @@ public class PlayerInteractUI : MonoBehaviour
 
     private void Awake()
     {
+        playerController = GetComponentInParent<PlayerController>();
         inputManager = GetComponentInParent<PlayerInputManager>();
         movementStateManager = GetComponentInParent<MovementStateManager>();
         deathAnim = GetComponent<Animator>();
@@ -47,13 +52,17 @@ public class PlayerInteractUI : MonoBehaviour
 
     void Start()
     {
+        playerController.Hit += OnTargetDamaged;
         UIPart.openUI += Client_TurnOffInteractiveUI;
     }
 
     void OnDestroy()
     {
+        playerController.Hit -= OnTargetDamaged;
         UIPart.openUI += Client_TurnOffInteractiveUI;
     }
+
+    private void OnTargetDamaged(int damage) => _hitNumber.OnHit(damage);
 
     private void Update()
     {
