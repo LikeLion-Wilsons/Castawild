@@ -29,7 +29,7 @@ public struct WeatherPreset
     [Header("Precipitation")]
     public bool isRaining;
 }
-
+[RequireComponent(typeof(NetworkObject))]
 public class WeatherManager : NetworkBehaviour
 {
     // --- VISUAL & LIGHTING PROPERTIES ---
