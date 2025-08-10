@@ -20,6 +20,8 @@ public class Player : NetworkBehaviour
     public float staminaRunDecreaseRate = 1f;
     public float hungerDecreaseRate = 1f;
     public float thirstDecreaseRate = 1f;
+    public float thirstSleepDecrease = 10f;
+    public float hungerSleepDecrease = 10f;
 
     [Header("Current Status")]
     [Networked] public float Hp { get; set; }
@@ -548,7 +550,8 @@ public class Player : NetworkBehaviour
         // 체력은 최대 체력의 80프로까지
         // huunger, thist는 일정 수치 감소
         Hp = playerData.maxHp;
-
+        Hunger -= hungerSleepDecrease;
+        Thirst -= thirstSleepDecrease;
     }
 
     /// <summary>
