@@ -34,26 +34,6 @@ public class AnimationTrigger : MonoBehaviour
     }
 
     public void Interact() => playercontroller.Client_Interact();
-    public void FinishSleep()
-    {
-        if (player.HasStateAuthority)
-            playercontroller.Host_FreezePosition(false);
-        player.All_FinishSleep();
-    }
-
-    public void CanWakeUp()
-    {
-        if (player.HasStateAuthority)
-            movementManager.CanWakeUp = true;
-
-        if (player.HasInputAuthority)
-        {
-            player.playerInteractUI.SetWakeUpUI();
-            movementManager.isLyingOrGettingUp = false;
-        }
-    }
-
-    public void LyingOrGettingUp(int playing) => movementManager.isLyingOrGettingUp = (playing != 0);
 
     public void Throw(int isArrow) => toolManager.Client_SetTargetPos(isArrow);
 

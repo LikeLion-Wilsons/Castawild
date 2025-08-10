@@ -45,10 +45,6 @@ public class MovementStateManager : BaseStateManager
     private Vector3 spherePos;
     #endregion
 
-    #region Animation
-    [Header("Animation")]
-    [HideInInspector] public bool isLyingOrGettingUp; // 눕거나 일어나는 애니메이션 도중 카메라 못움직이게 확인하는 불변수
-    #endregion
 
     #region Network
     [Header("Networked")]
@@ -59,7 +55,6 @@ public class MovementStateManager : BaseStateManager
     [Networked] public float currentMoveSpeed { get; set; }
     [Networked, HideInInspector] public bool Revived { get; set; }
     [Networked, HideInInspector] public bool JumpTriggered { get; set; }
-    [Networked, HideInInspector] public bool CanWakeUp { get; set; }
     [Networked, HideInInspector] public Vector2 MoveValue { get; set; }
     #endregion
 
@@ -79,13 +74,14 @@ public class MovementStateManager : BaseStateManager
     public override void Spawned()
     {
         InitComponents();
-        //if (HasStateAuthority)
-        //    dayNightManager.NewDay += Host_WakeUp;
+        if (HasStateAuthority)
+            DayNightCycleManager.OnTimeSkipStarted += Host_WakeUp;
     }
 
     private void OnDisable()
     {
-        //dayNightManager.NewDay -= Host_WakeUp;
+        if (HasStateAuthority)
+            DayNightCycleManager.OnTimeSkipStarted -= Host_WakeUp;
     }
 
     private void InitComponents()
@@ -191,9 +187,9 @@ public class MovementStateManager : BaseStateManager
                 anim.SetTrigger("RunJump");
                 CurrentMoveAnimation = MoveAnimatoinState.None;
                 break;
-            case MoveAnimatoinState.Sleep:
-                anim.SetBool("Sleeping", true);
-                break;
+            //case MoveAnimatoinState.Sleep:
+            //    anim.SetBool("Sleeping", true);
+            //    break;
             //case MoveAnimatoinState.GetHit:
             //    anim.SetTrigger("GetHit");
             //    CurrentMoveAnimation = MoveAnimatoinState.None;

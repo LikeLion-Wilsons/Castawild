@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class BuildingPreview : MonoBehaviour
@@ -6,7 +7,8 @@ public class BuildingPreview : MonoBehaviour
     [SerializeField] private Color invalidColor;
     [SerializeField] private LayerMask groundLayerMask = 1; // 지면 레이어 마스크
     [SerializeField] private LayerMask obstacleLayerMask = 1; // 장애물 레이어 마스크
-    [SerializeField] private float maxSlopeAngle = 70f; // 장애물 레이어 마스크
+    [SerializeField] private float maxSlopeAngle = 70f;
+    [SerializeField] private float gridSize = 1f;
 
     private GameObject previewObject;
     private Renderer[] previewRenderers;
@@ -95,7 +97,7 @@ public class BuildingPreview : MonoBehaviour
         return obstacles.Length == 0;
     }
 
-    private void UpdatePreviewPosition()
+    public void UpdatePreviewPosition()
     {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit[] hits = Physics.RaycastAll(ray, 20f, groundLayerMask);
@@ -117,9 +119,11 @@ public class BuildingPreview : MonoBehaviour
             }
         }
 
+        Vector3 targetPosition;
         if (closestHit.HasValue)
         {
-            Vector3 targetPosition = closestHit.Value.point;
+            //Vector3 targetPosition = closestHit.Value.point;
+            targetPosition = closestHit.Value.point;
             Vector3 normal = closestHit.Value.normal;
 
             float slopeAngle = Vector3.Angle(Vector3.up, normal);
@@ -135,23 +139,27 @@ public class BuildingPreview : MonoBehaviour
                 onWallPos = true;//벽면에는 설치불가로 가정.
             }
 
-            previewObject.transform.position = targetPosition;
             onAirPos = false;
         }
 
-
         else
         {
-            previewObject.transform.position = ray.GetPoint(10f);
+            targetPosition = ray.GetPoint(10f);
+            //previewObject.transform.position = ray.GetPoint(10f);
 
             onAirPos = true;
         }
+
+        targetPosition.x = Mathf.Round(targetPosition.x / gridSize) * gridSize;
+        targetPosition.y = Mathf.Round(targetPosition.y / gridSize) * gridSize;
+        targetPosition.z = Mathf.Round(targetPosition.z / gridSize) * gridSize;
+        previewObject.transform.position = targetPosition;
 
         savedRotation = previewObject.transform.rotation;
         savedPosition = previewObject.transform.position;
     }
 
-    private void UpdatePreviewColor()
+    public void UpdatePreviewColor()
     {
         bool canBuild = CheckBuildable();
 
