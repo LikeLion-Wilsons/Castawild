@@ -1,6 +1,7 @@
 using UnityEngine;
 using Fusion;
 using System.Linq;
+using System;
 
 [RequireComponent(typeof(NetworkObject))]
 public class DayNightCycleManager : NetworkBehaviour
@@ -40,7 +41,7 @@ public class DayNightCycleManager : NetworkBehaviour
     [Networked] private TimeSkipState CurrentState { get; set; }
     [Networked] private float TargetTimeOfDay { get; set; }
     [Networked, Capacity(16)] private NetworkLinkedList<PlayerRef> SleepingPlayers { get; }
-
+    public static event Action OnTimeSkipStarted;
 
     public override void FixedUpdateNetwork()
     {
@@ -50,7 +51,7 @@ public class DayNightCycleManager : NetworkBehaviour
         {
             case TimeSkipState.Normal:
                 float currentSpeedMultiplier = developerMode ? developerModeSpeed : 1f;
-                TimeOfDay += (Runner.DeltaTime / dayDurationInSeconds) * currentSpeedMultiplier;
+                TimeOfDay += Runner.DeltaTime / dayDurationInSeconds * currentSpeedMultiplier;
                 TimeOfDay %= 1f;
                 break;
 
@@ -61,10 +62,11 @@ public class DayNightCycleManager : NetworkBehaviour
                     TimeOfDay = TargetTimeOfDay;
                     CurrentState = TimeSkipState.Normal;
                     SleepingPlayers.Clear();
+                    OnTimeSkipStarted?.Invoke();
                 }
                 else
                 {
-                    TimeOfDay += (Runner.DeltaTime / dayDurationInSeconds) * skipSpeed;
+                    TimeOfDay += Runner.DeltaTime / dayDurationInSeconds * skipSpeed;
                     TimeOfDay %= 1f;
                 }
                 break;
@@ -111,11 +113,12 @@ public class DayNightCycleManager : NetworkBehaviour
                 SleepingPlayers.Remove(SleepingPlayers.Get(i));
             }
         }
-        
+
         if (Runner.ActivePlayers.Count() > 0 && SleepingPlayers.Count >= Runner.ActivePlayers.Count())
         {
             TargetTimeOfDay = 0.25f;
             CurrentState = TimeSkipState.Skipping;
+            
         }
     }
 
