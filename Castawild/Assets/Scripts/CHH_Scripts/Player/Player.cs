@@ -1,5 +1,6 @@
 using Fusion;
 using System.Collections.Generic;
+using Test;
 using UnityEngine;
 
 // 테스트용
@@ -10,6 +11,10 @@ public enum ItemType { None, Default, Tool, Food, Drink, Placeable }
 public class Player : NetworkBehaviour
 {
     #region Status
+    [Header("NickName")]
+    [SerializeField] private NicknameUI nicknameUI;
+    [Networked, OnChangedRender(nameof(All_OnChangedNickname))] private string nickname { get; set; }
+
     [Header("Status")]
     public PlayerData playerData = new PlayerData();
 
@@ -93,6 +98,12 @@ public class Player : NetworkBehaviour
         isSpawned = true;
         InitStatus();
         InitTools();
+
+        if (HasInputAuthority)
+            RPC_RequestSetNickname(PlayerTempData.nickname);
+        All_OnChangedNickname();
+        if (HasInputAuthority)
+            nicknameUI.gameObject.SetActive(false);
     }
 
     public override void FixedUpdateNetwork()
@@ -422,6 +433,8 @@ public class Player : NetworkBehaviour
         RPC_NotifyInitCurrentToolObject();
     }
 
+
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     private void RPC_ApplyPlayDamagedEffect() => takeDamageEffectAnim.SetTrigger("Damaged");
 
@@ -448,6 +461,11 @@ public class Player : NetworkBehaviour
                 tool.Value.SetActive(false);
         }
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_RequestSetNickname(string nickname) => this.nickname = nickname;
+
+    void All_OnChangedNickname() => nicknameUI.SetNickname(nickname);
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     private void RPC_NotifySetCurrentItemType(int _currentItemIdx)
