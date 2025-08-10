@@ -3132,12 +3132,15 @@ MonoBehaviour:
   staminaRunDecreaseRate: 1
   hungerDecreaseRate: 1
   thirstDecreaseRate: 1
+  thirstSleepDecrease: 10
+  hungerSleepDecrease: 10
   _Hp: 0
   _Stamina: 0
   _Hunger: 0
   _Thirst: 0
   _Temperature: 0
   anim: {fileID: 0}
+  buildPreview: {fileID: 0}
   playerInteractUI: {fileID: 0}
   playerController: {fileID: 0}
   inputManager: {fileID: 0}
@@ -3505,7 +3508,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7137290088832178523}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e1f539cfdbc781c4a8315e513d5969b3, type: 3}
   m_Name: 
