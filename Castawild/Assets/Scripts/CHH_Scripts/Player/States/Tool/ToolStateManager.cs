@@ -113,15 +113,16 @@ public class ToolStateManager : BaseStateManager
         if (!HasStateAuthority)
             return;
 
-        currentState?.ExitState();
         CurrentToolState = newState;
-        currentState = toolStateDict[CurrentToolState];
     }
 
     private void OnCurrentToolStateChanged()
     {
         if (toolStateDict.TryGetValue(CurrentToolState, out var newState))
         {
+            if (currentState == newState)
+                return;
+
             currentState?.ExitState();
             currentState = newState;
             currentState.EnterState();
