@@ -46,24 +46,21 @@ public class DayNightCycleManager : NetworkBehaviour
     {
         if (!Object.HasStateAuthority) return;
 
-        // --- State Machine for Time Progression ---
         switch (CurrentState)
         {
             case TimeSkipState.Normal:
-                // Normal time progression
                 float currentSpeedMultiplier = developerMode ? developerModeSpeed : 1f;
                 TimeOfDay += (Runner.DeltaTime / dayDurationInSeconds) * currentSpeedMultiplier;
                 TimeOfDay %= 1f;
                 break;
 
             case TimeSkipState.Skipping:
-                // Fast-forwarding time
                 float distance = (TargetTimeOfDay - TimeOfDay + 1f) % 1f;
-                if (distance < 0.01f || distance > 0.99f) // Check if we are very close
+                if (distance < 0.01f || distance > 0.99f)
                 {
                     TimeOfDay = TargetTimeOfDay;
                     CurrentState = TimeSkipState.Normal;
-                    SleepingPlayers.Clear(); // Everyone wakes up
+                    SleepingPlayers.Clear();
                 }
                 else
                 {
