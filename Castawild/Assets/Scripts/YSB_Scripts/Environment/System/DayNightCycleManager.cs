@@ -62,6 +62,7 @@ public class DayNightCycleManager : NetworkBehaviour
                     TimeOfDay = TargetTimeOfDay;
                     CurrentState = TimeSkipState.Normal;
                     SleepingPlayers.Clear();
+                    Debug.Log("일어나기");
                     OnTimeSkipStarted?.Invoke();
                 }
                 else
@@ -104,7 +105,7 @@ public class DayNightCycleManager : NetworkBehaviour
     private void CheckAndTriggerTimeSkip()
     {
         if (!Object.HasStateAuthority) return;
-        if (CurrentState == TimeSkipState.Skipping) return; 
+        if (CurrentState == TimeSkipState.Skipping) return;
 
         for (int i = SleepingPlayers.Count - 1; i >= 0; i--)
         {
@@ -118,7 +119,7 @@ public class DayNightCycleManager : NetworkBehaviour
         {
             TargetTimeOfDay = 0.25f;
             CurrentState = TimeSkipState.Skipping;
-            
+
         }
     }
 
@@ -158,7 +159,7 @@ public class DayNightCycleManager : NetworkBehaviour
         if (Application.isPlaying) return;
 
         float previewTime = previewTimeOfDay;
-        
+
         var sunCurve = sunIntensityCurve != null && sunIntensityCurve.keys.Length > 0 ? sunIntensityCurve : AnimationCurve.Linear(0.2f, 1, 0.8f, 1);
         var moonCurve = moonIntensityCurve != null && moonIntensityCurve.keys.Length > 0 ? moonIntensityCurve : AnimationCurve.Linear(0, 0.1f, 1, 0.1f);
         //태양

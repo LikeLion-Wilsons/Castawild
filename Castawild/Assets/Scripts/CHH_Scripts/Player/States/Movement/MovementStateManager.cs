@@ -74,13 +74,14 @@ public class MovementStateManager : BaseStateManager
     public override void Spawned()
     {
         InitComponents();
-        //if (HasStateAuthority)
-        //    dayNightManager.NewDay += Host_WakeUp;
+        if (HasStateAuthority)
+            DayNightCycleManager.OnTimeSkipStarted += Host_WakeUp;
     }
 
     private void OnDisable()
     {
-        //dayNightManager.NewDay -= Host_WakeUp;
+        if (HasStateAuthority)
+            DayNightCycleManager.OnTimeSkipStarted -= Host_WakeUp;
     }
 
     private void InitComponents()

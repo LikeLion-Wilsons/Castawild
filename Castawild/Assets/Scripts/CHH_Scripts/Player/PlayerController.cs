@@ -188,7 +188,6 @@ public sealed class PlayerController : NetworkBehaviour
     {
         if (IsChangePos)
         {
-            Debug.Log("ChangePos" + IsChangePos);
             IsChangePos = false;
             kcc.SetPosition(ChangePos);
         }
@@ -417,7 +416,6 @@ public sealed class PlayerController : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_NotifySetPosition(Vector3 position)
     {
-        Debug.Log(IsChangePos);
         IsChangePos = true;
         ChangePos = position;
     }
