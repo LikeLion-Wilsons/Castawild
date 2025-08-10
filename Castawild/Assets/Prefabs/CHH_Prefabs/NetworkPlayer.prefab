@@ -3452,10 +3452,10 @@ MonoBehaviour:
   invalidColor: {r: 1, g: 0, b: 0, a: 0.23921569}
   groundLayerMask:
     serializedVersion: 2
-    m_Bits: 265
+    m_Bits: 9
   obstacleLayerMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 257
   maxSlopeAngle: 70
 --- !u!1 &7288379860564303627
 GameObject:
