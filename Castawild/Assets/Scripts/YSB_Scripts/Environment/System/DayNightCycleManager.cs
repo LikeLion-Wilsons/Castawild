@@ -104,7 +104,7 @@ public class DayNightCycleManager : NetworkBehaviour
     private void CheckAndTriggerTimeSkip()
     {
         if (!Object.HasStateAuthority) return;
-        if (CurrentState == TimeSkipState.Skipping) return; 
+        if (CurrentState == TimeSkipState.Skipping) return;
 
         for (int i = SleepingPlayers.Count - 1; i >= 0; i--)
         {
