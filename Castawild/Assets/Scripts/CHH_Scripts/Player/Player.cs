@@ -402,7 +402,10 @@ public class Player : NetworkBehaviour
             toolStateManager.Host_ChangeState(ToolState.Idle);
 
             if (isAttack)
-                RPC_ApplyPlayDamageEffect();
+            {
+                RPC_ApplyPlayDamagedEffect();
+                RPC_NotifyPlayDamagedAnim();
+            }
         }
     }
 
@@ -421,7 +424,10 @@ public class Player : NetworkBehaviour
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    private void RPC_ApplyPlayDamageEffect() => takeDamageEffectAnim.SetTrigger("Damaged");
+    private void RPC_ApplyPlayDamagedEffect() => takeDamageEffectAnim.SetTrigger("Damaged");
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_NotifyPlayDamagedAnim() => anim.SetTrigger("GetHit");
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_NotifyArrowActive(bool isActive) => arrow.SetActive(false);

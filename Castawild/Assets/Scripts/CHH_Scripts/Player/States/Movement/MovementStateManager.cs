@@ -178,10 +178,10 @@ public class MovementStateManager : BaseStateManager
             case MoveAnimatoinState.Sleep:
                 anim.SetBool("Sleeping", true);
                 break;
-            case MoveAnimatoinState.GetHit:
-                anim.SetTrigger("GetHit");
-                CurrentMoveAnimation = MoveAnimatoinState.None;
-                break;
+            //case MoveAnimatoinState.GetHit:
+            //    anim.SetTrigger("GetHit");
+            //    CurrentMoveAnimation = MoveAnimatoinState.None;
+            //    break;
             case MoveAnimatoinState.Death:
                 anim.SetTrigger("Death");
                 CurrentMoveAnimation = MoveAnimatoinState.None;
