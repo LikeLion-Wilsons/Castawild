@@ -12,30 +12,36 @@ public class SleepState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.CurrentMoveAnimation = MoveAnimatoinState.Sleep;
-
-        movementManager.CanWakeUp = false;
+        movementManager.anim.SetTrigger("Sleep");
 
         movementManager.playerController.Host_FreezePosition(true);
 
         movementManager.player.Client_TurnOffInteractiveUI();
-        movementManager.player.Client_AttachCameraToHead(true);
+        movementManager.player.Client_SleepDeadCameraTarget(true, true);
 
+        if (movementManager.HasInputAuthority)
+            movementManager.player.playerInteractUI.SetWakeUpUI();
         if (movementManager.HasStateAuthority)
             movementManager.Host_Sleep(true);
     }
 
     public override void UpdateState()
     {
-        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.interactInput)
-            && movementManager.CanWakeUp)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.interactInput))
             movementManager.Host_ChangeState(MovementState.Idle);
     }
 
     public override void ExitState()
     {
+        movementManager.anim.SetTrigger("WakeUp");
+
         movementManager.player.Client_TurnOffInteractiveUI();
-        movementManager.player.Client_AttachCameraToHead(false);
+        movementManager.player.Client_SleepDeadCameraTarget(false, true);
+
+        if (movementManager.HasStateAuthority)
+            movementManager.playerController.Host_FreezePosition(false);
+
+        movementManager.player.Host_FinishSleep();
 
         if (movementManager.HasStateAuthority)
             movementManager.Host_Sleep(false);

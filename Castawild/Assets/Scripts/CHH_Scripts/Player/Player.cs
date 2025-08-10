@@ -263,13 +263,10 @@ public class Player : NetworkBehaviour
     }
 
     /// <summary>
-    /// 수면 끝나고 일어나는 애니메이션 이후 호출하는 함수
+    /// 수면 끝나고 호출하는 함수
     /// </summary>
-    public void All_FinishSleep()
+    public void Host_FinishSleep()
     {
-        if (HasInputAuthority)
-            cameraManager.AttachCameraToHead(false);
-
         if (HasStateAuthority)
         {
             Host_currentBed.CanSleep = true;
@@ -337,18 +334,18 @@ public class Player : NetworkBehaviour
     /// </summary>
     public void Client_AttachToCamera(bool attach)
     {
-        if (attach && cameraManager.currentView == ViewType.FirstPerson)
-        {
-            amarture.transform.SetParent(cameraManager.firstPersonCam.transform);
-            amarture.transform.localPosition = new Vector3(0f, -3f, 0f);
-            amarture.transform.localRotation = Quaternion.identity;
-        }
-        else
-        {
-            amarture.transform.SetParent(transform);
-            amarture.transform.localPosition = Vector3.zero;
-            amarture.transform.localRotation = Quaternion.identity;
-        }
+        //if (attach && cameraManager.currentView == ViewType.FirstPerson)
+        //{
+        //    amarture.transform.SetParent(cameraManager.firstPersonCam.transform);
+        //    amarture.transform.localPosition = new Vector3(0f, -3f, 0f);
+        //    amarture.transform.localRotation = Quaternion.identity;
+        //}
+        //else
+        //{
+        //    amarture.transform.SetParent(transform);
+        //    amarture.transform.localPosition = Vector3.zero;
+        //    amarture.transform.localRotation = Quaternion.identity;
+        //}
     }
 
     /// <summary>
@@ -519,12 +516,12 @@ public class Player : NetworkBehaviour
     public void RPC_RequestCursorLocked(bool isLocked) => IsCursorLocked = isLocked;
 
     /// <summary>
-    /// 카메라 머리에 붙이거나 떼기 
+    /// 죽거나 잘 때 카메라 위치
     /// </summary>
-    public void Client_AttachCameraToHead(bool attachCamera)
+    public void Client_SleepDeadCameraTarget(bool attachCamera, bool isSleep)
     {
         if (HasInputAuthority)
-            cameraManager.AttachCameraToHead(attachCamera);
+            cameraManager.SleepDeadCameraTarget(attachCamera, isSleep);
     }
 
     /// <summary>

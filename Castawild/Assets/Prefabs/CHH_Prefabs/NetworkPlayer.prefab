@@ -2151,6 +2151,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5694693715151805272}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4714201666549999945
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7560626048283133922}
+  m_Layer: 0
+  m_Name: DeadTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7560626048283133922
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4714201666549999945}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.73678356, y: -0.0072862245, z: 0.009158168, w: 0.67602736}
+  m_LocalPosition: {x: -0.0058257263, y: 0.38222432, z: 2.027907}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5694693715151805272}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4790727959444358280
 GameObject:
   m_ObjectHideFlags: 0
@@ -2405,6 +2436,37 @@ Transform:
   - {fileID: 308787070664347630}
   m_Father: {fileID: 6942629187688206138}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5581898428839757634
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3845726617783592595}
+  m_Layer: 0
+  m_Name: SleepTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3845726617783592595
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5581898428839757634}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.7030754, y: 0.004793906, z: 0.031791944, w: 0.7103882}
+  m_LocalPosition: {x: -0.33119744, y: 0.48375866, z: -1.845081}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5694693715151805272}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5602562972727450398
 GameObject:
   m_ObjectHideFlags: 0
@@ -2497,6 +2559,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 3845726617783592595}
+  - {fileID: 7560626048283133922}
   - {fileID: 3312262715438081692}
   - {fileID: 5508614353083602396}
   - {fileID: 3533680929014235342}
@@ -3026,7 +3090,7 @@ MonoBehaviour:
     ColliderLayer: 6
     CollisionLayerMask:
       serializedVersion: 2
-      m_Bits: 201
+      m_Bits: 479
     ProxyInterpolationMode: 0
     MaxPenetrationSteps: 8
     CCDRadiusMultiplier: 0.75
@@ -3164,14 +3228,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   fallMultiplier: 1.5
-  isLyingOrGettingUp: 0
   _CurrentMoveState: 0
   _CanLanding: 0
   _CurrentMoveAnimation: 0
   _currentMoveSpeed: 0
   _Revived: 0
   _JumpTriggered: 0
-  _CanWakeUp: 0
   _MoveValue: {x: 0, y: 0}
 --- !u!114 &8225308212403291209
 MonoBehaviour:
@@ -3299,7 +3361,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -3775,10 +3837,13 @@ MonoBehaviour:
   - {fileID: 1960706104356853493}
   - {fileID: 3653424579983766144}
   - {fileID: 7288379860564303627}
-  playerHead: {fileID: 8041571145415919264}
   firstPersonCam: {fileID: 3849144779001713377}
   firstPersonTarget: {fileID: 3312262715438081692}
   firstPerson_AimFov: 55
+  sleepCameraTarget: {fileID: 3845726617783592595}
+  sleepTransitionTime: 2.1
+  deadCameraTarget: {fileID: 7560626048283133922}
+  deadTransitionTime: 1.4
   thirdPersonCam: {fileID: 1706552347776469061}
   thirdPersonTarget: {fileID: 3533680929014235342}
   thirdPerson_AimTargetPos: {fileID: 3517969266310779276}

@@ -14,7 +14,7 @@ public class DeathState : MovementBaseState
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.Death;
 
         if (movementManager.HasInputAuthority)
-            movementManager.player.Client_AttachCameraToHead(true);
+            movementManager.player.Client_SleepDeadCameraTarget(true, false);
 
         movementManager.Revived = false;
         movementManager.playerController.Host_FreezePosition(true);
@@ -27,7 +27,7 @@ public class DeathState : MovementBaseState
     public override void ExitState()
     {
         if (movementManager.HasInputAuthority)
-            movementManager.player.Client_AttachCameraToHead(false);
+            movementManager.player.Client_SleepDeadCameraTarget(false, false);
 
         if (movementManager.HasStateAuthority)
             movementManager.playerController.Host_SetPosition(movementManager.player.RespawnPos);

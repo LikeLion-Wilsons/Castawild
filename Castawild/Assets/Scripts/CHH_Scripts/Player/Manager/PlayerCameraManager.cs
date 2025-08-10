@@ -2,6 +2,7 @@ using Fusion;
 using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
+using static System.TimeZoneInfo;
 
 public enum ViewType { None, FirstPerson, ThirdPerson }
 
@@ -36,12 +37,18 @@ public class PlayerCameraManager : MonoBehaviour
     #region First Person
     [Header("1인칭")]
     [SerializeField] private GameObject[] playerMeshes;
-    [SerializeField] private GameObject playerHead;
 
     public CinemachineCamera firstPersonCam;
     [SerializeField] private Transform firstPersonTarget;
     [SerializeField] private float firstPerson_AimFov;
     private float firstPerson_DefaultFov;
+
+    [Header("CameraMove")]
+    private Vector3 originfirstPersonTargetPos;
+    [SerializeField] private Transform sleepCameraTarget;
+    [SerializeField] private float sleepTransitionTime;
+    [SerializeField] private Transform deadCameraTarget;
+    [SerializeField] private float deadTransitionTime;
     #endregion
 
     #region Third Person
@@ -85,6 +92,7 @@ public class PlayerCameraManager : MonoBehaviour
         InitComponents();
         InitVariables();
         SubscribeEvents();
+        originfirstPersonTargetPos = firstPersonTarget.localPosition;
     }
 
     private void Start()
@@ -203,29 +211,11 @@ public class PlayerCameraManager : MonoBehaviour
     // 1인칭 카메라 상하각도 조절
     private void UpdateCameraPitch()
     {
-        if (movementManager.isLyingOrGettingUp && currentView == ViewType.FirstPerson)
-        {
-            pitch = 0f;
-            yaw = 0f;
-            Vector3 flatForward = new Vector3(player.transform.forward.x, 0f, player.transform.forward.z).normalized;
-            firstPersonCam.transform.rotation = Quaternion.LookRotation(flatForward);
-            return;
-        }
-
         if (currentView == ViewType.ThirdPerson || !player.IsCursorLocked || !player.All_CanMoving())
             return;
 
         pitch -= inputManager.lookInput.y * sensitivity;
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
-
-        // 자고있을 때 좌우회전 추가
-        if (movementManager.CurrentMoveState == MovementState.Sleep)
-        {
-            yaw += inputManager.lookInput.x * sensitivity;
-            yaw = Mathf.Clamp(yaw, minYaw, maxYaw);
-        }
-        else if (movementManager.CurrentMoveState != MovementState.Sleep && yaw != 0f)
-            yaw = 0f;
 
         firstPersonCam.transform.localEulerAngles = new Vector3(pitch, yaw, 0f);
     }
@@ -306,23 +296,36 @@ public class PlayerCameraManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 플레이어의 머리에 카메라를 붙이거나 떼는 함수
+    /// 죽거나 잘 때 카메라 위치
     /// </summary>
-    public void AttachCameraToHead(bool attachCamera)
+    public void SleepDeadCameraTarget(bool moveCamera, bool isSleep)
     {
-        if (attachCamera)
+        if (moveCamera)
         {
             player.Client_AttachToCamera(false);
 
-            firstPersonCam.Follow = playerHead.transform;
-            firstPersonCam.LookAt = playerHead.transform;
+            if (moveCameraCoroutine != null)
+            {
+                StopCoroutine(moveCameraCoroutine);
+                moveCameraCoroutine = null;
+            }
+            if (isSleep)
+                firstPersonTarget.localPosition = sleepCameraTarget.localPosition;
+            else
+                firstPersonTarget.localPosition = deadCameraTarget.localPosition;
         }
+
         else
         {
             player.Client_AttachToCamera(true);
 
-            firstPersonCam.Follow = firstPersonTarget;
-            firstPersonCam.LookAt = firstPersonTarget;
+            if (moveCameraCoroutine != null)
+            {
+                StopCoroutine(moveCameraCoroutine);
+                moveCameraCoroutine = null;
+            }
+            else
+                firstPersonTarget.localPosition = originfirstPersonTargetPos;
         }
     }
 
