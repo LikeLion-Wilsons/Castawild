@@ -11698,6 +11698,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1454801508}
     - target: {fileID: 6179868913154303962, guid: cb32e48b46ee1e84194d7c85583db8fa, type: 3}
+      propertyPath: developerMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179868913154303962, guid: cb32e48b46ee1e84194d7c85583db8fa, type: 3}
       propertyPath: dayDurationInSeconds
       value: 300
       objectReference: {fileID: 0}

@@ -48,6 +48,5 @@ public class Campfire : InteractableObject
     {
         isFire = tof;
         fireVFX.SetActive(tof);
-        Debug.Log(fireVFX.activeSelf);
     }
 }

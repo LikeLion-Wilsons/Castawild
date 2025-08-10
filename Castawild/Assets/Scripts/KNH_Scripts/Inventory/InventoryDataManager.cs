@@ -2,6 +2,7 @@ using Fusion;
 using System;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
+using UnityEngine.InputSystem.LowLevel;
 
 public delegate void OnItemGet();
 
@@ -20,17 +21,16 @@ public class InventoryDataManager : NetworkBehaviour
     [Networked, Capacity(50)] public NetworkLinkedList<Item> itemList => default;
 
     private Player player;
-
-    [Header("테스트용")]
-    public GameObject chest;//나중에 삭제
+    public Item_Panel[] inventorySlots;
 
     public override void Spawned()
     {
+        inventorySlots = new Item_Panel[47];
         ChangeSelectedSlot(0);
 
         if (Object.HasStateAuthority)
         {
-            while (itemList.Count < 45)
+            while (itemList.Count < inventorySlots.Length)
             {
                 itemList.Add(new Item
                 {
@@ -57,6 +57,7 @@ public class InventoryDataManager : NetworkBehaviour
             player = GetComponent<Player>();
             canvasHolder.SetPlayer(player);
 
+            #region item slot Init
             int i = 0;
             while (i < 9)
             {
@@ -78,21 +79,28 @@ public class InventoryDataManager : NetworkBehaviour
                 index++;
             }
 
+
+            inventorySlots[45] = canvasHolder.campfireUI.GetComponent<UICampfire>().cookPot;
+            inventorySlots[46] = canvasHolder.campfireUI.GetComponent<UICampfire>().result;
+
+
             for (int k = 0; k < inventorySlots.Length; k++)
             {
                 inventorySlots[k].GetComponent<Item_Panel>().BindToInventoryData(this);
             }
 
+            #endregion
         }
     }
 
 
-    public Item_Panel[] inventorySlots;
     public GameObject inventoryItemPrefab;
     int selectedSlot = 0;
     int maxSlotCount = 9; // 총 슬롯 수
     public static InventoryDataManager Instance { get; set; }
     public static event Action<int> onItemSelected;
+    public static event Action onInventoryUpdated;
+
     void ChangeSelectedSlot(int newValue)
     {
         if (Object.HasInputAuthority)
@@ -119,14 +127,7 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
 
-    public event Action onInventoryUpdated;//기존에 있던 아이템이 추가될 때
 
-
-    private void Start()
-    {
-        // 수정한 부분
-        // ChangeSelectedSlot(0);
-    }
 
     private void Update()
     {
@@ -163,6 +164,7 @@ public class InventoryDataManager : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
             RPC_ThrowItem(GetSelectedIndex());
 
+        #region cheat
         //아이템 획득 치트
         if (Input.GetKeyDown(KeyCode.Alpha1))
             AddItem(0, 5);
@@ -172,25 +174,7 @@ public class InventoryDataManager : NetworkBehaviour
             AddItem(2, 5);
         if (Input.GetKeyDown(KeyCode.Alpha4))
             AddItem(3, 5);
-
-        //if (Input.GetKeyDown(KeyCode.R))
-        //{
-        //    RPC_UseSelectedItem(1);
-        //}
-
-        //테스트용
-        if (Object.HasInputAuthority && Input.GetKeyDown(KeyCode.B))
-        {
-            RPCRequestBuild();
-        }
-    }
-
-    //테스트용
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    void RPCRequestBuild()
-    {
-        PlayerRef playerRef = Runner.LocalPlayer;
-        Runner.Spawn(chest, chest.transform.position, Quaternion.identity, null);
+        #endregion
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]

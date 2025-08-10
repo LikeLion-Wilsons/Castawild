@@ -9,6 +9,9 @@ public class UICampfire : UIPart
     UI_Manager uiManager;
     InventoryDataManager inventoryData;
     Campfire campFire;
+    [Header("슬롯")]
+    public Item_Panel cookPot;
+    public Item_Panel result;
 
     [SerializeField] GameObject fireImage;
     [Header("연료")]

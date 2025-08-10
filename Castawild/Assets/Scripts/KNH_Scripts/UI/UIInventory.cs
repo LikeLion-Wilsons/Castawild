@@ -16,7 +16,7 @@ public class UIInventory : UIPart
     public void BindToInventoryData(InventoryDataManager data)
     {
         inventoryData = data;
-        data.onInventoryUpdated += SetItemList;
+        InventoryDataManager.onInventoryUpdated += SetItemList;
         Init();
     }
 
