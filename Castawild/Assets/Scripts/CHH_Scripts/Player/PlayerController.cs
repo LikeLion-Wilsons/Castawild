@@ -392,7 +392,7 @@ public sealed class PlayerController : NetworkBehaviour
     /// <summary>
     /// 위치 고정
     /// </summary>
-    public void Host_FreezePosition(bool freeze)
+    public void Host_FreezePosition(NetworkBool freeze)
     {
         if (!HasStateAuthority)
             return;

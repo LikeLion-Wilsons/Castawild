@@ -539,22 +539,30 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 활 있는지
     /// </summary>
-    public void Host_SetHasArrow(bool hasArrow) => HasArrow = hasArrow;
+    public void Host_SetHasArrow(NetworkBool hasArrow) => HasArrow = hasArrow;
 
     /// <summary>
     /// 던지는 돌맹이 있는지
     /// </summary>
-    public void Host_SetHasPebble(bool hasPebble) => HasPebble = hasPebble;
+    public void Host_SetHasPebble(NetworkBool hasPebble) => HasPebble = hasPebble;
+
+    public void Host_NewDayStatus()
+    {
+        // 체력은 최대 체력의 80프로까지
+        // huunger, thist는 일정 수치 감소
+        Hp = playerData.maxHp;
+
+    }
 
     /// <summary>
     /// 활 있는지
     /// </summary>
-    public void RPC_RequestSetHasArrow(bool hasArrow) => HasArrow = hasArrow;
+    public void RPC_RequestSetHasArrow(NetworkBool hasArrow) => HasArrow = hasArrow;
 
     /// <summary>
     /// 던지는 돌맹이 있는지
     /// </summary>
-    public void RPC_RequestSetHasPebble(bool hasPebble) => HasPebble = hasPebble;
+    public void RPC_RequestSetHasPebble(NetworkBool hasPebble) => HasPebble = hasPebble;
 
     /// <summary>
     /// 리스폰 장소 설정
@@ -579,7 +587,7 @@ public class Player : NetworkBehaviour
     /// Bed.CanSleep 설정
     /// </summary>
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_RequestCanSleep_Bed(Bed bed, bool canSleep) => bed.CanSleep = canSleep;
+    public void RPC_RequestCanSleep_Bed(Bed bed, NetworkBool canSleep) => bed.CanSleep = canSleep;
 
     /// <summary>
     /// 현재 침대 설정

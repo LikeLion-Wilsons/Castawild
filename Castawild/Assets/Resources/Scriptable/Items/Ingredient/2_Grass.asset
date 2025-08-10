@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 2_Grass
   m_EditorClassIdentifier: 
   itemID: 2
-  image: {fileID: 21300000, guid: da7129ed6a246f048a49d8d97de2d2d4, type: 3}
+  image: {fileID: 21300000, guid: 5ecc6df672ec02f49aa4ed090619f1f3, type: 3}
   itemName: "\uD480"
   description: "\uC12C\uC720\uB97C \uB9CC\uB4E4 \uC218 \uC788\uB2E4."
   type: 2
@@ -21,3 +21,5 @@ MonoBehaviour:
   stackable: 1
   ingredient: []
   ingredientCount: 
+  buildPreviewPrefab: {fileID: 0}
+  buildPrefab: {fileID: 0}
