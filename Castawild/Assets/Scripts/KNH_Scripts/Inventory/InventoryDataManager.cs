@@ -1,5 +1,6 @@
 using Fusion;
 using System;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 public delegate void OnItemGet();
@@ -436,7 +437,7 @@ public class InventoryDataManager : NetworkBehaviour
             if (itemList[i].itemID == id)
             {
                 var item = itemList.Get(i);
-                if (item.count - count >= 0)
+                if (item.count - count > 0)
                 {
                     item.count -= count;
                     itemList.Set(i, item);
@@ -444,6 +445,7 @@ public class InventoryDataManager : NetworkBehaviour
                 }
                 else
                 {
+                    item.itemID = -1;
                     count -= item.count;
                     item.count = 0;
                     itemList.Set(i, item);
