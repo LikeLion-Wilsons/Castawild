@@ -16,7 +16,7 @@ public class Campfire : InteractableObject
 
     private void Update()
     {
-        fireVFX.SetActive(isFire);//불 On/Off
+        
 
         if (canvasHolder == null) return;
         bool isInventoryOpen = canvasHolder.uiParts["Inventory"].IsOpen();
@@ -44,8 +44,10 @@ public class Campfire : InteractableObject
         }
     }
 
-    public void SetFire(bool tof)
+    public void SetFireActive(bool tof)
     {
         isFire = tof;
+        fireVFX.SetActive(tof);
+        Debug.Log(fireVFX.activeSelf);
     }
 }

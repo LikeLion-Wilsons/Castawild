@@ -36,16 +36,16 @@ public class UICampfire : UIPart
             campFire = uiManager.currentCampFire.GetComponent<Campfire>();
         if (campFire == null) return;
 
+        //타이머 네트워크 동기화 필요(UI 닫혀있을 때에도 타이머 감소)
         if (currentTime > 0)
         {
             currentTime -= Time.deltaTime;
-            fireImage.SetActive(true);
-            campFire.SetFire(false);
+
             SetTimerText();
         }
         else
         {
-            campFire.SetFire(false);
+            campFire.SetFireActive(false);
             fireImage.SetActive(false);
         }
     }
@@ -53,13 +53,20 @@ public class UICampfire : UIPart
     {
         inventoryData = uiManager.player.GetComponent<InventoryDataManager>();
         int fuelCount = inventoryData.GetItemCount(fuelList[selectedFuelIndex]);//나뭇가지 개수 확인
-        if (fuelCount <= 0) return;//연료 부족
+
+        if (fuelCount <= 0) return;//연료 부족하면 무시
+
         inventoryData.UseItem(fuelList[selectedFuelIndex], 1);//연료 사용
+
         //시간 증가 처리
         if (fuelList[selectedFuelIndex] == 0) addTime = 20;
         else if (fuelList[selectedFuelIndex] == 3) addTime = 40;
 
         AddTime(addTime);
+
+        //불 켜기
+        fireImage.SetActive(true);
+        campFire.SetFireActive(true);
     }
     public void LeftButtonClick()
     {
@@ -83,10 +90,6 @@ public class UICampfire : UIPart
     void AddTime(float time)
     {
         currentTime += time;
-
-
-        //시간 텍스트 설정
-        SetTimerText();
     }
 
     void SetTimerText()

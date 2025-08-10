@@ -157,9 +157,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactableType: 0
+  itemIndex: 301
   text: Campfire
   isPlaceable: 1
-  fireVFX: {fileID: 8295591563862043295, guid: e01f2e62cf41a3449be2dade3b2c2d79, type: 3}
+  fireVFX: {fileID: 5839911783318004443}
 --- !u!114 &2863630399083837473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,6 +254,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e01f2e62cf41a3449be2dade3b2c2d79, type: 3}
+--- !u!1 &5839911783318004443 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8295591563862043295, guid: e01f2e62cf41a3449be2dade3b2c2d79, type: 3}
+  m_PrefabInstance: {fileID: 2455680331382048836}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5839911783318004444 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8295591563862043288, guid: e01f2e62cf41a3449be2dade3b2c2d79, type: 3}
