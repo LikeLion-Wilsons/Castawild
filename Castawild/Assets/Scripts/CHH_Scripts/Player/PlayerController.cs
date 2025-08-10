@@ -384,7 +384,6 @@ public sealed class PlayerController : NetworkBehaviour
     /// </summary>
     public void Host_SetPosition(Vector3 position)
     {
-        Debug.Log(IsChangePos);
         IsChangePos = true;
         ChangePos = position;
     }
