@@ -160,18 +160,18 @@ public class InventoryDataManager : NetworkBehaviour
 
         //선택된 아이템 버리기
         if (Input.GetKeyDown(KeyCode.Q))
-        {
             RPC_ThrowItem(GetSelectedIndex());
-        }
 
+        //아이템 획득 치트
         if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            AddItem(0, 1);
-        }
+            AddItem(0, 5);
         if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            AddItem(1, 1);
-        }
+            AddItem(1, 5);
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+            AddItem(2, 5);
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+            AddItem(3, 5);
+
         //if (Input.GetKeyDown(KeyCode.R))
         //{
         //    RPC_UseSelectedItem(1);
