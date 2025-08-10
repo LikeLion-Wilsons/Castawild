@@ -2025,6 +2025,37 @@ Transform:
   - {fileID: 6860568051446787890}
   m_Father: {fileID: 1144816066921113876}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4479943522708699289
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7339163387627562639}
+  m_Layer: 6
+  m_Name: GroundCheckPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7339163387627562639
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4479943522708699289}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.133, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6388187669656790763}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4487727907490258689
 GameObject:
   m_ObjectHideFlags: 0
@@ -2939,6 +2970,7 @@ Transform:
   - {fileID: 5180488209280489115}
   - {fileID: 3860441751889761913}
   - {fileID: 7563730193558800885}
+  - {fileID: 7339163387627562639}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7933685528624486573
@@ -3090,7 +3122,9 @@ MonoBehaviour:
   fallThreshold: 20
   damagePerMeter: 10
   fallingDeadTime: 5
-  _Grounded: 0
+  checkStartPoint: {fileID: 7339163387627562639}
+  checkDistance: 0.5
+  _Grounded_Physics: 0
   interactHeight: 10
   thirdPersonInteractPos: {fileID: 7467696255462433047}
   interactRadius: 0.5
@@ -3126,7 +3160,6 @@ MonoBehaviour:
   crouchSpeed: 2
   rotationSpeed: 10
   groundYOffset: 0
-  groundCheckRadius: 0.3
   groundMask:
     serializedVersion: 2
     m_Bits: 8

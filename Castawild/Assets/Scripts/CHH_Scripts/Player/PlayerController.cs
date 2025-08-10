@@ -27,7 +27,10 @@ public sealed class PlayerController : NetworkBehaviour
     private bool isFalling;
     [SerializeField] private float fallingDeadTime = 5f;
     private float fallingElapsed;
-    [Networked] public bool Grounded { get; set; }
+    [SerializeField] private Transform checkStartPoint;
+    [SerializeField] private float checkDistance = 0.2f;
+    [Networked] public bool Grounded_Physics { get; set; }
+    public bool Grounded { get; set; }
 
     [Header("Interact")]
     [SerializeField] private float interactHeight = 10f;
@@ -75,7 +78,20 @@ public sealed class PlayerController : NetworkBehaviour
         // 테스트용
         if (HasInputAuthority && Input.GetKeyDown(KeyCode.H))
             player.RPC_RequestHeal();
+
+        Grounded = Physics.Raycast(checkStartPoint.position, Vector3.down, out RaycastHit hit, checkDistance);
+
+        Vector3 start = checkStartPoint.position;
+        Vector3 end = start + Vector3.down * checkDistance;
+
+        Debug.DrawLine(start, end, Grounded ? Color.green : Color.red);
     }
+
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.color = Grounded ? Color.green : Color.red;
+    //    Gizmos.DrawLine(checkStartPoint.position, checkStartPoint.position + Vector3.down * checkDistance);
+    //}
 
     public override void FixedUpdateNetwork()
     {
@@ -117,17 +133,17 @@ public sealed class PlayerController : NetworkBehaviour
     private void Host_Falling()
     {
         Vector3 velocity = kcc.RealVelocity;
-        Grounded = kcc.IsGrounded;
+        Grounded_Physics = kcc.IsGrounded;
 
         // 떨어지기 시작
-        if (!isFalling && velocity.y < -0.1f && !Grounded)
+        if (!isFalling && velocity.y < -0.1f && !Grounded_Physics)
         {
             isFalling = true;
             startY = transform.position.y;
         }
 
         // 떨어지는 중
-        if (isFalling && !Grounded)
+        if (isFalling && !Grounded_Physics)
         {
             fallingElapsed += Runner.DeltaTime;
             if (fallingElapsed > fallingDeadTime)
@@ -138,7 +154,7 @@ public sealed class PlayerController : NetworkBehaviour
         }
 
         // 착지
-        if (isFalling && Grounded)
+        if (isFalling && Grounded_Physics)
         {
             isFalling = false;
 
@@ -172,6 +188,7 @@ public sealed class PlayerController : NetworkBehaviour
     {
         if (IsChangePos)
         {
+            Debug.Log("ChangePos" + IsChangePos);
             IsChangePos = false;
             kcc.SetPosition(ChangePos);
         }
@@ -367,6 +384,7 @@ public sealed class PlayerController : NetworkBehaviour
     /// </summary>
     public void Host_SetPosition(Vector3 position)
     {
+        Debug.Log(IsChangePos);
         IsChangePos = true;
         ChangePos = position;
     }
@@ -399,6 +417,7 @@ public sealed class PlayerController : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_NotifySetPosition(Vector3 position)
     {
+        Debug.Log(IsChangePos);
         IsChangePos = true;
         ChangePos = position;
     }
