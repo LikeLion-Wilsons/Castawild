@@ -20,6 +20,9 @@ public class SleepState : MovementBaseState
 
         movementManager.player.Client_TurnOffInteractiveUI();
         movementManager.player.Client_AttachCameraToHead(true);
+
+        if (movementManager.HasStateAuthority)
+            movementManager.Host_Sleep(true);
     }
 
     public override void UpdateState()
@@ -33,5 +36,8 @@ public class SleepState : MovementBaseState
     {
         movementManager.player.Client_TurnOffInteractiveUI();
         movementManager.player.Client_AttachCameraToHead(false);
+
+        if (movementManager.HasStateAuthority)
+            movementManager.Host_Sleep(false);
     }
 }

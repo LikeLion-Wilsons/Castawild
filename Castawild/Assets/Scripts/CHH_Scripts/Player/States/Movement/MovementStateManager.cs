@@ -8,6 +8,7 @@ public enum MoveAnimatoinState { None, Idle, Walk, Run, CrouchIdle, CrouchWalk, 
 public class MovementStateManager : BaseStateManager
 {
     #region Conponent
+    private DayNightCycleManager dayNightManager;
     [HideInInspector] public PlayerInteractUI interactUI;
     [HideInInspector] public ToolStateManager toolStateManager;
     #endregion
@@ -71,17 +72,26 @@ public class MovementStateManager : BaseStateManager
     protected override void Awake()
     {
         base.Awake();
-        InitComponents();
         InitStates();
+        Host_ChangeState(MovementState.Idle);
     }
 
     public override void Spawned()
     {
-        Host_ChangeState(MovementState.Idle);
+        InitComponents();
+        //if (HasStateAuthority)
+        //    dayNightManager.NewDay += Host_WakeUp;
+    }
+
+    private void OnDisable()
+    {
+        //dayNightManager.NewDay -= Host_WakeUp;
     }
 
     private void InitComponents()
     {
+        if (HasStateAuthority)
+            dayNightManager = FindAnyObjectByType<DayNightCycleManager>();
         interactUI = GetComponentInChildren<PlayerInteractUI>();
         toolStateManager = GetComponent<ToolStateManager>();
     }
@@ -132,6 +142,12 @@ public class MovementStateManager : BaseStateManager
             currentState = newState;
             currentState.EnterState();
         }
+    }
+
+    private void Host_WakeUp()
+    {
+        Host_ChangeState(MovementState.Idle);
+        player.Host_NewDayStatus();
     }
 
     /// <summary>
@@ -217,6 +233,8 @@ public class MovementStateManager : BaseStateManager
     /// 스테미나 회복가능한지 확인
     /// </summary>
     public bool All_CanRecoverStamina() => CurrentMoveState != MovementState.Run && CurrentMoveState != MovementState.Death;
+
+    public void Host_Sleep(bool isSleep) => dayNightManager.Rpc_SetSleepingState(isSleep);
 
     /// <summary>
     /// Sleep 상태로 변경하는 RPC
