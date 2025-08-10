@@ -3390,6 +3390,7 @@ MonoBehaviour:
   thirstDecreaseRate: 1
   thirstSleepDecrease: 10
   hungerSleepDecrease: 10
+  bloodEffectThreshold: 0.2
   _Hp: 0
   _Stamina: 0
   _Hunger: 0
@@ -3410,6 +3411,7 @@ MonoBehaviour:
   _HasArrow: 0
   _HasPebble: 0
   Host_currentBed: {fileID: 0}
+  takeDamageEffect: {fileID: 5564867861575558819}
   takeDamageEffectAnim: {fileID: 191165801755477274}
   amarture: {fileID: 762437358709272171}
   _RespawnPos: {x: 0, y: 0, z: 0}
@@ -5048,6 +5050,17 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 2701346878154654172, guid: a32dfb15ed36a9a41a5d97a90523ae3a, type: 3}
   m_PrefabInstance: {fileID: 2871665870375109830}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5564867861575558819 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7701249040240910949, guid: a32dfb15ed36a9a41a5d97a90523ae3a, type: 3}
+  m_PrefabInstance: {fileID: 2871665870375109830}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &7563730193558800885 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5705480656418131251, guid: a32dfb15ed36a9a41a5d97a90523ae3a, type: 3}

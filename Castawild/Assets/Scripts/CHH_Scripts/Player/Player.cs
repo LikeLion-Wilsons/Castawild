@@ -1,7 +1,9 @@
 using Fusion;
+using System.Collections;
 using System.Collections.Generic;
 using Test;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
@@ -27,6 +29,7 @@ public class Player : NetworkBehaviour
     public float thirstDecreaseRate = 1f;
     public float thirstSleepDecrease = 10f;
     public float hungerSleepDecrease = 10f;
+    [SerializeField] private float bloodEffectThreshold = 0.2f;
 
     [Header("Current Status")]
     [Networked] public float Hp { get; set; }
@@ -68,7 +71,9 @@ public class Player : NetworkBehaviour
     #endregion
 
     [Header("Effect")]
+    [SerializeField] private Volume takeDamageEffect;
     [SerializeField] private Animator takeDamageEffectAnim;
+    private Coroutine activeDamageEffectAnim;
 
     public Coroutine fallingCoroutine;
     public GameObject amarture;
@@ -405,6 +410,7 @@ public class Player : NetworkBehaviour
         {
             movementManager.Host_ChangeState(MovementState.Death);
             toolStateManager.Host_ChangeState(ToolState.Idle);
+            return;
         }
         else if (Hp > 0 && isAttack)
         {
@@ -413,12 +419,15 @@ public class Player : NetworkBehaviour
 
             if (isAttack)
             {
-                RPC_ApplyPlayDamagedEffect();
+                RPC_ApplyPlayDamagedEffectAnim();
                 RPC_NotifyPlayDamagedAnim();
                 if (movementManager.input.currentView == ViewType.FirstPerson)
                     playerController.RPC_ApplyShakeCamera();
             }
         }
+
+        if (Hp <= playerData.maxHp * 0.2f)
+            RPC_ApplyPlayDamagedEffect();
     }
 
     /// <summary>
@@ -435,10 +444,33 @@ public class Player : NetworkBehaviour
         RPC_NotifyInitCurrentToolObject();
     }
 
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    private void RPC_ApplyPlayDamagedEffect()
+    {
+        float hpPercent = Hp / playerData.maxHp;
 
+        if (hpPercent <= bloodEffectThreshold)
+            takeDamageEffect.weight = Mathf.InverseLerp(bloodEffectThreshold, 0f, hpPercent);
+        Debug.Log("takeDamageEffect Weight : " + takeDamageEffect.weight);
+    }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    private void RPC_ApplyPlayDamagedEffect() => takeDamageEffectAnim.SetTrigger("Damaged");
+    private void RPC_ApplyPlayDamagedEffectAnim()
+    {
+        takeDamageEffectAnim.enabled = true;
+        takeDamageEffectAnim.SetTrigger("Damaged");
+
+        if (activeDamageEffectAnim != null)
+            StopCoroutine(activeDamageEffectAnim);
+        activeDamageEffectAnim = StartCoroutine(ActiveDamageEffectAnim());
+    }
+
+    private IEnumerator ActiveDamageEffectAnim()
+    {
+        yield return 0.4f;
+        takeDamageEffectAnim.enabled = false;
+        activeDamageEffectAnim = null;
+    }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_NotifyPlayDamagedAnim() => anim.SetTrigger("GetHit");
