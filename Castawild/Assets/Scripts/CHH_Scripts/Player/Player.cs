@@ -51,6 +51,7 @@ public class Player : NetworkBehaviour
     public GameObject arrow;
 
     [Networked, HideInInspector] public bool HasArrow { get; set; }
+    [Networked, HideInInspector] public bool HasPebble { get; set; }
     private GameObject currentToolObject;
     #endregion
 
@@ -58,6 +59,9 @@ public class Player : NetworkBehaviour
     [Header("Interact")]
     [HideInInspector] public Bed Host_currentBed;
     #endregion
+
+    [Header("Effect")]
+    [SerializeField] private Animator takeDamageEffectAnim;
 
     public Coroutine fallingCoroutine;
     public GameObject amarture;
@@ -75,7 +79,7 @@ public class Player : NetworkBehaviour
 
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isSpawned;
-    [HideInInspector] public ItemType currentItemType;
+    public ItemType currentItemType;
 
     private void Awake()
     {
@@ -129,6 +133,12 @@ public class Player : NetworkBehaviour
             if (attackObject.canAttack)
             {
                 Host_TakeDamage(true, attackObject.att);
+
+                Transform parent = other.transform;
+                while (other.transform.parent != null)
+                    parent = parent.parent;
+
+                parent.GetComponent<PlayerController>().RPC_ApplyHitInvoke(attackObject.att);
             }
         }
     }
@@ -144,6 +154,7 @@ public class Player : NetworkBehaviour
             {
                 Host_TakeDamage(true, throwObject.att);
                 throwObject.canAttack = false;
+                throwObject.thrower.GetComponent<PlayerController>().RPC_ApplyHitInvoke(throwObject.att);
             }
         }
     }
@@ -288,6 +299,7 @@ public class Player : NetworkBehaviour
         if (currentToolObject == null)
             return;
 
+        Debug.Log("Set Bow Pos" + isBowUse);
         if (HasInputAuthority)
         {
             if (isBowUse && cameraManager.currentView == ViewType.FirstPerson)
@@ -342,7 +354,13 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 현재 도구 활성화
     /// </summary>
-    public void All_SetCurrentToolActive(bool active) => currentToolObject?.SetActive(active);
+    public void All_SetPebbleActive(bool active)
+    {
+        if (HasPebble && active)
+            currentToolObject?.SetActive(true);
+        else if (!active)
+            currentToolObject?.SetActive(false);
+    }
 
     /// <summary>
     /// 리스폰 위치 설정
@@ -382,6 +400,9 @@ public class Player : NetworkBehaviour
         {
             movementManager.Host_ChangeState(MovementState.GetHit);
             toolStateManager.Host_ChangeState(ToolState.Idle);
+
+            if (isAttack)
+                RPC_ApplyPlayDamageEffect();
         }
     }
 
@@ -389,6 +410,39 @@ public class Player : NetworkBehaviour
     /// 죽었는지 확인
     /// </summary>
     public bool All_IsDead() => movementManager.CurrentMoveState == MovementState.Death || Hp <= 0;
+
+    public void Host_InitCurrentTool()
+    {
+        CurrentToolID = -1;
+        CurrentToolName = string.Empty;
+        CurrentToolAtt = 0;
+
+        RPC_NotifyInitCurrentToolObject();
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    private void RPC_ApplyPlayDamageEffect() => takeDamageEffectAnim.SetTrigger("Damaged");
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_NotifyArrowActive(bool isActive) => arrow.SetActive(false);
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_NotifyInitCurrentToolObject()
+    {
+        currentToolObject.SetActive(false);
+        currentToolObject = null;
+
+        All_AllToolInActive();
+    }
+
+    private void All_AllToolInActive()
+    {
+        foreach (var tool in toolDict)
+        {
+            if (tool.Value != null)
+                tool.Value.SetActive(false);
+        }
+    }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     private void RPC_NotifySetCurrentItemType(int _currentItemIdx)
@@ -430,11 +484,7 @@ public class Player : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     private void RPC_NotifyEquipmentTool(int itemIdx = -1)
     {
-        foreach (var tool in toolDict)
-        {
-            if (tool.Value != null)
-                tool.Value.SetActive(false);
-        }
+        All_AllToolInActive();
 
         if (itemIdx == -1)
             return;
@@ -477,13 +527,28 @@ public class Player : NetworkBehaviour
     public void Client_TurnOffInteractiveUI()
     {
         if (HasInputAuthority)
-            playerInteractUI.TurnOffInteractiveUI();
+            playerInteractUI.Client_TurnOffInteractiveUI();
     }
 
     /// <summary>
     /// 활 있는지
     /// </summary>
-    public void RPC_NotifyHasArrow(bool hasArrow) => HasArrow = hasArrow;
+    public void Host_SetHasArrow(bool hasArrow) => HasArrow = hasArrow;
+
+    /// <summary>
+    /// 던지는 돌맹이 있는지
+    /// </summary>
+    public void Host_SetHasPebble(bool hasPebble) => HasPebble = hasPebble;
+
+    /// <summary>
+    /// 활 있는지
+    /// </summary>
+    public void RPC_RequestSetHasArrow(bool hasArrow) => HasArrow = hasArrow;
+
+    /// <summary>
+    /// 던지는 돌맹이 있는지
+    /// </summary>
+    public void RPC_RequestSetHasPebble(bool hasPebble) => HasPebble = hasPebble;
 
     /// <summary>
     /// 리스폰 장소 설정

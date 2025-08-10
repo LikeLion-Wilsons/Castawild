@@ -37,14 +37,13 @@ public class Chest : InteractableObject
         //현재 열고 있는 상자 설정
         canvasHolder.SetOpenedChest(chestData);
 
-
         //chest -> inventory
         inventoryData.RPC_SetItemFromChest(chestData);
 
         if (CanOpen)
         {
-            canvasHolder.uiParts["Inventory"].Open(player.inputManager);
-            canvasHolder.uiParts["Chest"].Open(player.inputManager);
+            canvasHolder.uiParts["Inventory"].Open();
+            canvasHolder.uiParts["Chest"].Open();
             if (Object.HasStateAuthority)
                 CanOpen = false;
             else if (player.HasInputAuthority)

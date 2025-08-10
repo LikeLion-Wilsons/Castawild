@@ -1,11 +1,11 @@
-using UnityEngine;
 using Fusion;
+using UnityEngine;
 
 namespace YSB_Scripts
 {
-    public class NetworkStone : EnvironmentObject
+    public class NetworkTree : EnvironmentObject
     {
-        private StoneDefinition definition;
+        private TreeDefinition definition;
         public override void Spawned()
         {
             base.Spawned();
@@ -17,16 +17,17 @@ namespace YSB_Scripts
             base.Init(def, instanceId);
             if (def == null)
             {
-                Debug.LogError("StoneDefinition is null!");
+                Debug.LogError("TreeDefinition is null!");
                 return;
             }
-            definition = def as StoneDefinition;
+            definition = def as TreeDefinition;
             MaxHP = definition.maxHealth;
             Health = MaxHP;
         }
 
         public override void Interact(PlayerRef player, int att)
         {
+            Debug.Log($"Tree[{InstanceId}] Interact with player: {player} for {att} damage");
             if (!IsAlive()) return;
 
             RPC_RequestDamage(player, att);
@@ -48,12 +49,11 @@ namespace YSB_Scripts
             else
             {
                 var playerObj = Runner.GetPlayerObject(player);
-                var inven = playerObj.GetComponent<Test.PlayerInventory>();
-                inven.AddItem(definition.dropItemID, definition.dropAmount);
+                Player _player = playerObj.GetComponent<Player>();
+                //InventoryDataManager inventoryData = _player.GetComponent<InventoryDataManager>();
+                //inventoryData.AddItem(definition.dropItemID, definition.dropAmount);//아이템 획득
 
                 Die();
-
-                ReviveTimer = TickTimer.CreateFromSeconds(Runner, 10f);
             }
         }
     }

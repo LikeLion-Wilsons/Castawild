@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
+[RequireComponent(typeof(NetworkObject))]
 public abstract class EnvironmentSpawner<T, U> : NetworkBehaviour
     where T : EnvironmentObject
     where U : SpawnableDefinition
@@ -15,8 +16,8 @@ public abstract class EnvironmentSpawner<T, U> : NetworkBehaviour
     [SerializeField] protected List<TerrainSpawnSettings> terrainSettings;
 
     [Header("Spawn Settings")]
-    [SerializeField] protected int maxSpawnAttempts = 20;
-    [SerializeField] protected float checkInterval = 5f;
+    [SerializeField] protected int maxSpawnAttempts = 5;
+    [SerializeField] protected float checkInterval = 3f;
 
     protected Dictionary<Terrain, float[,,]> terrainAlphaMapCache = new();
     protected Dictionary<Terrain, int> terrainTextureIndexCache = new();
@@ -85,7 +86,7 @@ public abstract class EnvironmentSpawner<T, U> : NetworkBehaviour
             {
                 // 살아있는 객체만 카운트 (EnvironmentObject 기반)
                 int aliveCount = 0;
-                foreach (var obj in setting.activeTrees)
+                foreach (var obj in setting.activeObjects)
                 {
                     if (obj != null && obj.GetComponent<T>().IsAlive())
                     {
@@ -93,7 +94,7 @@ public abstract class EnvironmentSpawner<T, U> : NetworkBehaviour
                     }
                 }
 
-                int needed = setting.maxTrees - aliveCount;
+                int needed = setting.maxObjects - aliveCount;
                 for (int i = 0; i < needed; i++)
                 {
                     TrySpawnOne(setting);
@@ -146,9 +147,9 @@ public abstract class EnvironmentSpawner<T, U> : NetworkBehaviour
 
     protected bool IsOverlapping(Vector3 pos, TerrainSpawnSettings setting)
     {
-        foreach (var obj in setting.activeTrees)
+        foreach (var obj in setting.activeObjects)
         {
-            if (obj != null && obj.GetComponent<T>().IsAlive() && Vector3.Distance(obj.transform.position, pos) < setting.minDistanceBetweenTrees)
+            if (obj != null && obj.GetComponent<T>().IsAlive() && Vector3.Distance(obj.transform.position, pos) < setting.minDistanceBetweenObjects)
                 return true;
         }
         return false;
@@ -175,7 +176,7 @@ public abstract class EnvironmentSpawner<T, U> : NetworkBehaviour
             Runner.MoveToRunnerScene(netObj.gameObject);
             if (netObj.HasStateAuthority)
             {
-                setting.activeTrees.Add(netObj);
+                setting.activeObjects.Add(netObj);
             }
         }
     }

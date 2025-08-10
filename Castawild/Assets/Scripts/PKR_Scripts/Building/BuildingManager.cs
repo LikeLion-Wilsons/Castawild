@@ -5,14 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class BuildingManager : NetworkBehaviour
 {
+    private InventoryDataManager inventory;
     [SerializeField] private BuildingPreview buildingPreview;
-    [SerializeField] private GameObject previewPrefab;
-    [SerializeField] private NetworkObject networkPrefab;
+    private NetworkObject networkPrefab;
     private bool isPreviewing = false;
+    [Networked] private int CurrentItemId { get; set; } = -1;
 
     void Start()
     {
         InventoryDataManager.onItemSelected += OnItemSelected;
+        inventory = GetComponent<InventoryDataManager>();
     }
 
     void OnDestroy()
@@ -23,16 +25,22 @@ public class BuildingManager : NetworkBehaviour
     private void OnItemSelected(int itemID)
     {
         if (HasInputAuthority == false) return;
-        
+        CurrentItemId = itemID;
+
         Debug.Log("Selected item ID: " + itemID);
         if (isPreviewing) PreviewStop();
 
-        bool isBuildingItem = true; //todo: itemID -> 건설 아이템 판별.
-        if (isBuildingItem == false) return;
+        if (itemID < 300 || itemID >= 400)
+            return;
 
-        GameObject prefab = previewPrefab;//todo: itemID -> 건설 프리팹 구하기.
-        PreviewStart(prefab);
+        GameObject previewPrefab = ItemDataBase.Instance.GetItemByID(itemID).buildPreviewPrefab;
+        RPC_SetNetworkPrefab(itemID);
+
+        PreviewStart(previewPrefab);
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_SetNetworkPrefab(int itemID) => networkPrefab = ItemDataBase.Instance.GetItemByID(itemID).buildPrefab.GetComponent<NetworkObject>();
 
     void Update()
     {
@@ -90,5 +98,6 @@ public class BuildingManager : NetworkBehaviour
         var retryRot = buildingPreview.GetPreviewRotation();
         Debug.Log($" pos:{pos},retryPos:{retryPos}, rot:{rot},retryRot:{retryRot}");
         Runner.Spawn(networkPrefab, pos, rot);
+        inventory.UseItem(CurrentItemId, 1);
     }
 }

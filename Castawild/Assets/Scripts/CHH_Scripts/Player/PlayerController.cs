@@ -1,5 +1,6 @@
 using Fusion;
 using Fusion.Addons.SimpleKCC;
+using System;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -7,6 +8,7 @@ public sealed class PlayerController : NetworkBehaviour
 {
     public SimpleKCC kcc;
     private Player player;
+    private PlayerInteractUI playerInteractUI;
     private Rigidbody rigid;
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
@@ -40,6 +42,7 @@ public sealed class PlayerController : NetworkBehaviour
     Collider[] _interactResult = new Collider[5];
 
     private NetworkButtons prevInputButtons;
+    public event Action<int> Hit;
 
     public override void Spawned()
     {
@@ -51,6 +54,7 @@ public sealed class PlayerController : NetworkBehaviour
         kcc = GetComponent<SimpleKCC>();
 
         player = GetComponent<Player>();
+        playerInteractUI = GetComponentInChildren<PlayerInteractUI>();
         movementManager = GetComponent<MovementStateManager>();
         movementManager.Host_ChangeState(MovementState.Idle);
 
@@ -94,15 +98,9 @@ public sealed class PlayerController : NetworkBehaviour
             return;
         }
 
-        if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
-        {
-            Debug.Log("AttackPlayer");
-            player.Host_TakeDamage(true, 30f);
-        }
-
         All_HandleMovement(input);
 
-        if (HasInputAuthority)
+        if (HasInputAuthority && !player.inventory.canvasHolder.AnyUIOpen())
             Client_TestTryOverlap(input);
 
         prevInputButtons = input.Buttons;
@@ -272,7 +270,7 @@ public sealed class PlayerController : NetworkBehaviour
                 {
                     if (interactable.CanInteract())
                     {
-                        player.playerInteractUI.InteractUI(interactable.interactableType);
+                        playerInteractUI.InteractUI(interactable.interactableType);
                         Client_currentInteractObject = interactable;
                         break;
                     }
@@ -281,8 +279,8 @@ public sealed class PlayerController : NetworkBehaviour
                 // 다른 오브젝트 
                 else if (_interactResult[i].TryGetComponent<InteractableObject>(out var interactableObject))
                 {
-                    player.playerInteractUI.InteractUI(interactableObject.interactableType);
-                    player.playerInteractUI.interactableText.text = interactableObject.text;
+                    playerInteractUI.InteractUI(interactableObject.interactableType);
+                    playerInteractUI.SetInteractText(interactableObject.text);
 
                     // 설치가능한 오브젝트
                     if (interactableObject.isPlaceable)
@@ -290,7 +288,9 @@ public sealed class PlayerController : NetworkBehaviour
                         if (interactableObject.CanInteract()
                             && input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
                         {
-                            // 제거하고 템창에 넣는 로직 추가하기
+                            player.inventory.RPC_GetItem(interactableObject.itemIndex, 1);
+                            RPC_DespawnObject(interactableObject.GetComponent<NetworkObject>());
+                            return;
                         }
                     }
 
@@ -304,7 +304,7 @@ public sealed class PlayerController : NetworkBehaviour
         }
         else
         {
-            player.playerInteractUI.InteractUI();
+            playerInteractUI.InteractUI();
             Client_currentInteractObject = null;
         }
 
@@ -346,18 +346,20 @@ public sealed class PlayerController : NetworkBehaviour
         if (Client_currentInteractObject == null || !HasInputAuthority)
             return;
 
+        int att = 0;
         if (Client_currentInteractObject.interactableType == InteractableType.Tree && Client_currentInteractObject.CanInteract())
         {
-            int att = player.All_GetToolAtt("Axe");
-            Debug.Log("Player Att : " + att);
+            att = player.All_GetToolAtt("Axe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
         }
         else if (Client_currentInteractObject.interactableType == InteractableType.Stone && Client_currentInteractObject.CanInteract())
         {
-            int att = player.All_GetToolAtt("Pickaxe");
-            Debug.Log("Player Att : " + att);
+            att = player.All_GetToolAtt("Pickaxe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
         }
+
+        if (att != 0)
+            Hit?.Invoke(att);
     }
 
     /// <summary>
@@ -384,6 +386,12 @@ public sealed class PlayerController : NetworkBehaviour
         else
             player.CanMove = true;
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplyHitInvoke(int dmg) => Hit?.Invoke(dmg);
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_DespawnObject(NetworkObject despawnObject) => Runner.Despawn(despawnObject);
 
     /// <summary>
     /// 위치 변경

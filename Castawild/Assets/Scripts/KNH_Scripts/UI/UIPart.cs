@@ -1,32 +1,34 @@
+using System;
 using UnityEngine;
 
 public class UIPart : MonoBehaviour
 {
+    public static event Action<bool> openUI;
     public bool isActive => gameObject.activeSelf;
     // 수정한 부분
-    public virtual void Open(PlayerInputManager inputManager = null)
+    public virtual void Open()
     {
-        inputManager?.UnlockCursor();
+        openUI?.Invoke(true);
         gameObject.SetActive(true);
     }
 
     // 수정한 부분
-    public virtual void Close(PlayerInputManager inputManager = null)
+    public virtual void Close()
     {
+        openUI?.Invoke(false);
         if (isActive == false)
         {
             //Debug.LogWarning("Not Active this UI");
             return;
         }
-        inputManager?.LockCursor();
         gameObject.SetActive(false);
     }
 
     // 수정한 부분
-    public virtual void Toggle(PlayerInputManager inputManager = null)
+    public virtual void Toggle()
     {
-        if (isActive) Close(inputManager);
-        else Open(inputManager);
+        if (isActive) Close();
+        else Open();
     }
 
     public virtual bool IsOpen()

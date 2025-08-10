@@ -24,12 +24,17 @@ public class AimState : ToolBaseState
         toolStateManager.Client_SetAimCameraAndUI(true);
 
         if (toolStateManager.CurrentToolType == ToolType.Bow)
+        {
             toolStateManager.player.All_SetBowPos(true);
+            toolStateManager.player.All_SetArrowActive(true);
+            toolStateManager.All_SetArrowPull(true);
+        }
     }
 
     public override void UpdateState()
     {
-        RotatePlayer();
+        if (toolStateManager.input.currentView == ViewType.ThirdPerson)
+            toolStateManager.All_RotatePlayer();
 
         if (toolStateManager.movementManager.CurrentMoveState == MovementState.Idle)
             toolStateManager.CurrentToolAnimationState = ToolAnimationState.FullAim;
@@ -48,7 +53,7 @@ public class AimState : ToolBaseState
         {
             if (toolStateManager.CurrentToolType == ToolType.Bow)
             {
-                toolStateManager.player.All_SetBowPos(true);
+                toolStateManager.player.All_SetBowPos(false);
                 toolStateManager.All_SetArrowPull(false);
             }
             toolStateManager.Client_SetAimCameraAndUI(false);
@@ -61,17 +66,7 @@ public class AimState : ToolBaseState
         base.ExitState();
     }
 
-    private void RotatePlayer()
-    {
-        Vector3 lookDirection = toolStateManager.cameraManager.CurrenCam.transform.forward;
-        lookDirection.y = 0f;
 
-        if (lookDirection.sqrMagnitude > 0.001f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-            toolStateManager.transform.rotation = Quaternion.Slerp(toolStateManager.transform.rotation, targetRotation, Time.deltaTime * 10f);
-        }
-    }
 
     private void LookForward()
     {

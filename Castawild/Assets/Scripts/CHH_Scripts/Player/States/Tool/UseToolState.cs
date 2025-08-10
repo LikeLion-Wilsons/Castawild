@@ -1,3 +1,4 @@
+using UnityEditor.Purchasing;
 using UnityEngine;
 
 public class UseToolState : ToolBaseState
@@ -19,19 +20,20 @@ public class UseToolState : ToolBaseState
         if (toolStateManager.CurrentToolType == ToolType.Fist || toolStateManager.CurrentToolType == ToolType.Throw)
         {
             toolStateManager.Client_ArmVisibleChanged(true);
-            if (toolStateManager.CurrentToolType == ToolType.Throw)
-                toolStateManager.player.All_SetCurrentToolActive(true);
         }
 
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
+        {
+            toolStateManager.player.All_SetBowPos(true);
             toolStateManager.All_SetArrowPull(true);
+        }
 
         elapsed = 0f;
     }
 
     public override void UpdateState()
     {
-        if (elapsed <= rotateTime && toolStateManager.CurrentToolType != ToolType.Bow)
+        if (elapsed <= rotateTime)
         {
             elapsed += toolStateManager.Runner.DeltaTime;
             if (toolStateManager.input.currentView == ViewType.ThirdPerson)
@@ -41,7 +43,6 @@ public class UseToolState : ToolBaseState
         if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
             toolStateManager.Client_SetAimCameraAndUI(false);
-            toolStateManager.player.All_SetBowPos(false);
         }
 
         // 곡괭이, 도끼는 손 때까지 상태 유지
@@ -66,6 +67,8 @@ public class UseToolState : ToolBaseState
             else
             {
                 toolStateManager.Host_ChangeState(ToolState.Idle);
+                if (toolStateManager.HasInputAuthority)
+                    toolStateManager.Client_SetAimCameraAndUI(false);
             }
         }
     }
@@ -73,6 +76,12 @@ public class UseToolState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
+
+        if (toolStateManager.CurrentToolType == ToolType.Bow && toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
+            toolStateManager.player.All_SetBowPos(false);
+
+        if (toolStateManager.CurrentToolType == ToolType.Throw)
+            toolStateManager.player.All_SetPebbleActive(true);
 
         if (toolStateManager.CurrentToolType == ToolType.Fist)
             toolStateManager.Client_ArmVisibleChanged(false);

@@ -1,10 +1,17 @@
 using Fusion;
 using UnityEngine;
+using System;
+using UnityEditor;
+
 public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, INetworkVisibilityObject, YSB_Scripts.IInteractable, IRevivable
 {
+    public event Action<INetworkVisibilityObject> OnDestroyed;
     public InteractableType interactableType;
     public int InstanceId { get; set; }
+    public GameObject GameObject { get { return gameObject; } }
     public GameObject VisualRoot { get { return visualRoot; } }
+    public Collider Collider { get { return cachedCollider; } }
+    private Collider cachedCollider;
     [SerializeField] private GameObject visualRoot;
 
     [Networked] protected int Health { get; set; } 
@@ -22,6 +29,7 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, INetwork
 
     public virtual void Init(SpawnableDefinition def, int instanceId)
     {
+        cachedCollider = GetComponent<Collider>();
         InstanceId = instanceId;
     }
 
@@ -29,7 +37,6 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, INetwork
 
     // INetworkVisibilityObject
     public virtual bool CanBeVisible() => IsAlive();
-    public virtual NetworkObject GetNetworkObject() => Object;
 
     // IInteractable
     public virtual bool CanInteract() => IsAlive();
@@ -44,8 +51,9 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, INetwork
         Health = MaxHP;
     }
 
-    protected void Die()
+    protected void  Die()
     {
+        OnDestroyed?.Invoke(this);
         ReviveTimer = TickTimer.CreateFromSeconds(Runner, reviveTime);
     }
 }

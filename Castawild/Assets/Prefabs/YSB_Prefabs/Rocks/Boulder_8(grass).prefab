@@ -182,10 +182,10 @@ GameObject:
   m_Component:
   - component: {fileID: 5145814649184166351}
   - component: {fileID: 1802997452799358501}
-  - component: {fileID: 8804911070628611239}
   - component: {fileID: 6218583717084362499}
   - component: {fileID: 434945656591654047}
   - component: {fileID: 2091150761662038341}
+  - component: {fileID: 960063757229946396}
   m_Layer: 8
   m_Name: Boulder_8(grass)
   m_TagString: Untagged
@@ -201,14 +201,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5239562337097104110}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.32754466, y: 0.84253186, z: 0.2715322, w: 0.33034062}
+  m_LocalRotation: {x: -0.3275425, y: 0.8425312, z: 0.27153394, w: 0.33034295}
   m_LocalPosition: {x: -61.98, y: 58.34, z: 137.25}
   m_LocalScale: {x: 0.5065686, y: 0.5065686, z: 0.5065687}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4126674450065022570}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -42.373, y: 149.156, z: -30.282}
 --- !u!205 &1802997452799358501
 LODGroup:
   m_ObjectHideFlags: 0
@@ -223,11 +223,11 @@ LODGroup:
   m_AnimateCrossFading: 0
   m_LastLODIsBillboard: 0
   m_LODs:
-  - screenRelativeHeight: 0.25
+  - screenRelativeHeight: 0.9
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 1267776923398885720}
-  - screenRelativeHeight: 0.125
+  - screenRelativeHeight: 0.75
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 1327117037178037390}
@@ -236,28 +236,6 @@ LODGroup:
     renderers:
     - renderer: {fileID: 7762399863512237868}
   m_Enabled: 1
---- !u!64 &8804911070628611239
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5239562337097104110}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 3297464386448611629, guid: 7441e175e19f4237b4ea19701af956aa, type: 3}
 --- !u!114 &6218583717084362499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -309,6 +287,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactableType: 2
   visualRoot: {fileID: 8188281656959128784}
+  reviveTime: 10
+--- !u!136 &960063757229946396
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5239562337097104110}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7971357095221934113
 GameObject:
   m_ObjectHideFlags: 0

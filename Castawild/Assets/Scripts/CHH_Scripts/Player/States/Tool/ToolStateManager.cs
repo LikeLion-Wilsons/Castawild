@@ -147,8 +147,11 @@ public class ToolStateManager : BaseStateManager
 
             if (player.CanPVP && hitObject.TryGetComponent(out Player otherPlayer))
             {
-                otherPlayer.Host_TakeDamage(true, player.All_GetToolAtt());
                 Host_alreadyHit.Add(otherPlayer.transform.root);
+
+                int attack = player.All_GetToolAtt();
+                otherPlayer.Host_TakeDamage(true, attack);
+                playerController.RPC_ApplyHitInvoke(attack);
             }
         }
     }
@@ -286,6 +289,13 @@ public class ToolStateManager : BaseStateManager
                 throwObject = Runner.Spawn(arrowPrefab.gameObject, thirdPersonArrowPos.position, cameraManager.thirdPersonCam.transform.rotation);
                 throwObject?.GetComponent<ThrowObject>().AddForce(arrowForce, arrowUpForce, rayTargetPos);
             }
+
+            player.inventory.UseItem(201, 1);
+            if (player.inventory.GetItemCount(201) <= 0)
+            {
+                player.HasArrow = false;
+                player.RPC_NotifyArrowActive(false);
+            }
         }
         else if (!isArrow)
         {
@@ -294,9 +304,18 @@ public class ToolStateManager : BaseStateManager
             else
                 throwObject = Runner.Spawn(throwableStonePrefab.gameObject, throwPos.position, cameraManager.thirdPersonCam.transform.rotation);
             throwObject?.GetComponent<ThrowObject>().AddForce(throwForce, throwUpForce, rayTargetPos);
-        }
 
-        // 돌맹이나 화살 개수 줄이기
+            throwObject.GetComponent<ThrowObject>().thrower = player.gameObject;
+
+            player.inventory.UseItem(202, 1);
+
+            if (player.inventory.GetItemCount(202) <= 0)
+            {
+                Debug.Log("돌맹이 없음, 주먹으로 변경");
+                player.Host_InitCurrentTool();
+                CurrentToolType = ToolType.Fist;
+            }
+        }
     }
 
     /// <summary>
@@ -351,6 +370,15 @@ public class ToolStateManager : BaseStateManager
     /// 활 쏘는 애니메이션 트리거
     /// </summary>
     public void All_BowShootAnimation() => bowAnim.SetTrigger("Shoot");
+
+    public void All_RotatePlayer()
+    {
+        Vector3 lookDirection = cameraManager.CurrenCam.transform.forward;
+        lookDirection.y = 0f;
+
+        Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+    }
 
     /// <summary>
     /// 현재 아이템 변경 RPC
@@ -407,7 +435,7 @@ public class ToolStateManager : BaseStateManager
         Host_SpawnThrowObject(isArrow == 0 ? false : true, rayTargetPos);
 
         if (isArrow == 0)
-            player.All_SetCurrentToolActive(false);
+            player.All_SetPebbleActive(false);
         else
             player.arrow.SetActive(false);
     }
