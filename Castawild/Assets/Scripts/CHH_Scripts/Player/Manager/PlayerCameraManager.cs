@@ -302,8 +302,6 @@ public class PlayerCameraManager : MonoBehaviour
     {
         if (moveCamera)
         {
-            player.Client_AttachToCamera(false);
-
             if (moveCameraCoroutine != null)
             {
                 StopCoroutine(moveCameraCoroutine);
@@ -317,8 +315,6 @@ public class PlayerCameraManager : MonoBehaviour
 
         else
         {
-            player.Client_AttachToCamera(true);
-
             if (moveCameraCoroutine != null)
             {
                 StopCoroutine(moveCameraCoroutine);

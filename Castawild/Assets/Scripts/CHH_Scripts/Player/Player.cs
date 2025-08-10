@@ -336,18 +336,18 @@ public class Player : NetworkBehaviour
     /// </summary>
     public void Client_AttachToCamera(bool attach)
     {
-        //if (attach && cameraManager.currentView == ViewType.FirstPerson)
-        //{
-        //    amarture.transform.SetParent(cameraManager.firstPersonCam.transform);
-        //    amarture.transform.localPosition = new Vector3(0f, -3f, 0f);
-        //    amarture.transform.localRotation = Quaternion.identity;
-        //}
-        //else
-        //{
-        //    amarture.transform.SetParent(transform);
-        //    amarture.transform.localPosition = Vector3.zero;
-        //    amarture.transform.localRotation = Quaternion.identity;
-        //}
+        if (attach && cameraManager.currentView == ViewType.FirstPerson)
+        {
+            amarture.transform.SetParent(cameraManager.firstPersonCam.transform);
+            amarture.transform.localPosition = new Vector3(0f, -3f, 0f);
+            amarture.transform.localRotation = Quaternion.identity;
+        }
+        else
+        {
+            amarture.transform.SetParent(transform);
+            amarture.transform.localPosition = Vector3.zero;
+            amarture.transform.localRotation = Quaternion.identity;
+        }
     }
 
     /// <summary>
