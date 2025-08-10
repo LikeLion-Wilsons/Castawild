@@ -95,7 +95,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6835935351536815891}
-  - component: {fileID: 1783199649351805250}
+  - component: {fileID: 6851271583380465475}
   - component: {fileID: 384296411215608051}
   - component: {fileID: 2863630399083837473}
   - component: {fileID: 2184143154126297667}
@@ -123,7 +123,7 @@ Transform:
   - {fileID: 5839911783318004444}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1783199649351805250
+--- !u!65 &6851271583380465475
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -142,8 +142,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 2.8448958, y: 0.78856, z: 2.910641}
+  m_Center: {x: -0.011339009, y: 0.303418, z: -0.0129544735}
 --- !u!114 &384296411215608051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,6 +157,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactableType: 0
+  itemIndex: 0
   text: Campfire
   isPlaceable: 1
   fireVFX: {fileID: 8295591563862043295, guid: e01f2e62cf41a3449be2dade3b2c2d79, type: 3}
