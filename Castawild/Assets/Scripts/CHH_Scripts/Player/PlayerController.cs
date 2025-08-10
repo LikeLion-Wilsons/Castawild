@@ -199,7 +199,8 @@ public sealed class PlayerController : NetworkBehaviour
         velocity.x = 0;
         velocity.z = 0;
         velocity.y += gravity * Runner.DeltaTime;
-        kcc.Move(velocity);
+        if (!Grounded)
+            kcc.Move(velocity);
     }
 
     private void All_HandleMovement(PlayerNetworkInputData input)
