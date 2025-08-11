@@ -62,6 +62,7 @@ public class DayNightCycleManager : NetworkBehaviour
                     TimeOfDay = TargetTimeOfDay;
                     CurrentState = TimeSkipState.Normal;
                     SleepingPlayers.Clear();
+                    Rpc_NotifyTimeSkipStarted();
                 }
                 else
                 {
@@ -121,8 +122,6 @@ public class DayNightCycleManager : NetworkBehaviour
         {
             TargetTimeOfDay = 0.25f;
             CurrentState = TimeSkipState.Skipping;
-
-            Rpc_NotifyTimeSkipStarted();
         }
     }
 
