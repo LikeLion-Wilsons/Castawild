@@ -2,7 +2,7 @@ using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum MovementState { None, Idle, Walk, Run, Crouch, Jump, Sleep, Death, GetHit }
+public enum MovementState { None, Idle, Walk, Run, Crouch, Jump, Sleep, Death, GetHit, Gather }
 public enum MoveAnimatoinState { None, Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump, Sleep, Death, GetHit }
 
 public class MovementStateManager : BaseStateManager
@@ -24,6 +24,7 @@ public class MovementStateManager : BaseStateManager
     public SleepState sleepState;
     public GetHitState getHitState;
     public DeathState deathState;
+    public GatherState gatherState;
     public Dictionary<MovementState, MovementBaseState> movementStateDict;
     public MovementBaseState currentState; // 호스트용 변수
     #endregion
@@ -99,6 +100,7 @@ public class MovementStateManager : BaseStateManager
         sleepState = new SleepState(this, inputManager);
         getHitState = new GetHitState(this, inputManager);
         deathState = new DeathState(this, inputManager);
+        gatherState = new GatherState(this, inputManager);
 
         movementStateDict = new Dictionary<MovementState, MovementBaseState>
         {
@@ -109,7 +111,8 @@ public class MovementStateManager : BaseStateManager
             { MovementState.Jump, jumpState },
             { MovementState.Sleep, sleepState },
             { MovementState.GetHit, getHitState },
-            { MovementState.Death, deathState }
+            { MovementState.Death, deathState },
+            { MovementState.Gather, gatherState }
         };
     }
 
@@ -245,6 +248,15 @@ public class MovementStateManager : BaseStateManager
     public void RPC_RequestChangeSleepState(PlayerRef playerRef)
     {
         Host_ChangeState(MovementState.Sleep);
+    }
+
+    /// <summary>
+    /// Gather상태로 변경하는 RPC
+    /// </summary>
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestChangeGatherState(PlayerRef playerRef)
+    {
+        Host_ChangeState(MovementState.Gather);
     }
 
     /// <summary>

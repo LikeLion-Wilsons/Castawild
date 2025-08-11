@@ -294,6 +294,13 @@ public sealed class PlayerController : NetworkBehaviour
                     {
                         playerInteractUI.InteractUI(interactable.interactableType);
                         Client_currentInteractObject = interactable;
+
+                        if (interactable.interactableType == InteractableType.Gatherable
+                            && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
+                        {
+                            movementManager.RPC_RequestChangeGatherState(Object.InputAuthority);
+                            playerInteractUI.SetInteractText("줍기");
+                        }
                         break;
                     }
                 }
@@ -381,6 +388,9 @@ public sealed class PlayerController : NetworkBehaviour
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
             toolManager.client_DecreaseToolDuration = true;
         }
+
+        else if (Client_currentInteractObject.interactableType == InteractableType.Gatherable && Client_currentInteractObject.CanInteract())
+            Client_currentInteractObject?.Interact(Object.InputAuthority, att);
 
         if (att != 0)
         {
