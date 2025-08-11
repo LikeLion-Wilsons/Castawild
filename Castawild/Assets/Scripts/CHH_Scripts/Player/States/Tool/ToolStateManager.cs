@@ -49,6 +49,7 @@ public class ToolStateManager : BaseStateManager
     [SerializeField] private Vector3 hitBox = new Vector3(1f, 1f, 1.0f);
     public HashSet<Transform> Host_alreadyHit = new HashSet<Transform>();
     [HideInInspector] public bool client_DecreaseToolDuration;
+    [HideInInspector] public bool client_isDecreased;
 
     #region Network
     [Header("Network")]

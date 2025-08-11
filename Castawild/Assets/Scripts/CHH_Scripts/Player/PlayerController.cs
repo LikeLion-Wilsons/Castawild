@@ -38,6 +38,7 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private Transform thirdPersonInteractPos;
     [SerializeField] private float interactRadius = 1f;
     [SerializeField] private LayerMask interactLayer;
+    [SerializeField] private float kneelY = 6.8f;
     [HideInInspector] public EnvironmentObject Client_currentInteractObject;
 
     [Networked, HideInInspector] public Vector3 ChangePos { get; set; }
@@ -294,6 +295,19 @@ public sealed class PlayerController : NetworkBehaviour
                     {
                         playerInteractUI.InteractUI(interactable.interactableType);
                         Client_currentInteractObject = interactable;
+
+                        if (interactable.interactableType == InteractableType.Gatherable
+                            && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
+                        {
+                            movementManager.RPC_RequestChangeGatherState(Object.InputAuthority);
+                            playerInteractUI.SetInteractText("줍기");
+
+                            float targetTopY = interact.bounds.max.y;
+                            if (targetTopY - transform.position.y >= kneelY)
+                                movementManager.RPC_RequestSetKneel(false);
+                            else
+                                movementManager.RPC_RequestSetKneel(true);
+                        }
                         break;
                     }
                 }
@@ -382,8 +396,14 @@ public sealed class PlayerController : NetworkBehaviour
             toolManager.client_DecreaseToolDuration = true;
         }
 
+        else if (Client_currentInteractObject.interactableType == InteractableType.Gatherable && Client_currentInteractObject.CanInteract())
+            Client_currentInteractObject?.Interact(Object.InputAuthority, att);
+
         if (att != 0)
+        {
+            Debug.Log("Hit Invoke");
             Hit?.Invoke(att);
+        }
     }
 
     /// <summary>
@@ -412,7 +432,11 @@ public sealed class PlayerController : NetworkBehaviour
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ApplyHitInvoke(int dmg) => Hit?.Invoke(dmg);
+    public void RPC_ApplyHitInvoke(int dmg)
+    {
+        Debug.Log("Hit Invoke");
+        Hit?.Invoke(dmg);
+    }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     private void RPC_DespawnObject(NetworkObject despawnObject) => Runner.Despawn(despawnObject);

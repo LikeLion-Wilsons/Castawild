@@ -2,7 +2,7 @@ using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum MovementState { None, Idle, Walk, Run, Crouch, Jump, Sleep, Death, GetHit }
+public enum MovementState { None, Idle, Walk, Run, Crouch, Jump, Sleep, Death, GetHit, Gather }
 public enum MoveAnimatoinState { None, Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump, Sleep, Death, GetHit }
 
 public class MovementStateManager : BaseStateManager
@@ -24,6 +24,7 @@ public class MovementStateManager : BaseStateManager
     public SleepState sleepState;
     public GetHitState getHitState;
     public DeathState deathState;
+    public GatherState gatherState;
     public Dictionary<MovementState, MovementBaseState> movementStateDict;
     public MovementBaseState currentState; // 호스트용 변수
     #endregion
@@ -45,7 +46,6 @@ public class MovementStateManager : BaseStateManager
     private Vector3 spherePos;
     #endregion
 
-
     #region Network
     [Header("Networked")]
     [Networked, OnChangedRender(nameof(OnCurrentMoveStateChanged))]
@@ -56,6 +56,7 @@ public class MovementStateManager : BaseStateManager
     [Networked, HideInInspector] public bool Revived { get; set; }
     [Networked, HideInInspector] public bool JumpTriggered { get; set; }
     [Networked, HideInInspector] public Vector2 MoveValue { get; set; }
+    [Networked, HideInInspector] public bool kneel { get; set; }
     #endregion
 
     public float Stamina
@@ -99,6 +100,7 @@ public class MovementStateManager : BaseStateManager
         sleepState = new SleepState(this, inputManager);
         getHitState = new GetHitState(this, inputManager);
         deathState = new DeathState(this, inputManager);
+        gatherState = new GatherState(this, inputManager);
 
         movementStateDict = new Dictionary<MovementState, MovementBaseState>
         {
@@ -109,7 +111,8 @@ public class MovementStateManager : BaseStateManager
             { MovementState.Jump, jumpState },
             { MovementState.Sleep, sleepState },
             { MovementState.GetHit, getHitState },
-            { MovementState.Death, deathState }
+            { MovementState.Death, deathState },
+            { MovementState.Gather, gatherState }
         };
     }
 
@@ -248,6 +251,15 @@ public class MovementStateManager : BaseStateManager
     }
 
     /// <summary>
+    /// Gather상태로 변경하는 RPC
+    /// </summary>
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestChangeGatherState(PlayerRef playerRef)
+    {
+        Host_ChangeState(MovementState.Gather);
+    }
+
+    /// <summary>
     /// 부활하는 RPC
     /// </summary>
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -256,4 +268,7 @@ public class MovementStateManager : BaseStateManager
         Host_ChangeState(MovementState.Idle);
         player.Host_RevivedStatus();
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestSetKneel(NetworkBool _kneel) => kneel = _kneel;
 }

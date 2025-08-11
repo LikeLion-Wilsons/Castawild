@@ -2,6 +2,7 @@ using Fusion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Test;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -114,10 +115,19 @@ public class Player : NetworkBehaviour
 
         if (HasInputAuthority)
             RPC_RequestSetNickname(PlayerTempData.nickname);
+
         All_OnChangedNickname();
+
         if (HasInputAuthority)
             nicknameUI.gameObject.SetActive(false);
     }
+
+
+    public void Init() => RespawnPos = transform.position;
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_RequestSetNickname(string nickname) => this.nickname = nickname;
+
 
     public override void FixedUpdateNetwork()
     {
@@ -164,6 +174,7 @@ public class Player : NetworkBehaviour
 
             attackObject.player.RPC_ApplyHitInvoke(attackObject.Att);
             attackObject.player.toolStateManager.client_DecreaseToolDuration = true;
+            attackObject.player.GetComponent<PlayerController>().RPC_ApplyHitInvoke(attackObject.Att);
         }
 
         // 동물 공격
@@ -224,11 +235,6 @@ public class Player : NetworkBehaviour
                 }
             }
         }
-    }
-
-    public void Init()
-    {
-        RespawnPos = transform.position;
     }
 
     /// <summary>
@@ -408,6 +414,8 @@ public class Player : NetworkBehaviour
         Stamina = playerData.maxStamina;
         Thirst = playerData.maxThirst * 0.2f;
         Hunger = playerData.maxHunger * 0.2f;
+
+        takeDamageEffect.weight = 0f;
     }
 
     /// <summary>
@@ -434,6 +442,7 @@ public class Player : NetworkBehaviour
             {
                 RPC_ApplyPlayDamagedEffectAnim();
                 RPC_NotifyPlayDamagedAnim();
+
                 if (movementManager.input.currentView == ViewType.FirstPerson)
                     playerController.RPC_ApplyShakeCamera(transform.right, 0.5f);
                 else
@@ -498,9 +507,6 @@ public class Player : NetworkBehaviour
                 tool.Value.SetActive(false);
         }
     }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_RequestSetNickname(string nickname) => this.nickname = nickname;
 
     void All_OnChangedNickname() => nicknameUI.SetNickname(nickname);
 
@@ -636,6 +642,8 @@ public class Player : NetworkBehaviour
         Thirst = playerData.maxThirst;
         Hunger = playerData.maxHunger;
         Temperature = playerData.maxTemperature;
+
+        takeDamageEffect.weight = 0f;
     }
 
     /// <summary>

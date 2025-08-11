@@ -115,7 +115,7 @@ public class PlayerInteractUI : MonoBehaviour
             placeableUI.alpha = 0f;
         }
 
-        else if (interactableType == InteractableType.Item)
+        else if (interactableType == InteractableType.Item || interactableType == InteractableType.Gatherable)
         {
             interactableUI.alpha = 1f;
             placeableUI.alpha = 0f;
