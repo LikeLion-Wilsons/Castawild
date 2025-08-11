@@ -326,7 +326,7 @@ public class ToolStateManager : BaseStateManager
     /// <summary>
     /// Ray로 조준 위치 설정
     /// </summary>
-    public void Client_SetTargetPos(int isArrow)
+    public void Client_Throw(int isArrow)
     {
         if (isArrow == 1)
             All_SetArrowPull(false);
@@ -336,6 +336,9 @@ public class ToolStateManager : BaseStateManager
 
         if (isArrow == 1)
             client_DecreaseToolDuration = true;
+
+        if (cameraManager.currentView == ViewType.FirstPerson && player.HasArrow)
+            cameraManager.ShakeCamera(transform.right, 0.1f);
 
         Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
         Ray ray = Camera.main.ScreenPointToRay(screenCenter);
