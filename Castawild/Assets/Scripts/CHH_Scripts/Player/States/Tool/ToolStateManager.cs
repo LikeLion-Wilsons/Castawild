@@ -133,55 +133,6 @@ public class ToolStateManager : BaseStateManager
     }
 
     /// <summary>
-    /// 주먹 공격
-    /// </summary>
-    //public void Host_FistAttack()
-    //{
-    //    Collider[] hitObjects = Physics.OverlapBox(fistPos.position, hitBox, fistPos.rotation);
-
-    //    for (int i = 0; i < hitObjects.Length; i++)
-    //    {
-    //        Transform hitObject = hitObjects[i].transform.root;
-
-    //        if (hitObject.transform.root == this.transform.root)
-    //            continue;
-
-    //        if (Host_alreadyHit.Contains(hitObject.transform.root))
-    //            continue;
-
-    //        if (player.CanPVP && hitObject.TryGetComponent(out Player otherPlayer))
-    //        {
-    //            Host_alreadyHit.Add(otherPlayer.transform.root);
-
-    //            int attack = player.All_GetToolAtt();
-    //            otherPlayer.Host_TakeDamage(true, attack);
-    //            playerController.RPC_ApplyHitInvoke(attack);
-    //        }
-    //    }
-    //}
-
-    /// <summary>
-    /// 때릴 수 있게 설정
-    /// </summary>
-    //public void Host_StartHit()
-    //{
-    //    if (!HasStateAuthority)
-    //        return;
-    //    Host_canHit = true;
-    //}
-
-    ///// <summary>
-    ///// 때린거 초기화
-    ///// </summary>
-    //public void Host_FinishHit()
-    //{
-    //    if (!HasStateAuthority)
-    //        return;
-    //    Host_canHit = false;
-    //    Host_alreadyHit.Clear();
-    //}
-
-    /// <summary>
     /// 애니메이션 업데이트
     /// </summary>
     public void All_UpdateMoveAnimation()

@@ -245,14 +245,20 @@ public class Player : NetworkBehaviour
         RPC_NotifySetCurrentItemType(itemIdx);
 
         // 도구일 경우 장착
-        if (currentItemType == ItemType.Tool)
+        if (currentItemType == ItemType.Tool || currentItemType == ItemType.Drink || currentItemType == ItemType.Food)
         {
             if (toolDict.TryGetValue(itemIdx, out GameObject currentToolGameObject))
             {
                 if (HasInputAuthority)
                     RPC_NotifyEquipmentTool(itemIdx);
-                ToolInfo toolInfo = currentToolGameObject.GetComponent<ToolInfo>();
-                RPC_RequestSetCurrentTool(toolInfo.ItemID, toolInfo.ToolName, toolInfo.Att, toolInfo.Durability);
+
+                if (currentItemType == ItemType.Tool)
+                {
+                    ToolInfo toolInfo = currentToolGameObject.GetComponent<ToolInfo>();
+                    RPC_RequestSetCurrentTool(toolInfo.ItemID, toolInfo.ToolName, toolInfo.Att, toolInfo.Durability);
+                }
+                else
+                    RPC_RequestSetCurrentTool();
             }
             else
                 Debug.LogWarning($"{itemIdx} 인덱스 없음");
