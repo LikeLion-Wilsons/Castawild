@@ -19,7 +19,15 @@ public class AnimationTrigger : MonoBehaviour
         interactUI = transform.parent.GetComponentInChildren<PlayerInteractUI>();
     }
 
-    public void ToolAnimationFinishTrigger() => toolManager.IsAnimationFinished = true;
+    public void ToolAnimationFinishTrigger()
+    {
+        if (toolManager.HasInputAuthority)
+        {
+            toolManager.client_isDecreased = false;
+            toolManager.client_DecreaseToolDuration = false;
+        }
+        toolManager.IsAnimationFinished = true;
+    }
     public void ToolAnimationStartTrigger() => toolManager.IsAnimationFinished = false;
     public void MoveAnimationFinishTrigger() => movementManager.IsAnimationFinished = true;
     public void MoveAnimationStartTrigger() => movementManager.IsAnimationFinished = false;

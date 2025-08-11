@@ -3621,6 +3621,7 @@ MonoBehaviour:
   throwPos: {fileID: 8012178248796667738}
   hitBox: {x: 0.64, y: 1.5, z: 0.85}
   client_DecreaseToolDuration: 0
+  client_isDecreased: 0
   _CurrentToolState: 0
   _CurrentToolAnimationState: 0
   _CurrentToolType: 0
@@ -4694,6 +4695,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7844614530758869572}
     m_Modifications:
+    - target: {fileID: -587096083230232040, guid: ade642d343edac543a66fdccb1786eac, type: 3}
+      propertyPath: SortKey
+      value: 3146354028
+      objectReference: {fileID: 0}
     - target: {fileID: 1568103841125034, guid: ade642d343edac543a66fdccb1786eac, type: 3}
       propertyPath: m_Name
       value: 404_StoneSpear
@@ -4767,6 +4772,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7844614530758869572}
     m_Modifications:
+    - target: {fileID: -8968120805878920706, guid: 60e3d6b7b45c38940b382ad3225bc322, type: 3}
+      propertyPath: SortKey
+      value: 2687743123
+      objectReference: {fileID: 0}
     - target: {fileID: 1683656624262994, guid: 60e3d6b7b45c38940b382ad3225bc322, type: 3}
       propertyPath: m_Name
       value: 405_StonePickaxe
@@ -5039,6 +5048,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3479888908781244880, guid: 320f9d5c5f1873442818fc5b70dda38d, type: 3}
+      propertyPath: SortKey
+      value: 3407401569
+      objectReference: {fileID: 0}
     - target: {fileID: 8967367658928670673, guid: 320f9d5c5f1873442818fc5b70dda38d, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -5146,6 +5159,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7844614530758869572}
     m_Modifications:
+    - target: {fileID: -1580625264523228205, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
+      propertyPath: SortKey
+      value: 1696242542
+      objectReference: {fileID: 0}
     - target: {fileID: 1771104533621832, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
       propertyPath: m_Name
       value: 401_WoodenClub

@@ -16,7 +16,11 @@ public class UseToolState : ToolBaseState
         toolStateManager.CurrentToolAnimationState = ToolAnimationState.UseTool;
         toolStateManager.movementManager.Host_ChangeState(MovementState.Idle);
         toolStateManager.playerController.Host_FreezePosition(true);
-        toolStateManager.client_DecreaseToolDuration = false;
+        if (toolStateManager.HasInputAuthority)
+        {
+            toolStateManager.client_DecreaseToolDuration = false;
+            toolStateManager.client_isDecreased = false;
+        }
 
         if (toolStateManager.CurrentToolType == ToolType.Fist || toolStateManager.CurrentToolType == ToolType.Throw)
         {
@@ -34,8 +38,11 @@ public class UseToolState : ToolBaseState
 
     public override void UpdateState()
     {
-        if (toolStateManager.HasInputAuthority && toolStateManager.client_DecreaseToolDuration)
+        if (toolStateManager.HasInputAuthority && toolStateManager.client_DecreaseToolDuration && !toolStateManager.client_isDecreased)
+        {
+            toolStateManager.client_isDecreased = true;
             toolStateManager.player.inventory.RPC_SubtractDurability(toolStateManager.player.client_CurrentToolDuration);
+        }
 
         if (elapsed <= rotateTime)
         {
@@ -58,6 +65,11 @@ public class UseToolState : ToolBaseState
         {
             if (CanComboAttack() && comboCount == 1)
             {
+                if (toolStateManager.HasInputAuthority)
+                {
+                    toolStateManager.client_isDecreased = false;
+                    toolStateManager.client_DecreaseToolDuration = false;
+                }
                 comboCount++;
                 toolStateManager.CanComboAttack = true;
                 return;
@@ -81,6 +93,7 @@ public class UseToolState : ToolBaseState
     {
         base.ExitState();
 
+        toolStateManager.client_isDecreased = false;
         toolStateManager.client_DecreaseToolDuration = false;
 
         if (toolStateManager.CurrentToolType == ToolType.Bow && toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
