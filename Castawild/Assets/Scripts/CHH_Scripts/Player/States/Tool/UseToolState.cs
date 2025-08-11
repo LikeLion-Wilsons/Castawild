@@ -38,7 +38,7 @@ public class UseToolState : ToolBaseState
             && toolStateManager.All_IsDecreaseDurationTool())
         {
             toolStateManager.IsDecreased = true;
-            toolStateManager.player.inventory.RPC_SubtractDurability(toolStateManager.player.CurrentToolDurability);
+            toolStateManager.player.inventory.RPC_SubtractDurability(toolStateManager.player.currentToolInfoData.Durability);
         }
 
         if (elapsed <= rotateTime)
