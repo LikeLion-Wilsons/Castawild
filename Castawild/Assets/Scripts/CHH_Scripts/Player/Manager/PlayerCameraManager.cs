@@ -325,8 +325,8 @@ public class PlayerCameraManager : MonoBehaviour
     /// <summary>
     /// 카메라 쉐이크
     /// </summary>
-    public void ShakeCamera()
+    public void ShakeCamera(Vector3 direction, float force)
     {
-        impulseSource.GenerateImpulse();
+        impulseSource.GenerateImpulse(direction.normalized * force);
     }
 }

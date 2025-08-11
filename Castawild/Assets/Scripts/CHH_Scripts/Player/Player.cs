@@ -429,7 +429,9 @@ public class Player : NetworkBehaviour
                 RPC_ApplyPlayDamagedEffectAnim();
                 RPC_NotifyPlayDamagedAnim();
                 if (movementManager.input.currentView == ViewType.FirstPerson)
-                    playerController.RPC_ApplyShakeCamera();
+                    playerController.RPC_ApplyShakeCamera(transform.right, 0.5f);
+                else
+                    playerController.RPC_ApplyShakeCamera(transform.right, 0.3f);
             }
         }
 
