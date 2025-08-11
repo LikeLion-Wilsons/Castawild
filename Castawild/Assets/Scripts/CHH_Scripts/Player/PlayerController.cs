@@ -20,6 +20,7 @@ public sealed class PlayerController : NetworkBehaviour
     public float rotationSpeed = 15f;
 
     [Header("Falling")]
+    [SerializeField] private float maxGroundAngle = 45f;
     [SerializeField] private float gravity = -9.81f;
     [SerializeField] private float fallThreshold = 3f;
     [SerializeField] private float damagePerMeter = 10f;
@@ -50,6 +51,7 @@ public sealed class PlayerController : NetworkBehaviour
     public override void Spawned()
     {
         InitComponents();
+        kcc.SetMaxGroundAngle(maxGroundAngle);
     }
 
     private void InitComponents()
@@ -371,11 +373,13 @@ public sealed class PlayerController : NetworkBehaviour
         {
             att = player.All_GetToolAtt("Axe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
+            toolManager.client_DecreaseToolDuration = true;
         }
         else if (Client_currentInteractObject.interactableType == InteractableType.Stone && Client_currentInteractObject.CanInteract())
         {
             att = player.All_GetToolAtt("Pickaxe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
+            toolManager.client_DecreaseToolDuration = true;
         }
 
         if (att != 0)
