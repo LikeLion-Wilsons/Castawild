@@ -14,11 +14,9 @@ public class UseToolState : ToolBaseState
         toolStateManager.CurrentToolAnimationState = ToolAnimationState.UseTool;
         toolStateManager.movementManager.Host_ChangeState(MovementState.Idle);
         toolStateManager.playerController.Host_FreezePosition(true);
-        if (toolStateManager.HasInputAuthority)
-        {
-            toolStateManager.client_DecreaseToolDuration = false;
-            toolStateManager.client_isDecreased = false;
-        }
+
+        toolStateManager.DecreaseToolDuration = false;
+        toolStateManager.IsDecreased = false;
 
         if (toolStateManager.CurrentToolType == ToolType.Fist || toolStateManager.CurrentToolType == ToolType.Throw)
         {
@@ -36,10 +34,10 @@ public class UseToolState : ToolBaseState
 
     public override void UpdateState()
     {
-        if (toolStateManager.HasInputAuthority && toolStateManager.client_DecreaseToolDuration && !toolStateManager.client_isDecreased)
+        if (toolStateManager.HasStateAuthority && toolStateManager.DecreaseToolDuration && !toolStateManager.IsDecreased)
         {
-            toolStateManager.client_isDecreased = true;
-            //toolStateManager.player.inventory.SubtractDurability(toolStateManager.player.client_CurrentToolDurability);
+            toolStateManager.IsDecreased = true;
+            toolStateManager.player.inventory.RPC_SubtractDurability(toolStateManager.player.CurrentToolDurability);
         }
 
         if (elapsed <= rotateTime)
@@ -63,11 +61,8 @@ public class UseToolState : ToolBaseState
         {
             if (CanComboAttack() && comboCount == 1)
             {
-                if (toolStateManager.HasInputAuthority)
-                {
-                    toolStateManager.client_isDecreased = false;
-                    toolStateManager.client_DecreaseToolDuration = false;
-                }
+                toolStateManager.IsDecreased = false;
+                toolStateManager.DecreaseToolDuration = false;
                 comboCount++;
                 toolStateManager.CanComboAttack = true;
                 return;
@@ -91,8 +86,8 @@ public class UseToolState : ToolBaseState
     {
         base.ExitState();
 
-        toolStateManager.client_isDecreased = false;
-        toolStateManager.client_DecreaseToolDuration = false;
+        toolStateManager.IsDecreased = false;
+        toolStateManager.DecreaseToolDuration = false;
 
         if (toolStateManager.CurrentToolType == ToolType.Bow && toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
             toolStateManager.player.All_SetBowPos(false);

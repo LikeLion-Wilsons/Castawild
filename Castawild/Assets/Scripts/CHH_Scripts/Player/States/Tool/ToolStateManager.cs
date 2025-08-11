@@ -49,8 +49,7 @@ public class ToolStateManager : BaseStateManager
     [Header("Hit")]
     [SerializeField] private Vector3 hitBox = new Vector3(1f, 1f, 1.0f);
     public HashSet<Transform> Host_alreadyHit = new HashSet<Transform>();
-    [HideInInspector] public bool client_DecreaseToolDuration;
-    [HideInInspector] public bool client_isDecreased;
+
 
     #region Network
     [Header("Network")]
@@ -61,6 +60,8 @@ public class ToolStateManager : BaseStateManager
     [Networked, HideInInspector] public bool CanComboAttack { get; set; }
     [Networked, HideInInspector] public bool ComboAttack { get; set; }
     [Networked, HideInInspector] public bool CanReceiveInput { get; set; }
+    [Networked, HideInInspector] public bool DecreaseToolDuration { get; set; }
+    [Networked, HideInInspector] public bool IsDecreased { get; set; }
     #endregion
 
     protected override void Awake()
@@ -335,9 +336,6 @@ public class ToolStateManager : BaseStateManager
         if (!HasInputAuthority)
             return;
 
-        if (isArrow == 1)
-            client_DecreaseToolDuration = true;
-
         if (cameraManager.currentView == ViewType.FirstPerson && player.HasArrow)
             cameraManager.ShakeCamera(transform.right, 0.1f);
 
@@ -441,7 +439,10 @@ public class ToolStateManager : BaseStateManager
         else
             player.arrow.SetActive(false);
     }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_DecreaseToolDuration(bool decrease) => client_DecreaseToolDuration = decrease;
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestDecreaseToolDuration(bool isDecreased)
+    {
+        DecreaseToolDuration = isDecreased;
+        Debug.Log("DecreaseToolDuration : " + DecreaseToolDuration);
+    }
 }

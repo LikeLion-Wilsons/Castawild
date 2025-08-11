@@ -90,7 +90,7 @@ public class Player : NetworkBehaviour
     [Networked, HideInInspector] public int CurrentToolAtt { get; set; }
     [Networked, HideInInspector] public int CurrentToolID { get; set; }
 
-    [HideInInspector] public float client_CurrentToolDurability;
+    [Networked, HideInInspector] public float CurrentToolDurability { get; set; }
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isSpawned;
     public ItemType currentItemType;
@@ -173,7 +173,8 @@ public class Player : NetworkBehaviour
             Host_TakeDamage(true, attackObject.Att);
 
             attackObject.player.RPC_ApplyHitInvoke(attackObject.Att);
-            attackObject.player.toolStateManager.RPC_DecreaseToolDuration(true);
+            attackObject.player.toolStateManager.DecreaseToolDuration = true;
+            Debug.Log("DecreaseToolDuration : " + attackObject.player.toolStateManager.DecreaseToolDuration);
             attackObject.player.GetComponent<PlayerController>().RPC_ApplyHitInvoke(attackObject.Att);
         }
 
@@ -252,8 +253,7 @@ public class Player : NetworkBehaviour
                 if (HasInputAuthority)
                     RPC_NotifyEquipmentTool(itemIdx);
                 ToolInfo toolInfo = currentToolGameObject.GetComponent<ToolInfo>();
-                RPC_RequestSetCurrentTool(toolInfo.ItemID, toolInfo.ToolName, toolInfo.Att);
-                client_CurrentToolDurability = toolInfo.Durability;
+                RPC_RequestSetCurrentTool(toolInfo.ItemID, toolInfo.ToolName, toolInfo.Att, toolInfo.Durability);
             }
             else
                 Debug.LogWarning($"{itemIdx} 인덱스 없음");
@@ -534,19 +534,21 @@ public class Player : NetworkBehaviour
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_RequestSetCurrentTool(int toolID = -1, string toolName = "", int toolAtt = 0)
+    private void RPC_RequestSetCurrentTool(int toolID = -1, string toolName = "", int toolAtt = 0, float durability = 1f)
     {
         if (toolID == -1)
         {
             CurrentToolID = -1;
             CurrentToolName = string.Empty;
             CurrentToolAtt = 0;
+            durability = 1f;
             return;
         }
 
         CurrentToolID = toolID;
         CurrentToolName = toolName;
         CurrentToolAtt = toolAtt;
+        CurrentToolDurability = durability;
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]

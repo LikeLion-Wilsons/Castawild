@@ -387,13 +387,13 @@ public sealed class PlayerController : NetworkBehaviour
         {
             att = player.All_GetToolAtt("Axe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
-            toolManager.client_DecreaseToolDuration = true;
+            toolManager.RPC_RequestDecreaseToolDuration(true);
         }
         else if (Client_currentInteractObject.interactableType == InteractableType.Stone && Client_currentInteractObject.CanInteract())
         {
             att = player.All_GetToolAtt("Pickaxe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
-            toolManager.client_DecreaseToolDuration = true;
+            toolManager.RPC_RequestDecreaseToolDuration(true);
         }
 
         else if (Client_currentInteractObject.interactableType == InteractableType.Gatherable && Client_currentInteractObject.CanInteract())
