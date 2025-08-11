@@ -174,7 +174,6 @@ public class Player : NetworkBehaviour
 
             attackObject.player.RPC_ApplyHitInvoke(attackObject.Att);
             attackObject.player.toolStateManager.DecreaseToolDuration = true;
-            Debug.Log("DecreaseToolDuration : " + attackObject.player.toolStateManager.DecreaseToolDuration);
             attackObject.player.GetComponent<PlayerController>().RPC_ApplyHitInvoke(attackObject.Att);
         }
 
@@ -480,7 +479,6 @@ public class Player : NetworkBehaviour
 
         if (hpPercent <= bloodEffectThreshold)
             takeDamageEffect.weight = Mathf.InverseLerp(bloodEffectThreshold, 0f, hpPercent);
-        Debug.Log("takeDamageEffect Weight : " + takeDamageEffect.weight);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]

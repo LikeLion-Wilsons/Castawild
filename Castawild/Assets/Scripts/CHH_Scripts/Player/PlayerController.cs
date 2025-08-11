@@ -310,6 +310,11 @@ public sealed class PlayerController : NetworkBehaviour
                         }
                         break;
                     }
+                    else
+                    {
+                        playerInteractUI.InteractUI();
+                        Client_currentInteractObject = null;
+                    }
                 }
 
                 // 다른 오브젝트 

@@ -34,7 +34,8 @@ public class UseToolState : ToolBaseState
 
     public override void UpdateState()
     {
-        if (toolStateManager.HasStateAuthority && toolStateManager.DecreaseToolDuration && !toolStateManager.IsDecreased)
+        if (toolStateManager.HasStateAuthority && toolStateManager.DecreaseToolDuration && !toolStateManager.IsDecreased
+            && toolStateManager.All_IsDecreaseDurationTool())
         {
             toolStateManager.IsDecreased = true;
             toolStateManager.player.inventory.RPC_SubtractDurability(toolStateManager.player.CurrentToolDurability);

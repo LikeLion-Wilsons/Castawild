@@ -5,7 +5,7 @@ using UnityEditor.EditorTools;
 using UnityEngine;
 
 // 현재 들고있는 무기
-public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife, Smash }
+public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe }
 
 public enum ToolState { None, Idle, Aim, UseTool, Carry, Eat, Drink }
 // 재생해야할 애니메이션 상태
@@ -378,6 +378,14 @@ public class ToolStateManager : BaseStateManager
 
         Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+    }
+
+    public bool All_IsDecreaseDurationTool()
+    {
+        if (CurrentToolType == ToolType.Fist || CurrentToolType == ToolType.Bow || CurrentToolType == ToolType.Throw)
+            return false;
+        else
+            return true;
     }
 
     /// <summary>
