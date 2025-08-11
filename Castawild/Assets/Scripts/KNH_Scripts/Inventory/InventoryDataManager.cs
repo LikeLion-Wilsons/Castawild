@@ -114,6 +114,9 @@ public class InventoryDataManager : NetworkBehaviour
             inventorySlots[newValue].Select();
             selectedSlot = newValue;
 
+            if (inventorySlots[selectedSlot].IsEmpty())
+                player.Client_RemoveSelectedItem();
+            player.Client_ApplySelectedItem(itemList[selectedSlot].itemID);
             onItemSelected?.Invoke(inventorySlots[selectedSlot].item.itemID);
         }
     }

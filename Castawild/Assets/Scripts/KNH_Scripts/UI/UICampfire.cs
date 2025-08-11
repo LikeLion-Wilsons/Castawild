@@ -52,11 +52,11 @@ public class UICampfire : UIPart
         {
             arrowImage.fillAmount = 0f;
         }
-        if (!netWorkCampfire.isCooking)//요리중이 아닐 때
+        else if (!netWorkCampfire.isCooking)//요리중이 아닐 때
         {
             arrowImage.fillAmount = 0f;
         }
-        if (netWorkCampfire.isCooking)//요리중일 때
+        else//요리중일 때
         {
             double totalDuration = 10.0;
             double elapsed = totalDuration - timeLeft;
@@ -65,17 +65,18 @@ public class UICampfire : UIPart
 
             if (arrowImage.fillAmount >= 1) arrowImage.fillAmount = 0f;//초기화
         }
+        //현재 연료 남은 시간
+        currentTime = netWorkCampfire.RemainingFireTime;
         //타이머 네트워크 동기화 필요(UI 닫혀있을 때에도 타이머 감소)
         if (currentTime > 0)
         {
-            currentTime -= Time.deltaTime;
-
             SetTimerText();
         }
         else
         {
             campFire.SetFireActive(false);
             fireImage.SetActive(false);
+            netWorkCampfire.RPC_SetisFire(false);
         }
     }
     public void AddFuelButton()
@@ -91,9 +92,11 @@ public class UICampfire : UIPart
         if (fuelList[selectedFuelIndex] == 0) addTime = 20;
         else if (fuelList[selectedFuelIndex] == 3) addTime = 40;
 
-        AddTime(addTime);
+        netWorkCampfire.RPC_AddFireTime(addTime);
+        //AddTime(addTime);
 
         //불 켜기
+        netWorkCampfire.RPC_SetisFire(true);
         fireImage.SetActive(true);
         campFire.SetFireActive(true);
     }
