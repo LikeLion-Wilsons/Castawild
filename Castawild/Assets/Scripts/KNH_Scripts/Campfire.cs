@@ -23,6 +23,7 @@ public class Campfire : InteractableObject
         bool isInventoryOpen = canvasHolder.uiParts["Inventory"].IsOpen();
         CanOpen = !isInventoryOpen;
     }
+
     public override bool CanInteract() => CanOpen;
     public void FinishInteract() => CanOpen = true;
 

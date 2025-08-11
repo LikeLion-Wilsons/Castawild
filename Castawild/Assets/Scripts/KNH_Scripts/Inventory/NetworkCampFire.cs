@@ -1,5 +1,6 @@
 using Fusion;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class NetworkCampFire : NetworkBehaviour
 {
@@ -10,7 +11,9 @@ public class NetworkCampFire : NetworkBehaviour
     Campfire campfire;
     public InventoryDataManager inventoryData;
     private double nextCookTime;
-    private bool isCooking;
+    public bool isCooking;
+
+
 
     public override void Spawned()
     {
@@ -31,8 +34,8 @@ public class NetworkCampFire : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        //if (!Object.HasStateAuthority) return; // 호스트만 로직 수행
-
+        if (!Object.HasStateAuthority) return; // 호스트만 로직 수행
+        if (inventoryData == null) return;
 
         //불이 꺼져있으면 타이머 리셋
         if (!isFire)
@@ -51,6 +54,14 @@ public class NetworkCampFire : NetworkBehaviour
                 isCooking = true;
             }
 
+            //fillAmount 갱신
+            if (isCooking)
+            {
+                double totalDuration = 10.0;
+                double elapsed = totalDuration - (nextCookTime - Runner.SimulationTime);
+                float progress = Mathf.Clamp01((float)(elapsed / totalDuration));
+            }
+
             // 10초가 지났으면 Cook 실행 후 다음 시간 예약
             if (Runner.SimulationTime >= nextCookTime)
             {
@@ -61,7 +72,7 @@ public class NetworkCampFire : NetworkBehaviour
         }
         else
         {
-            // 조건 불만족 시 타이머 초기화
+            //타이머 초기화
             isCooking = false;
         }
     }
@@ -95,5 +106,14 @@ public class NetworkCampFire : NetworkBehaviour
     public void RPC_SetResultItem(Item item)
     {
         resultItem = item;
+    }
+
+    public float RemainingCookTime
+    {
+        get
+        {
+            if (!isCooking) return 0f;
+            return Mathf.Max(0f, (float)(nextCookTime - Runner.SimulationTime));
+        }
     }
 }

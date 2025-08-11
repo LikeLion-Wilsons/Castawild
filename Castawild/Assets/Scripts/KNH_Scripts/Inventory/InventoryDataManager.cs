@@ -1,5 +1,6 @@
 using Fusion;
 using System;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 public delegate void OnItemGet();
@@ -112,15 +113,8 @@ public class InventoryDataManager : NetworkBehaviour
             }
             inventorySlots[newValue].Select();
             selectedSlot = newValue;
-            onItemSelected?.Invoke(inventorySlots[newValue].item.itemID);
 
-            // 수정한 부분
-            if (Object.HasInputAuthority)
-            {
-                if (inventorySlots[selectedSlot].IsEmpty())
-                    player.Client_RemoveSelectedItem();
-                player.Client_ApplySelectedItem(itemList[selectedSlot].itemID);
-            }
+            onItemSelected?.Invoke(inventorySlots[selectedSlot].item.itemID);
         }
     }
 
@@ -370,6 +364,17 @@ public class InventoryDataManager : NetworkBehaviour
                 if (Object.HasStateAuthority)
                 {
                     RPC_UpdateInventoryUI();
+                }
+
+                
+
+                // 수정한 부분
+                if (Object.HasInputAuthority)
+                {
+                    if (inventorySlots[selectedSlot].IsEmpty())
+                        player.Client_RemoveSelectedItem();
+                    player.Client_ApplySelectedItem(itemList[selectedSlot].itemID);
+                    onItemSelected?.Invoke(inventorySlots[selectedSlot].item.itemID);
                 }
                 return true;
             }
