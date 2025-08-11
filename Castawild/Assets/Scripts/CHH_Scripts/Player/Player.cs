@@ -90,7 +90,7 @@ public class Player : NetworkBehaviour
     [Networked, HideInInspector] public int CurrentToolAtt { get; set; }
     [Networked, HideInInspector] public int CurrentToolID { get; set; }
 
-    [HideInInspector] public float client_CurrentToolDuration;
+    [HideInInspector] public float client_CurrentToolDurability;
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isSpawned;
     public ItemType currentItemType;
@@ -173,7 +173,7 @@ public class Player : NetworkBehaviour
             Host_TakeDamage(true, attackObject.Att);
 
             attackObject.player.RPC_ApplyHitInvoke(attackObject.Att);
-            attackObject.player.toolStateManager.client_DecreaseToolDuration = true;
+            attackObject.player.toolStateManager.RPC_DecreaseToolDuration(true);
             attackObject.player.GetComponent<PlayerController>().RPC_ApplyHitInvoke(attackObject.Att);
         }
 
@@ -253,7 +253,7 @@ public class Player : NetworkBehaviour
                     RPC_NotifyEquipmentTool(itemIdx);
                 ToolInfo toolInfo = currentToolGameObject.GetComponent<ToolInfo>();
                 RPC_RequestSetCurrentTool(toolInfo.ItemID, toolInfo.ToolName, toolInfo.Att);
-                client_CurrentToolDuration = toolInfo.Durability;
+                client_CurrentToolDurability = toolInfo.Durability;
             }
             else
                 Debug.LogWarning($"{itemIdx} 인덱스 없음");

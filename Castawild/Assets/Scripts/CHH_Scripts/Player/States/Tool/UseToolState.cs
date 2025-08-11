@@ -1,5 +1,3 @@
-using UnityEditor.Purchasing;
-using UnityEngine;
 
 public class UseToolState : ToolBaseState
 {
@@ -41,7 +39,7 @@ public class UseToolState : ToolBaseState
         if (toolStateManager.HasInputAuthority && toolStateManager.client_DecreaseToolDuration && !toolStateManager.client_isDecreased)
         {
             toolStateManager.client_isDecreased = true;
-            toolStateManager.player.inventory.RPC_SubtractDurability(toolStateManager.player.client_CurrentToolDuration);
+            //toolStateManager.player.inventory.SubtractDurability(toolStateManager.player.client_CurrentToolDurability);
         }
 
         if (elapsed <= rotateTime)
