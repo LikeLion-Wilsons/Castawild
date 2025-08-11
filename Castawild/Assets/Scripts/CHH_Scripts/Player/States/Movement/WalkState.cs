@@ -12,6 +12,8 @@ public class WalkState : MovementBaseState
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.Walk;
         movementManager.currentMoveSpeed = movementManager.walkSpeed;
+        if (movementManager.HasInputAuthority)
+            movementManager.cameraManager.walk = true;
     }
 
     public override void UpdateState()
@@ -39,5 +41,7 @@ public class WalkState : MovementBaseState
 
     public override void ExitState()
     {
+        if (movementManager.HasInputAuthority)
+            movementManager.cameraManager.walk = false;
     }
 }

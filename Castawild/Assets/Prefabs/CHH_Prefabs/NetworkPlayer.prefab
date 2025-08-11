@@ -3398,6 +3398,7 @@ MonoBehaviour:
   thirstSleepDecrease: 10
   hungerSleepDecrease: 10
   bloodEffectThreshold: 0.2
+  foodRestoreTime: 5
   _Hp: 0
   _Stamina: 0
   _Hunger: 0
@@ -3427,13 +3428,12 @@ MonoBehaviour:
   _IsUIOpen: 0
   _IsCursorLocked: 0
   _IsSleeping: 0
-  _CurrentToolName: 
-  _CurrentToolAtt: 0
-  _CurrentToolID: 0
-  _CurrentToolDurability: 0
   inventory: {fileID: 0}
   isSpawned: 0
   currentItemType: 0
+  uiStats: {fileID: 0}
+  restoreColor: {r: 0, g: 0, b: 0, a: 0}
+  decreaseColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &8380833186685685926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4126,6 +4126,13 @@ MonoBehaviour:
   zoomLerpSpeed: 10
   minDistance: 3
   maxDistance: 15
+  walk: 1
+  run: 0
+  walkAmplitude: 0.2
+  walkFrequency: 8.5
+  sprintAmplitude: 0.2
+  sprintFrequency: 15
+  transitionSpeed: 5
 --- !u!1 &8041571145415919264
 GameObject:
   m_ObjectHideFlags: 0
@@ -4384,6 +4391,8 @@ Transform:
   - {fileID: 1531999376109934540}
   - {fileID: 3722948965755809256}
   - {fileID: 6673883963637684681}
+  - {fileID: 8389796411069249333}
+  - {fileID: 6410948434323936138}
   - {fileID: 4764091529066941589}
   - {fileID: 8396094774393724350}
   - {fileID: 1702254418431036941}
@@ -4391,8 +4400,6 @@ Transform:
   - {fileID: 6488644284147007480}
   - {fileID: 968123453888714388}
   - {fileID: 8625031622050551108}
-  - {fileID: 8389796411069249333}
-  - {fileID: 6410948434323936138}
   - {fileID: 5652918095632363721}
   m_Father: {fileID: 1287323105947238445}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5356,11 +5363,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7345272666002594563, guid: b274726a7947855418129a0e9d65e730, type: 3}
       propertyPath: m_Name
-      value: RawMeat
-      objectReference: {fileID: 0}
-    - target: {fileID: 7345272666002594563, guid: b274726a7947855418129a0e9d65e730, type: 3}
-      propertyPath: m_IsActive
-      value: 0
+      value: Index_RawMeat
       objectReference: {fileID: 0}
     - target: {fileID: 7972627249982128569, guid: b274726a7947855418129a0e9d65e730, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5405,32 +5408,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7345272666002594563, guid: b274726a7947855418129a0e9d65e730, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6516834046766096477}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b274726a7947855418129a0e9d65e730, type: 3}
---- !u!1 &6031326018605271344 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7345272666002594563, guid: b274726a7947855418129a0e9d65e730, type: 3}
-  m_PrefabInstance: {fileID: 3917064721595978291}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &6516834046766096477
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6031326018605271344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75d608491e0b3104c8add8603597e0da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  toolName: RawMeat
-  itemID: 0
-  interactAtt: 0
-  durability: 1
 --- !u!4 &6410948434323936138 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7972627249982128569, guid: b274726a7947855418129a0e9d65e730, type: 3}
@@ -5854,11 +5833,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1874088607237983909, guid: 2d32bbc0a155c5547842b55a178e6236, type: 3}
       propertyPath: m_Name
-      value: Meat
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874088607237983909, guid: 2d32bbc0a155c5547842b55a178e6236, type: 3}
-      propertyPath: m_IsActive
-      value: 0
+      value: Index_Meat
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
