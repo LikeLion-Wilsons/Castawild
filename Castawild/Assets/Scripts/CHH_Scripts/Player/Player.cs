@@ -111,12 +111,6 @@ public class Player : NetworkBehaviour
         isSpawned = true;
         InitStatus();
         InitTools();
-
-        if (HasInputAuthority)
-            RPC_RequestSetNickname(PlayerTempData.nickname);
-        All_OnChangedNickname();
-        if (HasInputAuthority)
-            nicknameUI.gameObject.SetActive(false);
     }
 
     public override void FixedUpdateNetwork()
@@ -229,6 +223,12 @@ public class Player : NetworkBehaviour
     public void Init()
     {
         RespawnPos = transform.position;
+
+        nickname = PlayerTempData.nickname;
+        All_OnChangedNickname();
+
+        if (HasInputAuthority)
+            nicknameUI.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -408,6 +408,8 @@ public class Player : NetworkBehaviour
         Stamina = playerData.maxStamina;
         Thirst = playerData.maxThirst * 0.2f;
         Hunger = playerData.maxHunger * 0.2f;
+
+        takeDamageEffect.weight = 0f;
     }
 
     /// <summary>
@@ -498,9 +500,6 @@ public class Player : NetworkBehaviour
                 tool.Value.SetActive(false);
         }
     }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_RequestSetNickname(string nickname) => this.nickname = nickname;
 
     void All_OnChangedNickname() => nicknameUI.SetNickname(nickname);
 
@@ -636,6 +635,8 @@ public class Player : NetworkBehaviour
         Thirst = playerData.maxThirst;
         Hunger = playerData.maxHunger;
         Temperature = playerData.maxTemperature;
+
+        takeDamageEffect.weight = 0f;
     }
 
     /// <summary>
