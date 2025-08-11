@@ -43,7 +43,7 @@ public class AnimationTrigger : MonoBehaviour
 
     public void Interact() => playercontroller.Client_Interact();
 
-    public void Throw(int isArrow) => toolManager.Client_SetTargetPos(isArrow);
+    public void Throw(int isArrow) => toolManager.Client_Throw(isArrow);
 
     public void ActiveDeathUI()
     {
