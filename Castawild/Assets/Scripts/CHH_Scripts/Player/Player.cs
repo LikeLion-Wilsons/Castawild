@@ -156,6 +156,9 @@ public class Player : NetworkBehaviour
         // 플레이어 공격
         if (CanPVP && other.TryGetComponent<AttackObject>(out AttackObject attackObject))
         {
+            if (other.GetComponent<ThrowObject>() != null)
+                return;
+
             Host_TakeDamage(true, attackObject.Att);
 
             attackObject.player.RPC_ApplyHitInvoke(attackObject.Att);
