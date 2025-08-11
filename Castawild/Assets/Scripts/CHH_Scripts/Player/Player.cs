@@ -2,6 +2,7 @@ using Fusion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Test;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -111,7 +112,22 @@ public class Player : NetworkBehaviour
         isSpawned = true;
         InitStatus();
         InitTools();
+
+        if (HasInputAuthority)
+            RPC_RequestSetNickname(PlayerTempData.nickname);
+
+        All_OnChangedNickname();
+
+        if (HasInputAuthority)
+            nicknameUI.gameObject.SetActive(false);
     }
+
+
+    public void Init() => RespawnPos = transform.position;
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_RequestSetNickname(string nickname) => this.nickname = nickname;
+
 
     public override void FixedUpdateNetwork()
     {
@@ -218,17 +234,6 @@ public class Player : NetworkBehaviour
                 }
             }
         }
-    }
-
-    public void Init()
-    {
-        RespawnPos = transform.position;
-
-        nickname = PlayerTempData.nickname;
-        All_OnChangedNickname();
-
-        if (HasInputAuthority)
-            nicknameUI.gameObject.SetActive(false);
     }
 
     /// <summary>
