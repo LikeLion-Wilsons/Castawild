@@ -75,13 +75,10 @@ public class MovementStateManager : BaseStateManager
     {
         InitComponents();
         if (HasStateAuthority)
-            DayNightCycleManager.OnTimeSkipStarted += Host_WakeUp;
-    }
-
-    private void OnDisable()
-    {
-        if (HasStateAuthority)
+        {
             DayNightCycleManager.OnTimeSkipStarted -= Host_WakeUp;
+            DayNightCycleManager.OnTimeSkipStarted += Host_WakeUp;
+        }
     }
 
     private void InitComponents()
@@ -142,6 +139,7 @@ public class MovementStateManager : BaseStateManager
 
     private void Host_WakeUp()
     {
+
         Host_ChangeState(MovementState.Idle);
         player.Host_NewDayStatus();
     }
@@ -230,7 +228,7 @@ public class MovementStateManager : BaseStateManager
     /// </summary>
     public bool All_CanRecoverStamina() => CurrentMoveState != MovementState.Run && CurrentMoveState != MovementState.Death;
 
-    public void Host_Sleep(bool isSleep) => dayNightManager.Rpc_SetSleepingState(isSleep);
+    public void Host_Sleep(bool isSleep) => dayNightManager.Rpc_SetSleepingState(isSleep, Object.InputAuthority);
 
     /// <summary>
     /// Sleep 상태로 변경하는 RPC

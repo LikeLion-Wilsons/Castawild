@@ -1,15 +1,13 @@
-using Fusion;
 using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
-using static System.TimeZoneInfo;
 
 public enum ViewType { None, FirstPerson, ThirdPerson }
 
 public class PlayerCameraManager : MonoBehaviour
 {
     #region Components
-    public CinemachineImpulseSource impulseSource;
+    [SerializeField] private CinemachineImpulseSource impulseSource;
     private PlayerController playerController;
     private PlayerInputManager inputManager;
     private MovementStateManager movementManager;
@@ -102,7 +100,6 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void InitComponents()
     {
-        impulseSource = GetComponentInParent<CinemachineImpulseSource>();
         player = GetComponentInParent<Player>();
         playerController = GetComponentInParent<PlayerController>();
         inputManager = GetComponentInParent<PlayerInputManager>();
@@ -328,8 +325,8 @@ public class PlayerCameraManager : MonoBehaviour
     /// <summary>
     /// 카메라 쉐이크
     /// </summary>
-    public void ShakeCamera()
+    public void ShakeCamera(Vector3 direction, float force)
     {
-        impulseSource.GenerateImpulse();
+        impulseSource.GenerateImpulse(direction.normalized * force);
     }
 }

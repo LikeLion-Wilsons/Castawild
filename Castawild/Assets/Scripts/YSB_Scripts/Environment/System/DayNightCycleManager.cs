@@ -62,7 +62,7 @@ public class DayNightCycleManager : NetworkBehaviour
                     TimeOfDay = TargetTimeOfDay;
                     CurrentState = TimeSkipState.Normal;
                     SleepingPlayers.Clear();
-                    OnTimeSkipStarted?.Invoke();
+                    Rpc_NotifyTimeSkipStarted();
                 }
                 else
                 {
@@ -82,44 +82,54 @@ public class DayNightCycleManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void Rpc_SetSleepingState(NetworkBool isSleeping, RpcInfo info = default)
+    public void Rpc_SetSleepingState(NetworkBool isSleeping, PlayerRef playerRef)
     {
-        var playerRef = info.Source;
-
         if (isSleeping)
         {
             if (!SleepingPlayers.Contains(playerRef))
-            {
                 SleepingPlayers.Add(playerRef);
-            }
         }
         else
         {
             SleepingPlayers.Remove(playerRef);
         }
 
-        CheckAndTriggerTimeSkip();
+        CleanupSleepingPlayers();
+
+        TryTriggerTimeSkip();
     }
 
-    private void CheckAndTriggerTimeSkip()
+    private void CleanupSleepingPlayers()
     {
         if (!Object.HasStateAuthority) return;
-        if (CurrentState == TimeSkipState.Skipping) return;
 
         for (int i = SleepingPlayers.Count - 1; i >= 0; i--)
         {
-            if (!Runner.IsPlayerValid(SleepingPlayers.Get(i)))
+            var playerRef = SleepingPlayers.Get(i);
+            if (!Runner.IsPlayerValid(playerRef))
             {
-                SleepingPlayers.Remove(SleepingPlayers.Get(i));
+                SleepingPlayers.Remove(playerRef);
             }
         }
+    }
+
+    private void TryTriggerTimeSkip()
+    {
+        if (!Object.HasStateAuthority) return;
+        if (CurrentState == TimeSkipState.Skipping) return;
 
         if (Runner.ActivePlayers.Count() > 0 && SleepingPlayers.Count >= Runner.ActivePlayers.Count())
         {
             TargetTimeOfDay = 0.25f;
             CurrentState = TimeSkipState.Skipping;
-
         }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void Rpc_NotifyTimeSkipStarted()
+    {
+        //Debug.Log("[DayNightCycle] Time skip started.");
+        OnTimeSkipStarted?.Invoke();
     }
 
     private void OnTimeOfDayChanged()

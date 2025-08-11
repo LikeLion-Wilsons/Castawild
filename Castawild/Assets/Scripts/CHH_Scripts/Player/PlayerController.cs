@@ -165,7 +165,10 @@ public sealed class PlayerController : NetworkBehaviour
             {
                 float damage = (fallDistance - fallThreshold) * damagePerMeter;
                 player.Host_TakeDamage(false, damage);
-                RPC_ApplyShakeCamera();
+                if (movementManager.input.currentView == ViewType.FirstPerson)
+                    RPC_ApplyShakeCamera(transform.up, 0.5f);
+                else
+                    RPC_ApplyShakeCamera(transform.up, 0.3f);
             }
         }
     }
@@ -424,5 +427,5 @@ public sealed class PlayerController : NetworkBehaviour
     /// 카메라 쉐이크
     /// </summary>
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ApplyShakeCamera() => cameraManager.ShakeCamera();
+    public void RPC_ApplyShakeCamera(Vector3 direction, float force) => cameraManager.ShakeCamera(direction, force);
 }
