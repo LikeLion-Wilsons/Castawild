@@ -18,8 +18,8 @@ public class IdleState : MovementBaseState
         // Move
         if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput) && movementManager.player.All_CanMoving())
         {
-            if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.All_HasEnoughStaminaToRun()
-                && movementManager.toolStateManager.CurrentToolState != ToolState.Aim)
+            if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.All_CanRun()
+                &&( movementManager.toolStateManager.CurrentToolState != ToolState.Aim && movementManager.toolStateManager.CurrentToolState != ToolState.Carry))
                 movementManager.Host_ChangeState(MovementState.Run);
             else
                 movementManager.Host_ChangeState(MovementState.Walk);
