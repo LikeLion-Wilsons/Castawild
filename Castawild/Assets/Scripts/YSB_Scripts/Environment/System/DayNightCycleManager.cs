@@ -63,6 +63,7 @@ public class DayNightCycleManager : NetworkBehaviour
                     CurrentState = TimeSkipState.Normal;
                     SleepingPlayers.Clear();
                     Rpc_NotifyTimeSkipStarted();
+                    Debug.Log("Time skip completed. Time of day set to: " + TimeOfDay);
                 }
                 else
                 {
@@ -84,6 +85,7 @@ public class DayNightCycleManager : NetworkBehaviour
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void Rpc_SetSleepingState(NetworkBool isSleeping, PlayerRef playerRef)
     {
+        Debug.Log($"Rpc_SetSleepingState called: isSleeping={isSleeping}, playerRef={playerRef}");
         if (isSleeping)
         {
             if (!SleepingPlayers.Contains(playerRef))
@@ -128,7 +130,6 @@ public class DayNightCycleManager : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void Rpc_NotifyTimeSkipStarted()
     {
-        //Debug.Log("[DayNightCycle] Time skip started.");
         OnTimeSkipStarted?.Invoke();
     }
 
