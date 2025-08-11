@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Test;
@@ -92,6 +93,7 @@ public class Player : NetworkBehaviour
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isSpawned;
     public ItemType currentItemType;
+    public event Action<int> Hit;
 
     private void Awake()
     {
@@ -146,19 +148,19 @@ public class Player : NetworkBehaviour
         if (!HasStateAuthority)
             return;
 
+        // 플레이어 공격
         if (CanPVP && other.TryGetComponent<AttackObject>(out AttackObject attackObject))
         {
-            if (attackObject.canAttack)
-            {
-                Host_TakeDamage(true, attackObject.att);
+            Host_TakeDamage(true, attackObject.Att);
 
-                Transform parent = other.transform;
-                while (other.transform.parent != null)
-                    parent = parent.parent;
-
-                parent.GetComponent<PlayerController>().RPC_ApplyHitInvoke(attackObject.att);
-            }
+            attackObject.player.RPC_ApplyHitInvoke(attackObject.Att);
         }
+
+        // 동물 공격
+        //if (other.CompareTag("AnimalAttack"))
+        //{
+
+        //}
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -170,9 +172,9 @@ public class Player : NetworkBehaviour
         {
             if (throwObject.canAttack)
             {
-                Host_TakeDamage(true, throwObject.att);
+                Host_TakeDamage(true, throwObject.Att);
                 throwObject.canAttack = false;
-                throwObject.thrower.GetComponent<PlayerController>().RPC_ApplyHitInvoke(throwObject.att);
+                throwObject.player.GetComponent<PlayerController>().RPC_ApplyHitInvoke(throwObject.Att);
             }
         }
     }
@@ -443,6 +445,9 @@ public class Player : NetworkBehaviour
 
         RPC_NotifyInitCurrentToolObject();
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplyHitInvoke(int dmg) => Hit?.Invoke(dmg);
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     private void RPC_ApplyPlayDamagedEffect()

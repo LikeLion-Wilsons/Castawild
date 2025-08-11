@@ -4,6 +4,7 @@ using UnityEngine;
 public enum ThrowType { stone, arrow }
 public class ThrowObject : AttackObject
 {
+    public bool canAttack;
     public GameObject thrower;
     public ThrowType throwType;
     private Rigidbody rigid;

@@ -45,11 +45,11 @@ public class AnimationTrigger : MonoBehaviour
 
     public void StartHit()
     {
-        toolManager.Host_StartHit();
+        //toolManager.Host_StartHit();
     }
 
     public void FinishHit()
     {
-        toolManager.Host_FinishHit();
+        //toolManager.Host_FinishHit();
     }
 }
