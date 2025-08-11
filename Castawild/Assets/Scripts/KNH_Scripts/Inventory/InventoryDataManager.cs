@@ -163,7 +163,7 @@ public class InventoryDataManager : NetworkBehaviour
             RPC_ThrowItem(GetSelectedIndex());
 
         #region cheat
-        //아이템 획득 치트
+            //아이템 획득 치트
         if (Input.GetKeyDown(KeyCode.Alpha1))
             AddItem(0, 5);
         if (Input.GetKeyDown(KeyCode.Alpha2))
@@ -175,6 +175,9 @@ public class InventoryDataManager : NetworkBehaviour
         #endregion
     }
 
+
+    #region RPC
+    //인벤토리 UI 업데이트
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_UpdateInventoryUI()
     {
@@ -182,48 +185,67 @@ public class InventoryDataManager : NetworkBehaviour
         uiTable.GetComponent<UITable>().SetTableUI();
     }
 
+    //아이템 위치 교환
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_SwapItems(int indexA, int indexB)
     {
         SwapItems(indexA, indexB);
     }
-
+    //index 슬롯의 아이템 버리기
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_ThrowItem(int index)
     {
         ThrowItem(index);
     }
 
+    //갖고 있는 모든 아이템 버리기
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_ThrowAllItem()
     {
         ThrowAllItem();
     }
 
+    //ID를 기반으로 아이템 사용하기
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_UseItem(int index, int count)
+    public void RPC_UseItem(int id, int count)
     {
-        UseItem(index, count);
+        UseItem(id, count);
     }
-
+    //선택된 슬롯에 있는 아이템 사용하기
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_UseSelectedItem(int count)
     {
         UseItem(itemList[selectedSlot].itemID, count);
     }
-
+    //선택된 슬롯에 있는 아이템 내구도 설정
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SubtractDurability(float amount)
+    {
+        var item = itemList.Get(selectedSlot);
+        if (item.itemID == -1) return;
+        //내구도 감소
+        item.durability -= amount;
+        if (item.durability <= 0)
+        {
+            item.count = 0;
+            item.itemID = -1;
+        }
+        RPC_SetItem(selectedSlot, item);
+        RPC_UpdateInventoryUI();
+    }
+    //아이템 얻기
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_GetItem(int itemId, int count)
     {
         AddItem(itemId, count);
     }
-
+    //아이템 데이터 설정
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_SetItem(int index, Item item)
     {
         itemList.Set(index, item);
     }
-
+    //상자로부터 아이템 데이터 받아오기
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_SetItemFromChest(ChestDataManager chestData)
     {
@@ -236,7 +258,7 @@ public class InventoryDataManager : NetworkBehaviour
         RPC_UpdateInventoryUI();
         Debug.Log("chest -> inventory");
     }
-
+    //인벤토리에서 상자로 데이터 보내기
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestStoreToChest(ChestDataManager chestData)
     {
@@ -249,13 +271,15 @@ public class InventoryDataManager : NetworkBehaviour
         Debug.Log("RPC_RequestStoreToChest");
         RPC_UpdateInventoryUI();
     }
-
+    //상자가 열 수 있는 상태인지 설정
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_SetCanOpen(Chest chest, bool tof)
     {
         chest.CanOpen = tof;
     }
 
+
+    #endregion
 
     public Item_Scriptable GetSeletedItem(bool use)
     {
@@ -306,7 +330,7 @@ public class InventoryDataManager : NetworkBehaviour
         }
 
         // 이미 존재하는 아이템이면 개수만 증가
-        for (int i = 0; i < itemList.Count; i++)
+        for (int i = 0; i < 29; i++)
         {
             if (itemList[i].itemID != -1)
             {
@@ -330,11 +354,11 @@ public class InventoryDataManager : NetworkBehaviour
 
         }
         // 빈 슬롯 찾기
-        for (int i = 0; i < itemList.Count; i++)
+        for (int i = 0; i < 29; i++)
         {
             if (itemList[i].itemID == -1)
             {
-                Item newItem = new Item { itemID = id, count = amount };
+                Item newItem = new Item { itemID = id, count = amount, durability = 1};
                 itemList.Set(i, newItem);
 
                 if (Object.HasStateAuthority)
@@ -344,8 +368,8 @@ public class InventoryDataManager : NetworkBehaviour
                 return true;
             }
         }
+        Debug.Log("인벤토리 가득 참");
         return false;
-
     }
 
     public void SwapItems(int indexA, int indexB)
@@ -357,7 +381,7 @@ public class InventoryDataManager : NetworkBehaviour
         // 슬롯 수 부족할 경우 확장
         while (itemList.Count <= Mathf.Max(indexA, indexB))
         {
-            var item = new Item { itemID = -1, count = 0 };
+            var item = new Item { itemID = -1, count = 0, durability = 1 };
             itemList.Add(item);
         }
 
