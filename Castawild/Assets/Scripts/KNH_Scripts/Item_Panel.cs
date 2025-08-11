@@ -113,10 +113,19 @@ public class Item_Panel :
         {
             itemData.gameObject.SetActive(true);
             item_icon.sprite = item.GetData().image;
-            //도구형 아이템은 개수 표시 안함
-            if (item.itemID / 100 == 4) itemCountText.gameObject.SetActive(false);
-            else itemCountText.text = item.count.ToString();
-            durabilityBar.fillAmount = item.durability;
+            //도구형 아이템
+            if (item.itemID / 100 == 4)
+            {
+                itemCountText.gameObject.SetActive(false);//아이템 개수 표시 X
+                durabilityBar.fillAmount = item.durability;//내구도 설정
+                Debug.Log(durabilityBar.fillAmount);
+            }
+            else
+            {
+                itemCountText.text = item.count.ToString();
+                durabilityBar.gameObject.SetActive(false);//내구도 UI X
+            }
+
         }
         else
         {
@@ -336,7 +345,7 @@ public class Item_Panel :
                     {
                         itemID = -1,
                         count = 0,
-                        durability = 0
+                        durability = 1
                     };
                     inventoryData.RPC_SetItem(indexB, item);//합쳐지는 아이템 삭제
                     uiInventory.SetItemList();
