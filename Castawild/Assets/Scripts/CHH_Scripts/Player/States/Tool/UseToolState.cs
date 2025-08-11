@@ -16,6 +16,7 @@ public class UseToolState : ToolBaseState
         toolStateManager.CurrentToolAnimationState = ToolAnimationState.UseTool;
         toolStateManager.movementManager.Host_ChangeState(MovementState.Idle);
         toolStateManager.playerController.Host_FreezePosition(true);
+        toolStateManager.client_DecreaseToolDuration = false;
 
         if (toolStateManager.CurrentToolType == ToolType.Fist || toolStateManager.CurrentToolType == ToolType.Throw)
         {
@@ -33,6 +34,9 @@ public class UseToolState : ToolBaseState
 
     public override void UpdateState()
     {
+        if (toolStateManager.HasInputAuthority && toolStateManager.client_DecreaseToolDuration)
+            toolStateManager.player.inventory.RPC_SubtractDurability(toolStateManager.player.client_CurrentToolDuration);
+
         if (elapsed <= rotateTime)
         {
             elapsed += toolStateManager.Runner.DeltaTime;
@@ -76,6 +80,8 @@ public class UseToolState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
+
+        toolStateManager.client_DecreaseToolDuration = false;
 
         if (toolStateManager.CurrentToolType == ToolType.Bow && toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
             toolStateManager.player.All_SetBowPos(false);

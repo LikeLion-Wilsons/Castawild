@@ -1,5 +1,6 @@
 using Fusion;
 using System.Collections.Generic;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 // 현재 들고있는 무기
@@ -47,6 +48,7 @@ public class ToolStateManager : BaseStateManager
     [Header("Hit")]
     [SerializeField] private Vector3 hitBox = new Vector3(1f, 1f, 1.0f);
     public HashSet<Transform> Host_alreadyHit = new HashSet<Transform>();
+    [HideInInspector] public bool client_DecreaseToolDuration;
 
     #region Network
     [Header("Network")]
@@ -330,6 +332,9 @@ public class ToolStateManager : BaseStateManager
 
         if (!HasInputAuthority)
             return;
+
+        if (isArrow == 1)
+            client_DecreaseToolDuration = true;
 
         Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
         Ray ray = Camera.main.ScreenPointToRay(screenCenter);
