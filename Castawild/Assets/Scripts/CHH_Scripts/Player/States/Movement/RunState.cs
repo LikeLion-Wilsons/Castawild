@@ -12,6 +12,8 @@ public class RunState : MovementBaseState
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.Run;
         movementManager.currentMoveSpeed = movementManager.runSpeed;
+        if (movementManager.HasInputAuthority)
+            movementManager.cameraManager.run = true;
     }
 
     public override void UpdateState()
@@ -46,5 +48,7 @@ public class RunState : MovementBaseState
 
     public override void ExitState()
     {
+        if (movementManager.HasInputAuthority)
+            movementManager.cameraManager.run = false;
     }
 }
