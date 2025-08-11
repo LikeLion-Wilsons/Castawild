@@ -8,7 +8,7 @@ public class InventoryDataManager : NetworkBehaviour
 {
     [SerializeField] int maxStackCount;//아이템 최대 스택 개수
     public UI_Manager canvasHolder;
-    private UIInventory uiInventory;
+    public UIInventory uiInventory;
     private UITable uiTable;
     [SerializeField] GameObject itemBox;
     private float nextScrollTime = 0f;
@@ -163,7 +163,7 @@ public class InventoryDataManager : NetworkBehaviour
             RPC_ThrowItem(GetSelectedIndex());
 
         #region cheat
-            //아이템 획득 치트
+        //아이템 획득 치트
         if (Input.GetKeyDown(KeyCode.Alpha1))
             AddItem(0, 5);
         if (Input.GetKeyDown(KeyCode.Alpha2))
@@ -172,6 +172,12 @@ public class InventoryDataManager : NetworkBehaviour
             AddItem(2, 5);
         if (Input.GetKeyDown(KeyCode.Alpha4))
             AddItem(3, 5);
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+            AddItem(4, 5);
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+            AddItem(5, 5);
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+            AddItem(6, 5);
         #endregion
     }
 
@@ -358,7 +364,7 @@ public class InventoryDataManager : NetworkBehaviour
         {
             if (itemList[i].itemID == -1)
             {
-                Item newItem = new Item { itemID = id, count = amount, durability = 1};
+                Item newItem = new Item { itemID = id, count = amount, durability = 1 };
                 itemList.Set(i, newItem);
 
                 if (Object.HasStateAuthority)
@@ -374,7 +380,12 @@ public class InventoryDataManager : NetworkBehaviour
 
     public void SwapItems(int indexA, int indexB)
     {
+        //indexA : 이동 전 슬롯
+        //indexB : 이동 후 슬롯
         if (indexA >= itemList.Count || indexB >= itemList.Count) return;
+
+        if (indexA > 44 && itemList[indexB].itemID != 6) return;//모닥불에는 생고기만 이동 가능 
+        if (indexA == 46) return;//result슬롯으로는 이동 불가능
 
         //Debug.Log("Swap " + indexA + " " + indexB);
 
@@ -388,6 +399,7 @@ public class InventoryDataManager : NetworkBehaviour
         //교환
         var tempA = itemList[indexA];
         var tempB = itemList[indexB];
+
 
         itemList.Set(indexA, tempB);
         itemList.Set(indexB, tempA);

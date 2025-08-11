@@ -8,6 +8,7 @@ public class Campfire : InteractableObject
     UI_Manager canvasHolder;
     [SerializeField] GameObject fireVFX;
     public Player player;
+    InventoryDataManager inventoryData;
 
     private void Awake()
     {
@@ -32,8 +33,11 @@ public class Campfire : InteractableObject
         player = playerObj.GetComponent<Player>();
 
         PlayerController playerController = playerObj.GetComponent<PlayerController>();
+        inventoryData = player.GetComponent<InventoryDataManager>();
 
-        canvasHolder = playerObj.GetComponent<InventoryDataManager>().canvasHolder;
+        GetComponent<NetworkCampFire>().inventoryData = inventoryData;
+
+        canvasHolder = inventoryData.canvasHolder;
         canvasHolder.currentCampFire = gameObject;
 
         if (CanOpen)
