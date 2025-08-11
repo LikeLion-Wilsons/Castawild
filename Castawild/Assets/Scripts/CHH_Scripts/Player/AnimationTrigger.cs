@@ -21,11 +21,8 @@ public class AnimationTrigger : MonoBehaviour
 
     public void ToolAnimationFinishTrigger()
     {
-        if (toolManager.HasInputAuthority)
-        {
-            toolManager.client_isDecreased = false;
-            toolManager.client_DecreaseToolDuration = false;
-        }
+        toolManager.IsDecreased = false;
+        toolManager.DecreaseToolDuration = false;
         toolManager.IsAnimationFinished = true;
     }
     public void ToolAnimationStartTrigger() => toolManager.IsAnimationFinished = false;
@@ -43,7 +40,13 @@ public class AnimationTrigger : MonoBehaviour
 
     public void Interact() => playercontroller.Client_Interact();
 
-    public void Throw(int isArrow) => toolManager.Client_Throw(isArrow);
+    public void Throw(int isArrow)
+    {
+        toolManager.Client_Throw(isArrow);
+
+        if (isArrow == 1)
+            toolManager.DecreaseToolDuration = true;
+    }
 
     public void ActiveDeathUI()
     {

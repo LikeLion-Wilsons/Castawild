@@ -5,7 +5,7 @@ using UnityEditor.EditorTools;
 using UnityEngine;
 
 // 현재 들고있는 무기
-public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife, Smash }
+public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe }
 
 public enum ToolState { None, Idle, Aim, UseTool, Carry, Eat, Drink }
 // 재생해야할 애니메이션 상태
@@ -49,8 +49,7 @@ public class ToolStateManager : BaseStateManager
     [Header("Hit")]
     [SerializeField] private Vector3 hitBox = new Vector3(1f, 1f, 1.0f);
     public HashSet<Transform> Host_alreadyHit = new HashSet<Transform>();
-    [HideInInspector] public bool client_DecreaseToolDuration;
-    [HideInInspector] public bool client_isDecreased;
+
 
     #region Network
     [Header("Network")]
@@ -61,6 +60,8 @@ public class ToolStateManager : BaseStateManager
     [Networked, HideInInspector] public bool CanComboAttack { get; set; }
     [Networked, HideInInspector] public bool ComboAttack { get; set; }
     [Networked, HideInInspector] public bool CanReceiveInput { get; set; }
+    [Networked, HideInInspector] public bool DecreaseToolDuration { get; set; }
+    [Networked, HideInInspector] public bool IsDecreased { get; set; }
     #endregion
 
     protected override void Awake()
@@ -130,55 +131,6 @@ public class ToolStateManager : BaseStateManager
             currentState.EnterState();
         }
     }
-
-    /// <summary>
-    /// 주먹 공격
-    /// </summary>
-    //public void Host_FistAttack()
-    //{
-    //    Collider[] hitObjects = Physics.OverlapBox(fistPos.position, hitBox, fistPos.rotation);
-
-    //    for (int i = 0; i < hitObjects.Length; i++)
-    //    {
-    //        Transform hitObject = hitObjects[i].transform.root;
-
-    //        if (hitObject.transform.root == this.transform.root)
-    //            continue;
-
-    //        if (Host_alreadyHit.Contains(hitObject.transform.root))
-    //            continue;
-
-    //        if (player.CanPVP && hitObject.TryGetComponent(out Player otherPlayer))
-    //        {
-    //            Host_alreadyHit.Add(otherPlayer.transform.root);
-
-    //            int attack = player.All_GetToolAtt();
-    //            otherPlayer.Host_TakeDamage(true, attack);
-    //            playerController.RPC_ApplyHitInvoke(attack);
-    //        }
-    //    }
-    //}
-
-    /// <summary>
-    /// 때릴 수 있게 설정
-    /// </summary>
-    //public void Host_StartHit()
-    //{
-    //    if (!HasStateAuthority)
-    //        return;
-    //    Host_canHit = true;
-    //}
-
-    ///// <summary>
-    ///// 때린거 초기화
-    ///// </summary>
-    //public void Host_FinishHit()
-    //{
-    //    if (!HasStateAuthority)
-    //        return;
-    //    Host_canHit = false;
-    //    Host_alreadyHit.Clear();
-    //}
 
     /// <summary>
     /// 애니메이션 업데이트
@@ -335,9 +287,6 @@ public class ToolStateManager : BaseStateManager
         if (!HasInputAuthority)
             return;
 
-        if (isArrow == 1)
-            client_DecreaseToolDuration = true;
-
         if (cameraManager.currentView == ViewType.FirstPerson && player.HasArrow)
             cameraManager.ShakeCamera(transform.right, 0.1f);
 
@@ -380,6 +329,14 @@ public class ToolStateManager : BaseStateManager
 
         Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+    }
+
+    public bool All_IsDecreaseDurationTool()
+    {
+        if (CurrentToolType == ToolType.Fist || CurrentToolType == ToolType.Bow || CurrentToolType == ToolType.Throw)
+            return false;
+        else
+            return true;
     }
 
     /// <summary>
@@ -441,7 +398,10 @@ public class ToolStateManager : BaseStateManager
         else
             player.arrow.SetActive(false);
     }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_DecreaseToolDuration(bool decrease) => client_DecreaseToolDuration = decrease;
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestDecreaseToolDuration(bool isDecreased)
+    {
+        DecreaseToolDuration = isDecreased;
+        Debug.Log("DecreaseToolDuration : " + DecreaseToolDuration);
+    }
 }

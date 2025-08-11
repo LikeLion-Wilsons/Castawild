@@ -1,9 +1,11 @@
+using Autodesk.Fbx;
 using Fusion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Test;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -32,6 +34,7 @@ public class Player : NetworkBehaviour
     public float thirstSleepDecrease = 10f;
     public float hungerSleepDecrease = 10f;
     [SerializeField] private float bloodEffectThreshold = 0.2f;
+    [SerializeField] private float foodRestoreTime = 5f;
 
     [Header("Current Status")]
     [Networked] public float Hp { get; set; }
@@ -73,7 +76,7 @@ public class Player : NetworkBehaviour
     #endregion
 
     [Header("Effect")]
-    [SerializeField] private Volume takeDamageEffect;
+    public Volume takeDamageEffect;
     [SerializeField] private Animator takeDamageEffectAnim;
 
     public Coroutine fallingCoroutine;
@@ -86,15 +89,18 @@ public class Player : NetworkBehaviour
     [Networked, HideInInspector] public bool IsUIOpen { get; set; }
     [Networked, HideInInspector] public bool IsCursorLocked { get; set; }
     [Networked, HideInInspector] public bool IsSleeping { get; set; }
-    [Networked] public string CurrentToolName { get; set; }
-    [Networked, HideInInspector] public int CurrentToolAtt { get; set; }
-    [Networked, HideInInspector] public int CurrentToolID { get; set; }
+    [Networked] public ToolInfoData currentToolInfoData { get; set; }
+    //[Networked] public string CurrentToolName { get; set; }
+    //[Networked, HideInInspector] public int CurrentToolAtt { get; set; }
+    //[Networked, HideInInspector] public int CurrentToolID { get; set; }
+    //[Networked, HideInInspector] public float CurrentToolDurability { get; set; }
 
-    [HideInInspector] public float client_CurrentToolDurability;
+
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isSpawned;
     public ItemType currentItemType;
     public event Action<int> Hit;
+    private Coroutine foodRestoreCoroutine;
 
     private void Awake()
     {
@@ -173,7 +179,7 @@ public class Player : NetworkBehaviour
             Host_TakeDamage(true, attackObject.Att);
 
             attackObject.player.RPC_ApplyHitInvoke(attackObject.Att);
-            attackObject.player.toolStateManager.RPC_DecreaseToolDuration(true);
+            attackObject.player.toolStateManager.DecreaseToolDuration = true;
             attackObject.player.GetComponent<PlayerController>().RPC_ApplyHitInvoke(attackObject.Att);
         }
 
@@ -245,15 +251,20 @@ public class Player : NetworkBehaviour
         RPC_NotifySetCurrentItemType(itemIdx);
 
         // 도구일 경우 장착
-        if (currentItemType == ItemType.Tool)
+        if (currentItemType == ItemType.Tool || currentItemType == ItemType.Drink || currentItemType == ItemType.Food)
         {
             if (toolDict.TryGetValue(itemIdx, out GameObject currentToolGameObject))
             {
                 if (HasInputAuthority)
                     RPC_NotifyEquipmentTool(itemIdx);
-                ToolInfo toolInfo = currentToolGameObject.GetComponent<ToolInfo>();
-                RPC_RequestSetCurrentTool(toolInfo.ItemID, toolInfo.ToolName, toolInfo.Att);
-                client_CurrentToolDurability = toolInfo.Durability;
+
+                if (currentItemType == ItemType.Tool)
+                {
+                    ToolInfo toolInfo = currentToolGameObject.GetComponent<ToolInfo>();
+                    RPC_RequestSetCurrentTool(toolInfo.GetData());
+                }
+                else
+                    RPC_RequestSetCurrentTool(ToolInfoData.Empty);
             }
             else
                 Debug.LogWarning($"{itemIdx} 인덱스 없음");
@@ -261,7 +272,7 @@ public class Player : NetworkBehaviour
         else
         {
             RPC_NotifyEquipmentTool();
-            RPC_RequestSetCurrentTool();
+            RPC_RequestSetCurrentTool(ToolInfoData.Empty);
         }
 
         toolStateManager.RPC_NotifyChangeSelectedItem(itemIdx);
@@ -273,7 +284,7 @@ public class Player : NetworkBehaviour
     public void Client_RemoveSelectedItem()
     {
         RPC_NotifyEquipmentTool();
-        RPC_RequestSetCurrentTool();
+        RPC_RequestSetCurrentTool(ToolInfoData.Empty);
 
         toolStateManager.RPC_NotifyChangeSelectedItem();
     }
@@ -288,12 +299,12 @@ public class Player : NetworkBehaviour
     /// </summary>
     public int All_GetToolAtt(string toolName = "")
     {
-        if (CurrentToolName == string.Empty)
+        if (currentToolInfoData.IsEmpty())
             return playerData.attack;
 
-        if (CurrentToolName.Contains(toolName))
-            return playerData.attack + CurrentToolAtt;
-        else if (CurrentToolID > 400 || CurrentToolID == 202)
+        if (currentToolInfoData.ToolName.Contains(toolName))
+            return playerData.attack + currentToolInfoData.Att;
+        else if (currentToolInfoData.ItemID > 400 || currentToolInfoData.ItemID == 202)
             return playerData.attack + 2;
         else
             return playerData.attack;
@@ -463,9 +474,7 @@ public class Player : NetworkBehaviour
 
     public void Host_InitCurrentTool()
     {
-        CurrentToolID = -1;
-        CurrentToolName = string.Empty;
-        CurrentToolAtt = 0;
+        currentToolInfoData = ToolInfoData.Empty;
 
         RPC_NotifyInitCurrentToolObject();
     }
@@ -480,7 +489,6 @@ public class Player : NetworkBehaviour
 
         if (hpPercent <= bloodEffectThreshold)
             takeDamageEffect.weight = Mathf.InverseLerp(bloodEffectThreshold, 0f, hpPercent);
-        Debug.Log("takeDamageEffect Weight : " + takeDamageEffect.weight);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
@@ -510,6 +518,25 @@ public class Player : NetworkBehaviour
         }
     }
 
+    public void RestoreStatFromFood()
+    {
+        if (foodRestoreCoroutine != null)
+            StopCoroutine(foodRestoreCoroutine);
+
+        foodRestoreCoroutine = StartCoroutine(RestoreStatFromFoodCoroutine());
+    }
+
+    private IEnumerator RestoreStatFromFoodCoroutine()
+    {
+        float elapsed = 0f;
+        if (elapsed < foodRestoreTime)
+        {
+            elapsed += Runner.DeltaTime;
+        }
+
+        yield return null;
+    }
+
     void All_OnChangedNickname() => nicknameUI.SetNickname(nickname);
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
@@ -534,20 +561,8 @@ public class Player : NetworkBehaviour
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_RequestSetCurrentTool(int toolID = -1, string toolName = "", int toolAtt = 0)
-    {
-        if (toolID == -1)
-        {
-            CurrentToolID = -1;
-            CurrentToolName = string.Empty;
-            CurrentToolAtt = 0;
-            return;
-        }
-
-        CurrentToolID = toolID;
-        CurrentToolName = toolName;
-        CurrentToolAtt = toolAtt;
-    }
+    private void RPC_RequestSetCurrentTool(ToolInfoData _toolInfoData)
+        => currentToolInfoData = _toolInfoData.IsEmpty() ? ToolInfoData.Empty : _toolInfoData;
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     private void RPC_NotifyEquipmentTool(int itemIdx = -1)

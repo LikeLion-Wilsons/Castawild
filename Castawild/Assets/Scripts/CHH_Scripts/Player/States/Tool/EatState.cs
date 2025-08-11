@@ -9,7 +9,6 @@ public class EatState : ToolBaseState
 
     public override void EnterState()
     {
-        // 나중에 아이템 인덱스 제대로 설정하기
         if (toolStateManager.player.currentItemType == ItemType.Food)
             toolStateManager.CurrentToolAnimationState = ToolAnimationState.Eat;
         if (toolStateManager.player.currentItemType == ItemType.Drink)
