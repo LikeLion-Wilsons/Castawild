@@ -75,13 +75,10 @@ public class MovementStateManager : BaseStateManager
     {
         InitComponents();
         if (HasStateAuthority)
-            DayNightCycleManager.OnTimeSkipStarted += Host_WakeUp;
-    }
-
-    private void OnDisable()
-    {
-        if (HasStateAuthority)
+        {
             DayNightCycleManager.OnTimeSkipStarted -= Host_WakeUp;
+            DayNightCycleManager.OnTimeSkipStarted += Host_WakeUp;
+        }
     }
 
     private void InitComponents()

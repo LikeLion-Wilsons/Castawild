@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Test;
@@ -73,7 +74,6 @@ public class Player : NetworkBehaviour
     [Header("Effect")]
     [SerializeField] private Volume takeDamageEffect;
     [SerializeField] private Animator takeDamageEffectAnim;
-    private Coroutine activeDamageEffectAnim;
 
     public Coroutine fallingCoroutine;
     public GameObject amarture;
@@ -92,10 +92,17 @@ public class Player : NetworkBehaviour
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isSpawned;
     public ItemType currentItemType;
+    public event Action<int> Hit;
 
     private void Awake()
     {
         InitComponents();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+            Host_TakeDamage(true, 10);
     }
 
     override public void Spawned()
@@ -146,19 +153,19 @@ public class Player : NetworkBehaviour
         if (!HasStateAuthority)
             return;
 
+        // 플레이어 공격
         if (CanPVP && other.TryGetComponent<AttackObject>(out AttackObject attackObject))
         {
-            if (attackObject.canAttack)
-            {
-                Host_TakeDamage(true, attackObject.att);
+            Host_TakeDamage(true, attackObject.Att);
 
-                Transform parent = other.transform;
-                while (other.transform.parent != null)
-                    parent = parent.parent;
-
-                parent.GetComponent<PlayerController>().RPC_ApplyHitInvoke(attackObject.att);
-            }
+            attackObject.player.RPC_ApplyHitInvoke(attackObject.Att);
         }
+
+        // 동물 공격
+        //if (other.CompareTag("AnimalAttack"))
+        //{
+
+        //}
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -170,9 +177,9 @@ public class Player : NetworkBehaviour
         {
             if (throwObject.canAttack)
             {
-                Host_TakeDamage(true, throwObject.att);
+                Host_TakeDamage(true, throwObject.Att);
                 throwObject.canAttack = false;
-                throwObject.thrower.GetComponent<PlayerController>().RPC_ApplyHitInvoke(throwObject.att);
+                throwObject.player.GetComponent<PlayerController>().RPC_ApplyHitInvoke(throwObject.Att);
             }
         }
     }
@@ -422,7 +429,9 @@ public class Player : NetworkBehaviour
                 RPC_ApplyPlayDamagedEffectAnim();
                 RPC_NotifyPlayDamagedAnim();
                 if (movementManager.input.currentView == ViewType.FirstPerson)
-                    playerController.RPC_ApplyShakeCamera();
+                    playerController.RPC_ApplyShakeCamera(transform.right, 0.5f);
+                else
+                    playerController.RPC_ApplyShakeCamera(transform.right, 0.3f);
             }
         }
 
@@ -445,6 +454,9 @@ public class Player : NetworkBehaviour
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplyHitInvoke(int dmg) => Hit?.Invoke(dmg);
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     private void RPC_ApplyPlayDamagedEffect()
     {
         float hpPercent = Hp / playerData.maxHp;
@@ -455,22 +467,7 @@ public class Player : NetworkBehaviour
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    private void RPC_ApplyPlayDamagedEffectAnim()
-    {
-        takeDamageEffectAnim.enabled = true;
-        takeDamageEffectAnim.SetTrigger("Damaged");
-
-        if (activeDamageEffectAnim != null)
-            StopCoroutine(activeDamageEffectAnim);
-        activeDamageEffectAnim = StartCoroutine(ActiveDamageEffectAnim());
-    }
-
-    private IEnumerator ActiveDamageEffectAnim()
-    {
-        yield return 0.4f;
-        takeDamageEffectAnim.enabled = false;
-        activeDamageEffectAnim = null;
-    }
+    private void RPC_ApplyPlayDamagedEffectAnim() => takeDamageEffectAnim.SetTrigger("Damaged");
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_NotifyPlayDamagedAnim() => anim.SetTrigger("GetHit");

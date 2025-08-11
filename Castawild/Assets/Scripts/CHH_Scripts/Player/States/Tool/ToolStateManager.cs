@@ -45,10 +45,8 @@ public class ToolStateManager : BaseStateManager
     [SerializeField] private Transform throwPos;
 
     [Header("Hit")]
-    [SerializeField] private Transform fistPos;
     [SerializeField] private Vector3 hitBox = new Vector3(1f, 1f, 1.0f);
     public HashSet<Transform> Host_alreadyHit = new HashSet<Transform>();
-    private bool Host_canHit;
 
     #region Network
     [Header("Network")]
@@ -77,8 +75,8 @@ public class ToolStateManager : BaseStateManager
 
     public override void FixedUpdateNetwork()
     {
-        if (Host_canHit && HasStateAuthority && CurrentToolType == ToolType.Fist)
-            Host_FistAttack();
+        //if (Host_canHit && HasStateAuthority && CurrentToolType == ToolType.Fist)
+        //    Host_FistAttack();
     }
 
     private void InitComponents()
@@ -132,58 +130,51 @@ public class ToolStateManager : BaseStateManager
     /// <summary>
     /// 주먹 공격
     /// </summary>
-    public void Host_FistAttack()
-    {
-        Collider[] hitObjects = Physics.OverlapBox(fistPos.position, hitBox, fistPos.rotation);
+    //public void Host_FistAttack()
+    //{
+    //    Collider[] hitObjects = Physics.OverlapBox(fistPos.position, hitBox, fistPos.rotation);
 
-        for (int i = 0; i < hitObjects.Length; i++)
-        {
-            Transform hitObject = hitObjects[i].transform.root;
+    //    for (int i = 0; i < hitObjects.Length; i++)
+    //    {
+    //        Transform hitObject = hitObjects[i].transform.root;
 
-            if (hitObject.transform.root == this.transform.root)
-                continue;
+    //        if (hitObject.transform.root == this.transform.root)
+    //            continue;
 
-            if (Host_alreadyHit.Contains(hitObject.transform.root))
-                continue;
+    //        if (Host_alreadyHit.Contains(hitObject.transform.root))
+    //            continue;
 
-            if (player.CanPVP && hitObject.TryGetComponent(out Player otherPlayer))
-            {
-                Host_alreadyHit.Add(otherPlayer.transform.root);
+    //        if (player.CanPVP && hitObject.TryGetComponent(out Player otherPlayer))
+    //        {
+    //            Host_alreadyHit.Add(otherPlayer.transform.root);
 
-                int attack = player.All_GetToolAtt();
-                otherPlayer.Host_TakeDamage(true, attack);
-                playerController.RPC_ApplyHitInvoke(attack);
-            }
-        }
-    }
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.matrix = Matrix4x4.TRS(fistPos.position, Quaternion.identity, Vector3.one);
-        Gizmos.DrawWireCube(Vector3.zero, hitBox * 2f);
-    }
+    //            int attack = player.All_GetToolAtt();
+    //            otherPlayer.Host_TakeDamage(true, attack);
+    //            playerController.RPC_ApplyHitInvoke(attack);
+    //        }
+    //    }
+    //}
 
     /// <summary>
     /// 때릴 수 있게 설정
     /// </summary>
-    public void Host_StartHit()
-    {
-        if (!HasStateAuthority)
-            return;
-        Host_canHit = true;
-    }
+    //public void Host_StartHit()
+    //{
+    //    if (!HasStateAuthority)
+    //        return;
+    //    Host_canHit = true;
+    //}
 
-    /// <summary>
-    /// 때린거 초기화
-    /// </summary>
-    public void Host_FinishHit()
-    {
-        if (!HasStateAuthority)
-            return;
-        Host_canHit = false;
-        Host_alreadyHit.Clear();
-    }
+    ///// <summary>
+    ///// 때린거 초기화
+    ///// </summary>
+    //public void Host_FinishHit()
+    //{
+    //    if (!HasStateAuthority)
+    //        return;
+    //    Host_canHit = false;
+    //    Host_alreadyHit.Clear();
+    //}
 
     /// <summary>
     /// 애니메이션 업데이트
