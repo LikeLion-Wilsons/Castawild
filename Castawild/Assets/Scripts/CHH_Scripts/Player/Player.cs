@@ -174,6 +174,7 @@ public class Player : NetworkBehaviour
 
             attackObject.player.RPC_ApplyHitInvoke(attackObject.Att);
             attackObject.player.toolStateManager.client_DecreaseToolDuration = true;
+            attackObject.player.GetComponent<PlayerController>().RPC_ApplyHitInvoke(attackObject.Att);
         }
 
         // 동물 공격
@@ -441,6 +442,7 @@ public class Player : NetworkBehaviour
             {
                 RPC_ApplyPlayDamagedEffectAnim();
                 RPC_NotifyPlayDamagedAnim();
+
                 if (movementManager.input.currentView == ViewType.FirstPerson)
                     playerController.RPC_ApplyShakeCamera(transform.right, 0.5f);
                 else

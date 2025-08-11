@@ -383,7 +383,10 @@ public sealed class PlayerController : NetworkBehaviour
         }
 
         if (att != 0)
+        {
+            Debug.Log("Hit Invoke");
             Hit?.Invoke(att);
+        }
     }
 
     /// <summary>
@@ -412,7 +415,11 @@ public sealed class PlayerController : NetworkBehaviour
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ApplyHitInvoke(int dmg) => Hit?.Invoke(dmg);
+    public void RPC_ApplyHitInvoke(int dmg)
+    {
+        Debug.Log("Hit Invoke");
+        Hit?.Invoke(dmg);
+    }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     private void RPC_DespawnObject(NetworkObject despawnObject) => Runner.Despawn(despawnObject);
