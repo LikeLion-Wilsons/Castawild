@@ -320,4 +320,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   toolName: Bow
   itemID: 406
-  att: 5
+  interactAtt: 0
+  durability: 0.1

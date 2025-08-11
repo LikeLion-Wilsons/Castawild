@@ -3462,6 +3462,7 @@ MonoBehaviour:
   _CurrentToolName: 
   _CurrentToolAtt: 0
   _CurrentToolID: 0
+  client_CurrentToolDuration: 0
   inventory: {fileID: 0}
   isSpawned: 0
   currentItemType: 0
@@ -3481,6 +3482,7 @@ MonoBehaviour:
   jumpImpulse: 10
   maxSpeed: 2
   rotationSpeed: 15
+  maxGroundAngle: 45
   gravity: -9.81
   fallThreshold: 20
   damagePerMeter: 10
@@ -3618,6 +3620,7 @@ MonoBehaviour:
   thirdPersonArrowPos: {fileID: 2414465423738557776}
   throwPos: {fileID: 8012178248796667738}
   hitBox: {x: 0.64, y: 1.5, z: 0.85}
+  client_DecreaseToolDuration: 0
   _CurrentToolState: 0
   _CurrentToolAnimationState: 0
   _CurrentToolType: 0
@@ -3681,7 +3684,6 @@ MonoBehaviour:
   scrollCooldown: 0.1
   playerUIPrefab: {fileID: 2839189812646824299, guid: e749cc6fe2a853349bb3f6bb330140f7, type: 3}
   UICanvas: {fileID: 0}
-  chest: {fileID: 6167062138974328233, guid: b3205841b2c54e84e941859841c61959, type: 3}
   inventorySlots:
   - {fileID: 0}
   - {fileID: 0}
@@ -4692,25 +4694,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7844614530758869572}
     m_Modifications:
-    - target: {fileID: -587096083230232040, guid: ade642d343edac543a66fdccb1786eac, type: 3}
-      propertyPath: SortKey
-      value: 3146354028
-      objectReference: {fileID: 0}
     - target: {fileID: 1568103841125034, guid: ade642d343edac543a66fdccb1786eac, type: 3}
       propertyPath: m_Name
       value: 404_StoneSpear
-      objectReference: {fileID: 0}
-    - target: {fileID: 1568103841125034, guid: ade642d343edac543a66fdccb1786eac, type: 3}
-      propertyPath: m_Layer
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 1568103841125034, guid: ade642d343edac543a66fdccb1786eac, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1568103841125034, guid: ade642d343edac543a66fdccb1786eac, type: 3}
-      propertyPath: m_TagString
-      value: PlayerAttack
       objectReference: {fileID: 0}
     - target: {fileID: 4462896759855332, guid: ade642d343edac543a66fdccb1786eac, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4752,12 +4738,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8321722175507344541, guid: ade642d343edac543a66fdccb1786eac, type: 3}
-      propertyPath: att
-      value: 3
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 2515550508101212155, guid: ade642d343edac543a66fdccb1786eac, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -4786,33 +4767,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7844614530758869572}
     m_Modifications:
-    - target: {fileID: -8968120805878920706, guid: 60e3d6b7b45c38940b382ad3225bc322, type: 3}
-      propertyPath: SortKey
-      value: 2687743123
-      objectReference: {fileID: 0}
-    - target: {fileID: -7498477608500860873, guid: 60e3d6b7b45c38940b382ad3225bc322, type: 3}
-      propertyPath: att
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: -7498477608500860873, guid: 60e3d6b7b45c38940b382ad3225bc322, type: 3}
-      propertyPath: canAttack
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1683656624262994, guid: 60e3d6b7b45c38940b382ad3225bc322, type: 3}
       propertyPath: m_Name
       value: 405_StonePickaxe
-      objectReference: {fileID: 0}
-    - target: {fileID: 1683656624262994, guid: 60e3d6b7b45c38940b382ad3225bc322, type: 3}
-      propertyPath: m_Layer
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 1683656624262994, guid: 60e3d6b7b45c38940b382ad3225bc322, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1683656624262994, guid: 60e3d6b7b45c38940b382ad3225bc322, type: 3}
-      propertyPath: m_TagString
-      value: PlayerAttack
       objectReference: {fileID: 0}
     - target: {fileID: 4144373302085674, guid: 60e3d6b7b45c38940b382ad3225bc322, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4854,8 +4811,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 4440043442953955982, guid: 60e3d6b7b45c38940b382ad3225bc322, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -4966,18 +4922,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: 403_StoneAxe
       objectReference: {fileID: 0}
-    - target: {fileID: 1444140402882792, guid: 682f64c2af3935743ae97e7a4b53df94, type: 3}
-      propertyPath: m_Layer
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 1444140402882792, guid: 682f64c2af3935743ae97e7a4b53df94, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1444140402882792, guid: 682f64c2af3935743ae97e7a4b53df94, type: 3}
-      propertyPath: m_TagString
-      value: PlayerAttack
-      objectReference: {fileID: 0}
     - target: {fileID: 4089537146240186, guid: 682f64c2af3935743ae97e7a4b53df94, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.13100001
@@ -5018,20 +4962,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1343107979902281790, guid: 682f64c2af3935743ae97e7a4b53df94, type: 3}
-      propertyPath: att
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2944684159316543000, guid: 682f64c2af3935743ae97e7a4b53df94, type: 3}
-      propertyPath: att
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 6091583828393369892, guid: 682f64c2af3935743ae97e7a4b53df94, type: 3}
       propertyPath: SortKey
       value: 3976633669
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 6961593972771876712, guid: 682f64c2af3935743ae97e7a4b53df94, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -5063,18 +4998,6 @@ PrefabInstance:
     - target: {fileID: 2150556656117040860, guid: 320f9d5c5f1873442818fc5b70dda38d, type: 3}
       propertyPath: m_Name
       value: 402_Torch
-      objectReference: {fileID: 0}
-    - target: {fileID: 2150556656117040860, guid: 320f9d5c5f1873442818fc5b70dda38d, type: 3}
-      propertyPath: m_Layer
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 2150556656117040860, guid: 320f9d5c5f1873442818fc5b70dda38d, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2150556656117040860, guid: 320f9d5c5f1873442818fc5b70dda38d, type: 3}
-      propertyPath: m_TagString
-      value: PlayerAttack
       objectReference: {fileID: 0}
     - target: {fileID: 3135374206538331343, guid: 320f9d5c5f1873442818fc5b70dda38d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5116,13 +5039,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3479888908781244880, guid: 320f9d5c5f1873442818fc5b70dda38d, type: 3}
-      propertyPath: SortKey
-      value: 3407401569
-      objectReference: {fileID: 0}
-    - target: {fileID: 5996870927364506238, guid: 320f9d5c5f1873442818fc5b70dda38d, type: 3}
-      propertyPath: att
-      value: 2
+    - target: {fileID: 8967367658928670673, guid: 320f9d5c5f1873442818fc5b70dda38d, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5227,25 +5146,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7844614530758869572}
     m_Modifications:
-    - target: {fileID: -1580625264523228205, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
-      propertyPath: SortKey
-      value: 1696242542
-      objectReference: {fileID: 0}
     - target: {fileID: 1771104533621832, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
       propertyPath: m_Name
       value: 401_WoodenClub
-      objectReference: {fileID: 0}
-    - target: {fileID: 1771104533621832, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
-      propertyPath: m_Layer
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 1771104533621832, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1771104533621832, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
-      propertyPath: m_TagString
-      value: PlayerAttack
       objectReference: {fileID: 0}
     - target: {fileID: 4047547711319264, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5287,20 +5190,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3115659081394865434, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
-      propertyPath: SortKey
-      value: 749546853
-      objectReference: {fileID: 0}
-    - target: {fileID: 6376777473369892278, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
-      propertyPath: att
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6376777473369892278, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
-      propertyPath: canAttack
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 1653963680197513406, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -5407,21 +5297,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7844614530758869572}
     m_Modifications:
-    - target: {fileID: 1380810401459524713, guid: c19cb8ae3a01c0b45aa126b1b78daa66, type: 3}
-      propertyPath: itemID
-      value: 202
-      objectReference: {fileID: 0}
-    - target: {fileID: 1380810401459524713, guid: c19cb8ae3a01c0b45aa126b1b78daa66, type: 3}
-      propertyPath: toolName
-      value: Peddle
-      objectReference: {fileID: 0}
     - target: {fileID: 1703291259242920242, guid: c19cb8ae3a01c0b45aa126b1b78daa66, type: 3}
       propertyPath: m_Name
       value: 202__Peddle
-      objectReference: {fileID: 0}
-    - target: {fileID: 1703291259242920242, guid: c19cb8ae3a01c0b45aa126b1b78daa66, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6123478145016397464, guid: c19cb8ae3a01c0b45aa126b1b78daa66, type: 3}
       propertyPath: m_LocalPosition.x
