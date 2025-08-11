@@ -1,8 +1,6 @@
 using Fusion;
 using System;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
-using UnityEngine.InputSystem.LowLevel;
 
 public delegate void OnItemGet();
 
@@ -30,7 +28,7 @@ public class InventoryDataManager : NetworkBehaviour
 
         if (Object.HasStateAuthority)
         {
-            while (itemList.Count < inventorySlots.Length)
+            while (itemList.Count < 47)
             {
                 itemList.Add(new Item
                 {

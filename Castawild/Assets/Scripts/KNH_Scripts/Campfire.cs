@@ -7,6 +7,7 @@ public class Campfire : InteractableObject
     public bool isFire { get; set; } = false;
     UI_Manager canvasHolder;
     [SerializeField] GameObject fireVFX;
+    public Player player;
 
     private void Awake()
     {
@@ -17,7 +18,6 @@ public class Campfire : InteractableObject
     private void Update()
     {
         
-
         if (canvasHolder == null) return;
         bool isInventoryOpen = canvasHolder.uiParts["Inventory"].IsOpen();
         CanOpen = !isInventoryOpen;
@@ -29,7 +29,7 @@ public class Campfire : InteractableObject
     {
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
 
-        Player player = playerObj.GetComponent<Player>();
+        player = playerObj.GetComponent<Player>();
 
         PlayerController playerController = playerObj.GetComponent<PlayerController>();
 
