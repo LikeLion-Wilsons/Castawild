@@ -123,7 +123,6 @@ public class MovementStateManager : BaseStateManager
     {
         if (!HasStateAuthority)
             return;
-
         CurrentMoveState = newState;
     }
 
@@ -163,7 +162,6 @@ public class MovementStateManager : BaseStateManager
         anim.SetBool("Running", false);
         anim.SetBool("Crouching", false);
         anim.SetBool("Falling", false);
-        anim.SetBool("Sleeping", false);
 
         switch (CurrentMoveAnimation)
         {
@@ -188,15 +186,12 @@ public class MovementStateManager : BaseStateManager
                 anim.SetTrigger("RunJump");
                 CurrentMoveAnimation = MoveAnimatoinState.None;
                 break;
-            //case MoveAnimatoinState.Sleep:
-            //    anim.SetBool("Sleeping", true);
-            //    break;
-            //case MoveAnimatoinState.GetHit:
-            //    anim.SetTrigger("GetHit");
-            //    CurrentMoveAnimation = MoveAnimatoinState.None;
-            //    break;
             case MoveAnimatoinState.Death:
                 anim.SetTrigger("Death");
+                CurrentMoveAnimation = MoveAnimatoinState.None;
+                break;
+            case MoveAnimatoinState.Sleep:
+                anim.SetTrigger("Sleep");
                 CurrentMoveAnimation = MoveAnimatoinState.None;
                 break;
         }

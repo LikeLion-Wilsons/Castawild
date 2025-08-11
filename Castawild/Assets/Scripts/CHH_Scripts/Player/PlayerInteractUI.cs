@@ -167,6 +167,9 @@ public class PlayerInteractUI : MonoBehaviour
     /// </summary>
     public void SetWakeUpUI()
     {
+        if (interactableUI.alpha == 1f)
+            return;
+
         interactableUI.alpha = 1f;
         placeableUI.alpha = 0f;
         SetInteractText("Wake Up");

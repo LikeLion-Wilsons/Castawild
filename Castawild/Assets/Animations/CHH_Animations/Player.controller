@@ -909,7 +909,7 @@ AnimatorStateMachine:
     m_Position: {x: -100, y: -130, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4299897714267742892}
-    m_Position: {x: -150, y: 190, z: 0}
+    m_Position: {x: -160, y: 180, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1419440274571028429}
     m_Position: {x: -220, y: 90, z: 0}
@@ -2966,6 +2966,12 @@ AnimatorController:
   m_Name: Player
   serializedVersion: 5
   m_AnimatorParameters:
+  - m_Name: WakeUp
+    m_Type: 9
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
   - m_Name: Gather
     m_Type: 9
     m_DefaultFloat: 0
@@ -2973,12 +2979,6 @@ AnimatorController:
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
   - m_Name: Gather_Kneeling
-    m_Type: 9
-    m_DefaultFloat: 0
-    m_DefaultInt: 0
-    m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
-  - m_Name: WakeUp
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -5400,7 +5400,7 @@ AnimatorStateMachine:
     m_Position: {x: -250, y: -200, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4003142232291942103}
-    m_Position: {x: -330, y: 80, z: 0}
+    m_Position: {x: -340, y: 110, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -4969830690672511606}
     m_Position: {x: -570, y: -90, z: 0}

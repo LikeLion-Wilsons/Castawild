@@ -407,13 +407,28 @@ public sealed class PlayerController : NetworkBehaviour
     }
 
     /// <summary>
-    /// 위치 변경
+    /// 리스폰 위치 변경
     /// </summary>
     public void Host_SetPosition(Vector3 position)
     {
         IsChangePos = true;
         ChangePos = position;
     }
+
+    /// <summary>
+    /// 위치 변경
+    /// </summary>
+    public void All_SetPosition(Vector3 position)
+    {
+        if (HasStateAuthority)
+        {
+            IsChangePos = true;
+            ChangePos = position;
+        }
+        else
+            RPC_NotifySetPosition(position);
+    }
+
 
     /// <summary>
     /// 위치 고정
@@ -443,7 +458,7 @@ public sealed class PlayerController : NetworkBehaviour
     /// <summary>
     /// 위치 변경
     /// </summary>
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_NotifySetPosition(Vector3 position)
     {
         IsChangePos = true;

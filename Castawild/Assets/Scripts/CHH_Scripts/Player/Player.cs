@@ -399,10 +399,12 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 리스폰 위치 설정
     /// </summary>
-    public void Client_SetRespawnPos(Vector3 respawnPos)
+    public void All_SetRespawnPos(Vector3 respawnPos)
     {
         if (HasInputAuthority)
             RPC_RequestSetRespawnPos(respawnPos);
+        else
+            RespawnPos = respawnPos;
     }
 
     /// <summary>
