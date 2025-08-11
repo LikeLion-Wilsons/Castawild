@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Bed : InteractableObject
 {
-    [Networked] public bool CanSleep { get; set; } = true;
+    [Networked, HideInInspector] public bool CanSleep { get; set; } = true;
     [SerializeField] private Transform sleepPos;
 
     private void Awake()

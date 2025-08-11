@@ -1,6 +1,9 @@
 using Fusion;
+using System.Collections;
 using System.Collections.Generic;
+using Test;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
@@ -10,6 +13,10 @@ public enum ItemType { None, Default, Tool, Food, Drink, Placeable }
 public class Player : NetworkBehaviour
 {
     #region Status
+    [Header("NickName")]
+    [SerializeField] private NicknameUI nicknameUI;
+    [Networked, OnChangedRender(nameof(All_OnChangedNickname))] private string nickname { get; set; }
+
     [Header("Status")]
     public PlayerData playerData = new PlayerData();
 
@@ -20,6 +27,9 @@ public class Player : NetworkBehaviour
     public float staminaRunDecreaseRate = 1f;
     public float hungerDecreaseRate = 1f;
     public float thirstDecreaseRate = 1f;
+    public float thirstSleepDecrease = 10f;
+    public float hungerSleepDecrease = 10f;
+    [SerializeField] private float bloodEffectThreshold = 0.2f;
 
     [Header("Current Status")]
     [Networked] public float Hp { get; set; }
@@ -61,7 +71,9 @@ public class Player : NetworkBehaviour
     #endregion
 
     [Header("Effect")]
+    [SerializeField] private Volume takeDamageEffect;
     [SerializeField] private Animator takeDamageEffectAnim;
+    private Coroutine activeDamageEffectAnim;
 
     public Coroutine fallingCoroutine;
     public GameObject amarture;
@@ -91,6 +103,12 @@ public class Player : NetworkBehaviour
         isSpawned = true;
         InitStatus();
         InitTools();
+
+        if (HasInputAuthority)
+            RPC_RequestSetNickname(PlayerTempData.nickname);
+        All_OnChangedNickname();
+        if (HasInputAuthority)
+            nicknameUI.gameObject.SetActive(false);
     }
 
     public override void FixedUpdateNetwork()
@@ -263,13 +281,10 @@ public class Player : NetworkBehaviour
     }
 
     /// <summary>
-    /// 수면 끝나고 일어나는 애니메이션 이후 호출하는 함수
+    /// 수면 끝나고 호출하는 함수
     /// </summary>
-    public void All_FinishSleep()
+    public void Host_FinishSleep()
     {
-        if (HasInputAuthority)
-            cameraManager.AttachCameraToHead(false);
-
         if (HasStateAuthority)
         {
             Host_currentBed.CanSleep = true;
@@ -395,6 +410,7 @@ public class Player : NetworkBehaviour
         {
             movementManager.Host_ChangeState(MovementState.Death);
             toolStateManager.Host_ChangeState(ToolState.Idle);
+            return;
         }
         else if (Hp > 0 && isAttack)
         {
@@ -403,10 +419,15 @@ public class Player : NetworkBehaviour
 
             if (isAttack)
             {
-                RPC_ApplyPlayDamagedEffect();
+                RPC_ApplyPlayDamagedEffectAnim();
                 RPC_NotifyPlayDamagedAnim();
+                if (movementManager.input.currentView == ViewType.FirstPerson)
+                    playerController.RPC_ApplyShakeCamera();
             }
         }
+
+        if (Hp <= playerData.maxHp * 0.2f)
+            RPC_ApplyPlayDamagedEffect();
     }
 
     /// <summary>
@@ -424,7 +445,32 @@ public class Player : NetworkBehaviour
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    private void RPC_ApplyPlayDamagedEffect() => takeDamageEffectAnim.SetTrigger("Damaged");
+    private void RPC_ApplyPlayDamagedEffect()
+    {
+        float hpPercent = Hp / playerData.maxHp;
+
+        if (hpPercent <= bloodEffectThreshold)
+            takeDamageEffect.weight = Mathf.InverseLerp(bloodEffectThreshold, 0f, hpPercent);
+        Debug.Log("takeDamageEffect Weight : " + takeDamageEffect.weight);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    private void RPC_ApplyPlayDamagedEffectAnim()
+    {
+        takeDamageEffectAnim.enabled = true;
+        takeDamageEffectAnim.SetTrigger("Damaged");
+
+        if (activeDamageEffectAnim != null)
+            StopCoroutine(activeDamageEffectAnim);
+        activeDamageEffectAnim = StartCoroutine(ActiveDamageEffectAnim());
+    }
+
+    private IEnumerator ActiveDamageEffectAnim()
+    {
+        yield return 0.4f;
+        takeDamageEffectAnim.enabled = false;
+        activeDamageEffectAnim = null;
+    }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_NotifyPlayDamagedAnim() => anim.SetTrigger("GetHit");
@@ -449,6 +495,11 @@ public class Player : NetworkBehaviour
                 tool.Value.SetActive(false);
         }
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_RequestSetNickname(string nickname) => this.nickname = nickname;
+
+    void All_OnChangedNickname() => nicknameUI.SetNickname(nickname);
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     private void RPC_NotifySetCurrentItemType(int _currentItemIdx)
@@ -519,12 +570,12 @@ public class Player : NetworkBehaviour
     public void RPC_RequestCursorLocked(bool isLocked) => IsCursorLocked = isLocked;
 
     /// <summary>
-    /// 카메라 머리에 붙이거나 떼기 
+    /// 죽거나 잘 때 카메라 위치
     /// </summary>
-    public void Client_AttachCameraToHead(bool attachCamera)
+    public void Client_SleepDeadCameraTarget(bool attachCamera, bool isSleep)
     {
         if (HasInputAuthority)
-            cameraManager.AttachCameraToHead(attachCamera);
+            cameraManager.SleepDeadCameraTarget(attachCamera, isSleep);
     }
 
     /// <summary>
@@ -539,22 +590,31 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 활 있는지
     /// </summary>
-    public void Host_SetHasArrow(bool hasArrow) => HasArrow = hasArrow;
+    public void Host_SetHasArrow(NetworkBool hasArrow) => HasArrow = hasArrow;
 
     /// <summary>
     /// 던지는 돌맹이 있는지
     /// </summary>
-    public void Host_SetHasPebble(bool hasPebble) => HasPebble = hasPebble;
+    public void Host_SetHasPebble(NetworkBool hasPebble) => HasPebble = hasPebble;
+
+    public void Host_NewDayStatus()
+    {
+        // 체력은 최대 체력의 80프로까지
+        // huunger, thist는 일정 수치 감소
+        Hp = playerData.maxHp;
+        Hunger -= hungerSleepDecrease;
+        Thirst -= thirstSleepDecrease;
+    }
 
     /// <summary>
     /// 활 있는지
     /// </summary>
-    public void RPC_RequestSetHasArrow(bool hasArrow) => HasArrow = hasArrow;
+    public void RPC_RequestSetHasArrow(NetworkBool hasArrow) => HasArrow = hasArrow;
 
     /// <summary>
     /// 던지는 돌맹이 있는지
     /// </summary>
-    public void RPC_RequestSetHasPebble(bool hasPebble) => HasPebble = hasPebble;
+    public void RPC_RequestSetHasPebble(NetworkBool hasPebble) => HasPebble = hasPebble;
 
     /// <summary>
     /// 리스폰 장소 설정
@@ -579,7 +639,7 @@ public class Player : NetworkBehaviour
     /// Bed.CanSleep 설정
     /// </summary>
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_RequestCanSleep_Bed(Bed bed, bool canSleep) => bed.CanSleep = canSleep;
+    public void RPC_RequestCanSleep_Bed(Bed bed, NetworkBool canSleep) => bed.CanSleep = canSleep;
 
     /// <summary>
     /// 현재 침대 설정

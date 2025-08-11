@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7b30c7c93af76c46acd2b93a24d37fb, type: 3}
+  m_Name: 303_GrassShelter
+  m_EditorClassIdentifier: 
+  itemID: 303
+  image: {fileID: 21300000, guid: fd1248f010e8c184da66b7bb903cc72a, type: 3}
+  itemName: "\uD480 \uC544\uC9C0\uD2B8"
+  description: "\uC7A0\uC744 \uC798 \uC218 \uC788\uB2E4."
+  type: 3
+  range: {x: 5, y: 4}
+  stackable: 0
+  ingredient:
+  - {fileID: 11400000, guid: afcb80db2862c0648ba144279369d5c1, type: 2}
+  - {fileID: 11400000, guid: f65e9d8fd998e834da200d7b1ce7c28a, type: 2}
+  - {fileID: 11400000, guid: 8a4a708c8d089da419ff325b52b9a76e, type: 2}
+  ingredientCount: 0a0000000500000005000000
+  buildPreviewPrefab: {fileID: 8279742519067391878, guid: b57a1248518499c49afd3e7bca0b02ba, type: 3}
+  buildPrefab: {fileID: 4392086456302280992, guid: 601b53210f6996d4c961d89c720d9cd1, type: 3}

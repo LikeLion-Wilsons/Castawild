@@ -8,6 +8,7 @@ public enum MoveAnimatoinState { None, Idle, Walk, Run, CrouchIdle, CrouchWalk, 
 public class MovementStateManager : BaseStateManager
 {
     #region Conponent
+    private DayNightCycleManager dayNightManager;
     [HideInInspector] public PlayerInteractUI interactUI;
     [HideInInspector] public ToolStateManager toolStateManager;
     #endregion
@@ -44,10 +45,6 @@ public class MovementStateManager : BaseStateManager
     private Vector3 spherePos;
     #endregion
 
-    #region Animation
-    [Header("Animation")]
-    [HideInInspector] public bool isLyingOrGettingUp; // 눕거나 일어나는 애니메이션 도중 카메라 못움직이게 확인하는 불변수
-    #endregion
 
     #region Network
     [Header("Networked")]
@@ -58,7 +55,6 @@ public class MovementStateManager : BaseStateManager
     [Networked] public float currentMoveSpeed { get; set; }
     [Networked, HideInInspector] public bool Revived { get; set; }
     [Networked, HideInInspector] public bool JumpTriggered { get; set; }
-    [Networked, HideInInspector] public bool CanWakeUp { get; set; }
     [Networked, HideInInspector] public Vector2 MoveValue { get; set; }
     #endregion
 
@@ -71,17 +67,27 @@ public class MovementStateManager : BaseStateManager
     protected override void Awake()
     {
         base.Awake();
-        InitComponents();
         InitStates();
+        Host_ChangeState(MovementState.Idle);
     }
 
     public override void Spawned()
     {
-        Host_ChangeState(MovementState.Idle);
+        InitComponents();
+        if (HasStateAuthority)
+            DayNightCycleManager.OnTimeSkipStarted += Host_WakeUp;
+    }
+
+    private void OnDisable()
+    {
+        if (HasStateAuthority)
+            DayNightCycleManager.OnTimeSkipStarted -= Host_WakeUp;
     }
 
     private void InitComponents()
     {
+        if (HasStateAuthority)
+            dayNightManager = FindAnyObjectByType<DayNightCycleManager>();
         interactUI = GetComponentInChildren<PlayerInteractUI>();
         toolStateManager = GetComponent<ToolStateManager>();
     }
@@ -134,6 +140,12 @@ public class MovementStateManager : BaseStateManager
         }
     }
 
+    private void Host_WakeUp()
+    {
+        Host_ChangeState(MovementState.Idle);
+        player.Host_NewDayStatus();
+    }
+
     /// <summary>
     /// 애니메이션 업데이트
     /// </summary>
@@ -175,9 +187,9 @@ public class MovementStateManager : BaseStateManager
                 anim.SetTrigger("RunJump");
                 CurrentMoveAnimation = MoveAnimatoinState.None;
                 break;
-            case MoveAnimatoinState.Sleep:
-                anim.SetBool("Sleeping", true);
-                break;
+            //case MoveAnimatoinState.Sleep:
+            //    anim.SetBool("Sleeping", true);
+            //    break;
             //case MoveAnimatoinState.GetHit:
             //    anim.SetTrigger("GetHit");
             //    CurrentMoveAnimation = MoveAnimatoinState.None;
@@ -217,6 +229,8 @@ public class MovementStateManager : BaseStateManager
     /// 스테미나 회복가능한지 확인
     /// </summary>
     public bool All_CanRecoverStamina() => CurrentMoveState != MovementState.Run && CurrentMoveState != MovementState.Death;
+
+    public void Host_Sleep(bool isSleep) => dayNightManager.Rpc_SetSleepingState(isSleep);
 
     /// <summary>
     /// Sleep 상태로 변경하는 RPC

@@ -1,6 +1,7 @@
 using UnityEngine;
 using Fusion;
 using System.Linq;
+using System;
 
 [RequireComponent(typeof(NetworkObject))]
 public class DayNightCycleManager : NetworkBehaviour
@@ -40,7 +41,7 @@ public class DayNightCycleManager : NetworkBehaviour
     [Networked] private TimeSkipState CurrentState { get; set; }
     [Networked] private float TargetTimeOfDay { get; set; }
     [Networked, Capacity(16)] private NetworkLinkedList<PlayerRef> SleepingPlayers { get; }
-
+    public static event Action OnTimeSkipStarted;
 
     public override void FixedUpdateNetwork()
     {
@@ -50,7 +51,7 @@ public class DayNightCycleManager : NetworkBehaviour
         {
             case TimeSkipState.Normal:
                 float currentSpeedMultiplier = developerMode ? developerModeSpeed : 1f;
-                TimeOfDay += (Runner.DeltaTime / dayDurationInSeconds) * currentSpeedMultiplier;
+                TimeOfDay += Runner.DeltaTime / dayDurationInSeconds * currentSpeedMultiplier;
                 TimeOfDay %= 1f;
                 break;
 
@@ -61,10 +62,11 @@ public class DayNightCycleManager : NetworkBehaviour
                     TimeOfDay = TargetTimeOfDay;
                     CurrentState = TimeSkipState.Normal;
                     SleepingPlayers.Clear();
+                    OnTimeSkipStarted?.Invoke();
                 }
                 else
                 {
-                    TimeOfDay += (Runner.DeltaTime / dayDurationInSeconds) * skipSpeed;
+                    TimeOfDay += Runner.DeltaTime / dayDurationInSeconds * skipSpeed;
                     TimeOfDay %= 1f;
                 }
                 break;
@@ -102,7 +104,7 @@ public class DayNightCycleManager : NetworkBehaviour
     private void CheckAndTriggerTimeSkip()
     {
         if (!Object.HasStateAuthority) return;
-        if (CurrentState == TimeSkipState.Skipping) return; 
+        if (CurrentState == TimeSkipState.Skipping) return;
 
         for (int i = SleepingPlayers.Count - 1; i >= 0; i--)
         {
@@ -111,11 +113,12 @@ public class DayNightCycleManager : NetworkBehaviour
                 SleepingPlayers.Remove(SleepingPlayers.Get(i));
             }
         }
-        
+
         if (Runner.ActivePlayers.Count() > 0 && SleepingPlayers.Count >= Runner.ActivePlayers.Count())
         {
             TargetTimeOfDay = 0.25f;
             CurrentState = TimeSkipState.Skipping;
+
         }
     }
 
@@ -155,7 +158,7 @@ public class DayNightCycleManager : NetworkBehaviour
         if (Application.isPlaying) return;
 
         float previewTime = previewTimeOfDay;
-        
+
         var sunCurve = sunIntensityCurve != null && sunIntensityCurve.keys.Length > 0 ? sunIntensityCurve : AnimationCurve.Linear(0.2f, 1, 0.8f, 1);
         var moonCurve = moonIntensityCurve != null && moonIntensityCurve.keys.Length > 0 ? moonIntensityCurve : AnimationCurve.Linear(0, 0.1f, 1, 0.1f);
         //태양
