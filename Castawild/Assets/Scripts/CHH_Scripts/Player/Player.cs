@@ -1,13 +1,11 @@
-using Autodesk.Fbx;
 using Fusion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Test;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
@@ -79,7 +77,6 @@ public class Player : NetworkBehaviour
     public Volume takeDamageEffect;
     [SerializeField] private Animator takeDamageEffectAnim;
 
-    public Coroutine fallingCoroutine;
     public GameObject amarture;
 
     [Header("Networked")]
@@ -90,16 +87,19 @@ public class Player : NetworkBehaviour
     [Networked, HideInInspector] public bool IsCursorLocked { get; set; }
     [Networked, HideInInspector] public bool IsSleeping { get; set; }
     [Networked] public ToolInfoData currentToolInfoData { get; set; }
-    //[Networked] public string CurrentToolName { get; set; }
-    //[Networked, HideInInspector] public int CurrentToolAtt { get; set; }
-    //[Networked, HideInInspector] public int CurrentToolID { get; set; }
-    //[Networked, HideInInspector] public float CurrentToolDurability { get; set; }
-
+    [Networked] public FoodInfoData currentFoodInfoData { get; set; }
 
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isSpawned;
     public ItemType currentItemType;
+
+    public UIStats uiStats;
+    [SerializeField] Color restoreColor;
+    [SerializeField] Color decreaseColor;
+
     public event Action<int> Hit;
+
+    public Coroutine fallingCoroutine;
     private Coroutine foodRestoreCoroutine;
 
     private void Awake()
@@ -258,13 +258,14 @@ public class Player : NetworkBehaviour
                 if (HasInputAuthority)
                     RPC_NotifyEquipmentTool(itemIdx);
 
-                if (currentItemType == ItemType.Tool)
+                ToolInfo toolInfo = currentToolGameObject.GetComponent<ToolInfo>();
+                RPC_RequestSetCurrentTool(toolInfo.GetData());
+
+                if (currentItemType == ItemType.Drink || currentItemType == ItemType.Food)
                 {
-                    ToolInfo toolInfo = currentToolGameObject.GetComponent<ToolInfo>();
-                    RPC_RequestSetCurrentTool(toolInfo.GetData());
+                    FoodInfo foodInfo = currentToolGameObject.GetComponent<FoodInfo>();
+                    RPC_RequestSetCurrentFood(foodInfo.GetData());
                 }
-                else
-                    RPC_RequestSetCurrentTool(ToolInfoData.Empty);
             }
             else
                 Debug.LogWarning($"{itemIdx} 인덱스 없음");
@@ -273,6 +274,7 @@ public class Player : NetworkBehaviour
         {
             RPC_NotifyEquipmentTool();
             RPC_RequestSetCurrentTool(ToolInfoData.Empty);
+            RPC_RequestSetCurrentFood(FoodInfoData.Empty);
         }
 
         toolStateManager.RPC_NotifyChangeSelectedItem(itemIdx);
@@ -285,6 +287,7 @@ public class Player : NetworkBehaviour
     {
         RPC_NotifyEquipmentTool();
         RPC_RequestSetCurrentTool(ToolInfoData.Empty);
+        RPC_RequestSetCurrentFood(FoodInfoData.Empty);
 
         toolStateManager.RPC_NotifyChangeSelectedItem();
     }
@@ -302,9 +305,9 @@ public class Player : NetworkBehaviour
         if (currentToolInfoData.IsEmpty())
             return playerData.attack;
 
-        if (currentToolInfoData.ToolName.Contains(toolName))
-            return playerData.attack + currentToolInfoData.Att;
-        else if (currentToolInfoData.ItemID > 400 || currentToolInfoData.ItemID == 202)
+        if (currentToolInfoData.toolName.Contains(toolName))
+            return playerData.attack + currentToolInfoData.att;
+        else if (currentToolInfoData.itemID > 400 || currentToolInfoData.itemID == 202)
             return playerData.attack + 2;
         else
             return playerData.attack;
@@ -529,12 +532,48 @@ public class Player : NetworkBehaviour
     private IEnumerator RestoreStatFromFoodCoroutine()
     {
         float elapsed = 0f;
-        if (elapsed < foodRestoreTime)
+        float restoreHPPerSecond = currentFoodInfoData.restoreHPValue / foodRestoreTime;
+        float restoreStaminaPerSecond = currentFoodInfoData.restoreStaminaValue / foodRestoreTime;
+        float restoreHungerPerSecond = currentFoodInfoData.restoreHungerValue / foodRestoreTime;
+        float restoreThirstPerSecond = currentFoodInfoData.restoreThirstValue / foodRestoreTime;
+
+        if (uiStats != null)
         {
-            elapsed += Runner.DeltaTime;
+            //SetBarColor(uiStats.hungerBar, currentFoodInfoData.restoreHPValue);
+            //SetBarColor(uiStats.staminaBar, currentFoodInfoData.restoreStaminaValue);
+            //SetBarColor(uiStats.hungerBar, currentFoodInfoData.restoreHungerValue);
+            //SetBarColor(uiStats.thirstBar, currentFoodInfoData.restoreThirstValue);
         }
 
-        yield return null;
+        while (elapsed < foodRestoreTime)
+        {
+            elapsed += Runner.DeltaTime;
+
+            Hp = RestoreValue(restoreHPPerSecond, Hp, playerData.maxHp);
+            Stamina = RestoreValue(restoreStaminaPerSecond, Stamina, playerData.maxStamina);
+            Hunger = RestoreValue(restoreHungerPerSecond, Hunger, playerData.maxHunger);
+            Thirst = RestoreValue(restoreThirstPerSecond, Thirst, playerData.maxThirst);
+
+            yield return null;
+        }
+
+        foodRestoreCoroutine = null;
+    }
+
+    private void SetBarColor(Image bar, float value)
+    {
+        if (value > 0)
+            bar.color = restoreColor;
+        else if (value < 0)
+            bar.color = decreaseColor;
+        else
+            bar.color = Color.white;
+    }
+
+    private float RestoreValue(float restoreHPPerSecond, float currentValue, float maxValue)
+    {
+        float restoreValue = restoreHPPerSecond * Runner.DeltaTime;
+        return Mathf.Min(currentValue + restoreValue, maxValue);
     }
 
     void All_OnChangedNickname() => nicknameUI.SetNickname(nickname);
@@ -561,8 +600,12 @@ public class Player : NetworkBehaviour
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_RequestSetCurrentTool(ToolInfoData _toolInfoData)
-        => currentToolInfoData = _toolInfoData.IsEmpty() ? ToolInfoData.Empty : _toolInfoData;
+    private void RPC_RequestSetCurrentTool(ToolInfoData toolInfoData)
+        => currentToolInfoData = toolInfoData.IsEmpty() ? ToolInfoData.Empty : toolInfoData;
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_RequestSetCurrentFood(FoodInfoData foodInfoData)
+        => currentFoodInfoData = foodInfoData.IsEmpty() ? FoodInfoData.Empty : foodInfoData;
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     private void RPC_NotifyEquipmentTool(int itemIdx = -1)

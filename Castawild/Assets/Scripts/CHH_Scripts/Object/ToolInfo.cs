@@ -25,19 +25,19 @@ public class ToolInfo : MonoBehaviour
 
 public struct ToolInfoData : INetworkStruct
 {
-    public int ItemID;
-    public NetworkString<_32> ToolName;
-    public int Att;
-    public float Durability;
+    public int itemID;
+    public NetworkString<_32> toolName;
+    public int att;
+    public float durability;
 
     public ToolInfoData(int itemID, NetworkString<_32> toolName, int att, float durability)
     {
-        ItemID = itemID;
-        ToolName = toolName;
-        Att = att;
-        Durability = durability;
+        this.itemID = itemID;
+        this.toolName = toolName;
+        this.att = att;
+        this.durability = durability;
     }
 
-    public bool IsEmpty() => ItemID == -1 || string.IsNullOrEmpty(ToolName.ToString());
+    public bool IsEmpty() => itemID == -1 || string.IsNullOrEmpty(toolName.ToString());
     public static ToolInfoData Empty => new ToolInfoData(-1, string.Empty, 0, 1f);
 }
