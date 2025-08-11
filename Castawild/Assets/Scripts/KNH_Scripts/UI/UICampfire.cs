@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static Unity.Collections.Unicode;
 
 public class UICampfire : UIPart
 {
@@ -9,6 +10,7 @@ public class UICampfire : UIPart
     UI_Manager uiManager;
     InventoryDataManager inventoryData;
     Campfire campFire;
+    NetworkCampFire netWorkCampfire;
     [Header("슬롯")]
     public Item_Panel cookPot;
     public Item_Panel result;
@@ -26,6 +28,8 @@ public class UICampfire : UIPart
     int sec;
     [SerializeField] TextMeshProUGUI timerText;
 
+    public Image arrowImage;
+
     void Start()
     {
         uiManager = uiCanvas.GetComponent<UI_Manager>();
@@ -34,11 +38,33 @@ public class UICampfire : UIPart
 
     void Update()
     {
+        //나중에 수정
         if (uiManager == null) return;
         if (uiManager.currentCampFire != null)
             campFire = uiManager.currentCampFire.GetComponent<Campfire>();
         if (campFire == null) return;
+        netWorkCampfire = campFire.GetComponent<NetworkCampFire>();
 
+        //요리 남은 시간
+        float timeLeft = netWorkCampfire.RemainingCookTime;
+
+        if (!netWorkCampfire.isFire)//불이 꺼져 있을 때
+        {
+            arrowImage.fillAmount = 0f;
+        }
+        if (!netWorkCampfire.isCooking)//요리중이 아닐 때
+        {
+            arrowImage.fillAmount = 0f;
+        }
+        if (netWorkCampfire.isCooking)//요리중일 때
+        {
+            double totalDuration = 10.0;
+            double elapsed = totalDuration - timeLeft;
+            float progress = Mathf.Clamp01((float)(elapsed / totalDuration));
+            arrowImage.fillAmount = progress;
+
+            if (arrowImage.fillAmount >= 1) arrowImage.fillAmount = 0f;//초기화
+        }
         //타이머 네트워크 동기화 필요(UI 닫혀있을 때에도 타이머 감소)
         if (currentTime > 0)
         {

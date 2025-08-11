@@ -6151,6 +6151,7 @@ MonoBehaviour:
   fuelList: 0000000003000000
   fuelIcon: {fileID: 3151229963410230231}
   timerText: {fileID: 7339295588658695096}
+  arrowImage: {fileID: 5703418051615520898}
 --- !u!1 &4336805274880291625
 GameObject:
   m_ObjectHideFlags: 0
