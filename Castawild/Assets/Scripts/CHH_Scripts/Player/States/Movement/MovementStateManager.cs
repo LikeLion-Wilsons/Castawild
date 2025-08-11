@@ -46,7 +46,6 @@ public class MovementStateManager : BaseStateManager
     private Vector3 spherePos;
     #endregion
 
-
     #region Network
     [Header("Networked")]
     [Networked, OnChangedRender(nameof(OnCurrentMoveStateChanged))]
@@ -57,6 +56,7 @@ public class MovementStateManager : BaseStateManager
     [Networked, HideInInspector] public bool Revived { get; set; }
     [Networked, HideInInspector] public bool JumpTriggered { get; set; }
     [Networked, HideInInspector] public Vector2 MoveValue { get; set; }
+    [Networked, HideInInspector] public bool kneel { get; set; }
     #endregion
 
     public float Stamina
@@ -268,4 +268,7 @@ public class MovementStateManager : BaseStateManager
         Host_ChangeState(MovementState.Idle);
         player.Host_RevivedStatus();
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestSetKneel(NetworkBool _kneel) => kneel = _kneel;
 }

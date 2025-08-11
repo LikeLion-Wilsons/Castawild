@@ -38,6 +38,7 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private Transform thirdPersonInteractPos;
     [SerializeField] private float interactRadius = 1f;
     [SerializeField] private LayerMask interactLayer;
+    [SerializeField] private float kneelY = 6.8f;
     [HideInInspector] public EnvironmentObject Client_currentInteractObject;
 
     [Networked, HideInInspector] public Vector3 ChangePos { get; set; }
@@ -300,6 +301,12 @@ public sealed class PlayerController : NetworkBehaviour
                         {
                             movementManager.RPC_RequestChangeGatherState(Object.InputAuthority);
                             playerInteractUI.SetInteractText("줍기");
+
+                            float targetTopY = interact.bounds.max.y;
+                            if (targetTopY - transform.position.y >= kneelY)
+                                movementManager.RPC_RequestSetKneel(false);
+                            else
+                                movementManager.RPC_RequestSetKneel(true);
                         }
                         break;
                     }

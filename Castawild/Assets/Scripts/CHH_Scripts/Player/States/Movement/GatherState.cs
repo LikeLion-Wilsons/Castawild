@@ -9,7 +9,10 @@ public class GatherState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.anim.SetTrigger("Gather");
+        if (movementManager.kneel)
+            movementManager.anim.SetTrigger("Gather");
+        else
+            movementManager.anim.SetTrigger("Gather_Kneeling");
         movementManager.playerController.Host_FreezePosition(true);
     }
 
