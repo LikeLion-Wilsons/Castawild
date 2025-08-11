@@ -74,7 +74,6 @@ public class Player : NetworkBehaviour
     [Header("Effect")]
     [SerializeField] private Volume takeDamageEffect;
     [SerializeField] private Animator takeDamageEffectAnim;
-    private Coroutine activeDamageEffectAnim;
 
     public Coroutine fallingCoroutine;
     public GameObject amarture;
@@ -98,6 +97,12 @@ public class Player : NetworkBehaviour
     private void Awake()
     {
         InitComponents();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+            Host_TakeDamage(true, 10);
     }
 
     override public void Spawned()
@@ -460,22 +465,7 @@ public class Player : NetworkBehaviour
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    private void RPC_ApplyPlayDamagedEffectAnim()
-    {
-        takeDamageEffectAnim.enabled = true;
-        takeDamageEffectAnim.SetTrigger("Damaged");
-
-        if (activeDamageEffectAnim != null)
-            StopCoroutine(activeDamageEffectAnim);
-        activeDamageEffectAnim = StartCoroutine(ActiveDamageEffectAnim());
-    }
-
-    private IEnumerator ActiveDamageEffectAnim()
-    {
-        yield return 0.4f;
-        takeDamageEffectAnim.enabled = false;
-        activeDamageEffectAnim = null;
-    }
+    private void RPC_ApplyPlayDamagedEffectAnim() => takeDamageEffectAnim.SetTrigger("Damaged");
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_NotifyPlayDamagedAnim() => anim.SetTrigger("GetHit");
