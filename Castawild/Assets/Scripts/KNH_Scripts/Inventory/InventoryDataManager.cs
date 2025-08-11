@@ -156,7 +156,7 @@ public class InventoryDataManager : NetworkBehaviour
         }
 
         //선택된 아이템 버리기
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Q) && HasInputAuthority)
             RPC_ThrowItem(GetSelectedIndex());
 
         #region cheat
@@ -281,6 +281,15 @@ public class InventoryDataManager : NetworkBehaviour
         chest.CanOpen = tof;
     }
 
+    //아이템 비우기
+    public void ClearItem(Item item)
+    {
+        item.itemID = -1;
+        item.count = 0;
+        if (inventorySlots[selectedSlot].IsEmpty())
+            player.Client_RemoveSelectedItem();
+        RPC_UpdateInventoryUI();
+    }
 
     #endregion
 
@@ -368,8 +377,6 @@ public class InventoryDataManager : NetworkBehaviour
                 {
                     RPC_UpdateInventoryUI();
                 }
-
-                
 
                 // 수정한 부분
                 if (Object.HasInputAuthority)
