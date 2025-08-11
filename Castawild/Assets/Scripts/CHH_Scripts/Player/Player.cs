@@ -73,7 +73,7 @@ public class Player : NetworkBehaviour
     #endregion
 
     [Header("Effect")]
-    [SerializeField] private Volume takeDamageEffect;
+    public Volume takeDamageEffect;
     [SerializeField] private Animator takeDamageEffectAnim;
 
     public Coroutine fallingCoroutine;

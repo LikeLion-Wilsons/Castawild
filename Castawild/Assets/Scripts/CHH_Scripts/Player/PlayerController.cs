@@ -80,7 +80,10 @@ public sealed class PlayerController : NetworkBehaviour
     {
         // 테스트용
         if (HasInputAuthority && Input.GetKeyDown(KeyCode.H))
+        {
+            player.takeDamageEffect.weight = 0f;
             player.RPC_RequestHeal();
+        }
 
         Grounded = Physics.Raycast(checkStartPoint.position, Vector3.down, out RaycastHit hit, checkDistance);
 
