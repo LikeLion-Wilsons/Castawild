@@ -202,13 +202,21 @@ public class MovementStateManager : BaseStateManager
             // 이 부분 없으면 착지할 때 애니메이션 전환 이상함
             if (input.moveValue != Vector2.zero)
             {
-                if (input.IsDown(PlayerNetworkInputData.sprintInput))
+                if (input.IsDown(PlayerNetworkInputData.sprintInput) && All_CanRun())
                     anim.SetBool("Running", true);
                 else
                     anim.SetBool("Walking", true);
             }
         }
         anim.SetBool("Falling", !playerController.Grounded);
+    }
+
+    public bool All_CanRun()
+    {
+        if (toolStateManager.CurrentToolState == ToolState.Aim || toolStateManager.CurrentToolState == ToolState.Carry
+            || !All_HasEnoughStaminaToRun())
+            return false;
+        return true;
     }
 
     /// <summary>
