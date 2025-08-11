@@ -1,10 +1,11 @@
 
 using UnityEngine;
 
-// StandToSleep 애니메이션 : SleepState Enter하면서 재생
-// SleepToStand 애니메이션 : SleepState Exit하면서 재생 -> 애니메이션 재생중일 땐 Idle 상태
 public class SleepState : MovementBaseState
 {
+    float elapsed = 0f;
+    float canWakeUpTime = 1f;
+
     public SleepState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
         : base(_movementManager, _inputManager)
     {
@@ -12,21 +13,28 @@ public class SleepState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.anim.SetTrigger("Sleep");
+        movementManager.CurrentMoveAnimation = MoveAnimatoinState.Sleep;
 
         movementManager.playerController.Host_FreezePosition(true);
 
         movementManager.player.Client_TurnOffInteractiveUI();
         movementManager.player.Client_SleepDeadCameraTarget(true, true);
 
-        if (movementManager.HasInputAuthority)
-            movementManager.player.playerInteractUI.SetWakeUpUI();
         if (movementManager.HasStateAuthority)
             movementManager.Host_Sleep(true);
+
+        elapsed = 0f;
     }
 
     public override void UpdateState()
     {
+        elapsed += movementManager.Runner.DeltaTime;
+        if (elapsed < canWakeUpTime)
+            return;
+
+        if (movementManager.HasInputAuthority)
+            movementManager.player.playerInteractUI.SetWakeUpUI();
+
         if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.interactInput))
             movementManager.Host_ChangeState(MovementState.Idle);
     }
@@ -34,7 +42,7 @@ public class SleepState : MovementBaseState
     public override void ExitState()
     {
         movementManager.anim.SetTrigger("WakeUp");
-
+        elapsed = 0f;
         movementManager.player.Client_TurnOffInteractiveUI();
         movementManager.player.Client_SleepDeadCameraTarget(false, true);
 
