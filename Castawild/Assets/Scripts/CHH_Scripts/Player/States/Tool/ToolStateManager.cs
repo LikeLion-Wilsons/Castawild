@@ -1,5 +1,6 @@
 using Fusion;
 using System.Collections.Generic;
+using UnityEditor.Build;
 using UnityEditor.EditorTools;
 using UnityEngine;
 
@@ -440,4 +441,7 @@ public class ToolStateManager : BaseStateManager
         else
             player.arrow.SetActive(false);
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_DecreaseToolDuration(bool decrease) => client_DecreaseToolDuration = decrease;
 }

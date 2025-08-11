@@ -434,7 +434,6 @@ public sealed class PlayerController : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_ApplyHitInvoke(int dmg)
     {
-        Debug.Log("Hit Invoke");
         Hit?.Invoke(dmg);
     }
 
