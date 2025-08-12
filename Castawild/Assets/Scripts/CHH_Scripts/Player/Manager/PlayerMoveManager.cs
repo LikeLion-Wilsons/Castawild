@@ -27,8 +27,8 @@ public class PlayerMoveManager : NetworkBehaviour
     private float fallingElapsed;
 
     [Header("Ground Check")]
-    [Networked, HideInInspector] public bool Grounded_Physics { get; set; }
     public bool Grounded { get; set; }
+    [Networked, HideInInspector] public bool Grounded_Physics { get; set; }
     [SerializeField] private Transform groundStartPoint;
     [SerializeField] private float groundDistance = 0.5f;
 
@@ -160,8 +160,6 @@ public class PlayerMoveManager : NetworkBehaviour
         if (!Grounded)
             kcc.Move(velocity);
     }
-
-
 
     private void Host_Move(Vector3 direction)
     {

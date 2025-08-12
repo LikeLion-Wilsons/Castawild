@@ -1133,8 +1133,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2344188678965562170}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.019895565, y: 0.96989167, z: 0.08485452, w: -0.22740738}
-  m_LocalPosition: {x: 4.3774457, y: 1.7635183, z: 8.821713}
+  m_LocalRotation: {x: 0.24261811, y: -0.62387335, z: 0.21263896, w: 0.7118309}
+  m_LocalPosition: {x: 7.850045, y: 9.607258, z: -1.0383708}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1217,7 +1217,7 @@ MonoBehaviour:
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
-    Value: -153.60866
+    Value: -82.46489
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -1227,7 +1227,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: -10
+    Value: 37.641994
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
@@ -3256,6 +3256,7 @@ GameObject:
   - component: {fileID: 7933685528624486573}
   - component: {fileID: 5000463041039569134}
   - component: {fileID: 3669695777030045323}
+  - component: {fileID: 5489833291580611953}
   - component: {fileID: 2392341617914439019}
   - component: {fileID: 2620789083190254575}
   - component: {fileID: 3318766871343913700}
@@ -3327,6 +3328,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 5000463041039569134}
   - {fileID: 3669695777030045323}
+  - {fileID: 5489833291580611953}
   - {fileID: 2392341617914439019}
   - {fileID: 2620789083190254575}
   - {fileID: 3318766871343913700}
@@ -3432,6 +3434,27 @@ MonoBehaviour:
   isNearFire: 0
   uiStats: {fileID: 0}
   toolStateManager: {fileID: 0}
+--- !u!114 &5489833291580611953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d956430f81926824b8eaabdb0e6e98bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  optionUI: {fileID: 9031955928824126459}
+  interactHeight: 10
+  thirdPersonInteractPos: {fileID: 7467696255462433047}
+  interactRadius: 1
+  interactLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  kneelY: 6.8
+  Client_currentInteractObject: {fileID: 0}
 --- !u!114 &2392341617914439019
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5854,6 +5877,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1888540431556003769, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
   m_PrefabInstance: {fileID: 6412740358708803259}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9031955928824126459 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2713794194575306048, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+  m_PrefabInstance: {fileID: 6412740358708803259}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebe3fb2cadea3444baa7f99f60c36ae4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6486286278863924394
 PrefabInstance:
   m_ObjectHideFlags: 0

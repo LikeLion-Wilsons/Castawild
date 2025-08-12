@@ -20,6 +20,7 @@ public class BaseStateManager : NetworkBehaviour
         anim = GetComponentInChildren<Animator>();
         player = GetComponent<Player>();
         moveManager = GetComponent<PlayerMoveManager>();
+        toolManager = GetComponent<PlayerToolManager>();
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
         interactUI = GetComponentInChildren<PlayerInteractUI>();
     }

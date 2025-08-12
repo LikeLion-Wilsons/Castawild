@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class PlayerInteractUI : MonoBehaviour
 {
-    private PlayerInteractManager playerController;
+    private PlayerInteractManager interactManager;
     private PlayerInputManager inputManager;
     private MovementStateManager movementStateManager;
 
@@ -46,7 +46,7 @@ public class PlayerInteractUI : MonoBehaviour
 
     private void Awake()
     {
-        playerController = GetComponentInParent<PlayerInteractManager>();
+        interactManager = GetComponentInParent<PlayerInteractManager>();
         inputManager = GetComponentInParent<PlayerInputManager>();
         movementStateManager = GetComponentInParent<MovementStateManager>();
         deathAnim = GetComponent<Animator>();
@@ -55,13 +55,13 @@ public class PlayerInteractUI : MonoBehaviour
 
     void Start()
     {
-        playerController.Hit += OnTargetDamaged;
+        interactManager.Hit += OnTargetDamaged;
         UIPart.openUI += Client_TurnOffInteractiveUI;
     }
 
     void OnDestroy()
     {
-        playerController.Hit -= OnTargetDamaged;
+        interactManager.Hit -= OnTargetDamaged;
         UIPart.openUI -= Client_TurnOffInteractiveUI;
     }
 

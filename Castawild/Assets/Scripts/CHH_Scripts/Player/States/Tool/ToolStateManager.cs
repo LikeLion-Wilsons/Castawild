@@ -78,8 +78,8 @@ public class ToolStateManager : BaseStateManager
             player.Host_DecreaseToolDuration += SetDecreaseToolDuration;
         }
 
-        toolManager.Host_ChangeSelectedItem -= RPC_NotifyChangeSelectedItem;
-        toolManager.Host_ChangeSelectedItem += RPC_NotifyChangeSelectedItem;
+        toolManager.Host_ChangeSelectedItem -= All_ChangeSelectedItem;
+        toolManager.Host_ChangeSelectedItem += All_ChangeSelectedItem;
     }
 
     private void ChangeToDeathState(bool isDeath) => Host_ChangeState(ToolState.Idle);
@@ -319,8 +319,7 @@ public class ToolStateManager : BaseStateManager
     /// <summary>
     /// 현재 아이템 변경 
     /// </summary>
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_NotifyChangeSelectedItem(int itemIdx = -1)
+    public void All_ChangeSelectedItem(int itemIdx = -1)
     {
         // 설치가능한 아이템 
         if (itemIdx >= 300 && itemIdx < 400)

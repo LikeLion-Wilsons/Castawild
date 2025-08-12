@@ -165,6 +165,8 @@ public class Player : NetworkBehaviour
                 Stamina = playerData.maxStamina;
         }
 
+        if (dayNightManager == null)
+            return;
         if (dayNightManager.isNightTime && !isNearFire)
             Temperature -= temperatureDecreaseRate * Runner.DeltaTime;
         else if (dayNightManager.isNightTime && isNearFire)
