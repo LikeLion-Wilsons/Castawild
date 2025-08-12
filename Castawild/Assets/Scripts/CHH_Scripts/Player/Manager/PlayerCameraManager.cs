@@ -23,7 +23,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     #region Mouse Settings
     [Header("마우스")]
-    public float sensitivity = 1.5f;
+    public float sensivity = 1.5f;
     private float pitch = 0f;
     private float yaw = 0f;
 
@@ -33,14 +33,15 @@ public class PlayerCameraManager : MonoBehaviour
     [SerializeField] private float maxYaw = 90f;
     #endregion
 
+
+
     #region First Person
     [Header("1인칭")]
     [SerializeField] private GameObject[] playerMeshes;
 
     public CinemachineCamera firstPersonCam;
     [SerializeField] private Transform firstPersonTarget;
-    [SerializeField] private float firstPerson_AimFov;
-    private float firstPerson_DefaultFov;
+    [SerializeField] private float firstPerson_AimFovDelta = 5f;
 
     [Header("CameraMove")]
     private Vector3 originfirstPersonTargetPos;
@@ -55,11 +56,14 @@ public class PlayerCameraManager : MonoBehaviour
     public CinemachineCamera thirdPersonCam;
     [SerializeField] private Transform thirdPersonTarget;
     [SerializeField] private Transform thirdPerson_AimTargetPos;
-    [SerializeField] private float thirdPerson_AimFov;
+    [SerializeField] private float thirdPerson_AimFovDelta = 20f;
 
     private Vector3 thirdPerson_DefaultTargetPos;
-    private float thirdPerson_DefaultFov;
+
+    private float defaultFov;
+    private float currentFOV;
     #endregion
+
 
     #region Third Person Camera Zoom
     [Header("3인칭 Zoom")]
@@ -68,13 +72,10 @@ public class PlayerCameraManager : MonoBehaviour
     [SerializeField] private float zoomLerpSpeed = 10f;
     [SerializeField] private float minDistance = 3f;
     [SerializeField] private float maxDistance = 15f;
-
-    private float targetZoom;
-    private float currentZoom;
     #endregion
 
     [Header("Move Camera")]
-    [HideInInspector] private bool MovingCamera = true;
+    [HideInInspector] public bool MovingCamera = true;
     [HideInInspector] public bool walk = false;
     [HideInInspector] public bool run = false;
     [Header("Walk")]
@@ -142,9 +143,7 @@ public class PlayerCameraManager : MonoBehaviour
     private void InitVariables()
     {
         thirdPerson_DefaultTargetPos = thirdPersonTarget.localPosition;
-        thirdPerson_DefaultFov = thirdPersonCam.Lens.FieldOfView;
-        firstPerson_DefaultFov = firstPersonCam.Lens.FieldOfView;
-        targetZoom = currentZoom = orbital.Radius;
+        defaultFov = firstPersonCam.Lens.FieldOfView;
     }
 
     public void ActivateCameraInput() => inputAxisController.enabled = true;
@@ -157,7 +156,6 @@ public class PlayerCameraManager : MonoBehaviour
 
         HandleViewChange();
         UpdateCameraPitch();
-        //ZoomCamera();
 
         if (MovingCamera)
             MoveUpDownCamera();
@@ -254,18 +252,13 @@ public class PlayerCameraManager : MonoBehaviour
         }
     }
 
+    // 플레이어가 바라보는 방향의 각도를 카메라 회전값으로 설정
     private void SettingThirdPersonCam()
     {
-        var transposer = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
+        float targetYaw = player.transform.eulerAngles.y;
+        orbital.HorizontalAxis.Value = targetYaw;
 
-        if (transposer != null)
-        {
-            // 플레이어가 바라보는 방향의 각도를 카메라 회전값으로 설정
-            float targetYaw = player.transform.eulerAngles.y;
-            transposer.HorizontalAxis.Value = targetYaw;
-        }
-
-        thirdPersonCam.GetComponent<CinemachineOrbitalFollow>().VerticalAxis.Value = 22f;
+        orbital.VerticalAxis.Value = 22f;
     }
 
     // 1인칭 카메라 상하각도 조절
@@ -274,25 +267,10 @@ public class PlayerCameraManager : MonoBehaviour
         if (currentView == ViewType.ThirdPerson || !player.IsCursorLocked || !player.All_CanMoving())
             return;
 
-        pitch -= inputManager.lookInput.y * sensitivity;
+        pitch -= inputManager.lookInput.y * sensivity;
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         firstPersonCam.transform.localEulerAngles = new Vector3(pitch, yaw, 0f);
-    }
-
-    private void ZoomCamera()
-    {
-        if (inputManager.zoomInput.y != 0 && inputAxisController.enabled)
-        {
-            if (orbital != null)
-            {
-                targetZoom = Mathf.Clamp(orbital.Radius - inputManager.zoomInput.y * zoomSpeed, minDistance, maxDistance);
-                inputManager.zoomInput = Vector2.zero;
-            }
-        }
-
-        currentZoom = Mathf.Lerp(currentZoom, targetZoom, Time.deltaTime * zoomLerpSpeed);
-        orbital.Radius = currentZoom;
     }
 
     /// <summary>
@@ -313,16 +291,16 @@ public class PlayerCameraManager : MonoBehaviour
         if (_isAiming)
         {
             if (currentView == ViewType.FirstPerson)
-                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(firstPerson_AimFov));
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV + firstPerson_AimFovDelta));
             else
-                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(thirdPerson_AimFov, thirdPerson_AimTargetPos.localPosition));
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV + thirdPerson_AimFovDelta, thirdPerson_AimTargetPos.localPosition));
         }
         else
         {
             if (currentView == ViewType.FirstPerson)
-                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(firstPerson_DefaultFov));
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV));
             else
-                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(thirdPerson_DefaultFov, thirdPerson_DefaultTargetPos));
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV, thirdPerson_DefaultTargetPos));
         }
     }
 
@@ -390,6 +368,14 @@ public class PlayerCameraManager : MonoBehaviour
     /// </summary>
     public void ShakeCamera(Vector3 direction, float force)
     {
-        impulseSource.GenerateImpulse(direction.normalized * force);
+        if (MovingCamera)
+            impulseSource.GenerateImpulse(direction.normalized * force);
+    }
+
+    public void ChangeFOV(float value)
+    {
+        float changeAmount = value - defaultFov;
+        thirdPersonCam.Lens.FieldOfView = value;
+        currentFOV = value;
     }
 }

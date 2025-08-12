@@ -15,6 +15,7 @@ public class PlayerInteractUI : MonoBehaviour
     public CanvasGroup interactableUI;
     [SerializeField] private CanvasGroup placeableUI;
     public Image crosshairImage;
+    public bool showCrosshair = true;
 
     private string originalText;
     public TextMeshProUGUI interactableText;
