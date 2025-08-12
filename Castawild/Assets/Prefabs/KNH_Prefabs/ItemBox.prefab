@@ -100,6 +100,7 @@ GameObject:
   - component: {fileID: -7374916689860518824}
   - component: {fileID: 4199764797745822454}
   - component: {fileID: 4801192569651053234}
+  - component: {fileID: 3343529374187580883}
   m_Layer: 8
   m_Name: ItemBox
   m_TagString: Untagged
@@ -142,6 +143,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: -7374916689860518824}
   - {fileID: 4801192569651053234}
+  - {fileID: 3343529374187580883}
   ForceRemoteRenderTimeframe: 0
 --- !u!65 &6983898623678621808
 BoxCollider:
@@ -177,6 +179,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactableType: 0
+  itemIndex: 0
   text: 
   isPlaceable: 0
   item:
@@ -233,3 +236,15 @@ MonoBehaviour:
     Position: 0.01
     Rotation: 0.01
     Scale: 0.01
+--- !u!114 &3343529374187580883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8916761579934458356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f50bb4936e2e86847be8ad314a238da1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

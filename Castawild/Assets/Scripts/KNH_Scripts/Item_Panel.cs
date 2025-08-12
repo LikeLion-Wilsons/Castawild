@@ -67,12 +67,6 @@ public class Item_Panel :
         {
             bool wasOpen = isInveontoryOpen;
             isInveontoryOpen = inventoryData.canvasHolder.IsInventoryOpen();
-
-            //// 인벤토리가 방금 닫혔다면 → 드래그 강제 종료
-            //if (wasOpen && !isInveontoryOpen && inventoryData.canvasHolder.isDragging)
-            //{
-            //    ForceCancelDrag();
-            //}
         }
 
     }
@@ -118,7 +112,6 @@ public class Item_Panel :
             {
                 itemCountText.gameObject.SetActive(false);//아이템 개수 표시 X
                 durabilityBar.fillAmount = item.durability;//내구도 설정
-                Debug.Log(durabilityBar.fillAmount);
             }
             else
             {

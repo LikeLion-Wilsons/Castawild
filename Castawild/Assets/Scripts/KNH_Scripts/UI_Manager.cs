@@ -111,5 +111,6 @@ public class UI_Manager : MonoBehaviour
     {
         player = _player;
         uiStats.player = player;
+        player.uiStats = uiStats;
     }
 }

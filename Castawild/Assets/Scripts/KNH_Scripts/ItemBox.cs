@@ -27,7 +27,8 @@ public class ItemBox : InteractableObject
 
         Player player = playerObj.GetComponent<Player>();
         InventoryDataManager inventoryData =  player.GetComponent<InventoryDataManager>();
-        inventoryData.AddItem(item.itemID, item.count);//아이템 획득
-        Destroy(gameObject);
+        Debug.Log(item.durability);
+        inventoryData.AddItem(item.itemID, item.count,item.durability);//아이템 획득
+        Runner.Despawn(GetComponent<NetworkObject>());
     }
 }

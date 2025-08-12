@@ -22,8 +22,7 @@ public class NetworkObjectVisibilityManager : NetworkSingleton<NetworkObjectVisi
 
     private void HandleObjectDestroyed(INetworkVisibilityObject obj)
     {
-        obj.OnDestroyed -= HandleObjectDestroyed;
-        a_allVisibilityObjects.Remove(obj);
+        SetObjectVisibility(obj, false);
     }
 
     public void SetPlayerTransform(PlayerRef playerRef, Transform playerTransform)
@@ -51,12 +50,11 @@ public class NetworkObjectVisibilityManager : NetworkSingleton<NetworkObjectVisi
         Vector3 playerPos = playerTransform.position;
         float sqrVisibleRange = visibleRange * visibleRange;
 
-        // 모든 등록된 오브젝트를 순회하며 가시성 결정
         for (int i = a_allVisibilityObjects.Count - 1; i >= 0; i--)
         {
             var obj = a_allVisibilityObjects[i];
             if (obj == null || obj.GameObject == null)
-            { 
+            {
                 a_allVisibilityObjects.RemoveAt(i);
                 continue;
             }
@@ -79,5 +77,18 @@ public class NetworkObjectVisibilityManager : NetworkSingleton<NetworkObjectVisi
             if (obj.Collider != null)
                 obj.Collider.enabled = isVisible;
         }
+    }
+
+    public void Despawned()
+    {
+        foreach (var obj in a_allVisibilityObjects)
+        {
+            if (obj != null)
+            {
+                obj.OnDestroyed -= HandleObjectDestroyed;
+            }
+        }
+        a_allVisibilityObjects.Clear();
+        playerTransforms.Clear();
     }
 }

@@ -19,6 +19,7 @@ MonoBehaviour:
     m_SubObjectType: 
     m_EditorAssetChanged: 0
   maxHealth: 30
+  reviveTime: 10
   dropItemID: 0
   dropAmount: 1
   destroySFX: 
