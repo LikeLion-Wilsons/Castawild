@@ -52,9 +52,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -52384491921587503, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 83
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
       propertyPath: m_Name
       value: IslandCliff1
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 83
+      objectReference: {fileID: 0}
+    - target: {fileID: 3536649312410189866, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 83
+      objectReference: {fileID: 0}
+    - target: {fileID: 3832616859161726190, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 83
       objectReference: {fileID: 0}
     - target: {fileID: 4243135793924946061, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
