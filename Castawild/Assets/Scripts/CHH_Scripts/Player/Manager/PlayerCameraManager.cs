@@ -75,8 +75,8 @@ public class PlayerCameraManager : MonoBehaviour
 
     [Header("Move Camera")]
     [HideInInspector] private bool MovingCamera = true;
-    [HideInInspector] public bool walk;
-    [HideInInspector] public bool run;
+    [HideInInspector] public bool walk = false;
+    [HideInInspector] public bool run = false;
     [Header("Walk")]
     [SerializeField] private float walkAmplitude = 0.2f; // 세기
     [SerializeField] private float walkFrequency = 8.5f; // 속도
