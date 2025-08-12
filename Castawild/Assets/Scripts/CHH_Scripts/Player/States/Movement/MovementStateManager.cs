@@ -70,11 +70,23 @@ public class MovementStateManager : BaseStateManager
     public override void Spawned()
     {
         InitComponents();
+
         if (HasStateAuthority)
         {
+            player.Host_TakeDamagedEvent -= ChangeToDeathState;
+            player.Host_TakeDamagedEvent += ChangeToDeathState;
+
             DayNightCycleManager.OnTimeSkipStarted -= Host_WakeUp;
             DayNightCycleManager.OnTimeSkipStarted += Host_WakeUp;
         }
+    }
+
+    private void ChangeToDeathState(bool isDeath)
+    {
+        if (isDeath)
+            Host_ChangeState(MovementState.Death);
+        else
+            Host_ChangeState(MovementState.GetHit);
     }
 
     private void Host_WakeUp()
@@ -144,7 +156,7 @@ public class MovementStateManager : BaseStateManager
     /// </summary>
     public void All_UpdateMoveAnimation(float deltaTime)
     {
-        if (player.All_CanMoving())
+        if (moveManager.All_CanMoving())
         {
             anim.SetFloat("Horizontal", MoveValue.x, 0.1f, deltaTime);
             anim.SetFloat("Vertical", MoveValue.y, 0.1f, deltaTime);
@@ -189,7 +201,7 @@ public class MovementStateManager : BaseStateManager
                 break;
         }
 
-        if (player.All_CanMoving())
+        if (moveManager.All_CanMoving())
         {
             // 이 부분 없으면 착지할 때 애니메이션 전환 이상함
             if (input.moveValue != Vector2.zero)
@@ -200,7 +212,7 @@ public class MovementStateManager : BaseStateManager
                     anim.SetBool("Walking", true);
             }
         }
-        anim.SetBool("Falling", !moveController.Grounded);
+        anim.SetBool("Falling", !moveManager.Grounded);
     }
 
     /// <summary>
@@ -208,16 +220,11 @@ public class MovementStateManager : BaseStateManager
     /// </summary>
     public bool All_CanRun()
     {
-        if (moveController.CanRun_Tool && Stamina > player.playerData.maxStamina * 0.3f)
+        if (moveManager.CanRun_Tool && Stamina > player.playerData.maxStamina * 0.3f)
             return true;
 
         return false;
     }
-
-    /// <summary>
-    /// 스테미나 회복가능한지 확인
-    /// </summary>
-    public bool All_CanRecoverStamina() => CurrentMoveState != MovementState.Run && CurrentMoveState != MovementState.Death;
 
     public void Host_Sleep(bool isSleep) => dayNightManager.Rpc_SetSleepingState(isSleep, Object.InputAuthority);
 

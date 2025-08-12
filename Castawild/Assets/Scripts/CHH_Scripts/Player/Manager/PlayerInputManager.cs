@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[DisallowMultipleComponent]
 public class PlayerInputManager : MonoBehaviour
 {
     #region Input Action
@@ -28,8 +29,9 @@ public class PlayerInputManager : MonoBehaviour
     public Action<bool> cursorLocked;
     #endregion 
 
-    private PlayerCameraManager cameraManager;
     private Player player;
+    private PlayerCameraManager cameraManager;
+    private PlayerMoveManager moveManager;
 
 
     void Start()
@@ -54,8 +56,9 @@ public class PlayerInputManager : MonoBehaviour
 
     private void Awake()
     {
-        cameraManager = GetComponentInChildren<PlayerCameraManager>();
         player = GetComponent<Player>();
+        cameraManager = GetComponentInChildren<PlayerCameraManager>();
+        moveManager = GetComponent<PlayerMoveManager>();
         InitInputActions();
     }
 
@@ -159,7 +162,7 @@ public class PlayerInputManager : MonoBehaviour
             inputData.camForward = new Vector3(camForward.x, 0f, camForward.z);
         }
 
-        if (player.All_CanMoving())
+        if (moveManager.All_CanMoving())
         {
             if (cameraManager.currentView == ViewType.FirstPerson)
             {

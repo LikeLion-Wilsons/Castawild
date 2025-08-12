@@ -11,7 +11,7 @@ public class GetHitState : MovementBaseState
     public override void EnterState()
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.GetHit;
-        movementManager.moveController.Host_FreezePosition(true);
+        movementManager.moveManager.Host_FreezePosition(true);
     }
 
     public override void UpdateState()
@@ -23,6 +23,6 @@ public class GetHitState : MovementBaseState
     public override void ExitState()
     {
         movementManager.IsAnimationFinished = false;
-        movementManager.moveController.Host_FreezePosition(false);
+        movementManager.moveManager.Host_FreezePosition(false);
     }
 }

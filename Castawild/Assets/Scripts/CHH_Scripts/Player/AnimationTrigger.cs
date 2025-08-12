@@ -21,7 +21,6 @@ public class AnimationTrigger : MonoBehaviour
 
     public void ToolAnimationFinishTrigger()
     {
-        toolManager.IsDecreased = false;
         toolManager.DecreaseToolDuration = false;
         toolManager.IsAnimationFinished = true;
     }

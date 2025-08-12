@@ -5,7 +5,8 @@ public class BaseStateManager : NetworkBehaviour
 {
     [HideInInspector] public Animator anim;
     [HideInInspector] public Player player;
-    [HideInInspector] public PlayerMoveManager moveController;
+    [HideInInspector] public PlayerMoveManager moveManager;
+    [HideInInspector] public PlayerToolManager toolManager;
     [HideInInspector] public PlayerCameraManager cameraManager;
     [HideInInspector] public PlayerInteractUI interactUI;
 
@@ -18,7 +19,7 @@ public class BaseStateManager : NetworkBehaviour
     {
         anim = GetComponentInChildren<Animator>();
         player = GetComponent<Player>();
-        moveController = GetComponent<PlayerMoveManager>();
+        moveManager = GetComponent<PlayerMoveManager>();
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
         interactUI = GetComponentInChildren<PlayerInteractUI>();
     }

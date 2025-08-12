@@ -11,7 +11,10 @@ public class RunState : MovementBaseState
     public override void EnterState()
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.Run;
-        movementManager.moveController.currentMoveSpeed = movementManager.runSpeed;
+        movementManager.moveManager.currentMoveSpeed = movementManager.runSpeed;
+
+        movementManager.player.CanRecoverStamina = false;
+
         if (movementManager.HasInputAuthority)
             movementManager.cameraManager.run = true;
     }
@@ -39,7 +42,7 @@ public class RunState : MovementBaseState
             movementManager.Host_ChangeState(MovementState.Crouch);
 
         // Jump
-        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.moveController.Grounded)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.moveManager.Grounded)
         {
             movementManager.previousState = this;
             movementManager.Host_ChangeState(MovementState.Jump);
@@ -48,6 +51,8 @@ public class RunState : MovementBaseState
 
     public override void ExitState()
     {
+        movementManager.player.CanRecoverStamina = true;
+
         if (movementManager.HasInputAuthority)
             movementManager.cameraManager.run = false;
     }

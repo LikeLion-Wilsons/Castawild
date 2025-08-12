@@ -54,7 +54,6 @@ public class ToolStateManager : BaseStateManager
     [Networked, HideInInspector] public bool ComboAttack { get; set; }
     [Networked, HideInInspector] public bool CanReceiveInput { get; set; }
     [Networked, HideInInspector] public bool DecreaseToolDuration { get; set; }
-    [Networked, HideInInspector] public bool IsDecreased { get; set; }
     #endregion
 
     protected override void Awake()
@@ -69,12 +68,24 @@ public class ToolStateManager : BaseStateManager
     {
         Host_ChangeState(ToolState.Idle);
         CurrentToolType = ToolType.Fist;
+
+        if (HasStateAuthority)
+        {
+            player.Host_TakeDamagedEvent -= ChangeToDeathState;
+            player.Host_TakeDamagedEvent += ChangeToDeathState;
+
+            player.Host_DecreaseToolDuration -= SetDecreaseToolDuration;
+            player.Host_DecreaseToolDuration += SetDecreaseToolDuration;
+        }
+
+        toolManager.Host_ChangeSelectedItem -= RPC_NotifyChangeSelectedItem;
+        toolManager.Host_ChangeSelectedItem += RPC_NotifyChangeSelectedItem;
     }
 
-    private void InitComponents()
-    {
-        movementManager = GetComponent<MovementStateManager>();
-    }
+    private void ChangeToDeathState(bool isDeath) => Host_ChangeState(ToolState.Idle);
+    private void SetDecreaseToolDuration() => DecreaseToolDuration = true;
+
+    private void InitComponents() => movementManager = GetComponent<MovementStateManager>();
 
     private void InitStates()
     {
@@ -200,7 +211,7 @@ public class ToolStateManager : BaseStateManager
             return;
 
         NetworkObject throwObject;
-        if (isArrow && player.HasArrow)
+        if (isArrow && toolManager.HasArrow)
         {
             if (input.currentView == ViewType.FirstPerson)
             {
@@ -216,8 +227,8 @@ public class ToolStateManager : BaseStateManager
             player.inventory.UseItem(201, 1);
             if (player.inventory.GetItemCount(201) <= 0)
             {
-                player.HasArrow = false;
-                player.RPC_NotifyArrowActive(false);
+                toolManager.HasArrow = false;
+                toolManager.RPC_NotifyArrowActive(false);
             }
         }
         else if (!isArrow)
@@ -235,16 +246,11 @@ public class ToolStateManager : BaseStateManager
             if (player.inventory.GetItemCount(202) <= 0)
             {
                 Debug.Log("돌맹이 없음, 주먹으로 변경");
-                player.Host_InitCurrentTool();
+                toolManager.Host_InitCurrentTool();
                 CurrentToolType = ToolType.Fist;
             }
         }
     }
-
-    /// <summary>
-    /// 스태미나 회복 가능한지 확인
-    /// </summary>
-    public bool All_CanRecoverStamina() => CurrentToolState != ToolState.UseTool;
 
     /// <summary>
     /// Ray로 조준 위치 설정
@@ -257,7 +263,7 @@ public class ToolStateManager : BaseStateManager
         if (!HasInputAuthority)
             return;
 
-        if (cameraManager.currentView == ViewType.FirstPerson && player.HasArrow)
+        if (cameraManager.currentView == ViewType.FirstPerson && toolManager.HasArrow)
             cameraManager.ShakeCamera(transform.right, 0.1f);
 
         Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
@@ -285,7 +291,7 @@ public class ToolStateManager : BaseStateManager
     public void All_SetArrowPull(bool isAiming)
     {
         bowAnim.SetBool("Pull", isAiming);
-        player.All_SetArrowActive(isAiming);
+        toolManager.All_SetArrowActive(isAiming);
     }
 
     /// <summary>
@@ -311,9 +317,9 @@ public class ToolStateManager : BaseStateManager
     }
 
     /// <summary>
-    /// 현재 아이템 변경 RPC
+    /// 현재 아이템 변경 
     /// </summary>
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_NotifyChangeSelectedItem(int itemIdx = -1)
     {
         // 설치가능한 아이템 
@@ -347,7 +353,7 @@ public class ToolStateManager : BaseStateManager
             case 406: // 활
                 {
                     CurrentToolType = ToolType.Bow;
-                    player.arrow.SetActive(false);
+                    toolManager.arrow.SetActive(false);
                 }
                 break;
             default:
@@ -365,15 +371,12 @@ public class ToolStateManager : BaseStateManager
         Host_SpawnThrowObject(isArrow == 0 ? false : true, rayTargetPos);
 
         if (isArrow == 0)
-            player.All_SetPebbleActive(false);
+            toolManager.All_SetPebbleActive(false);
         else
-            player.arrow.SetActive(false);
+            toolManager.arrow.SetActive(false);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestDecreaseToolDuration(bool isDecreased)
-    {
-        DecreaseToolDuration = isDecreased;
-        Debug.Log("DecreaseToolDuration : " + DecreaseToolDuration);
-    }
+       => DecreaseToolDuration = isDecreased;
 }

@@ -13,10 +13,9 @@ public class UseToolState : ToolBaseState
     {
         toolStateManager.CurrentToolAnimationState = ToolAnimationState.UseTool;
         toolStateManager.movementManager.Host_ChangeState(MovementState.Idle);
-        toolStateManager.moveController.Host_FreezePosition(true);
+        toolStateManager.moveManager.Host_FreezePosition(true);
 
         toolStateManager.DecreaseToolDuration = false;
-        toolStateManager.IsDecreased = false;
 
         if (toolStateManager.CurrentToolType == ToolType.Fist || toolStateManager.CurrentToolType == ToolType.Throw)
         {
@@ -25,11 +24,12 @@ public class UseToolState : ToolBaseState
 
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
         {
-            toolStateManager.player.All_SetBowPos(true);
-            toolStateManager.player.All_SetArrowActive(true);
+            toolStateManager.toolManager.All_SetBowPos(true);
+            toolStateManager.toolManager.All_SetArrowActive(true);
             toolStateManager.All_SetArrowPull(true);
         }
 
+        toolStateManager.player.CanRecoverStamina = false;
         elapsed = 0f;
     }
 
@@ -39,19 +39,12 @@ public class UseToolState : ToolBaseState
         {
             elapsed += toolStateManager.Runner.DeltaTime;
             if (toolStateManager.input.currentView == ViewType.ThirdPerson)
-                toolStateManager.moveController.All_RotateForward(toolStateManager.input);
-        }
-
-        if (toolStateManager.HasStateAuthority && toolStateManager.DecreaseToolDuration && !toolStateManager.IsDecreased
-            && toolStateManager.All_IsDecreaseDurationTool())
-        {
-            toolStateManager.IsDecreased = true;
-            toolStateManager.player.inventory.RPC_SubtractDurability(toolStateManager.player.currentToolInfoData.durability);
+                toolStateManager.moveManager.All_RotateForward(toolStateManager.input);
         }
 
         if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
-            toolStateManager.moveController.IsAiming = false;
+            toolStateManager.moveManager.IsAiming = false;
             toolStateManager.Client_SetAimCameraAndUI(false);
 
             if (toolStateManager.CurrentToolType == ToolType.Bow)
@@ -67,7 +60,6 @@ public class UseToolState : ToolBaseState
         {
             if (CanComboAttack() && comboCount == 1)
             {
-                toolStateManager.IsDecreased = false;
                 toolStateManager.DecreaseToolDuration = false;
                 comboCount++;
                 toolStateManager.CanComboAttack = true;
@@ -92,19 +84,24 @@ public class UseToolState : ToolBaseState
     {
         base.ExitState();
 
-        toolStateManager.IsDecreased = false;
+        if (toolStateManager.HasStateAuthority && toolStateManager.DecreaseToolDuration
+            && toolStateManager.All_IsDecreaseDurationTool())
+            toolStateManager.player.inventory.RPC_SubtractDurability(toolStateManager.toolManager.currentToolInfoData.durability);
+
+        toolStateManager.player.CanRecoverStamina = true;
+
         toolStateManager.DecreaseToolDuration = false;
 
         if (toolStateManager.CurrentToolType == ToolType.Bow && toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
-            toolStateManager.player.All_SetBowPos(false);
+            toolStateManager.toolManager.All_SetBowPos(false);
 
         if (toolStateManager.CurrentToolType == ToolType.Throw)
-            toolStateManager.player.All_SetPebbleActive(true);
+            toolStateManager.toolManager.All_SetPebbleActive(true);
 
         if (toolStateManager.CurrentToolType == ToolType.Fist)
             toolStateManager.Client_ArmVisibleChanged(false);
 
-        toolStateManager.moveController.Host_FreezePosition(false);
+        toolStateManager.moveManager.Host_FreezePosition(false);
 
         comboCount = 1;
         toolStateManager.ComboAttack = false;

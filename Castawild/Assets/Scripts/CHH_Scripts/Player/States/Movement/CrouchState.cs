@@ -9,7 +9,7 @@ public class CrouchState : MovementBaseState
     public override void EnterState()
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.CrouchIdle;
-        movementManager.moveController.currentMoveSpeed = movementManager.crouchSpeed;
+        movementManager.moveManager.currentMoveSpeed = movementManager.crouchSpeed;
     }
 
     public override void UpdateState()

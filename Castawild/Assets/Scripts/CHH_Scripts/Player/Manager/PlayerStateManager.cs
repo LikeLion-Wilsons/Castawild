@@ -5,12 +5,14 @@ using UnityEngine;
 public class PlayerStateManager : NetworkBehaviour
 {
     private Player player;
+    private PlayerMoveManager moveManager;
     private MovementStateManager movementManager;
     private ToolStateManager toolStateManager;
 
     private void Awake()
     {
         player = GetComponent<Player>();
+        moveManager = GetComponent<PlayerMoveManager>();
         movementManager = GetComponent<MovementStateManager>();
         toolStateManager = GetComponent<ToolStateManager>();
     }
@@ -22,7 +24,7 @@ public class PlayerStateManager : NetworkBehaviour
 
         All_HandleState(input);
 
-        if (!player.CanMove)
+        if (!moveManager.CanMove)
             return;
 
         movementManager.MoveValue = input.moveValue;

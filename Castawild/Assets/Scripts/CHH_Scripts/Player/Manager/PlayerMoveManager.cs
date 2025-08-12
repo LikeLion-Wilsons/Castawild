@@ -10,6 +10,7 @@ public class PlayerMoveManager : NetworkBehaviour
     private PlayerCameraManager CameraManager;
 
     [Header("Movement")]
+    [Networked, HideInInspector] public bool CanMove { get; set; } = true;
     public float jumpImpulse = 3f;
     public float rotationSpeed = 15f;
 
@@ -61,6 +62,7 @@ public class PlayerMoveManager : NetworkBehaviour
         if (!GetInput<PlayerNetworkInputData>(out var input))
             return;
 
+        player.input = input;
         this.input = input;
 
         if (HasStateAuthority)
@@ -70,7 +72,7 @@ public class PlayerMoveManager : NetworkBehaviour
             Host_Falling();
         }
 
-        if (!player.CanMove)
+        if (!CanMove)
         {
             if (HasStateAuthority)
                 Host_Gravity();
@@ -90,6 +92,12 @@ public class PlayerMoveManager : NetworkBehaviour
         Gizmos.color = Grounded ? Color.green : Color.red;
         Gizmos.DrawLine(groundStartPoint.position, groundStartPoint.position + Vector3.down * groundDistance);
     }
+
+
+    /// <summary>
+    /// 움직일 수 있는지 확인
+    /// </summary>
+    public bool All_CanMoving() => CanMove && player.IsCursorLocked;
 
     private void Host_ChangePosition()
     {
@@ -260,9 +268,9 @@ public class PlayerMoveManager : NetworkBehaviour
         if (freeze)
         {
             kcc.ResetVelocity();
-            player.CanMove = false;
+            CanMove = false;
         }
         else
-            player.CanMove = true;
+            CanMove = true;
     }
 }

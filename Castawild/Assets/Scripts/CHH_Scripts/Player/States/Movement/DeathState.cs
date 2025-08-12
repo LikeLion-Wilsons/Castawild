@@ -18,7 +18,7 @@ public class DeathState : MovementBaseState
             movementManager.player.Client_SleepDeadCameraTarget(true, false);
 
         movementManager.Revived = false;
-        movementManager.moveController.Host_FreezePosition(true);
+        movementManager.moveManager.Host_FreezePosition(true);
     }
 
     public override void UpdateState()
@@ -31,9 +31,9 @@ public class DeathState : MovementBaseState
             movementManager.player.Client_SleepDeadCameraTarget(false, false);
 
         if (movementManager.HasStateAuthority)
-            movementManager.moveController.Host_SetPosition(movementManager.player.RespawnPos);
+            movementManager.moveManager.Host_SetPosition(movementManager.player.RespawnPos);
 
         movementManager.Revived = true;
-        movementManager.moveController.Host_FreezePosition(false);
+        movementManager.moveManager.Host_FreezePosition(false);
     }
 }

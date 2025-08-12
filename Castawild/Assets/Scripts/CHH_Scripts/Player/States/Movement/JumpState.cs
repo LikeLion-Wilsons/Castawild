@@ -9,7 +9,7 @@ public class JumpState : MovementBaseState
 
     public override void EnterState()
     {
-        movementManager.moveController.JumpTriggered = true;
+        movementManager.moveManager.JumpTriggered = true;
         movementManager.CanLanding = false;
 
         if (movementManager.previousState == movementManager.idleState)
@@ -22,7 +22,7 @@ public class JumpState : MovementBaseState
 
     public override void UpdateState()
     {
-        if (movementManager.moveController.Grounded && movementManager.CanLanding)
+        if (movementManager.moveManager.Grounded && movementManager.CanLanding)
         {
             if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
                 movementManager.Host_ChangeState(MovementState.Idle);

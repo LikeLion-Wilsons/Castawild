@@ -3257,9 +3257,9 @@ GameObject:
   - component: {fileID: 5000463041039569134}
   - component: {fileID: 3669695777030045323}
   - component: {fileID: 2392341617914439019}
+  - component: {fileID: 2620789083190254575}
   - component: {fileID: 3318766871343913700}
   - component: {fileID: 230939324335428207}
-  - component: {fileID: 7845940353617236455}
   - component: {fileID: 1074039684945113463}
   - component: {fileID: 8225308212403291209}
   - component: {fileID: 6363259293620697004}
@@ -3328,9 +3328,9 @@ MonoBehaviour:
   - {fileID: 5000463041039569134}
   - {fileID: 3669695777030045323}
   - {fileID: 2392341617914439019}
+  - {fileID: 2620789083190254575}
   - {fileID: 3318766871343913700}
   - {fileID: 230939324335428207}
-  - {fileID: 7845940353617236455}
   - {fileID: 1074039684945113463}
   - {fileID: 6363259293620697004}
   - {fileID: 1934811449108985206}
@@ -3389,10 +3389,6 @@ MonoBehaviour:
   anim: {fileID: 0}
   dayNightManager: {fileID: 0}
   playerInteractUI: {fileID: 0}
-  playerController: {fileID: 0}
-  inputManager: {fileID: 0}
-  movementManager: {fileID: 0}
-  toolStateManager: {fileID: 0}
   cameraManager: {fileID: 0}
   nicknameUI: {fileID: 8077964778312649939}
   playerData:
@@ -3410,6 +3406,7 @@ MonoBehaviour:
   _Thirst: 0
   _Temperature: 0
   foodRestoreTime: 5
+  currentItemType: 0
   staminaRecoveryRate: 2
   temperatureReceoveryRate: 1
   hpDecreaseRate: 0.5
@@ -3420,27 +3417,21 @@ MonoBehaviour:
   temperatureDecreaseRate: 1
   thirstSleepDecrease: 10
   hungerSleepDecrease: 10
-  tools: {fileID: 7844614530758869572}
-  bowOriginalParent: {fileID: 5652918095632363721}
-  bowUseParent: {fileID: 1542822223830889626}
-  bowUseLocalParent: {fileID: 3555937060719847740}
-  arrow: {fileID: 2432054003010317866}
-  _HasArrow: 0
-  _HasPebble: 0
   Host_currentBed: {fileID: 0}
   screenEffect: {fileID: 478434462551621132}
   amarture: {fileID: 762437358709272171}
+  _CanRecoverStamina: 0
+  _isDead: 0
   _RespawnPos: {x: 0, y: 0, z: 0}
-  _CanMove: 1
   _CanPVP: 1
   _IsUIOpen: 0
   _IsCursorLocked: 0
   _IsSleeping: 0
   inventory: {fileID: 0}
   isSpawned: 0
-  currentItemType: 0
   isNearFire: 0
   uiStats: {fileID: 0}
+  toolStateManager: {fileID: 0}
 --- !u!114 &2392341617914439019
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3453,6 +3444,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4276296d34dba7479bbd3a9f3482ea1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _CanMove: 1
   jumpImpulse: 3
   rotationSpeed: 15
   maxGroundAngle: 45
@@ -3469,6 +3461,25 @@ MonoBehaviour:
   _currentMoveSpeed: 0
   _IsChangePos: 0
   _ChangePos: {x: 0, y: 0, z: 0}
+--- !u!114 &2620789083190254575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b36ea567c4a41a84f9d3722828c1a33a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tools: {fileID: 7844614530758869572}
+  bowOriginalParent: {fileID: 5652918095632363721}
+  bowUseParent: {fileID: 1542822223830889626}
+  bowUseLocalParent: {fileID: 3555937060719847740}
+  arrow: {fileID: 2432054003010317866}
+  _HasArrow: 0
+  _HasPebble: 0
 --- !u!114 &3318766871343913700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3483,7 +3494,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   anim: {fileID: 7941171218918909885}
   player: {fileID: 0}
-  moveController: {fileID: 0}
+  moveManager: {fileID: 0}
+  toolManager: {fileID: 0}
   cameraManager: {fileID: 0}
   interactUI: {fileID: 0}
   _IsAnimationFinished: 0
@@ -3516,7 +3528,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   anim: {fileID: 0}
   player: {fileID: 0}
-  moveController: {fileID: 0}
+  moveManager: {fileID: 0}
+  toolManager: {fileID: 0}
   cameraManager: {fileID: 0}
   interactUI: {fileID: 0}
   _IsAnimationFinished: 0
@@ -3540,28 +3553,6 @@ MonoBehaviour:
   _ComboAttack: 0
   _CanReceiveInput: 0
   _DecreaseToolDuration: 0
-  _IsDecreased: 0
---- !u!114 &7845940353617236455
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7137290088832178523}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 789849b503e9973499ad5ba34b085e4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  optionUI: {fileID: 9031955928824126459}
-  interactHeight: 10
-  thirdPersonInteractPos: {fileID: 7467696255462433047}
-  interactRadius: 1
-  interactLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  kneelY: 6.8
-  Client_currentInteractObject: {fileID: 0}
 --- !u!114 &1074039684945113463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5863,17 +5854,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1888540431556003769, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
   m_PrefabInstance: {fileID: 6412740358708803259}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &9031955928824126459 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2713794194575306048, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
-  m_PrefabInstance: {fileID: 6412740358708803259}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebe3fb2cadea3444baa7f99f60c36ae4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &6486286278863924394
 PrefabInstance:
   m_ObjectHideFlags: 0

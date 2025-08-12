@@ -6,10 +6,12 @@ using UnityEngine;
 public sealed class PlayerInteractManager : NetworkBehaviour
 {
     private Player player;
+    private PlayerMoveManager moveManager;
+    private PlayerToolManager toolManager;
     [SerializeField] private OptionUI optionUI;
     private PlayerInteractUI playerInteractUI;
     private MovementStateManager movementManager;
-    private ToolStateManager toolManager;
+    private ToolStateManager toolSateManager;
 
     [Header("Interact")]
     [SerializeField] private float interactHeight = 10f;
@@ -32,13 +34,15 @@ public sealed class PlayerInteractManager : NetworkBehaviour
     private void InitComponents()
     {
         player = GetComponent<Player>();
+        moveManager = GetComponent<PlayerMoveManager>();
+        toolManager = GetComponent<PlayerToolManager>();
         playerInteractUI = GetComponentInChildren<PlayerInteractUI>();
 
         movementManager = GetComponent<MovementStateManager>();
         movementManager.Host_ChangeState(MovementState.Idle);
 
-        toolManager = GetComponent<ToolStateManager>();
-        toolManager.Host_ChangeState(ToolState.Idle);
+        toolSateManager = GetComponent<ToolStateManager>();
+        toolSateManager.Host_ChangeState(ToolState.Idle);
     }
 
     public override void FixedUpdateNetwork()
@@ -46,7 +50,7 @@ public sealed class PlayerInteractManager : NetworkBehaviour
         if (!GetInput<PlayerNetworkInputData>(out var input))
             return;
 
-        if (!player.CanMove)
+        if (!moveManager.CanMove)
             return;
 
         if (HasInputAuthority && !player.inventory.canvasHolder.AnyUIOpen() && !optionUI.gameObject.activeSelf)
@@ -58,7 +62,7 @@ public sealed class PlayerInteractManager : NetworkBehaviour
     public override void Render()
     {
         movementManager.All_UpdateMoveAnimation(Runner.DeltaTime);
-        toolManager.All_UpdateMoveAnimation();
+        toolSateManager.All_UpdateMoveAnimation();
     }
 
     private void Client_TestTryOverlap(PlayerNetworkInputData input)
@@ -180,15 +184,15 @@ public sealed class PlayerInteractManager : NetworkBehaviour
         int att = 0;
         if (Client_currentInteractObject.interactableType == InteractableType.Tree && Client_currentInteractObject.CanInteract())
         {
-            att = player.All_GetToolAtt("Axe");
+            att = toolManager.All_GetToolAtt("Axe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
-            toolManager.RPC_RequestDecreaseToolDuration(true);
+            toolSateManager.RPC_RequestDecreaseToolDuration(true);
         }
         else if (Client_currentInteractObject.interactableType == InteractableType.Stone && Client_currentInteractObject.CanInteract())
         {
-            att = player.All_GetToolAtt("Pickaxe");
+            att = toolManager.All_GetToolAtt("Pickaxe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
-            toolManager.RPC_RequestDecreaseToolDuration(true);
+            toolSateManager.RPC_RequestDecreaseToolDuration(true);
         }
 
         else if (Client_currentInteractObject.interactableType == InteractableType.Gatherable && Client_currentInteractObject.CanInteract())

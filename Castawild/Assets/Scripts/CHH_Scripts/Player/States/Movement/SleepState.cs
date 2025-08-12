@@ -15,7 +15,7 @@ public class SleepState : MovementBaseState
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.Sleep;
 
-        movementManager.moveController.Host_FreezePosition(true);
+        movementManager.moveManager.Host_FreezePosition(true);
 
         movementManager.player.Client_TurnOffInteractiveUI();
         movementManager.player.Client_SleepDeadCameraTarget(true, true);
@@ -47,7 +47,7 @@ public class SleepState : MovementBaseState
         movementManager.player.Client_SleepDeadCameraTarget(false, true);
 
         if (movementManager.HasStateAuthority)
-            movementManager.moveController.Host_FreezePosition(false);
+            movementManager.moveManager.Host_FreezePosition(false);
 
         movementManager.player.Host_FinishSleep();
 

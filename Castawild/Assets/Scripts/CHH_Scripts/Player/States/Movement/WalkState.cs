@@ -9,7 +9,7 @@ public class WalkState : MovementBaseState
     public override void EnterState()
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.Walk;
-        movementManager.moveController.currentMoveSpeed = movementManager.walkSpeed;
+        movementManager.moveManager.currentMoveSpeed = movementManager.walkSpeed;
         if (movementManager.HasInputAuthority)
             movementManager.cameraManager.walk = true;
     }
@@ -29,7 +29,7 @@ public class WalkState : MovementBaseState
             movementManager.Host_ChangeState(MovementState.Idle);
 
         // Jump
-        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.moveController.Grounded)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.moveManager.Grounded)
         {
             movementManager.previousState = this;
             movementManager.Host_ChangeState(MovementState.Jump);

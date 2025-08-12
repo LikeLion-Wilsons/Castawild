@@ -25,16 +25,16 @@ public class AimState : ToolBaseState
 
         if (toolStateManager.CurrentToolType == ToolType.Bow)
         {
-            toolStateManager.player.All_SetBowPos(true);
-            toolStateManager.player.All_SetArrowActive(true);
+            toolStateManager.toolManager.All_SetBowPos(true);
+            toolStateManager.toolManager.All_SetArrowActive(true);
             toolStateManager.All_SetArrowPull(true);
         }
 
         if (toolStateManager.HasInputAuthority)
             toolStateManager.interactUI.ActiveCrosshair(true);
 
-        toolStateManager.moveController.IsAiming = true;
-        toolStateManager.moveController.CanRun_Tool = false;
+        toolStateManager.moveManager.IsAiming = true;
+        toolStateManager.moveManager.CanRun_Tool = false;
     }
 
     public override void UpdateState()
@@ -57,11 +57,11 @@ public class AimState : ToolBaseState
 
         else if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
-            toolStateManager.moveController.CanRun_Tool = true;
-            toolStateManager.moveController.IsAiming = false;
+            toolStateManager.moveManager.CanRun_Tool = true;
+            toolStateManager.moveManager.IsAiming = false;
             if (toolStateManager.CurrentToolType == ToolType.Bow)
             {
-                toolStateManager.player.All_SetBowPos(false);
+                toolStateManager.toolManager.All_SetBowPos(false);
                 toolStateManager.All_SetArrowPull(false);
             }
             toolStateManager.Client_SetAimCameraAndUI(false);

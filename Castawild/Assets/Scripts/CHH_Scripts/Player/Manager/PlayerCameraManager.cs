@@ -1,18 +1,17 @@
-using Fusion;
 using System.Collections;
 using Unity.Cinemachine;
-using Unity.Mathematics;
 using UnityEngine;
 
 public enum ViewType { None, FirstPerson, ThirdPerson }
 
+[DisallowMultipleComponent]
 public class PlayerCameraManager : MonoBehaviour
 {
     #region Components
 
     [SerializeField] private CinemachineImpulseSource impulseSource;
+    private PlayerMoveManager moveManager;
     private PlayerInputManager inputManager;
-    private MovementStateManager movementManager;
     private CinemachineOrbitalFollow orbital;
     private CinemachineInputAxisController inputAxisController;
     private ToolStateManager toolManager;
@@ -122,8 +121,8 @@ public class PlayerCameraManager : MonoBehaviour
     private void InitComponents()
     {
         player = GetComponentInParent<Player>();
+        moveManager = GetComponentInParent<PlayerMoveManager>();
         inputManager = GetComponentInParent<PlayerInputManager>();
-        movementManager = GetComponentInParent<MovementStateManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
         orbital = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
         inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
@@ -152,7 +151,7 @@ public class PlayerCameraManager : MonoBehaviour
         HandleViewChange();
         UpdateCameraPitch();
 
-        if (MovingCamera && player.All_CanMoving())
+        if (MovingCamera && moveManager.All_CanMoving())
             MoveUpDownCamera();
     }
 
@@ -257,7 +256,7 @@ public class PlayerCameraManager : MonoBehaviour
     // 1인칭 카메라 상하각도 조절
     private void UpdateCameraPitch()
     {
-        if (currentView == ViewType.ThirdPerson || !player.All_CanMoving())
+        if (currentView == ViewType.ThirdPerson || !moveManager.All_CanMoving())
             return;
 
         pitch -= inputManager.lookInput.y * sensivity;

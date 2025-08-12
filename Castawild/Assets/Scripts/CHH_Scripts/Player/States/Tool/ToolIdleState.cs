@@ -14,7 +14,7 @@ public class ToolIdleState : ToolBaseState
 
     public override void UpdateState()
     {
-        if (toolStateManager.player.All_IsDead())
+        if (toolStateManager.player.isDead)
             return;
 
         // Aim

@@ -10,7 +10,7 @@ public class CarryState : ToolBaseState
     public override void EnterState()
     {
         toolStateManager.CurrentToolAnimationState = ToolAnimationState.Carry;
-        toolStateManager.moveController.CanRun_Tool = false;
+        toolStateManager.moveManager.CanRun_Tool = false;
     }
 
     public override void UpdateState()
@@ -25,6 +25,6 @@ public class CarryState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
-        toolStateManager.moveController.CanRun_Tool = true;
+        toolStateManager.moveManager.CanRun_Tool = true;
     }
 }
