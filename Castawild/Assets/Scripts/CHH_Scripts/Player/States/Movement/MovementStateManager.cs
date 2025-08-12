@@ -143,7 +143,10 @@ public class MovementStateManager : BaseStateManager
         if (movementStateDict.TryGetValue(CurrentMoveState, out var newState))
         {
             if (currentState == newState)
+            {
+                Debug.Log("Same State");
                 return;
+            }
 
             currentState?.ExitState();
             currentState = newState;

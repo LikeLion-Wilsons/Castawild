@@ -3468,11 +3468,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _CanMove: 1
-  jumpImpulse: 3
+  jumpImpulse: 10
   rotationSpeed: 15
   maxGroundAngle: 45
   gravity: -9.81
-  fallThreshold: 3
+  fallThreshold: 5
   fallDamagePerMeter: 10
   fallingDeadTime: 5
   _Grounded_Physics: 0
