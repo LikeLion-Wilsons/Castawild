@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-
 public abstract class SpawnableDefinition : ScriptableObject
 {
     [Header("Prefab (Addressables)")]

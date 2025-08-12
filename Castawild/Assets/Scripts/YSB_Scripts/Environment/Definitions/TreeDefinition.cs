@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 [CreateAssetMenu(menuName = "ScriptableObjects/TreeDefinition")]
 public class TreeDefinition : SpawnableDefinition

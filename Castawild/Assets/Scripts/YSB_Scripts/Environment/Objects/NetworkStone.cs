@@ -48,9 +48,10 @@ namespace YSB_Scripts
             else
             {
                 var playerObj = Runner.GetPlayerObject(player);
-                var inven = playerObj.GetComponent<Test.PlayerInventory>();
-                inven.AddItem(definition.dropItemID, definition.dropAmount);
-
+                Player _player = playerObj.GetComponent<Player>();
+                //InventoryDataManager inventoryData = _player.GetComponent<InventoryDataManager>();
+                //inventoryData.AddItem(definition.dropItemID, definition.dropAmount);//아이템 획득
+                
                 Die();
             }
         }
