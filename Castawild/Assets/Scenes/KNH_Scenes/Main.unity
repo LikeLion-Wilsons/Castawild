@@ -4951,8 +4951,7 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 331341584}
+  NetworkedBehaviours: []
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &331341584
 MonoBehaviour:
@@ -4966,6 +4965,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fe4194212e98e6428063c47c8e983fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _runner: {fileID: 0}
+  _object: {fileID: 0}
+  InvokeRpc: 0
+  ObjectIndex: 0
+  WordOffset: 0
+  WordCount: 0
+  DefaultReplicated: 1
   definitions:
   - {fileID: 11400000, guid: 61964b564f364744c8c0d80785000d45, type: 2}
   - {fileID: 11400000, guid: b47e0cb933648de40b6efea2840d7f9f, type: 2}
@@ -4981,32 +4987,18 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c716bed80655a28438c7f3616fab9155, type: 2}
   - {fileID: 11400000, guid: c716bed80655a28438c7f3616fab9155, type: 2}
   terrainSettings:
-  - terrain: {fileID: 2043348611}
-    spawnTextureLayerIndex: 6
-    maxObjects: 200
-    minSpawnHeight: 50
-    minDistanceBetweenObjects: 4
-    activeObjects: []
-  - terrain: {fileID: 94829841}
-    spawnTextureLayerIndex: 2
-    maxObjects: 250
-    minSpawnHeight: 50
-    minDistanceBetweenObjects: 4
-    activeObjects: []
-  - terrain: {fileID: 268864407}
-    spawnTextureLayerIndex: 1
-    maxObjects: 250
-    minSpawnHeight: 50
-    minDistanceBetweenObjects: 4
-    activeObjects: []
-  - terrain: {fileID: 212356486}
-    spawnTextureLayerIndex: 1
-    maxObjects: 50
-    minSpawnHeight: 50
-    minDistanceBetweenObjects: 4
-    activeObjects: []
+  - {terrain: {fileID: 2043348611}, spawnTextureLayerIndex: 6, maxObjects: 200, minSpawnHeight: 50, minDistanceBetweenObjects: 4, activeObjects: []
+}
+  - {terrain: {fileID: 94829841}, spawnTextureLayerIndex: 2, maxObjects: 250, minSpawnHeight: 50, minDistanceBetweenObjects: 4, activeObjects: []
+}
+  - {terrain: {fileID: 268864407}, spawnTextureLayerIndex: 1, maxObjects: 250, minSpawnHeight: 50, minDistanceBetweenObjects: 4, activeObjects: []
+}
+  - {terrain: {fileID: 212356486}, spawnTextureLayerIndex: 1, maxObjects: 50, minSpawnHeight: 50, minDistanceBetweenObjects: 4, activeObjects: []
+}
   maxSpawnAttempts: 5
   checkInterval: 3
+  loadedPrefabs: []
+  nextInstanceId: 1
   maxPoolCountPerPrefab: 100
 --- !u!4 &331341585
 Transform:
@@ -14241,7 +14233,7 @@ Light:
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_Intensity: 0.03995438
+  m_Intensity: 0.032668687
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -15529,47 +15521,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff0a50772f61bcc468f4e9b31eaebe48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _runner: {fileID: 0}
+  _object: {fileID: 0}
+  InvokeRpc: 0
+  ObjectIndex: 0
+  WordOffset: 0
+  WordCount: 0
+  DefaultReplicated: 1
   definitions:
   - {fileID: 0}
   terrainSettings:
-  - terrain: {fileID: 0}
-    spawnTextureLayerIndex: 0
-    maxObjects: 10
-    minSpawnHeight: 50
-    minDistanceBetweenObjects: 4
-    activeObjects: []
-  - terrain: {fileID: 0}
-    spawnTextureLayerIndex: 0
-    maxObjects: 10
-    minSpawnHeight: 0
-    minDistanceBetweenObjects: 4
-    activeObjects: []
-  - terrain: {fileID: 0}
-    spawnTextureLayerIndex: 0
-    maxObjects: 10
-    minSpawnHeight: 0
-    minDistanceBetweenObjects: 4
-    activeObjects: []
-  - terrain: {fileID: 0}
-    spawnTextureLayerIndex: 0
-    maxObjects: 10
-    minSpawnHeight: 0
-    minDistanceBetweenObjects: 4
-    activeObjects: []
-  - terrain: {fileID: 0}
-    spawnTextureLayerIndex: 0
-    maxObjects: 10
-    minSpawnHeight: 0
-    minDistanceBetweenObjects: 4
-    activeObjects: []
-  - terrain: {fileID: 0}
-    spawnTextureLayerIndex: 0
-    maxObjects: 10
-    minSpawnHeight: 0
-    minDistanceBetweenObjects: 4
-    activeObjects: []
+  - {terrain: {fileID: 0}, spawnTextureLayerIndex: 0, maxObjects: 10, minSpawnHeight: 50, minDistanceBetweenObjects: 4, activeObjects: []
+}
+  - {terrain: {fileID: 0}, spawnTextureLayerIndex: 0, maxObjects: 10, minSpawnHeight: 0, minDistanceBetweenObjects: 4, activeObjects: []
+}
+  - {terrain: {fileID: 0}, spawnTextureLayerIndex: 0, maxObjects: 10, minSpawnHeight: 0, minDistanceBetweenObjects: 4, activeObjects: []
+}
+  - {terrain: {fileID: 0}, spawnTextureLayerIndex: 0, maxObjects: 10, minSpawnHeight: 0, minDistanceBetweenObjects: 4, activeObjects: []
+}
+  - {terrain: {fileID: 0}, spawnTextureLayerIndex: 0, maxObjects: 10, minSpawnHeight: 0, minDistanceBetweenObjects: 4, activeObjects: []
+}
+  - {terrain: {fileID: 0}, spawnTextureLayerIndex: 0, maxObjects: 10, minSpawnHeight: 0, minDistanceBetweenObjects: 4, activeObjects: []
+}
   maxSpawnAttempts: 5
   checkInterval: 3
+  loadedPrefabs: []
+  nextInstanceId: 1
   maxPoolCountPerPrefab: 500
 --- !u!114 &983863424
 MonoBehaviour:
@@ -15587,8 +15564,7 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 983863423}
+  NetworkedBehaviours: []
   ForceRemoteRenderTimeframe: 0
 --- !u!4 &983863425
 Transform:

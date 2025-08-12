@@ -117,7 +117,7 @@ public class InventoryDataManager : NetworkBehaviour
             if (inventorySlots[selectedSlot].IsEmpty())
                 player.Client_RemoveSelectedItem();
             player.Client_ApplySelectedItem(itemList[selectedSlot].itemID);
-            Debug.Log("ChangeSelectedSlot "+selectedSlot);
+            Debug.Log("ChangeSelectedSlot " + selectedSlot);
             onItemSelected?.Invoke(inventorySlots[selectedSlot].item.itemID);
         }
     }
@@ -125,7 +125,7 @@ public class InventoryDataManager : NetworkBehaviour
 
 
 
-    public override void FixedUpdateNetwork ()
+    public override void FixedUpdateNetwork()
     {
         if (Input.inputString != null)
         {
@@ -223,7 +223,7 @@ public class InventoryDataManager : NetworkBehaviour
     }
     //선택된 슬롯에 있는 아이템 내구도 설정
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_SubtractDurability( float amount)
+    public void RPC_SubtractDurability(float amount)
     {
         Debug.Log("RPC_SubtractDurability" + selectedSlot);
         var item = itemList.Get(selectedSlot);
@@ -293,6 +293,34 @@ public class InventoryDataManager : NetworkBehaviour
         chest.CanOpen = tof;
     }
 
+    //모닥불이 열 수 있는 상태인지 설정
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetCanOpen(Campfire campfire, bool tof)
+    {
+        campfire.CanOpen = tof;
+    }
+
+
+    //모닥불로부터 아이템 데이터 받아오기
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetItemFromCampfire(NetworkCampFire campfire)
+    {
+        itemList.Set(45, campfire.cookPotItem);
+        itemList.Set(45, campfire.resultItem);
+        RPC_UpdateInventoryUI();
+        Debug.Log("campfire -> inventory");
+    }
+    //모닥불에서 상자로 데이터 보내기
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestStoreToCampfire(NetworkCampFire campfire)
+    {
+        campfire.RPC_SetCookPotItem(itemList[45]);
+        campfire.RPC_SetResultItem(itemList[46]);
+        Debug.Log("inventory->campfire");
+        RPC_UpdateInventoryUI();
+    }
+
+    #endregion
     //아이템 비우기
     public void ClearItem(Item item)
     {
@@ -302,9 +330,6 @@ public class InventoryDataManager : NetworkBehaviour
             player.Client_RemoveSelectedItem();
         RPC_UpdateInventoryUI();
     }
-
-    #endregion
-
     public Item_Scriptable GetSeletedItem(bool use)
     {
         Item_Panel slot = inventorySlots[selectedSlot];
