@@ -1,15 +1,14 @@
-using Fusion;
 using System.Collections;
 using Unity.Cinemachine;
+using Unity.Mathematics;
 using UnityEngine;
-using static System.TimeZoneInfo;
 
 public enum ViewType { None, FirstPerson, ThirdPerson }
 
 public class PlayerCameraManager : MonoBehaviour
 {
     #region Components
-    public CinemachineImpulseSource impulseSource;
+    [SerializeField] private CinemachineImpulseSource impulseSource;
     private PlayerController playerController;
     private PlayerInputManager inputManager;
     private MovementStateManager movementManager;
@@ -74,6 +73,27 @@ public class PlayerCameraManager : MonoBehaviour
     private float currentZoom;
     #endregion
 
+    [Header("Move Camera")]
+    [HideInInspector] private bool MovingCamera = true;
+    [HideInInspector] public bool walk = false;
+    [HideInInspector] public bool run = false;
+    [Header("Walk")]
+    [SerializeField] private float walkAmplitude = 0.2f; // 세기
+    [SerializeField] private float walkFrequency = 8.5f; // 속도
+    [Header("Run")]
+    [SerializeField] private float sprintAmplitude = 0.2f;
+    [SerializeField] private float sprintFrequency = 15f;
+    [SerializeField] private float transitionSpeed = 10f;
+
+    private float targetAmplitude = 0f;
+    private float targetFrequency = 0f;
+
+    private float currentAmplitude;
+    private float currentFrequency;
+
+    private Vector3 startPos;
+    private float bobTimer = 0f;
+
     private Coroutine moveCameraCoroutine;
 
     public CinemachineCamera CurrenCam
@@ -98,11 +118,11 @@ public class PlayerCameraManager : MonoBehaviour
     private void Start()
     {
         ViewChange(ViewType.FirstPerson);
+        startPos = firstPersonCam.transform.localPosition;
     }
 
     private void InitComponents()
     {
-        impulseSource = GetComponentInParent<CinemachineImpulseSource>();
         player = GetComponentInParent<Player>();
         playerController = GetComponentInParent<PlayerController>();
         inputManager = GetComponentInParent<PlayerInputManager>();
@@ -138,7 +158,47 @@ public class PlayerCameraManager : MonoBehaviour
         HandleViewChange();
         UpdateCameraPitch();
         //ZoomCamera();
+
+        if (MovingCamera)
+            MoveUpDownCamera();
     }
+
+
+    private void MoveUpDownCamera()
+    {
+        if (walk)
+        {
+            targetAmplitude = walkAmplitude;
+            targetFrequency = walkFrequency;
+        }
+        else if (run)
+        {
+            targetAmplitude = sprintAmplitude;
+            targetFrequency = sprintFrequency;
+        }
+        if (!walk && !run)
+        {
+            targetAmplitude = 0f;
+            targetFrequency = 0f;
+        }
+
+        currentAmplitude = Mathf.Lerp(currentAmplitude, targetAmplitude, Time.deltaTime * transitionSpeed);
+        currentFrequency = Mathf.Lerp(currentFrequency, targetFrequency, Time.deltaTime * transitionSpeed);
+
+        if (walk || run)
+        {
+            bobTimer += Time.deltaTime * currentFrequency;
+            float newY = startPos.y + Mathf.Sin(bobTimer) * currentAmplitude;
+
+            firstPersonTarget.transform.localPosition = new Vector3(startPos.x, newY, startPos.z);
+        }
+        else
+        {
+            bobTimer = 0f;
+            firstPersonTarget.transform.localPosition = Vector3.Lerp(firstPersonTarget.transform.localPosition, startPos, Time.deltaTime * transitionSpeed);
+        }
+    }
+
 
     private void HandleViewChange()
     {
@@ -328,8 +388,8 @@ public class PlayerCameraManager : MonoBehaviour
     /// <summary>
     /// 카메라 쉐이크
     /// </summary>
-    public void ShakeCamera()
+    public void ShakeCamera(Vector3 direction, float force)
     {
-        impulseSource.GenerateImpulse();
+        impulseSource.GenerateImpulse(direction.normalized * force);
     }
 }

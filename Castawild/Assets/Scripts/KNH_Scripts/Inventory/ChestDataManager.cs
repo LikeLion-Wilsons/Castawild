@@ -38,29 +38,4 @@ public class ChestDataManager : NetworkBehaviour
     {
         itemList.Set(index, item);
     }
-
-    public void SwapItems(int indexA, int indexB)
-    {
-        if (indexA >= itemList.Count && indexB >= itemList.Count) return;
-        Debug.Log("Swap_Chest");
-        // 슬롯 수 부족할 경우 확장
-        while (itemList.Count <= Mathf.Max(indexA, indexB))
-        {
-            var item = new Item { itemID = -1, count = 0 };
-            itemList.Add(item);
-        }
-
-        var tempA = itemList[indexA];
-        var tempB = itemList[indexB];
-
-        itemList.Set(indexA, tempB);
-        itemList.Set(indexB, tempA);
-
-        if (Object.HasStateAuthority)
-        {
-            //RPC_UpdateInventoryUI();
-        }
-    }
-
-
 }

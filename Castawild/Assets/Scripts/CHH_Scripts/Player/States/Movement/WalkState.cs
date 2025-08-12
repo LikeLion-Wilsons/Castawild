@@ -12,13 +12,15 @@ public class WalkState : MovementBaseState
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.Walk;
         movementManager.currentMoveSpeed = movementManager.walkSpeed;
+        if (movementManager.HasInputAuthority)
+            movementManager.cameraManager.walk = true;
     }
 
     public override void UpdateState()
     {
         // Run
-        if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.All_HasEnoughStaminaToRun()
-            && movementManager.toolStateManager.CurrentToolState != ToolState.Aim)
+        if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.All_CanRun()
+            && movementManager.toolStateManager.CurrentToolState != ToolState.Aim && movementManager.toolStateManager.CurrentToolState != ToolState.Carry)
             movementManager.Host_ChangeState(MovementState.Run);
 
         // Crouch
@@ -39,5 +41,7 @@ public class WalkState : MovementBaseState
 
     public override void ExitState()
     {
+        if (movementManager.HasInputAuthority)
+            movementManager.cameraManager.walk = false;
     }
 }

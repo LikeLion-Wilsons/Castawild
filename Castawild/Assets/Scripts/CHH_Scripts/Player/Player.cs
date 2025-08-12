@@ -1,17 +1,30 @@
 using Fusion;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Test;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
 public enum AttackType { None, Aim, Attack }
 public enum ItemType { None, Default, Tool, Food, Drink, Placeable }
-
+public enum StatType { Hp, Stamina, Hunger, Thirst }
 public class Player : NetworkBehaviour
 {
+    #region Components
+    [HideInInspector] public Animator anim;
+    [HideInInspector] public DayNightCycleManager dayNightManager;
+    [HideInInspector] public PlayerInteractUI playerInteractUI;
+    [HideInInspector] public PlayerController playerController;
+    [HideInInspector] public PlayerInputManager inputManager;
+    [HideInInspector] public MovementStateManager movementManager;
+    [HideInInspector] public ToolStateManager toolStateManager;
+    [HideInInspector] public PlayerCameraManager cameraManager;
+    #endregion
+
     #region Status
     [Header("NickName")]
     [SerializeField] private NicknameUI nicknameUI;
@@ -19,17 +32,6 @@ public class Player : NetworkBehaviour
 
     [Header("Status")]
     public PlayerData playerData = new PlayerData();
-
-    [Header("StatusRate")]
-    public float hpDecreaseRate = 0.5f;
-    public float staminaIncreaseRate = 2f;
-    public float staminaHungerDecreaseRate = 3f;
-    public float staminaRunDecreaseRate = 1f;
-    public float hungerDecreaseRate = 1f;
-    public float thirstDecreaseRate = 1f;
-    public float thirstSleepDecrease = 10f;
-    public float hungerSleepDecrease = 10f;
-    [SerializeField] private float bloodEffectThreshold = 0.2f;
 
     [Header("Current Status")]
     [Networked] public float Hp { get; set; }
@@ -39,15 +41,22 @@ public class Player : NetworkBehaviour
     [Networked] public float Temperature { get; set; }
     #endregion
 
-    #region Components
-    [HideInInspector] public Animator anim;
-    [HideInInspector] public PlayerInteractUI playerInteractUI;
-    [HideInInspector] public PlayerController playerController;
-    [HideInInspector] public PlayerInputManager inputManager;
-    [HideInInspector] public MovementStateManager movementManager;
-    [HideInInspector] public ToolStateManager toolStateManager;
-    [HideInInspector] public PlayerCameraManager cameraManager;
-    #endregion
+    [Space]
+    [SerializeField] private float foodRestoreTime = 5f;
+
+    [Header("Recovery Rate")]
+    public float staminaRecoveryRate = 2f;
+    public float temperatureReceoveryRate = 1f;
+    [Header("Decrease Rate")]
+    public float hpDecreaseRate = 0.5f;
+    public float staminaHungerDecreaseRate = 3f;
+    public float staminaRunDecreaseRate = 1f;
+    public float hungerDecreaseRate = 1f;
+    public float thirstDecreaseRate = 1f;
+    public float temperatureDecreaseRate = 1f;
+    [Header("Sleep Rate")]
+    public float thirstSleepDecrease = 10f;
+    public float hungerSleepDecrease = 10f;
 
     #region Tool
     [Header("Tool")]
@@ -70,12 +79,8 @@ public class Player : NetworkBehaviour
     [HideInInspector] public Bed Host_currentBed;
     #endregion
 
-    [Header("Effect")]
-    [SerializeField] private Volume takeDamageEffect;
-    [SerializeField] private Animator takeDamageEffectAnim;
-    private Coroutine activeDamageEffectAnim;
+    public ScreenEffect screenEffect;
 
-    public Coroutine fallingCoroutine;
     public GameObject amarture;
 
     [Header("Networked")]
@@ -85,17 +90,29 @@ public class Player : NetworkBehaviour
     [Networked, HideInInspector] public bool IsUIOpen { get; set; }
     [Networked, HideInInspector] public bool IsCursorLocked { get; set; }
     [Networked, HideInInspector] public bool IsSleeping { get; set; }
-    [Networked] public string CurrentToolName { get; set; }
-    [Networked, HideInInspector] public int CurrentToolAtt { get; set; }
-    [Networked, HideInInspector] public int CurrentToolID { get; set; }
+    [Networked] public ToolInfoData currentToolInfoData { get; set; }
+    [Networked] public FoodInfoData currentFoodInfoData { get; set; }
 
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isSpawned;
     public ItemType currentItemType;
 
+    public bool isNearFire;
+    public UIStats uiStats;
+    public event Action<int> Hit;
+
+    public Coroutine fallingCoroutine;
+    private Coroutine foodRestoreCoroutine;
+
     private void Awake()
     {
         InitComponents();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+            Host_TakeDamage(true, 10);
     }
 
     override public void Spawned()
@@ -106,10 +123,19 @@ public class Player : NetworkBehaviour
 
         if (HasInputAuthority)
             RPC_RequestSetNickname(PlayerTempData.nickname);
+
         All_OnChangedNickname();
+
         if (HasInputAuthority)
             nicknameUI.gameObject.SetActive(false);
     }
+
+
+    public void Init() => RespawnPos = transform.position;
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_RequestSetNickname(string nickname) => this.nickname = nickname;
+
 
     public override void FixedUpdateNetwork()
     {
@@ -123,21 +149,32 @@ public class Player : NetworkBehaviour
             else
                 Thirst -= thirstDecreaseRate * Runner.DeltaTime;
 
-            if (Hunger <= 0)
+            if (Hunger <= 0 || Temperature <= 0)
             {
                 Host_TakeDamage(false, hpDecreaseRate * Runner.DeltaTime);
                 Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
             }
-            else
+            else if (Hunger > 0)
                 Hunger -= hungerDecreaseRate * Runner.DeltaTime;
 
             if (toolStateManager.All_CanRecoverStamina() && movementManager.All_CanRecoverStamina())
             {
                 if (Stamina < playerData.maxStamina)
-                    Stamina += staminaIncreaseRate * Runner.DeltaTime;
+                    Stamina += staminaRecoveryRate * Runner.DeltaTime;
                 else
                     Stamina = playerData.maxStamina;
             }
+
+            //if (dayNightManager.isNightTime && !isNearFire)
+            //    Temperature -= temperatureDecreaseRate * Runner.DeltaTime;
+            //else if (dayNightManager.isNightTime && isNearFire)
+            //    Temperature += temperatureReceoveryRate * Runner.DeltaTime;
+        }
+
+        if (HasInputAuthority)
+        {
+            screenEffect.ContinuousDamageEffect(Hp, playerData.maxHp);
+            screenEffect.ContinuousColdEffect(Temperature, playerData.maxTemperature);
         }
     }
 
@@ -146,19 +183,24 @@ public class Player : NetworkBehaviour
         if (!HasStateAuthority)
             return;
 
+        // 플레이어 공격
         if (CanPVP && other.TryGetComponent<AttackObject>(out AttackObject attackObject))
         {
-            if (attackObject.canAttack)
-            {
-                Host_TakeDamage(true, attackObject.att);
+            if (other.GetComponent<ThrowObject>() != null)
+                return;
 
-                Transform parent = other.transform;
-                while (other.transform.parent != null)
-                    parent = parent.parent;
+            Host_TakeDamage(true, attackObject.Att);
 
-                parent.GetComponent<PlayerController>().RPC_ApplyHitInvoke(attackObject.att);
-            }
+            attackObject.player.RPC_ApplyHitInvoke(attackObject.Att);
+            attackObject.player.toolStateManager.DecreaseToolDuration = true;
+            attackObject.player.GetComponent<PlayerController>().RPC_ApplyHitInvoke(attackObject.Att);
         }
+
+        // 동물 공격
+        //if (other.CompareTag("AnimalAttack"))
+        //{
+
+        //}
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -170,15 +212,17 @@ public class Player : NetworkBehaviour
         {
             if (throwObject.canAttack)
             {
-                Host_TakeDamage(true, throwObject.att);
+                Host_TakeDamage(true, throwObject.Att);
                 throwObject.canAttack = false;
-                throwObject.thrower.GetComponent<PlayerController>().RPC_ApplyHitInvoke(throwObject.att);
+                throwObject.player.GetComponent<PlayerController>().RPC_ApplyHitInvoke(throwObject.Att);
             }
         }
     }
 
     private void InitComponents()
     {
+        if (HasStateAuthority)
+            dayNightManager = FindAnyObjectByType<DayNightCycleManager>();
         anim = GetComponentInChildren<Animator>();
         playerController = GetComponent<PlayerController>();
         playerInteractUI = GetComponentInChildren<PlayerInteractUI>();
@@ -214,11 +258,6 @@ public class Player : NetworkBehaviour
         }
     }
 
-    public void Init()
-    {
-        RespawnPos = transform.position;
-    }
-
     /// <summary>
     /// 도구 장착
     /// </summary>
@@ -227,14 +266,21 @@ public class Player : NetworkBehaviour
         RPC_NotifySetCurrentItemType(itemIdx);
 
         // 도구일 경우 장착
-        if (currentItemType == ItemType.Tool)
+        if (currentItemType == ItemType.Tool || currentItemType == ItemType.Drink || currentItemType == ItemType.Food)
         {
             if (toolDict.TryGetValue(itemIdx, out GameObject currentToolGameObject))
             {
                 if (HasInputAuthority)
                     RPC_NotifyEquipmentTool(itemIdx);
+
                 ToolInfo toolInfo = currentToolGameObject.GetComponent<ToolInfo>();
-                RPC_RequestSetCurrentTool(toolInfo.ItemID, toolInfo.ToolName, toolInfo.Att);
+                RPC_RequestSetCurrentTool(toolInfo.GetData());
+
+                if (currentItemType == ItemType.Drink || currentItemType == ItemType.Food)
+                {
+                    FoodInfo foodInfo = currentToolGameObject.GetComponent<FoodInfo>();
+                    RPC_RequestSetCurrentFood(foodInfo.GetData());
+                }
             }
             else
                 Debug.LogWarning($"{itemIdx} 인덱스 없음");
@@ -242,7 +288,8 @@ public class Player : NetworkBehaviour
         else
         {
             RPC_NotifyEquipmentTool();
-            RPC_RequestSetCurrentTool();
+            RPC_RequestSetCurrentTool(ToolInfoData.Empty);
+            RPC_RequestSetCurrentFood(FoodInfoData.Empty);
         }
 
         toolStateManager.RPC_NotifyChangeSelectedItem(itemIdx);
@@ -254,7 +301,8 @@ public class Player : NetworkBehaviour
     public void Client_RemoveSelectedItem()
     {
         RPC_NotifyEquipmentTool();
-        RPC_RequestSetCurrentTool();
+        RPC_RequestSetCurrentTool(ToolInfoData.Empty);
+        RPC_RequestSetCurrentFood(FoodInfoData.Empty);
 
         toolStateManager.RPC_NotifyChangeSelectedItem();
     }
@@ -269,12 +317,12 @@ public class Player : NetworkBehaviour
     /// </summary>
     public int All_GetToolAtt(string toolName = "")
     {
-        if (CurrentToolName == string.Empty)
+        if (currentToolInfoData.IsEmpty())
             return playerData.attack;
 
-        if (CurrentToolName.Contains(toolName))
-            return playerData.attack + CurrentToolAtt;
-        else if (CurrentToolID > 400 || CurrentToolID == 202)
+        if (currentToolInfoData.toolName.Contains(toolName))
+            return playerData.attack + currentToolInfoData.att;
+        else if (currentToolInfoData.itemID > 400 || currentToolInfoData.itemID == 202)
             return playerData.attack + 2;
         else
             return playerData.attack;
@@ -380,10 +428,12 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 리스폰 위치 설정
     /// </summary>
-    public void Client_SetRespawnPos(Vector3 respawnPos)
+    public void All_SetRespawnPos(Vector3 respawnPos)
     {
         if (HasInputAuthority)
             RPC_RequestSetRespawnPos(respawnPos);
+        else
+            RespawnPos = respawnPos;
     }
 
     /// <summary>
@@ -395,6 +445,8 @@ public class Player : NetworkBehaviour
         Stamina = playerData.maxStamina;
         Thirst = playerData.maxThirst * 0.2f;
         Hunger = playerData.maxHunger * 0.2f;
+
+        screenEffect.TakeDamageEffect(0f);
     }
 
     /// <summary>
@@ -421,13 +473,13 @@ public class Player : NetworkBehaviour
             {
                 RPC_ApplyPlayDamagedEffectAnim();
                 RPC_NotifyPlayDamagedAnim();
+
                 if (movementManager.input.currentView == ViewType.FirstPerson)
-                    playerController.RPC_ApplyShakeCamera();
+                    playerController.RPC_ApplyShakeCamera(transform.right, 0.5f);
+                else
+                    playerController.RPC_ApplyShakeCamera(transform.right, 0.3f);
             }
         }
-
-        if (Hp <= playerData.maxHp * 0.2f)
-            RPC_ApplyPlayDamagedEffect();
     }
 
     /// <summary>
@@ -437,40 +489,16 @@ public class Player : NetworkBehaviour
 
     public void Host_InitCurrentTool()
     {
-        CurrentToolID = -1;
-        CurrentToolName = string.Empty;
-        CurrentToolAtt = 0;
+        currentToolInfoData = ToolInfoData.Empty;
 
         RPC_NotifyInitCurrentToolObject();
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    private void RPC_ApplyPlayDamagedEffect()
-    {
-        float hpPercent = Hp / playerData.maxHp;
-
-        if (hpPercent <= bloodEffectThreshold)
-            takeDamageEffect.weight = Mathf.InverseLerp(bloodEffectThreshold, 0f, hpPercent);
-        Debug.Log("takeDamageEffect Weight : " + takeDamageEffect.weight);
-    }
+    public void RPC_ApplyHitInvoke(int dmg) => Hit?.Invoke(dmg);
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    private void RPC_ApplyPlayDamagedEffectAnim()
-    {
-        takeDamageEffectAnim.enabled = true;
-        takeDamageEffectAnim.SetTrigger("Damaged");
-
-        if (activeDamageEffectAnim != null)
-            StopCoroutine(activeDamageEffectAnim);
-        activeDamageEffectAnim = StartCoroutine(ActiveDamageEffectAnim());
-    }
-
-    private IEnumerator ActiveDamageEffectAnim()
-    {
-        yield return 0.4f;
-        takeDamageEffectAnim.enabled = false;
-        activeDamageEffectAnim = null;
-    }
+    private void RPC_ApplyPlayDamagedEffectAnim() => screenEffect.SetTrigger("Damaged");
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_NotifyPlayDamagedAnim() => anim.SetTrigger("GetHit");
@@ -496,8 +524,50 @@ public class Player : NetworkBehaviour
         }
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_RequestSetNickname(string nickname) => this.nickname = nickname;
+    public void RestoreStatFromFood()
+    {
+        if (foodRestoreCoroutine != null)
+            StopCoroutine(foodRestoreCoroutine);
+
+        foodRestoreCoroutine = StartCoroutine(RestoreStatFromFoodCoroutine());
+    }
+
+    private IEnumerator RestoreStatFromFoodCoroutine()
+    {
+        float elapsed = 0f;
+        float restoreHPPerSecond = currentFoodInfoData.restoreHPValue / foodRestoreTime;
+        float restoreStaminaPerSecond = currentFoodInfoData.restoreStaminaValue / foodRestoreTime;
+        float restoreHungerPerSecond = currentFoodInfoData.restoreHungerValue / foodRestoreTime;
+        float restoreThirstPerSecond = currentFoodInfoData.restoreThirstValue / foodRestoreTime;
+
+        if (uiStats != null)
+        {
+            uiStats.SetBarColor(StatType.Hp, currentFoodInfoData.restoreHPValue);
+            uiStats.SetBarColor(StatType.Stamina, currentFoodInfoData.restoreStaminaValue);
+            uiStats.SetBarColor(StatType.Hunger, currentFoodInfoData.restoreHungerValue);
+            uiStats.SetBarColor(StatType.Thirst, currentFoodInfoData.restoreThirstValue);
+        }
+
+        while (elapsed < foodRestoreTime)
+        {
+            elapsed += Runner.DeltaTime;
+
+            Hp = RestoreValue(restoreHPPerSecond, Hp, playerData.maxHp);
+            Stamina = RestoreValue(restoreStaminaPerSecond, Stamina, playerData.maxStamina);
+            Hunger = RestoreValue(restoreHungerPerSecond, Hunger, playerData.maxHunger);
+            Thirst = RestoreValue(restoreThirstPerSecond, Thirst, playerData.maxThirst);
+
+            yield return null;
+        }
+
+        foodRestoreCoroutine = null;
+    }
+
+    private float RestoreValue(float restoreHPPerSecond, float currentValue, float maxValue)
+    {
+        float restoreValue = restoreHPPerSecond * Runner.DeltaTime;
+        return Mathf.Min(currentValue + restoreValue, maxValue);
+    }
 
     void All_OnChangedNickname() => nicknameUI.SetNickname(nickname);
 
@@ -523,20 +593,12 @@ public class Player : NetworkBehaviour
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_RequestSetCurrentTool(int toolID = -1, string toolName = "", int toolAtt = 0)
-    {
-        if (toolID == -1)
-        {
-            CurrentToolID = -1;
-            CurrentToolName = string.Empty;
-            CurrentToolAtt = 0;
-            return;
-        }
+    private void RPC_RequestSetCurrentTool(ToolInfoData toolInfoData)
+        => currentToolInfoData = toolInfoData.IsEmpty() ? ToolInfoData.Empty : toolInfoData;
 
-        CurrentToolID = toolID;
-        CurrentToolName = toolName;
-        CurrentToolAtt = toolAtt;
-    }
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_RequestSetCurrentFood(FoodInfoData foodInfoData)
+        => currentFoodInfoData = foodInfoData.IsEmpty() ? FoodInfoData.Empty : foodInfoData;
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     private void RPC_NotifyEquipmentTool(int itemIdx = -1)
@@ -633,6 +695,8 @@ public class Player : NetworkBehaviour
         Thirst = playerData.maxThirst;
         Hunger = playerData.maxHunger;
         Temperature = playerData.maxTemperature;
+
+        screenEffect.TakeDamageEffect(0f);
     }
 
     /// <summary>

@@ -2,7 +2,7 @@ using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum MovementState { None, Idle, Walk, Run, Crouch, Jump, Sleep, Death, GetHit }
+public enum MovementState { None, Idle, Walk, Run, Crouch, Jump, Sleep, Death, GetHit, Gather }
 public enum MoveAnimatoinState { None, Idle, Walk, Run, CrouchIdle, CrouchWalk, IdleJump, RunJump, Sleep, Death, GetHit }
 
 public class MovementStateManager : BaseStateManager
@@ -24,6 +24,7 @@ public class MovementStateManager : BaseStateManager
     public SleepState sleepState;
     public GetHitState getHitState;
     public DeathState deathState;
+    public GatherState gatherState;
     public Dictionary<MovementState, MovementBaseState> movementStateDict;
     public MovementBaseState currentState; // 호스트용 변수
     #endregion
@@ -45,7 +46,6 @@ public class MovementStateManager : BaseStateManager
     private Vector3 spherePos;
     #endregion
 
-
     #region Network
     [Header("Networked")]
     [Networked, OnChangedRender(nameof(OnCurrentMoveStateChanged))]
@@ -56,6 +56,7 @@ public class MovementStateManager : BaseStateManager
     [Networked, HideInInspector] public bool Revived { get; set; }
     [Networked, HideInInspector] public bool JumpTriggered { get; set; }
     [Networked, HideInInspector] public Vector2 MoveValue { get; set; }
+    [Networked, HideInInspector] public bool kneel { get; set; }
     #endregion
 
     public float Stamina
@@ -75,13 +76,10 @@ public class MovementStateManager : BaseStateManager
     {
         InitComponents();
         if (HasStateAuthority)
-            DayNightCycleManager.OnTimeSkipStarted += Host_WakeUp;
-    }
-
-    private void OnDisable()
-    {
-        if (HasStateAuthority)
+        {
             DayNightCycleManager.OnTimeSkipStarted -= Host_WakeUp;
+            DayNightCycleManager.OnTimeSkipStarted += Host_WakeUp;
+        }
     }
 
     private void InitComponents()
@@ -102,6 +100,7 @@ public class MovementStateManager : BaseStateManager
         sleepState = new SleepState(this, inputManager);
         getHitState = new GetHitState(this, inputManager);
         deathState = new DeathState(this, inputManager);
+        gatherState = new GatherState(this, inputManager);
 
         movementStateDict = new Dictionary<MovementState, MovementBaseState>
         {
@@ -112,7 +111,8 @@ public class MovementStateManager : BaseStateManager
             { MovementState.Jump, jumpState },
             { MovementState.Sleep, sleepState },
             { MovementState.GetHit, getHitState },
-            { MovementState.Death, deathState }
+            { MovementState.Death, deathState },
+            { MovementState.Gather, gatherState }
         };
     }
 
@@ -123,7 +123,6 @@ public class MovementStateManager : BaseStateManager
     {
         if (!HasStateAuthority)
             return;
-
         CurrentMoveState = newState;
     }
 
@@ -142,6 +141,7 @@ public class MovementStateManager : BaseStateManager
 
     private void Host_WakeUp()
     {
+
         Host_ChangeState(MovementState.Idle);
         player.Host_NewDayStatus();
     }
@@ -162,7 +162,6 @@ public class MovementStateManager : BaseStateManager
         anim.SetBool("Running", false);
         anim.SetBool("Crouching", false);
         anim.SetBool("Falling", false);
-        anim.SetBool("Sleeping", false);
 
         switch (CurrentMoveAnimation)
         {
@@ -187,15 +186,12 @@ public class MovementStateManager : BaseStateManager
                 anim.SetTrigger("RunJump");
                 CurrentMoveAnimation = MoveAnimatoinState.None;
                 break;
-            //case MoveAnimatoinState.Sleep:
-            //    anim.SetBool("Sleeping", true);
-            //    break;
-            //case MoveAnimatoinState.GetHit:
-            //    anim.SetTrigger("GetHit");
-            //    CurrentMoveAnimation = MoveAnimatoinState.None;
-            //    break;
             case MoveAnimatoinState.Death:
                 anim.SetTrigger("Death");
+                CurrentMoveAnimation = MoveAnimatoinState.None;
+                break;
+            case MoveAnimatoinState.Sleep:
+                anim.SetTrigger("Sleep");
                 CurrentMoveAnimation = MoveAnimatoinState.None;
                 break;
         }
@@ -205,13 +201,21 @@ public class MovementStateManager : BaseStateManager
             // 이 부분 없으면 착지할 때 애니메이션 전환 이상함
             if (input.moveValue != Vector2.zero)
             {
-                if (input.IsDown(PlayerNetworkInputData.sprintInput))
+                if (input.IsDown(PlayerNetworkInputData.sprintInput) && All_CanRun())
                     anim.SetBool("Running", true);
                 else
                     anim.SetBool("Walking", true);
             }
         }
         anim.SetBool("Falling", !playerController.Grounded);
+    }
+
+    public bool All_CanRun()
+    {
+        if (toolStateManager.CurrentToolState == ToolState.Aim || toolStateManager.CurrentToolState == ToolState.Carry
+            || !All_HasEnoughStaminaToRun())
+            return false;
+        return true;
     }
 
     /// <summary>
@@ -230,7 +234,7 @@ public class MovementStateManager : BaseStateManager
     /// </summary>
     public bool All_CanRecoverStamina() => CurrentMoveState != MovementState.Run && CurrentMoveState != MovementState.Death;
 
-    public void Host_Sleep(bool isSleep) => dayNightManager.Rpc_SetSleepingState(isSleep);
+    public void Host_Sleep(bool isSleep) => dayNightManager.Rpc_SetSleepingState(isSleep, Object.InputAuthority);
 
     /// <summary>
     /// Sleep 상태로 변경하는 RPC
@@ -242,6 +246,15 @@ public class MovementStateManager : BaseStateManager
     }
 
     /// <summary>
+    /// Gather상태로 변경하는 RPC
+    /// </summary>
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestChangeGatherState(PlayerRef playerRef)
+    {
+        Host_ChangeState(MovementState.Gather);
+    }
+
+    /// <summary>
     /// 부활하는 RPC
     /// </summary>
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -250,4 +263,7 @@ public class MovementStateManager : BaseStateManager
         Host_ChangeState(MovementState.Idle);
         player.Host_RevivedStatus();
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestSetKneel(NetworkBool _kneel) => kneel = _kneel;
 }

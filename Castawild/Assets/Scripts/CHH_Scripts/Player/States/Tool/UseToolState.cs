@@ -1,5 +1,3 @@
-using UnityEditor.Purchasing;
-using UnityEngine;
 
 public class UseToolState : ToolBaseState
 {
@@ -17,6 +15,9 @@ public class UseToolState : ToolBaseState
         toolStateManager.movementManager.Host_ChangeState(MovementState.Idle);
         toolStateManager.playerController.Host_FreezePosition(true);
 
+        toolStateManager.DecreaseToolDuration = false;
+        toolStateManager.IsDecreased = false;
+
         if (toolStateManager.CurrentToolType == ToolType.Fist || toolStateManager.CurrentToolType == ToolType.Throw)
         {
             toolStateManager.Client_ArmVisibleChanged(true);
@@ -33,6 +34,13 @@ public class UseToolState : ToolBaseState
 
     public override void UpdateState()
     {
+        if (toolStateManager.HasStateAuthority && toolStateManager.DecreaseToolDuration && !toolStateManager.IsDecreased
+            && toolStateManager.All_IsDecreaseDurationTool())
+        {
+            toolStateManager.IsDecreased = true;
+            toolStateManager.player.inventory.RPC_SubtractDurability(toolStateManager.player.currentToolInfoData.durability);
+        }
+
         if (elapsed <= rotateTime)
         {
             elapsed += toolStateManager.Runner.DeltaTime;
@@ -54,6 +62,8 @@ public class UseToolState : ToolBaseState
         {
             if (CanComboAttack() && comboCount == 1)
             {
+                toolStateManager.IsDecreased = false;
+                toolStateManager.DecreaseToolDuration = false;
                 comboCount++;
                 toolStateManager.CanComboAttack = true;
                 return;
@@ -76,6 +86,9 @@ public class UseToolState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
+
+        toolStateManager.IsDecreased = false;
+        toolStateManager.DecreaseToolDuration = false;
 
         if (toolStateManager.CurrentToolType == ToolType.Bow && toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
             toolStateManager.player.All_SetBowPos(false);

@@ -19,7 +19,12 @@ public class AnimationTrigger : MonoBehaviour
         interactUI = transform.parent.GetComponentInChildren<PlayerInteractUI>();
     }
 
-    public void ToolAnimationFinishTrigger() => toolManager.IsAnimationFinished = true;
+    public void ToolAnimationFinishTrigger()
+    {
+        toolManager.IsDecreased = false;
+        toolManager.DecreaseToolDuration = false;
+        toolManager.IsAnimationFinished = true;
+    }
     public void ToolAnimationStartTrigger() => toolManager.IsAnimationFinished = false;
     public void MoveAnimationFinishTrigger() => movementManager.IsAnimationFinished = true;
     public void MoveAnimationStartTrigger() => movementManager.IsAnimationFinished = false;
@@ -35,7 +40,13 @@ public class AnimationTrigger : MonoBehaviour
 
     public void Interact() => playercontroller.Client_Interact();
 
-    public void Throw(int isArrow) => toolManager.Client_SetTargetPos(isArrow);
+    public void Throw(int isArrow)
+    {
+        toolManager.Client_Throw(isArrow);
+
+        if (isArrow == 1)
+            toolManager.DecreaseToolDuration = true;
+    }
 
     public void ActiveDeathUI()
     {
@@ -45,11 +56,11 @@ public class AnimationTrigger : MonoBehaviour
 
     public void StartHit()
     {
-        toolManager.Host_StartHit();
+        //toolManager.Host_StartHit();
     }
 
     public void FinishHit()
     {
-        toolManager.Host_FinishHit();
+        //toolManager.Host_FinishHit();
     }
 }

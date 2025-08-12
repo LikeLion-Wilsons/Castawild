@@ -1,9 +1,11 @@
 using Fusion;
 using System.Collections.Generic;
+using UnityEditor.Build;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 // 현재 들고있는 무기
-public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe, Knife, Smash }
+public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe }
 
 public enum ToolState { None, Idle, Aim, UseTool, Carry, Eat, Drink }
 // 재생해야할 애니메이션 상태
@@ -45,10 +47,9 @@ public class ToolStateManager : BaseStateManager
     [SerializeField] private Transform throwPos;
 
     [Header("Hit")]
-    [SerializeField] private Transform fistPos;
     [SerializeField] private Vector3 hitBox = new Vector3(1f, 1f, 1.0f);
     public HashSet<Transform> Host_alreadyHit = new HashSet<Transform>();
-    private bool Host_canHit;
+
 
     #region Network
     [Header("Network")]
@@ -59,6 +60,8 @@ public class ToolStateManager : BaseStateManager
     [Networked, HideInInspector] public bool CanComboAttack { get; set; }
     [Networked, HideInInspector] public bool ComboAttack { get; set; }
     [Networked, HideInInspector] public bool CanReceiveInput { get; set; }
+    [Networked, HideInInspector] public bool DecreaseToolDuration { get; set; }
+    [Networked, HideInInspector] public bool IsDecreased { get; set; }
     #endregion
 
     protected override void Awake()
@@ -77,8 +80,8 @@ public class ToolStateManager : BaseStateManager
 
     public override void FixedUpdateNetwork()
     {
-        if (Host_canHit && HasStateAuthority && CurrentToolType == ToolType.Fist)
-            Host_FistAttack();
+        //if (Host_canHit && HasStateAuthority && CurrentToolType == ToolType.Fist)
+        //    Host_FistAttack();
     }
 
     private void InitComponents()
@@ -127,62 +130,6 @@ public class ToolStateManager : BaseStateManager
             currentState = newState;
             currentState.EnterState();
         }
-    }
-
-    /// <summary>
-    /// 주먹 공격
-    /// </summary>
-    public void Host_FistAttack()
-    {
-        Collider[] hitObjects = Physics.OverlapBox(fistPos.position, hitBox, fistPos.rotation);
-
-        for (int i = 0; i < hitObjects.Length; i++)
-        {
-            Transform hitObject = hitObjects[i].transform.root;
-
-            if (hitObject.transform.root == this.transform.root)
-                continue;
-
-            if (Host_alreadyHit.Contains(hitObject.transform.root))
-                continue;
-
-            if (player.CanPVP && hitObject.TryGetComponent(out Player otherPlayer))
-            {
-                Host_alreadyHit.Add(otherPlayer.transform.root);
-
-                int attack = player.All_GetToolAtt();
-                otherPlayer.Host_TakeDamage(true, attack);
-                playerController.RPC_ApplyHitInvoke(attack);
-            }
-        }
-    }
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.matrix = Matrix4x4.TRS(fistPos.position, Quaternion.identity, Vector3.one);
-        Gizmos.DrawWireCube(Vector3.zero, hitBox * 2f);
-    }
-
-    /// <summary>
-    /// 때릴 수 있게 설정
-    /// </summary>
-    public void Host_StartHit()
-    {
-        if (!HasStateAuthority)
-            return;
-        Host_canHit = true;
-    }
-
-    /// <summary>
-    /// 때린거 초기화
-    /// </summary>
-    public void Host_FinishHit()
-    {
-        if (!HasStateAuthority)
-            return;
-        Host_canHit = false;
-        Host_alreadyHit.Clear();
     }
 
     /// <summary>
@@ -332,13 +279,16 @@ public class ToolStateManager : BaseStateManager
     /// <summary>
     /// Ray로 조준 위치 설정
     /// </summary>
-    public void Client_SetTargetPos(int isArrow)
+    public void Client_Throw(int isArrow)
     {
         if (isArrow == 1)
             All_SetArrowPull(false);
 
         if (!HasInputAuthority)
             return;
+
+        if (cameraManager.currentView == ViewType.FirstPerson && player.HasArrow)
+            cameraManager.ShakeCamera(transform.right, 0.1f);
 
         Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
         Ray ray = Camera.main.ScreenPointToRay(screenCenter);
@@ -379,6 +329,14 @@ public class ToolStateManager : BaseStateManager
 
         Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+    }
+
+    public bool All_IsDecreaseDurationTool()
+    {
+        if (CurrentToolType == ToolType.Fist || CurrentToolType == ToolType.Bow || CurrentToolType == ToolType.Throw)
+            return false;
+        else
+            return true;
     }
 
     /// <summary>
@@ -439,5 +397,11 @@ public class ToolStateManager : BaseStateManager
             player.All_SetPebbleActive(false);
         else
             player.arrow.SetActive(false);
+    }
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestDecreaseToolDuration(bool isDecreased)
+    {
+        DecreaseToolDuration = isDecreased;
+        Debug.Log("DecreaseToolDuration : " + DecreaseToolDuration);
     }
 }

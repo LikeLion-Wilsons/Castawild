@@ -115,7 +115,7 @@ public class PlayerInteractUI : MonoBehaviour
             placeableUI.alpha = 0f;
         }
 
-        else if (interactableType == InteractableType.Item)
+        else if (interactableType == InteractableType.Item || interactableType == InteractableType.Gatherable)
         {
             interactableUI.alpha = 1f;
             placeableUI.alpha = 0f;
@@ -167,6 +167,9 @@ public class PlayerInteractUI : MonoBehaviour
     /// </summary>
     public void SetWakeUpUI()
     {
+        if (interactableUI.alpha == 1f)
+            return;
+
         interactableUI.alpha = 1f;
         placeableUI.alpha = 0f;
         SetInteractText("Wake Up");

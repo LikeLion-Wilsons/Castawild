@@ -20,6 +20,7 @@ public sealed class PlayerController : NetworkBehaviour
     public float rotationSpeed = 15f;
 
     [Header("Falling")]
+    [SerializeField] private float maxGroundAngle = 45f;
     [SerializeField] private float gravity = -9.81f;
     [SerializeField] private float fallThreshold = 3f;
     [SerializeField] private float damagePerMeter = 10f;
@@ -37,6 +38,7 @@ public sealed class PlayerController : NetworkBehaviour
     [SerializeField] private Transform thirdPersonInteractPos;
     [SerializeField] private float interactRadius = 1f;
     [SerializeField] private LayerMask interactLayer;
+    [SerializeField] private float kneelY = 6.8f;
     [HideInInspector] public EnvironmentObject Client_currentInteractObject;
 
     [Networked, HideInInspector] public Vector3 ChangePos { get; set; }
@@ -50,6 +52,7 @@ public sealed class PlayerController : NetworkBehaviour
     public override void Spawned()
     {
         InitComponents();
+        kcc.SetMaxGroundAngle(maxGroundAngle);
     }
 
     private void InitComponents()
@@ -77,7 +80,10 @@ public sealed class PlayerController : NetworkBehaviour
     {
         // 테스트용
         if (HasInputAuthority && Input.GetKeyDown(KeyCode.H))
+        {
+            player.screenEffect.TakeDamageEffect(0f);
             player.RPC_RequestHeal();
+        }
 
         Grounded = Physics.Raycast(checkStartPoint.position, Vector3.down, out RaycastHit hit, checkDistance);
 
@@ -165,7 +171,10 @@ public sealed class PlayerController : NetworkBehaviour
             {
                 float damage = (fallDistance - fallThreshold) * damagePerMeter;
                 player.Host_TakeDamage(false, damage);
-                RPC_ApplyShakeCamera();
+                if (movementManager.input.currentView == ViewType.FirstPerson)
+                    RPC_ApplyShakeCamera(transform.up, 0.5f);
+                else
+                    RPC_ApplyShakeCamera(transform.up, 0.3f);
             }
         }
     }
@@ -289,7 +298,25 @@ public sealed class PlayerController : NetworkBehaviour
                     {
                         playerInteractUI.InteractUI(interactable.interactableType);
                         Client_currentInteractObject = interactable;
+
+                        if (interactable.interactableType == InteractableType.Gatherable
+                            && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
+                        {
+                            movementManager.RPC_RequestChangeGatherState(Object.InputAuthority);
+                            playerInteractUI.SetInteractText("줍기");
+
+                            float targetTopY = interact.bounds.max.y;
+                            if (targetTopY - transform.position.y >= kneelY)
+                                movementManager.RPC_RequestSetKneel(false);
+                            else
+                                movementManager.RPC_RequestSetKneel(true);
+                        }
                         break;
+                    }
+                    else
+                    {
+                        playerInteractUI.InteractUI();
+                        Client_currentInteractObject = null;
                     }
                 }
 
@@ -368,25 +395,48 @@ public sealed class PlayerController : NetworkBehaviour
         {
             att = player.All_GetToolAtt("Axe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
+            toolManager.RPC_RequestDecreaseToolDuration(true);
         }
         else if (Client_currentInteractObject.interactableType == InteractableType.Stone && Client_currentInteractObject.CanInteract())
         {
             att = player.All_GetToolAtt("Pickaxe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
+            toolManager.RPC_RequestDecreaseToolDuration(true);
         }
 
+        else if (Client_currentInteractObject.interactableType == InteractableType.Gatherable && Client_currentInteractObject.CanInteract())
+            Client_currentInteractObject?.Interact(Object.InputAuthority, att);
+
         if (att != 0)
+        {
+            Debug.Log("Hit Invoke");
             Hit?.Invoke(att);
+        }
     }
 
     /// <summary>
-    /// 위치 변경
+    /// 리스폰 위치 변경
     /// </summary>
     public void Host_SetPosition(Vector3 position)
     {
         IsChangePos = true;
         ChangePos = position;
     }
+
+    /// <summary>
+    /// 위치 변경
+    /// </summary>
+    public void All_SetPosition(Vector3 position)
+    {
+        if (HasStateAuthority)
+        {
+            IsChangePos = true;
+            ChangePos = position;
+        }
+        else
+            RPC_NotifySetPosition(position);
+    }
+
 
     /// <summary>
     /// 위치 고정
@@ -405,7 +455,10 @@ public sealed class PlayerController : NetworkBehaviour
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ApplyHitInvoke(int dmg) => Hit?.Invoke(dmg);
+    public void RPC_ApplyHitInvoke(int dmg)
+    {
+        Hit?.Invoke(dmg);
+    }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     private void RPC_DespawnObject(NetworkObject despawnObject) => Runner.Despawn(despawnObject);
@@ -413,7 +466,7 @@ public sealed class PlayerController : NetworkBehaviour
     /// <summary>
     /// 위치 변경
     /// </summary>
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_NotifySetPosition(Vector3 position)
     {
         IsChangePos = true;
@@ -424,5 +477,5 @@ public sealed class PlayerController : NetworkBehaviour
     /// 카메라 쉐이크
     /// </summary>
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_ApplyShakeCamera() => cameraManager.ShakeCamera();
+    public void RPC_ApplyShakeCamera(Vector3 direction, float force) => cameraManager.ShakeCamera(direction, force);
 }

@@ -15,6 +15,8 @@ public class DayNightCycleManager : NetworkBehaviour
     [Header("Time Settings")]
     [Tooltip("게임 내 낮과 밤의 주기 (s)")]
     [SerializeField] private float dayDurationInSeconds = 600f; //600s
+    [Header("Is Night Time")]
+    [HideInInspector] public bool isNightTime => TimeOfDay < 0.25f || TimeOfDay > 0.75f;
 
     [Header("Light Intensity Control")]
     [Tooltip("빛의 강도를 시간에 따라 조절하는 애니메이션 곡선(0-1)")]
@@ -62,7 +64,8 @@ public class DayNightCycleManager : NetworkBehaviour
                     TimeOfDay = TargetTimeOfDay;
                     CurrentState = TimeSkipState.Normal;
                     SleepingPlayers.Clear();
-                    OnTimeSkipStarted?.Invoke();
+                    Rpc_NotifyTimeSkipStarted();
+                    Debug.Log("Time skip completed. Time of day set to: " + TimeOfDay);
                 }
                 else
                 {
@@ -82,44 +85,54 @@ public class DayNightCycleManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void Rpc_SetSleepingState(NetworkBool isSleeping, RpcInfo info = default)
+    public void Rpc_SetSleepingState(NetworkBool isSleeping, PlayerRef playerRef)
     {
-        var playerRef = info.Source;
-
+        Debug.Log($"Rpc_SetSleepingState called: isSleeping={isSleeping}, playerRef={playerRef}");
         if (isSleeping)
         {
             if (!SleepingPlayers.Contains(playerRef))
-            {
                 SleepingPlayers.Add(playerRef);
-            }
         }
         else
         {
             SleepingPlayers.Remove(playerRef);
         }
 
-        CheckAndTriggerTimeSkip();
+        CleanupSleepingPlayers();
+
+        TryTriggerTimeSkip();
     }
 
-    private void CheckAndTriggerTimeSkip()
+    private void CleanupSleepingPlayers()
     {
         if (!Object.HasStateAuthority) return;
-        if (CurrentState == TimeSkipState.Skipping) return;
 
         for (int i = SleepingPlayers.Count - 1; i >= 0; i--)
         {
-            if (!Runner.IsPlayerValid(SleepingPlayers.Get(i)))
+            var playerRef = SleepingPlayers.Get(i);
+            if (!Runner.IsPlayerValid(playerRef))
             {
-                SleepingPlayers.Remove(SleepingPlayers.Get(i));
+                SleepingPlayers.Remove(playerRef);
             }
         }
+    }
+
+    private void TryTriggerTimeSkip()
+    {
+        if (!Object.HasStateAuthority) return;
+        if (CurrentState == TimeSkipState.Skipping) return;
 
         if (Runner.ActivePlayers.Count() > 0 && SleepingPlayers.Count >= Runner.ActivePlayers.Count())
         {
             TargetTimeOfDay = 0.25f;
             CurrentState = TimeSkipState.Skipping;
-
         }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void Rpc_NotifyTimeSkipStarted()
+    {
+        OnTimeSkipStarted?.Invoke();
     }
 
     private void OnTimeOfDayChanged()
