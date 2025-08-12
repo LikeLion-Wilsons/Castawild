@@ -9,7 +9,7 @@ namespace YSB_Scripts
         public override void Spawned()
         {
             base.Spawned();
-            NetworkObjectVisibilityManager.Instance?.RegisterObject(this);
+            //NetworkObjectVisibilityManager.Instance?.RegisterObject(this);// Spawner로 이동
         }
 
         public override void Init(SpawnableDefinition def, int instanceId)
