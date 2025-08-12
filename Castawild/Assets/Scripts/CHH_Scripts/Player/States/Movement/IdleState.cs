@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class IdleState : MovementBaseState
 {
-    public IdleState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
-        : base(_movementManager, _inputManager)
+    public IdleState(MovementStateManager _movementManager)
+        : base(_movementManager)
     {
     }
 
@@ -18,8 +18,7 @@ public class IdleState : MovementBaseState
         // Move
         if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
         {
-            if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.All_CanRun()
-                && (movementManager.toolStateManager.CurrentToolState != ToolState.Aim && movementManager.toolStateManager.CurrentToolState != ToolState.Carry))
+            if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.All_CanRun())
                 movementManager.Host_ChangeState(MovementState.Run);
             else
                 movementManager.Host_ChangeState(MovementState.Walk);
@@ -30,7 +29,7 @@ public class IdleState : MovementBaseState
             movementManager.Host_ChangeState(MovementState.Crouch);
 
         // Jump
-        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.playerController.Grounded)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.moveController.Grounded)
         {
             movementManager.previousState = this;
             movementManager.Host_ChangeState(MovementState.Jump);

@@ -1,7 +1,5 @@
 using Fusion;
 using System.Collections.Generic;
-using UnityEditor.Build;
-using UnityEditor.EditorTools;
 using UnityEngine;
 
 // 현재 들고있는 무기
@@ -15,7 +13,6 @@ public class ToolStateManager : BaseStateManager
 {
     #region Components
     [HideInInspector] public MovementStateManager movementManager;
-    [HideInInspector] public AnimationTrigger animTrigger;
     #endregion
 
     #region States
@@ -46,13 +43,9 @@ public class ToolStateManager : BaseStateManager
     [SerializeField] private Transform thirdPersonArrowPos;
     [SerializeField] private Transform throwPos;
 
-    [Header("Hit")]
-    [SerializeField] private Vector3 hitBox = new Vector3(1f, 1f, 1.0f);
-    public HashSet<Transform> Host_alreadyHit = new HashSet<Transform>();
-
-
     #region Network
     [Header("Network")]
+
     [Networked, OnChangedRender(nameof(OnCurrentToolStateChanged))]
     public ToolState CurrentToolState { get; set; }
     [Networked] public ToolAnimationState CurrentToolAnimationState { get; set; }
@@ -78,25 +71,18 @@ public class ToolStateManager : BaseStateManager
         CurrentToolType = ToolType.Fist;
     }
 
-    public override void FixedUpdateNetwork()
-    {
-        //if (Host_canHit && HasStateAuthority && CurrentToolType == ToolType.Fist)
-        //    Host_FistAttack();
-    }
-
     private void InitComponents()
     {
         movementManager = GetComponent<MovementStateManager>();
-        animTrigger = GetComponentInChildren<AnimationTrigger>();
     }
 
     private void InitStates()
     {
-        idleState = new ToolIdleState(this, inputManager);
-        useToolState = new UseToolState(this, inputManager);
-        aimState = new AimState(this, inputManager);
-        carryState = new CarryState(this, inputManager);
-        eatState = new EatState(this, inputManager);
+        idleState = new ToolIdleState(this);
+        useToolState = new UseToolState(this);
+        aimState = new AimState(this);
+        carryState = new CarryState(this);
+        eatState = new EatState(this);
 
         toolStateDict = new Dictionary<ToolState, ToolBaseState>
         {
@@ -190,17 +176,6 @@ public class ToolStateManager : BaseStateManager
     }
 
     /// <summary>
-    /// 공격 무기 들고있는지 확인
-    /// </summary>
-    public bool All_HoldAttackTool()
-    {
-        if (CurrentToolType == ToolType.Throw || CurrentToolType == ToolType.Fist || CurrentToolType == ToolType.Spear || CurrentToolType == ToolType.Sword)
-            return true;
-        else
-            return false;
-    }
-
-    /// <summary>
     /// 곡괭이/도끼 들고있는지 확인
     /// </summary>
     public bool All_HoldCraftingTool()
@@ -272,11 +247,6 @@ public class ToolStateManager : BaseStateManager
     public bool All_CanRecoverStamina() => CurrentToolState != ToolState.UseTool;
 
     /// <summary>
-    /// 현재 조준중인지 확인
-    /// </summary>
-    public bool All_IsAiming() => CurrentToolState == ToolState.Aim;
-
-    /// <summary>
     /// Ray로 조준 위치 설정
     /// </summary>
     public void Client_Throw(int isArrow)
@@ -293,6 +263,7 @@ public class ToolStateManager : BaseStateManager
         Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
         Ray ray = Camera.main.ScreenPointToRay(screenCenter);
         Vector3 rayTargetPos = ray.GetPoint(30f);
+
         RPC_RequestThrow(isArrow, rayTargetPos);
     }
 
@@ -305,7 +276,7 @@ public class ToolStateManager : BaseStateManager
             return;
 
         cameraManager.MoveAimCamera(aimStart);
-        player.playerInteractUI.SetAimCrosshair(aimStart);
+        interactUI.SetAimCrosshair(aimStart);
     }
 
     /// <summary>
@@ -398,6 +369,7 @@ public class ToolStateManager : BaseStateManager
         else
             player.arrow.SetActive(false);
     }
+
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestDecreaseToolDuration(bool isDecreased)
     {

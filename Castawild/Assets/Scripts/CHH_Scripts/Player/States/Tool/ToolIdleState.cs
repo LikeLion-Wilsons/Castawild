@@ -2,8 +2,8 @@ using System.Diagnostics;
 
 public class ToolIdleState : ToolBaseState
 {
-    public ToolIdleState(ToolStateManager _toolStateManager, PlayerInputManager _inputManager)
-        : base(_toolStateManager, _inputManager)
+    public ToolIdleState(ToolStateManager _toolStateManager)
+        : base(_toolStateManager)
     {
     }
 

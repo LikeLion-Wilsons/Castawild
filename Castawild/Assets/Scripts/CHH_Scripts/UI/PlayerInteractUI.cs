@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class PlayerInteractUI : MonoBehaviour
 {
-    private PlayerController playerController;
+    private PlayerInteractManager playerController;
     private PlayerInputManager inputManager;
     private MovementStateManager movementStateManager;
 
@@ -46,7 +46,7 @@ public class PlayerInteractUI : MonoBehaviour
 
     private void Awake()
     {
-        playerController = GetComponentInParent<PlayerController>();
+        playerController = GetComponentInParent<PlayerInteractManager>();
         inputManager = GetComponentInParent<PlayerInputManager>();
         movementStateManager = GetComponentInParent<MovementStateManager>();
         deathAnim = GetComponent<Animator>();

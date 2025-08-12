@@ -1,13 +1,11 @@
 
-using UnityEngine;
-
 public class UseToolState : ToolBaseState
 {
     private int comboCount = 1;
     private float elapsed = 0f;
     private float rotateTime = 0.2f;
-    public UseToolState(ToolStateManager _toolStateManager, PlayerInputManager _inputManager)
-        : base(_toolStateManager, _inputManager)
+    public UseToolState(ToolStateManager _toolStateManager)
+        : base(_toolStateManager)
     {
     }
 
@@ -15,7 +13,7 @@ public class UseToolState : ToolBaseState
     {
         toolStateManager.CurrentToolAnimationState = ToolAnimationState.UseTool;
         toolStateManager.movementManager.Host_ChangeState(MovementState.Idle);
-        toolStateManager.playerController.Host_FreezePosition(true);
+        toolStateManager.moveController.Host_FreezePosition(true);
 
         toolStateManager.DecreaseToolDuration = false;
         toolStateManager.IsDecreased = false;
@@ -28,6 +26,7 @@ public class UseToolState : ToolBaseState
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
         {
             toolStateManager.player.All_SetBowPos(true);
+            toolStateManager.player.All_SetArrowActive(true);
             toolStateManager.All_SetArrowPull(true);
         }
 
@@ -40,7 +39,7 @@ public class UseToolState : ToolBaseState
         {
             elapsed += toolStateManager.Runner.DeltaTime;
             if (toolStateManager.input.currentView == ViewType.ThirdPerson)
-                toolStateManager.playerController.All_RotateForward(toolStateManager.input);
+                toolStateManager.moveController.All_RotateForward(toolStateManager.input);
         }
 
         if (toolStateManager.HasStateAuthority && toolStateManager.DecreaseToolDuration && !toolStateManager.IsDecreased
@@ -51,7 +50,13 @@ public class UseToolState : ToolBaseState
         }
 
         if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
+        {
+            toolStateManager.moveController.IsAiming = false;
             toolStateManager.Client_SetAimCameraAndUI(false);
+
+            if (toolStateManager.CurrentToolType == ToolType.Bow)
+                toolStateManager.All_SetArrowPull(false);
+        }
 
         // 곡괭이, 도끼는 손 때까지 상태 유지
         if (CraftingToolActionRelease())
@@ -99,7 +104,7 @@ public class UseToolState : ToolBaseState
         if (toolStateManager.CurrentToolType == ToolType.Fist)
             toolStateManager.Client_ArmVisibleChanged(false);
 
-        toolStateManager.playerController.Host_FreezePosition(false);
+        toolStateManager.moveController.Host_FreezePosition(false);
 
         comboCount = 1;
         toolStateManager.ComboAttack = false;

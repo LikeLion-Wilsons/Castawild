@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class GetHitState : MovementBaseState
 {
-    public GetHitState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
-        : base(_movementManager, _inputManager)
+    public GetHitState(MovementStateManager _movementManager)
+        : base(_movementManager)
     {
     }
 
     public override void EnterState()
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.GetHit;
-        movementManager.playerController.Host_FreezePosition(true);
+        movementManager.moveController.Host_FreezePosition(true);
     }
 
     public override void UpdateState()
@@ -23,6 +23,6 @@ public class GetHitState : MovementBaseState
     public override void ExitState()
     {
         movementManager.IsAnimationFinished = false;
-        movementManager.playerController.Host_FreezePosition(false);
+        movementManager.moveController.Host_FreezePosition(false);
     }
 }

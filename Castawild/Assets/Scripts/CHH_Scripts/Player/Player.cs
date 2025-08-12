@@ -4,8 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Test;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.UI;
 
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
@@ -18,7 +16,7 @@ public class Player : NetworkBehaviour
     [HideInInspector] public Animator anim;
     [HideInInspector] public DayNightCycleManager dayNightManager;
     [HideInInspector] public PlayerInteractUI playerInteractUI;
-    [HideInInspector] public PlayerController playerController;
+    [HideInInspector] public PlayerInteractManager playerController;
     [HideInInspector] public PlayerInputManager inputManager;
     [HideInInspector] public MovementStateManager movementManager;
     [HideInInspector] public ToolStateManager toolStateManager;
@@ -85,7 +83,7 @@ public class Player : NetworkBehaviour
 
     [Header("Networked")]
     [Networked, HideInInspector] public Vector3 RespawnPos { get; set; }
-    [Networked] public bool CanMove { get; set; } = true;
+    [Networked, HideInInspector] public bool CanMove { get; set; } = true;
     [Networked, HideInInspector] public bool CanPVP { get; set; } = true;
     [Networked, HideInInspector] public bool IsUIOpen { get; set; }
     [Networked, HideInInspector] public bool IsCursorLocked { get; set; }
@@ -97,7 +95,7 @@ public class Player : NetworkBehaviour
     [HideInInspector] public bool isSpawned;
     public ItemType currentItemType;
 
-    public bool isNearFire;
+    [HideInInspector] public bool isNearFire;
     [HideInInspector] public UIStats uiStats;
     public event Action<int> Hit;
 
@@ -113,6 +111,13 @@ public class Player : NetworkBehaviour
     {
         if (Input.GetKeyDown(KeyCode.K))
             Host_TakeDamage(true, 10);
+
+        // 테스트용
+        if (HasInputAuthority && Input.GetKeyDown(KeyCode.H))
+        {
+            screenEffect.TakeDamageEffect(0f);
+            RPC_RequestHeal();
+        }
     }
 
     override public void Spawned()
@@ -195,7 +200,7 @@ public class Player : NetworkBehaviour
 
             attackObject.player.RPC_ApplyHitInvoke(attackObject.Att);
             attackObject.player.toolStateManager.DecreaseToolDuration = true;
-            attackObject.player.GetComponent<PlayerController>().RPC_ApplyHitInvoke(attackObject.Att);
+            attackObject.player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(attackObject.Att);
         }
 
         // 동물 공격
@@ -216,7 +221,7 @@ public class Player : NetworkBehaviour
             {
                 Host_TakeDamage(true, throwObject.Att);
                 throwObject.canAttack = false;
-                throwObject.player.GetComponent<PlayerController>().RPC_ApplyHitInvoke(throwObject.Att);
+                throwObject.player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(throwObject.Att);
             }
         }
     }
@@ -226,7 +231,7 @@ public class Player : NetworkBehaviour
         if (HasStateAuthority)
             dayNightManager = FindAnyObjectByType<DayNightCycleManager>();
         anim = GetComponentInChildren<Animator>();
-        playerController = GetComponent<PlayerController>();
+        playerController = GetComponent<PlayerInteractManager>();
         playerInteractUI = GetComponentInChildren<PlayerInteractUI>();
         inputManager = GetComponent<PlayerInputManager>();
         movementManager = GetComponent<MovementStateManager>();
@@ -359,7 +364,6 @@ public class Player : NetworkBehaviour
         if (currentToolObject == null)
             return;
 
-        Debug.Log("Set Bow Pos" + isBowUse);
         if (HasInputAuthority)
         {
             if (isBowUse && cameraManager.currentView == ViewType.FirstPerson)
@@ -472,9 +476,9 @@ public class Player : NetworkBehaviour
                 RPC_NotifyPlayDamagedAnim();
 
                 if (movementManager.input.currentView == ViewType.FirstPerson)
-                    playerController.RPC_ApplyShakeCamera(transform.right, 0.5f);
+                    RPC_ApplyShakeCamera(transform.right, 0.5f);
                 else
-                    playerController.RPC_ApplyShakeCamera(transform.right, 0.3f);
+                    RPC_ApplyShakeCamera(transform.right, 0.3f);
             }
         }
     }
@@ -707,4 +711,11 @@ public class Player : NetworkBehaviour
     /// </summary>
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestCurrentBed(Bed bed) => Host_currentBed = bed;
+
+
+    /// <summary>
+    /// 카메라 쉐이크
+    /// </summary>
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplyShakeCamera(Vector3 direction, float force) => cameraManager.ShakeCamera(direction, force);
 }

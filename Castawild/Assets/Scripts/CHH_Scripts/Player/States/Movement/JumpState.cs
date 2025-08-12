@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class JumpState : MovementBaseState
 {
-    public JumpState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
-        : base(_movementManager, _inputManager)
+    public JumpState(MovementStateManager _movementManager)
+        : base(_movementManager)
     {
     }
 
     public override void EnterState()
     {
-        movementManager.JumpTriggered = true;
+        movementManager.moveController.JumpTriggered = true;
         movementManager.CanLanding = false;
 
         if (movementManager.previousState == movementManager.idleState)
@@ -22,11 +22,12 @@ public class JumpState : MovementBaseState
 
     public override void UpdateState()
     {
-        if (movementManager.playerController.Grounded && movementManager.CanLanding)
+        if (movementManager.moveController.Grounded && movementManager.CanLanding)
         {
             if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
                 movementManager.Host_ChangeState(MovementState.Idle);
-            else if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.All_CanRun())
+            else if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput)
+                 && movementManager.All_CanRun())
                 movementManager.Host_ChangeState(MovementState.Run);
             else
                 movementManager.Host_ChangeState(MovementState.Walk);

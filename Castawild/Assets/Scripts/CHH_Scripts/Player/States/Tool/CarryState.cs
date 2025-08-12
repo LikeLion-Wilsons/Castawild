@@ -2,14 +2,15 @@ using UnityEngine;
 
 public class CarryState : ToolBaseState
 {
-    public CarryState(ToolStateManager _toolStateManager, PlayerInputManager _inputManager)
-        : base(_toolStateManager, _inputManager)
+    public CarryState(ToolStateManager _toolStateManager)
+        : base(_toolStateManager)
     {
     }
 
     public override void EnterState()
     {
         toolStateManager.CurrentToolAnimationState = ToolAnimationState.Carry;
+        toolStateManager.moveController.CanRun_Tool = false;
     }
 
     public override void UpdateState()
@@ -24,5 +25,6 @@ public class CarryState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
+        toolStateManager.moveController.CanRun_Tool = true;
     }
 }

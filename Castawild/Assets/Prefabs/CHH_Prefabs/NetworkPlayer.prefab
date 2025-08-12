@@ -3256,10 +3256,12 @@ GameObject:
   - component: {fileID: 7933685528624486573}
   - component: {fileID: 5000463041039569134}
   - component: {fileID: 3669695777030045323}
-  - component: {fileID: 8380833186685685926}
+  - component: {fileID: 2392341617914439019}
   - component: {fileID: 3318766871343913700}
-  - component: {fileID: 8225308212403291209}
   - component: {fileID: 230939324335428207}
+  - component: {fileID: 7845940353617236455}
+  - component: {fileID: 1074039684945113463}
+  - component: {fileID: 8225308212403291209}
   - component: {fileID: 6363259293620697004}
   - component: {fileID: 4022685551630965951}
   - component: {fileID: 1934811449108985206}
@@ -3325,9 +3327,11 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 5000463041039569134}
   - {fileID: 3669695777030045323}
-  - {fileID: 8380833186685685926}
+  - {fileID: 2392341617914439019}
   - {fileID: 3318766871343913700}
   - {fileID: 230939324335428207}
+  - {fileID: 7845940353617236455}
+  - {fileID: 1074039684945113463}
   - {fileID: 6363259293620697004}
   - {fileID: 1934811449108985206}
   - {fileID: -2412737605465488693}
@@ -3437,7 +3441,7 @@ MonoBehaviour:
   currentItemType: 0
   isNearFire: 0
   uiStats: {fileID: 0}
---- !u!114 &8380833186685685926
+--- !u!114 &2392341617914439019
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3446,31 +3450,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 7137290088832178523}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3fa03644ea1a7e14f92fb7ac4e9cad82, type: 3}
+  m_Script: {fileID: 11500000, guid: b4276296d34dba7479bbd3a9f3482ea1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  kcc: {fileID: 5000463041039569134}
-  optionUI: {fileID: 9031955928824126459}
-  jumpImpulse: 10
+  jumpImpulse: 3
   rotationSpeed: 15
   maxGroundAngle: 45
   gravity: -9.81
-  fallThreshold: 20
-  damagePerMeter: 10
+  fallThreshold: 3
+  fallDamagePerMeter: 10
   fallingDeadTime: 5
-  checkStartPoint: {fileID: 7339163387627562639}
-  checkDistance: 0.5
   _Grounded_Physics: 0
-  interactHeight: 10
-  thirdPersonInteractPos: {fileID: 7467696255462433047}
-  interactRadius: 0.5
-  interactLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  kneelY: 6.8
-  Client_currentInteractObject: {fileID: 0}
-  _ChangePos: {x: 0, y: 0, z: 0}
+  groundStartPoint: {fileID: 7339163387627562639}
+  groundDistance: 0.5
+  _CanRun_Tool: 1
+  _IsAiming: 0
+  _JumpTriggered: 0
+  _currentMoveSpeed: 0
   _IsChangePos: 0
+  _ChangePos: {x: 0, y: 0, z: 0}
 --- !u!114 &3318766871343913700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3484,19 +3482,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   anim: {fileID: 7941171218918909885}
-  inputManager: {fileID: 8225308212403291209}
-  cameraManager: {fileID: 0}
   player: {fileID: 0}
-  playerController: {fileID: 0}
-  _IsAnimationFinished: 0
+  moveController: {fileID: 0}
+  cameraManager: {fileID: 0}
   interactUI: {fileID: 0}
-  toolStateManager: {fileID: 0}
+  _IsAnimationFinished: 0
   airSpeedMuliplier: 0.7
   walkSpeed: 5
   runSpeed: 10
   crouchSpeed: 2
   rotationSpeed: 10
-  groundYOffset: 0
   groundMask:
     serializedVersion: 2
     m_Bits: 8
@@ -3504,11 +3499,81 @@ MonoBehaviour:
   _CurrentMoveState: 0
   _CanLanding: 0
   _CurrentMoveAnimation: 0
-  _currentMoveSpeed: 0
   _Revived: 0
-  _JumpTriggered: 0
   _MoveValue: {x: 0, y: 0}
   _kneel: 0
+--- !u!114 &230939324335428207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f418d32ec44dd8840bcbc043673823be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anim: {fileID: 0}
+  player: {fileID: 0}
+  moveController: {fileID: 0}
+  cameraManager: {fileID: 0}
+  interactUI: {fileID: 0}
+  _IsAnimationFinished: 0
+  movementManager: {fileID: 0}
+  armature: {fileID: 7813269517312369915}
+  Client_armMesh: {fileID: 3201401248480740544}
+  bowAnim: {fileID: 1436198795544721307}
+  throwUpForce: 0.3
+  arrowUpForce: 0.2
+  throwForce: 20
+  arrowForce: 40
+  throwableStonePrefab: {fileID: 3276171059478812674, guid: 13ec340cd21e8b941800f61a46abf836, type: 3}
+  arrowPrefab: {fileID: 8716954291783428198, guid: efed917af524c72458d453d086971822, type: 3}
+  firstPersonArrowPos: {fileID: 3011774156531074929}
+  thirdPersonArrowPos: {fileID: 2414465423738557776}
+  throwPos: {fileID: 8012178248796667738}
+  _CurrentToolState: 0
+  _CurrentToolAnimationState: 0
+  _CurrentToolType: 0
+  _CanComboAttack: 0
+  _ComboAttack: 0
+  _CanReceiveInput: 0
+  _DecreaseToolDuration: 0
+  _IsDecreased: 0
+--- !u!114 &7845940353617236455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 789849b503e9973499ad5ba34b085e4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  optionUI: {fileID: 9031955928824126459}
+  interactHeight: 10
+  thirdPersonInteractPos: {fileID: 7467696255462433047}
+  interactRadius: 1
+  interactLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  kneelY: 6.8
+  Client_currentInteractObject: {fileID: 0}
+--- !u!114 &1074039684945113463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 751326abde2a42346a03cd63f33fc363, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &8225308212403291209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3560,47 +3625,6 @@ MonoBehaviour:
     m_Flags: 0
   lookInput: {x: 0, y: 0}
   zoomInput: {x: 0, y: 0}
---- !u!114 &230939324335428207
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7137290088832178523}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f418d32ec44dd8840bcbc043673823be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  anim: {fileID: 0}
-  inputManager: {fileID: 0}
-  cameraManager: {fileID: 0}
-  player: {fileID: 0}
-  playerController: {fileID: 0}
-  _IsAnimationFinished: 0
-  movementManager: {fileID: 0}
-  animTrigger: {fileID: 0}
-  armature: {fileID: 7813269517312369915}
-  Client_armMesh: {fileID: 3201401248480740544}
-  bowAnim: {fileID: 1436198795544721307}
-  throwUpForce: 0.3
-  arrowUpForce: 0.2
-  throwForce: 20
-  arrowForce: 40
-  throwableStonePrefab: {fileID: 3276171059478812674, guid: 13ec340cd21e8b941800f61a46abf836, type: 3}
-  arrowPrefab: {fileID: 8716954291783428198, guid: efed917af524c72458d453d086971822, type: 3}
-  firstPersonArrowPos: {fileID: 3011774156531074929}
-  thirdPersonArrowPos: {fileID: 2414465423738557776}
-  throwPos: {fileID: 8012178248796667738}
-  hitBox: {x: 0.64, y: 1.5, z: 0.85}
-  _CurrentToolState: 0
-  _CurrentToolAnimationState: 0
-  _CurrentToolType: 0
-  _CanComboAttack: 0
-  _ComboAttack: 0
-  _CanReceiveInput: 0
-  _DecreaseToolDuration: 0
-  _IsDecreased: 0
 --- !u!114 &6363259293620697004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3707,6 +3731,7 @@ MonoBehaviour:
   - {fileID: 0}
   inventoryItemPrefab: {fileID: 0}
   _itemList: []
+  _selectedSlot: 0
 --- !u!114 &1517099654388170568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5814,11 +5839,11 @@ PrefabInstance:
       objectReference: {fileID: 1839165641840884093}
     - target: {fileID: 3721399901069163586, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
       propertyPath: m_Value
-      value: 0.7
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3721399901069163586, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
       propertyPath: m_MaxValue
-      value: 1.2
+      value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 3721399901069163586, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
       propertyPath: m_MinValue

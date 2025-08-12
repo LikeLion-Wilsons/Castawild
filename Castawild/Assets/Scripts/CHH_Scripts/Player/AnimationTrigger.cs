@@ -5,7 +5,7 @@ using static UnityEngine.Rendering.DebugUI;
 public class AnimationTrigger : MonoBehaviour
 {
     private Player player;
-    private PlayerController playercontroller;
+    private PlayerInteractManager playercontroller;
     private MovementStateManager movementManager;
     private ToolStateManager toolManager;
     private PlayerInteractUI interactUI;
@@ -13,7 +13,7 @@ public class AnimationTrigger : MonoBehaviour
     private void Awake()
     {
         player = GetComponentInParent<Player>();
-        playercontroller = GetComponentInParent<PlayerController>();
+        playercontroller = GetComponentInParent<PlayerInteractManager>();
         movementManager = GetComponentInParent<MovementStateManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
         interactUI = transform.parent.GetComponentInChildren<PlayerInteractUI>();

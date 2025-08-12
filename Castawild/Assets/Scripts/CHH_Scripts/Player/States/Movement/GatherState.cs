@@ -2,8 +2,8 @@
 public class GatherState : MovementBaseState
 {
 
-    public GatherState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
-        : base(_movementManager, _inputManager)
+    public GatherState(MovementStateManager _movementManager)
+        : base(_movementManager)
     {
     }
 
@@ -13,7 +13,7 @@ public class GatherState : MovementBaseState
             movementManager.anim.SetTrigger("Gather");
         else
             movementManager.anim.SetTrigger("Gather_Kneeling");
-        movementManager.playerController.Host_FreezePosition(true);
+        movementManager.moveController.Host_FreezePosition(true);
     }
 
     public override void UpdateState()
@@ -24,6 +24,6 @@ public class GatherState : MovementBaseState
 
     public override void ExitState()
     {
-        movementManager.playerController.Host_FreezePosition(false);
+        movementManager.moveController.Host_FreezePosition(false);
     }
 }

@@ -1,11 +1,9 @@
-using UnityEngine;
-using UnityEngine.UIElements;
 
 public class DeathState : MovementBaseState
 {
 
-    public DeathState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
-        : base(_movementManager, _inputManager)
+    public DeathState(MovementStateManager _movementManager)
+        : base(_movementManager)
     {
     }
 
@@ -20,7 +18,7 @@ public class DeathState : MovementBaseState
             movementManager.player.Client_SleepDeadCameraTarget(true, false);
 
         movementManager.Revived = false;
-        movementManager.playerController.Host_FreezePosition(true);
+        movementManager.moveController.Host_FreezePosition(true);
     }
 
     public override void UpdateState()
@@ -33,9 +31,9 @@ public class DeathState : MovementBaseState
             movementManager.player.Client_SleepDeadCameraTarget(false, false);
 
         if (movementManager.HasStateAuthority)
-            movementManager.playerController.Host_SetPosition(movementManager.player.RespawnPos);
+            movementManager.moveController.Host_SetPosition(movementManager.player.RespawnPos);
 
         movementManager.Revived = true;
-        movementManager.playerController.Host_FreezePosition(false);
+        movementManager.moveController.Host_FreezePosition(false);
     }
 }

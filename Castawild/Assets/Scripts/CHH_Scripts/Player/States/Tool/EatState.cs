@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class EatState : ToolBaseState
 {
-    public EatState(ToolStateManager _toolStateManager, PlayerInputManager _inputManager)
-        : base(_toolStateManager, _inputManager)
+    public EatState(ToolStateManager _toolStateManager)
+        : base(_toolStateManager)
     {
     }
 
@@ -15,7 +15,7 @@ public class EatState : ToolBaseState
         if (toolStateManager.player.currentItemType == ItemType.Drink)
             toolStateManager.CurrentToolAnimationState = ToolAnimationState.Drink;
 
-        toolStateManager.playerController.Host_FreezePosition(true);
+        toolStateManager.moveController.Host_FreezePosition(true);
     }
 
     public override void UpdateState()
@@ -30,6 +30,6 @@ public class EatState : ToolBaseState
         if (toolStateManager.HasStateAuthority)
             toolStateManager.player.Host_RestoreStatFromFood();
 
-        toolStateManager.playerController.Host_FreezePosition(false);
+        toolStateManager.moveController.Host_FreezePosition(false);
     }
 }

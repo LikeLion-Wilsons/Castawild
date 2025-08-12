@@ -1,3 +1,4 @@
+using Fusion;
 using System.Collections;
 using Unity.Cinemachine;
 using Unity.Mathematics;
@@ -8,8 +9,8 @@ public enum ViewType { None, FirstPerson, ThirdPerson }
 public class PlayerCameraManager : MonoBehaviour
 {
     #region Components
+
     [SerializeField] private CinemachineImpulseSource impulseSource;
-    private PlayerController playerController;
     private PlayerInputManager inputManager;
     private MovementStateManager movementManager;
     private CinemachineOrbitalFollow orbital;
@@ -121,13 +122,13 @@ public class PlayerCameraManager : MonoBehaviour
     private void InitComponents()
     {
         player = GetComponentInParent<Player>();
-        playerController = GetComponentInParent<PlayerController>();
         inputManager = GetComponentInParent<PlayerInputManager>();
         movementManager = GetComponentInParent<MovementStateManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
         orbital = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
         inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
         Camera.main.GetComponent<CinemachineBrain>().DefaultBlend = new(CinemachineBlendDefinition.Styles.Cut, 0f);
+        currentFOV = 60f;
     }
 
     private void SubscribeEvents()
@@ -212,7 +213,7 @@ public class PlayerCameraManager : MonoBehaviour
     {
         if (viewType == ViewType.FirstPerson)
         {
-            if (playerController.HasInputAuthority)
+            if (player.HasInputAuthority)
             {
                 currentView = ViewType.FirstPerson;
                 foreach (var mesh in playerMeshes)
@@ -227,7 +228,7 @@ public class PlayerCameraManager : MonoBehaviour
 
         else if (viewType == ViewType.ThirdPerson)
         {
-            if (playerController.HasInputAuthority)
+            if (player.HasInputAuthority)
             {
                 currentView = ViewType.ThirdPerson;
 
@@ -282,13 +283,23 @@ public class PlayerCameraManager : MonoBehaviour
 
         if (_isAiming)
         {
+
             if (currentView == ViewType.FirstPerson)
-                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV + firstPerson_AimFovDelta));
+            {
+                Debug.Log("CurrentFOV : " + firstPersonCam.Lens.FieldOfView);
+                Debug.Log("TargetFOV : " + (currentFOV - firstPerson_AimFovDelta));
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV - firstPerson_AimFovDelta));
+            }
             else
-                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV + thirdPerson_AimFovDelta, thirdPerson_AimTargetPos.localPosition));
+            {
+                Debug.Log("CurrentFOV : " + thirdPersonCam.Lens.FieldOfView);
+                Debug.Log("TargetFOV : " + (currentFOV - thirdPerson_AimFovDelta));
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV - thirdPerson_AimFovDelta, thirdPerson_AimTargetPos.localPosition));
+            }
         }
         else
         {
+            Debug.Log("CurrentFOV : " + currentFOV);
             if (currentView == ViewType.FirstPerson)
                 moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV));
             else

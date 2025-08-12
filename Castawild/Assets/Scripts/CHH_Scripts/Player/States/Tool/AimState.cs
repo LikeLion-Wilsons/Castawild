@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class AimState : ToolBaseState
 {
-    public AimState(ToolStateManager _toolStateManager, PlayerInputManager _inputManager)
-        : base(_toolStateManager, _inputManager)
+    public AimState(ToolStateManager _toolStateManager)
+        : base(_toolStateManager)
     {
     }
 
@@ -31,7 +31,10 @@ public class AimState : ToolBaseState
         }
 
         if (toolStateManager.HasInputAuthority)
-            toolStateManager.player.playerInteractUI.ActiveCrosshair(true);
+            toolStateManager.interactUI.ActiveCrosshair(true);
+
+        toolStateManager.moveController.IsAiming = true;
+        toolStateManager.moveController.CanRun_Tool = false;
     }
 
     public override void UpdateState()
@@ -54,6 +57,8 @@ public class AimState : ToolBaseState
 
         else if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
+            toolStateManager.moveController.CanRun_Tool = true;
+            toolStateManager.moveController.IsAiming = false;
             if (toolStateManager.CurrentToolType == ToolType.Bow)
             {
                 toolStateManager.player.All_SetBowPos(false);
@@ -68,11 +73,10 @@ public class AimState : ToolBaseState
     {
         base.ExitState();
 
+
         if (toolStateManager.HasInputAuthority && !toolStateManager.player.playerInteractUI.showCrosshair)
-            toolStateManager.player.playerInteractUI.ActiveCrosshair(false);
+            toolStateManager.interactUI.ActiveCrosshair(false);
     }
-
-
 
     private void LookForward()
     {

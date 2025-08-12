@@ -38,7 +38,7 @@ public class Bed : InteractableObject
 
         player.All_SetRespawnPos(sleepPos.position);
 
-        PlayerController playerController = playerObj.GetComponent<PlayerController>();
-        playerController.All_SetPosition(sleepPos.position);
+        PlayerMoveManager controller = playerObj.GetComponent<PlayerMoveManager>();
+        controller.All_SetPosition(sleepPos.position);
     }
 }

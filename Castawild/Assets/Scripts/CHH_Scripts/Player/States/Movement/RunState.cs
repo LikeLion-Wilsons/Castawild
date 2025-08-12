@@ -3,15 +3,15 @@ using static Unity.Collections.Unicode;
 
 public class RunState : MovementBaseState
 {
-    public RunState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
-        : base(_movementManager, _inputManager)
+    public RunState(MovementStateManager _movementManager)
+        : base(_movementManager)
     {
     }
 
     public override void EnterState()
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.Run;
-        movementManager.currentMoveSpeed = movementManager.runSpeed;
+        movementManager.moveController.currentMoveSpeed = movementManager.runSpeed;
         if (movementManager.HasInputAuthority)
             movementManager.cameraManager.run = true;
     }
@@ -39,7 +39,7 @@ public class RunState : MovementBaseState
             movementManager.Host_ChangeState(MovementState.Crouch);
 
         // Jump
-        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.playerController.Grounded)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.moveController.Grounded)
         {
             movementManager.previousState = this;
             movementManager.Host_ChangeState(MovementState.Jump);

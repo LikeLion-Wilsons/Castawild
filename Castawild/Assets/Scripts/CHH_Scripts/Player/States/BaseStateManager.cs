@@ -4,10 +4,10 @@ using UnityEngine;
 public class BaseStateManager : NetworkBehaviour
 {
     [HideInInspector] public Animator anim;
-    [HideInInspector] public PlayerInputManager inputManager;
-    [HideInInspector] public PlayerCameraManager cameraManager;
     [HideInInspector] public Player player;
-    [HideInInspector] public PlayerController playerController;
+    [HideInInspector] public PlayerMoveManager moveController;
+    [HideInInspector] public PlayerCameraManager cameraManager;
+    [HideInInspector] public PlayerInteractUI interactUI;
 
     public PlayerNetworkInputData input { get; private set; }
     public NetworkButtons prevInputButtons;
@@ -17,10 +17,10 @@ public class BaseStateManager : NetworkBehaviour
     protected virtual void Awake()
     {
         anim = GetComponentInChildren<Animator>();
-        inputManager = GetComponent<PlayerInputManager>();
-        cameraManager = GetComponentInChildren<PlayerCameraManager>();
         player = GetComponent<Player>();
-        playerController = GetComponent<PlayerController>();
+        moveController = GetComponent<PlayerMoveManager>();
+        cameraManager = GetComponentInChildren<PlayerCameraManager>();
+        interactUI = GetComponentInChildren<PlayerInteractUI>();
     }
 
     public void SetInput(PlayerNetworkInputData inputData) => input = inputData;
