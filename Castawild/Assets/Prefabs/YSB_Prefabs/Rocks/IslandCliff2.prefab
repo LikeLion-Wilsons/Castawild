@@ -60,6 +60,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: IslandCliff2
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 48a6a851f8e143589893db8cab312c20, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 83
+      objectReference: {fileID: 0}
     - target: {fileID: 1825849032656525891, guid: 48a6a851f8e143589893db8cab312c20, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -71,6 +75,18 @@ PrefabInstance:
     - target: {fileID: 4742473837712756890, guid: 48a6a851f8e143589893db8cab312c20, type: 3}
       propertyPath: m_LODs.Array.data[1].screenRelativeHeight
       value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 6434506633349254375, guid: 48a6a851f8e143589893db8cab312c20, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 83
+      objectReference: {fileID: 0}
+    - target: {fileID: 6480441029087906184, guid: 48a6a851f8e143589893db8cab312c20, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 83
+      objectReference: {fileID: 0}
+    - target: {fileID: 7934908875749301465, guid: 48a6a851f8e143589893db8cab312c20, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 83
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
