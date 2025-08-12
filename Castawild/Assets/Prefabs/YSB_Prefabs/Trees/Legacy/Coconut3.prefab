@@ -120,6 +120,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: db538b0b71674e9aaa553b9ce5cf7c2d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8806077276131108233}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: db538b0b71674e9aaa553b9ce5cf7c2d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4244450933183552404}
   m_SourcePrefab: {fileID: 100100000, guid: db538b0b71674e9aaa553b9ce5cf7c2d, type: 3}
 --- !u!1 &6745553711898707945 stripped
 GameObject:
@@ -173,9 +176,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 971352eea68afe14e965ec568800bb03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Health: 0
-  _TreeId: 0
+  interactableType: 0
   visualRoot: {fileID: 0}
+  reviveTime: 10
 --- !u!114 &8806077276131108233
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,4 +197,22 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: -2428564616140321778}
+  - {fileID: 4244450933183552404}
   ForceRemoteRenderTimeframe: 0
+--- !u!114 &4244450933183552404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6745553711898707945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0

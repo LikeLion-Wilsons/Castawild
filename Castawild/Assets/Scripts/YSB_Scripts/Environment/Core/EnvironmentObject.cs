@@ -3,6 +3,7 @@ using UnityEngine;
 using System;
 using UnityEditor;
 
+[RequireComponent(typeof(NetworkObject),typeof(NetworkTransform))]
 public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, INetworkVisibilityObject, YSB_Scripts.IInteractable, IRevivable
 {
     public event Action<INetworkVisibilityObject> OnDestroyed;
@@ -14,10 +15,10 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, INetwork
     private Collider cachedCollider;
     [SerializeField] private GameObject visualRoot;
 
-    [Networked] protected int Health { get; set; } 
-    [Networked] protected int MaxHP { get; set; } 
+    [Networked] protected int Health { get; set; }
+    [Networked] protected int MaxHP { get; set; }
     [Networked] protected TickTimer ReviveTimer { get; set; }
-    [SerializeField] private float reviveTime = 10f;
+    private float reviveTime;
 
     public override void FixedUpdateNetwork()
     {
@@ -30,6 +31,7 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, INetwork
     public virtual void Init(SpawnableDefinition def, int instanceId)
     {
         cachedCollider = GetComponent<Collider>();
+        reviveTime = def.reviveTime;
         InstanceId = instanceId;
     }
 
@@ -51,7 +53,7 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, INetwork
         Health = MaxHP;
     }
 
-    protected void  Die()
+    protected void Die()
     {
         OnDestroyed?.Invoke(this);
         ReviveTimer = TickTimer.CreateFromSeconds(Runner, reviveTime);
