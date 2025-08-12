@@ -3266,6 +3266,7 @@ GameObject:
   - component: {fileID: 1517099654388170568}
   - component: {fileID: -2412737605465488693}
   - component: {fileID: -7957345436698639499}
+  - component: {fileID: 478434462551621132}
   m_Layer: 6
   m_Name: NetworkPlayer
   m_TagString: Player
@@ -3379,6 +3380,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5a853199b9360a4b83abacd575d5062, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  anim: {fileID: 0}
+  dayNightManager: {fileID: 0}
+  playerInteractUI: {fileID: 0}
+  playerController: {fileID: 0}
+  inputManager: {fileID: 0}
+  movementManager: {fileID: 0}
+  toolStateManager: {fileID: 0}
+  cameraManager: {fileID: 0}
   nicknameUI: {fileID: 8077964778312649939}
   playerData:
     characterName: 
@@ -3389,28 +3398,22 @@ MonoBehaviour:
     maxHunger: 100
     maxThirst: 100
     maxTemperature: 100
-  hpDecreaseRate: 0.5
-  staminaIncreaseRate: 2
-  staminaHungerDecreaseRate: 3
-  staminaRunDecreaseRate: 1
-  hungerDecreaseRate: 1
-  thirstDecreaseRate: 1
-  thirstSleepDecrease: 10
-  hungerSleepDecrease: 10
-  bloodEffectThreshold: 0.2
-  foodRestoreTime: 5
   _Hp: 0
   _Stamina: 0
   _Hunger: 0
   _Thirst: 0
   _Temperature: 0
-  anim: {fileID: 0}
-  playerInteractUI: {fileID: 0}
-  playerController: {fileID: 0}
-  inputManager: {fileID: 0}
-  movementManager: {fileID: 0}
-  toolStateManager: {fileID: 0}
-  cameraManager: {fileID: 0}
+  foodRestoreTime: 5
+  staminaRecoveryRate: 2
+  temperatureReceoveryRate: 1
+  hpDecreaseRate: 0.5
+  staminaHungerDecreaseRate: 3
+  staminaRunDecreaseRate: 1
+  hungerDecreaseRate: 1
+  thirstDecreaseRate: 1
+  temperatureDecreaseRate: 1
+  thirstSleepDecrease: 10
+  hungerSleepDecrease: 10
   tools: {fileID: 7844614530758869572}
   bowOriginalParent: {fileID: 5652918095632363721}
   bowUseParent: {fileID: 1542822223830889626}
@@ -3419,8 +3422,7 @@ MonoBehaviour:
   _HasArrow: 0
   _HasPebble: 0
   Host_currentBed: {fileID: 0}
-  takeDamageEffect: {fileID: 5564867861575558819}
-  takeDamageEffectAnim: {fileID: 3590413421425672894}
+  screenEffect: {fileID: 0}
   amarture: {fileID: 762437358709272171}
   _RespawnPos: {x: 0, y: 0, z: 0}
   _CanMove: 1
@@ -3431,9 +3433,8 @@ MonoBehaviour:
   inventory: {fileID: 0}
   isSpawned: 0
   currentItemType: 0
+  isNearFire: 0
   uiStats: {fileID: 0}
-  restoreColor: {r: 0, g: 0, b: 0, a: 0}
-  decreaseColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &8380833186685685926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3792,6 +3793,24 @@ MonoBehaviour:
     m_Bits: 257
   maxSlopeAngle: 70
   gridSize: 1
+--- !u!114 &478434462551621132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24ffd8c39c5df7248a79967d61ba858b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coldEffect: {fileID: 2100000, guid: c4e19d2e0a1690c4ba24063ced04e385, type: 2}
+  coldEffectThreshold: 0.2
+  maxColdEffectIntensity: 4
+  bloodEffectThreshold: 0.2
+  takeDamageEffect: {fileID: 5564867861575558819}
+  takeDamageEffectAnim: {fileID: 3590413421425672894}
 --- !u!1 &7288379860564303627
 GameObject:
   m_ObjectHideFlags: 0
