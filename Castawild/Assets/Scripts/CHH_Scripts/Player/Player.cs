@@ -11,9 +11,20 @@ using UnityEngine.UI;
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
 public enum AttackType { None, Aim, Attack }
 public enum ItemType { None, Default, Tool, Food, Drink, Placeable }
-
+public enum StatType { Hp, Stamina, Hunger, Thirst }
 public class Player : NetworkBehaviour
 {
+    #region Components
+    [HideInInspector] public Animator anim;
+    [HideInInspector] public DayNightCycleManager dayNightManager;
+    [HideInInspector] public PlayerInteractUI playerInteractUI;
+    [HideInInspector] public PlayerController playerController;
+    [HideInInspector] public PlayerInputManager inputManager;
+    [HideInInspector] public MovementStateManager movementManager;
+    [HideInInspector] public ToolStateManager toolStateManager;
+    [HideInInspector] public PlayerCameraManager cameraManager;
+    #endregion
+
     #region Status
     [Header("NickName")]
     [SerializeField] private NicknameUI nicknameUI;
@@ -21,18 +32,6 @@ public class Player : NetworkBehaviour
 
     [Header("Status")]
     public PlayerData playerData = new PlayerData();
-
-    [Header("StatusRate")]
-    public float hpDecreaseRate = 0.5f;
-    public float staminaIncreaseRate = 2f;
-    public float staminaHungerDecreaseRate = 3f;
-    public float staminaRunDecreaseRate = 1f;
-    public float hungerDecreaseRate = 1f;
-    public float thirstDecreaseRate = 1f;
-    public float thirstSleepDecrease = 10f;
-    public float hungerSleepDecrease = 10f;
-    [SerializeField] private float bloodEffectThreshold = 0.2f;
-    [SerializeField] private float foodRestoreTime = 5f;
 
     [Header("Current Status")]
     [Networked] public float Hp { get; set; }
@@ -42,15 +41,22 @@ public class Player : NetworkBehaviour
     [Networked] public float Temperature { get; set; }
     #endregion
 
-    #region Components
-    [HideInInspector] public Animator anim;
-    [HideInInspector] public PlayerInteractUI playerInteractUI;
-    [HideInInspector] public PlayerController playerController;
-    [HideInInspector] public PlayerInputManager inputManager;
-    [HideInInspector] public MovementStateManager movementManager;
-    [HideInInspector] public ToolStateManager toolStateManager;
-    [HideInInspector] public PlayerCameraManager cameraManager;
-    #endregion
+    [Space]
+    [SerializeField] private float foodRestoreTime = 5f;
+
+    [Header("Recovery Rate")]
+    public float staminaRecoveryRate = 2f;
+    public float temperatureReceoveryRate = 1f;
+    [Header("Decrease Rate")]
+    public float hpDecreaseRate = 0.5f;
+    public float staminaHungerDecreaseRate = 3f;
+    public float staminaRunDecreaseRate = 1f;
+    public float hungerDecreaseRate = 1f;
+    public float thirstDecreaseRate = 1f;
+    public float temperatureDecreaseRate = 1f;
+    [Header("Sleep Rate")]
+    public float thirstSleepDecrease = 10f;
+    public float hungerSleepDecrease = 10f;
 
     #region Tool
     [Header("Tool")]
@@ -73,9 +79,7 @@ public class Player : NetworkBehaviour
     [HideInInspector] public Bed Host_currentBed;
     #endregion
 
-    [Header("Effect")]
-    public Volume takeDamageEffect;
-    [SerializeField] private Animator takeDamageEffectAnim;
+    public ScreenEffect screenEffect;
 
     public GameObject amarture;
 
@@ -93,10 +97,8 @@ public class Player : NetworkBehaviour
     [HideInInspector] public bool isSpawned;
     public ItemType currentItemType;
 
+    public bool isNearFire;
     public UIStats uiStats;
-    [SerializeField] Color restoreColor;
-    [SerializeField] Color decreaseColor;
-
     public event Action<int> Hit;
 
     public Coroutine fallingCoroutine;
@@ -147,21 +149,32 @@ public class Player : NetworkBehaviour
             else
                 Thirst -= thirstDecreaseRate * Runner.DeltaTime;
 
-            if (Hunger <= 0)
+            if (Hunger <= 0 || Temperature <= 0)
             {
                 Host_TakeDamage(false, hpDecreaseRate * Runner.DeltaTime);
                 Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
             }
-            else
+            else if (Hunger > 0)
                 Hunger -= hungerDecreaseRate * Runner.DeltaTime;
 
             if (toolStateManager.All_CanRecoverStamina() && movementManager.All_CanRecoverStamina())
             {
                 if (Stamina < playerData.maxStamina)
-                    Stamina += staminaIncreaseRate * Runner.DeltaTime;
+                    Stamina += staminaRecoveryRate * Runner.DeltaTime;
                 else
                     Stamina = playerData.maxStamina;
             }
+
+            //if (dayNightManager.isNightTime && !isNearFire)
+            //    Temperature -= temperatureDecreaseRate * Runner.DeltaTime;
+            //else if (dayNightManager.isNightTime && isNearFire)
+            //    Temperature += temperatureReceoveryRate * Runner.DeltaTime;
+        }
+
+        if (HasInputAuthority)
+        {
+            screenEffect.ContinuousDamageEffect(Hp, playerData.maxHp);
+            screenEffect.ContinuousColdEffect(Temperature, playerData.maxTemperature);
         }
     }
 
@@ -208,6 +221,8 @@ public class Player : NetworkBehaviour
 
     private void InitComponents()
     {
+        if (HasStateAuthority)
+            dayNightManager = FindAnyObjectByType<DayNightCycleManager>();
         anim = GetComponentInChildren<Animator>();
         playerController = GetComponent<PlayerController>();
         playerInteractUI = GetComponentInChildren<PlayerInteractUI>();
@@ -431,7 +446,7 @@ public class Player : NetworkBehaviour
         Thirst = playerData.maxThirst * 0.2f;
         Hunger = playerData.maxHunger * 0.2f;
 
-        takeDamageEffect.weight = 0f;
+        screenEffect.TakeDamageEffect(0f);
     }
 
     /// <summary>
@@ -465,9 +480,6 @@ public class Player : NetworkBehaviour
                     playerController.RPC_ApplyShakeCamera(transform.right, 0.3f);
             }
         }
-
-        if (Hp <= playerData.maxHp * 0.2f)
-            RPC_ApplyPlayDamagedEffect();
     }
 
     /// <summary>
@@ -486,16 +498,7 @@ public class Player : NetworkBehaviour
     public void RPC_ApplyHitInvoke(int dmg) => Hit?.Invoke(dmg);
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    private void RPC_ApplyPlayDamagedEffect()
-    {
-        float hpPercent = Hp / playerData.maxHp;
-
-        if (hpPercent <= bloodEffectThreshold)
-            takeDamageEffect.weight = Mathf.InverseLerp(bloodEffectThreshold, 0f, hpPercent);
-    }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    private void RPC_ApplyPlayDamagedEffectAnim() => takeDamageEffectAnim.SetTrigger("Damaged");
+    private void RPC_ApplyPlayDamagedEffectAnim() => screenEffect.SetTrigger("Damaged");
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_NotifyPlayDamagedAnim() => anim.SetTrigger("GetHit");
@@ -539,10 +542,10 @@ public class Player : NetworkBehaviour
 
         if (uiStats != null)
         {
-            //SetBarColor(uiStats.hungerBar, currentFoodInfoData.restoreHPValue);
-            //SetBarColor(uiStats.staminaBar, currentFoodInfoData.restoreStaminaValue);
-            //SetBarColor(uiStats.hungerBar, currentFoodInfoData.restoreHungerValue);
-            //SetBarColor(uiStats.thirstBar, currentFoodInfoData.restoreThirstValue);
+            uiStats.SetBarColor(StatType.Hp, currentFoodInfoData.restoreHPValue);
+            uiStats.SetBarColor(StatType.Stamina, currentFoodInfoData.restoreStaminaValue);
+            uiStats.SetBarColor(StatType.Hunger, currentFoodInfoData.restoreHungerValue);
+            uiStats.SetBarColor(StatType.Thirst, currentFoodInfoData.restoreThirstValue);
         }
 
         while (elapsed < foodRestoreTime)
@@ -558,16 +561,6 @@ public class Player : NetworkBehaviour
         }
 
         foodRestoreCoroutine = null;
-    }
-
-    private void SetBarColor(Image bar, float value)
-    {
-        if (value > 0)
-            bar.color = restoreColor;
-        else if (value < 0)
-            bar.color = decreaseColor;
-        else
-            bar.color = Color.white;
     }
 
     private float RestoreValue(float restoreHPPerSecond, float currentValue, float maxValue)
@@ -703,7 +696,7 @@ public class Player : NetworkBehaviour
         Hunger = playerData.maxHunger;
         Temperature = playerData.maxTemperature;
 
-        takeDamageEffect.weight = 0f;
+        screenEffect.TakeDamageEffect(0f);
     }
 
     /// <summary>

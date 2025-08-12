@@ -81,7 +81,7 @@ public sealed class PlayerController : NetworkBehaviour
         // 테스트용
         if (HasInputAuthority && Input.GetKeyDown(KeyCode.H))
         {
-            player.takeDamageEffect.weight = 0f;
+            player.screenEffect.TakeDamageEffect(0f);
             player.RPC_RequestHeal();
         }
 
