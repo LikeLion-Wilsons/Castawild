@@ -1133,8 +1133,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2344188678965562170}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.006593731, y: 0.9933397, z: 0.086905956, w: -0.0753667}
-  m_LocalPosition: {x: 1.4858341, y: 1.7635183, z: 9.735345}
+  m_LocalRotation: {x: -0.0067975167, y: 0.9267574, z: -0.3752236, w: -0.016789053}
+  m_LocalPosition: {x: 0.26017576, y: 10.457107, z: 7.1785073}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1217,7 +1217,7 @@ MonoBehaviour:
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
-    Value: -171.32233
+    Value: -177.9243
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -1227,7 +1227,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: -10
+    Value: 44.083874
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
@@ -1325,7 +1325,7 @@ MonoBehaviour:
         LegacyInput: 
         LegacyGain: 1
         CancelDeltaTime: 0
-      InputValue: 0
+      InputValue: -0.6952546
       Driver:
         AccelTime: 0.2
         DecelTime: 0.2
@@ -1338,7 +1338,7 @@ MonoBehaviour:
         LegacyInput: 
         LegacyGain: 1
         CancelDeltaTime: 0
-      InputValue: -0
+      InputValue: -1.042882
       Driver:
         AccelTime: 0.2
         DecelTime: 0.2
@@ -3422,7 +3422,7 @@ MonoBehaviour:
   _HasArrow: 0
   _HasPebble: 0
   Host_currentBed: {fileID: 0}
-  screenEffect: {fileID: 0}
+  screenEffect: {fileID: 478434462551621132}
   amarture: {fileID: 762437358709272171}
   _RespawnPos: {x: 0, y: 0, z: 0}
   _CanMove: 1
