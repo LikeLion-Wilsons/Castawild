@@ -11,6 +11,7 @@ public class IdleState : MovementBaseState
     public override void EnterState()
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.Idle;
+        movementManager.flagManager.Set(PlayerFlags.MoveIdle);
     }
 
     public override void UpdateState()
@@ -41,6 +42,6 @@ public class IdleState : MovementBaseState
 
     public override void ExitState()
     {
-
+        movementManager.flagManager.Clear(PlayerFlags.MoveIdle);
     }
 }

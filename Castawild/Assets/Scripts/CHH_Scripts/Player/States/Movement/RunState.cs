@@ -11,9 +11,9 @@ public class RunState : MovementBaseState
     public override void EnterState()
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.Run;
-        movementManager.moveManager.currentMoveSpeed = movementManager.runSpeed;
+        movementManager.flagManager.Set(PlayerFlags.Run);
 
-        movementManager.player.CanRecoverStamina = false;
+        movementManager.moveManager.currentMoveSpeed = movementManager.runSpeed;
 
         if (movementManager.HasInputAuthority)
             movementManager.cameraManager.run = true;
@@ -51,7 +51,7 @@ public class RunState : MovementBaseState
 
     public override void ExitState()
     {
-        movementManager.player.CanRecoverStamina = true;
+        movementManager.flagManager.Clear(PlayerFlags.Run);
 
         if (movementManager.HasInputAuthority)
             movementManager.cameraManager.run = false;

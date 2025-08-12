@@ -8,6 +8,7 @@ public class PlayerStateManager : NetworkBehaviour
     private PlayerMoveManager moveManager;
     private MovementStateManager movementManager;
     private ToolStateManager toolStateManager;
+    private PlayerFlagManager flagManager;
 
     public override void Spawned()
     {
@@ -24,6 +25,7 @@ public class PlayerStateManager : NetworkBehaviour
         moveManager = GetComponent<PlayerMoveManager>();
         movementManager = GetComponent<MovementStateManager>();
         toolStateManager = GetComponent<ToolStateManager>();
+        flagManager = GetComponent<PlayerFlagManager>();
     }
 
     public override void FixedUpdateNetwork()
@@ -50,7 +52,8 @@ public class PlayerStateManager : NetworkBehaviour
         if (HasStateAuthority)
         {
             movementManager.currentState?.UpdateState();
-            toolStateManager.currentState?.UpdateState();
+            if (!flagManager.IsDead)
+                toolStateManager.currentState?.UpdateState();
         }
 
         if (player.IsCursorLocked)

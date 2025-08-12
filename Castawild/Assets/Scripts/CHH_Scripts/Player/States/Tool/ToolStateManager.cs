@@ -43,6 +43,8 @@ public class ToolStateManager : BaseStateManager
     [SerializeField] private Transform thirdPersonArrowPos;
     [SerializeField] private Transform throwPos;
 
+    [HideInInspector] public bool CanComboAttack { get; set; }
+    [HideInInspector] public bool CanReceiveInput { get; set; }
     #region Network
     [Header("Network")]
 
@@ -50,9 +52,7 @@ public class ToolStateManager : BaseStateManager
     public ToolState CurrentToolState { get; set; }
     [Networked] public ToolAnimationState CurrentToolAnimationState { get; set; }
     [Networked] public ToolType CurrentToolType { get; set; }
-    [Networked, HideInInspector] public bool CanComboAttack { get; set; }
     [Networked, HideInInspector] public bool ComboAttack { get; set; }
-    [Networked, HideInInspector] public bool CanReceiveInput { get; set; }
     [Networked, HideInInspector] public bool DecreaseToolDuration { get; set; }
     #endregion
 
@@ -121,7 +121,6 @@ public class ToolStateManager : BaseStateManager
     {
         if (toolStateDict.TryGetValue(CurrentToolState, out var newState))
         {
-
             currentState?.ExitState();
             currentState = newState;
             currentState.EnterState();
@@ -298,7 +297,7 @@ public class ToolStateManager : BaseStateManager
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_NotifyBowShootAnimation() => bowAnim.SetTrigger("Shoot");
 
-    public void Host_RotatePlayer(bool rotate) => moveManager.IsRotate = rotate;
+    public void Host_RotatePlayer(bool rotate) => moveManager.RotatePlayer();
 
     public bool All_IsDecreaseDurationTool()
     {

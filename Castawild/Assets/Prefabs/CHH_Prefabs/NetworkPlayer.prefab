@@ -1133,8 +1133,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2344188678965562170}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.24261811, y: -0.62387335, z: 0.21263896, w: 0.7118309}
-  m_LocalPosition: {x: 7.850045, y: 9.607258, z: -1.0383708}
+  m_LocalRotation: {x: 0.28658766, y: 0.5956226, z: -0.24009751, w: 0.7109532}
+  m_LocalPosition: {x: -7.0930157, y: 10.435158, z: -1.2620248}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1217,7 +1217,7 @@ MonoBehaviour:
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
-    Value: -82.46489
+    Value: 79.911224
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -1227,7 +1227,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: 37.641994
+    Value: 43.909065
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
@@ -3270,6 +3270,7 @@ GameObject:
   - component: {fileID: -2412737605465488693}
   - component: {fileID: -7957345436698639499}
   - component: {fileID: 478434462551621132}
+  - component: {fileID: 5172254778838205249}
   m_Layer: 6
   m_Name: NetworkPlayer
   m_TagString: Player
@@ -3337,6 +3338,7 @@ MonoBehaviour:
   - {fileID: 6363259293620697004}
   - {fileID: 1934811449108985206}
   - {fileID: -2412737605465488693}
+  - {fileID: 5172254778838205249}
   - {fileID: 6009412152884217692}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &5000463041039569134
@@ -3392,6 +3394,7 @@ MonoBehaviour:
   dayNightManager: {fileID: 0}
   playerInteractUI: {fileID: 0}
   cameraManager: {fileID: 0}
+  flagManager: {fileID: 0}
   nicknameUI: {fileID: 8077964778312649939}
   playerData:
     characterName: 
@@ -3422,13 +3425,10 @@ MonoBehaviour:
   Host_currentBed: {fileID: 0}
   screenEffect: {fileID: 478434462551621132}
   amarture: {fileID: 762437358709272171}
-  _CanRecoverStamina: 0
-  _isDead: 0
   _RespawnPos: {x: 0, y: 0, z: 0}
   _CanPVP: 1
   _IsUIOpen: 0
   _IsCursorLocked: 0
-  _IsSleeping: 0
   inventory: {fileID: 0}
   isSpawned: 0
   isNearFire: 0
@@ -3472,14 +3472,12 @@ MonoBehaviour:
   rotationSpeed: 15
   maxGroundAngle: 45
   gravity: -9.81
-  fallThreshold: 5
+  fallThreshold: 8
   fallDamagePerMeter: 10
   fallingDeadTime: 5
   _Grounded_Physics: 0
   groundStartPoint: {fileID: 7339163387627562639}
   groundDistance: 0.5
-  _CanRun_Tool: 1
-  _IsAiming: 0
   _JumpTriggered: 0
   _currentMoveSpeed: 0
   _IsChangePos: 0
@@ -3521,7 +3519,10 @@ MonoBehaviour:
   toolManager: {fileID: 0}
   cameraManager: {fileID: 0}
   interactUI: {fileID: 0}
+  flagManager: {fileID: 0}
   _IsAnimationFinished: 0
+  interactManager: {fileID: 0}
+  previousState: 0
   airSpeedMuliplier: 0.7
   walkSpeed: 5
   runSpeed: 10
@@ -3555,6 +3556,7 @@ MonoBehaviour:
   toolManager: {fileID: 0}
   cameraManager: {fileID: 0}
   interactUI: {fileID: 0}
+  flagManager: {fileID: 0}
   _IsAnimationFinished: 0
   movementManager: {fileID: 0}
   armature: {fileID: 7813269517312369915}
@@ -3572,9 +3574,7 @@ MonoBehaviour:
   _CurrentToolState: 0
   _CurrentToolAnimationState: 0
   _CurrentToolType: 0
-  _CanComboAttack: 0
   _ComboAttack: 0
-  _CanReceiveInput: 0
   _DecreaseToolDuration: 0
 --- !u!114 &1074039684945113463
 MonoBehaviour:
@@ -3852,6 +3852,19 @@ MonoBehaviour:
   bloodEffectThreshold: 0.2
   takeDamageEffect: {fileID: 5564867861575558819}
   takeDamageEffectAnim: {fileID: 3590413421425672894}
+--- !u!114 &5172254778838205249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7137290088832178523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80d32a6ec65c28b45ab2ec0cf8ea7bc0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Flags: 0
 --- !u!1 &7288379860564303627
 GameObject:
   m_ObjectHideFlags: 0
@@ -5851,18 +5864,6 @@ PrefabInstance:
       propertyPath: cameraManager
       value: 
       objectReference: {fileID: 1839165641840884093}
-    - target: {fileID: 3721399901069163586, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
-      propertyPath: m_Value
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3721399901069163586, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
-      propertyPath: m_MaxValue
-      value: 0.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 3721399901069163586, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
-      propertyPath: m_MinValue
-      value: 0.1
-      objectReference: {fileID: 0}
     - target: {fileID: 5777786391078981706, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
       propertyPath: m_Name
       value: OptionManager

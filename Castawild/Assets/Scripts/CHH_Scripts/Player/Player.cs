@@ -1,7 +1,6 @@
 using Fusion;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Test;
 using UnityEngine;
 
@@ -19,6 +18,7 @@ public class Player : NetworkBehaviour
     [HideInInspector] public DayNightCycleManager dayNightManager;
     [HideInInspector] public PlayerInteractUI playerInteractUI;
     [HideInInspector] public PlayerCameraManager cameraManager;
+    [HideInInspector] public PlayerFlagManager flagManager;
     #endregion
 
     #region Status
@@ -68,13 +68,10 @@ public class Player : NetworkBehaviour
     public PlayerNetworkInputData input { get; set; }
     [Header("Networked")]
     [Networked] public FoodInfoData currentFoodInfoData { get; set; }
-    [Networked, HideInInspector] public bool CanRecoverStamina { get; set; }
-    [Networked, HideInInspector] public bool isDead { get; set; }
     [Networked, HideInInspector] public Vector3 RespawnPos { get; set; }
     [Networked, HideInInspector] public bool CanPVP { get; set; } = true;
     [Networked, HideInInspector] public bool IsUIOpen { get; set; }
     [Networked, HideInInspector] public bool IsCursorLocked { get; set; }
-    [Networked, HideInInspector] public bool IsSleeping { get; set; }
 
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isSpawned;
@@ -129,7 +126,7 @@ public class Player : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (isDead)
+        if (flagManager.IsDead)
             return;
 
         if (HasStateAuthority)
@@ -157,7 +154,7 @@ public class Player : NetworkBehaviour
         else if (Hunger > 0)
             Hunger -= hungerDecreaseRate * Runner.DeltaTime;
 
-        if (CanRecoverStamina)
+        if (flagManager.CanRecoverStamina)
         {
             if (Stamina < playerData.maxStamina)
                 Stamina += staminaRecoveryRate * Runner.DeltaTime;
@@ -215,6 +212,9 @@ public class Player : NetworkBehaviour
         playerInteractUI = GetComponentInChildren<PlayerInteractUI>();
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
         inventory = GetComponent<InventoryDataManager>();
+        flagManager = GetComponent<PlayerFlagManager>();
+        playerToolManager = GetComponent<PlayerToolManager>();
+        toolStateManager = new ToolStateManager();
     }
 
     private void InitStatus()
@@ -237,7 +237,6 @@ public class Player : NetworkBehaviour
             Host_currentBed = default;
         }
     }
-
 
     /// <summary>
     /// 커서 잠구기
@@ -283,7 +282,7 @@ public class Player : NetworkBehaviour
     /// </summary>
     public void Host_RevivedStatus()
     {
-        isDead = false;
+        flagManager.Clear(PlayerFlags.Death);
         Hp = playerData.maxHp * 0.2f;
         Stamina = playerData.maxStamina;
         Thirst = playerData.maxThirst * 0.2f;
@@ -303,7 +302,7 @@ public class Player : NetworkBehaviour
 
         if (Hp <= 0)
         {
-            isDead = true;
+            flagManager.Set(PlayerFlags.Death);
             Host_TakeDamagedEvent?.Invoke(true);
             return;
         }
@@ -462,10 +461,18 @@ public class Player : NetworkBehaviour
 
     // 임시 
     [HideInInspector] public ToolStateManager toolStateManager;
-    public void Client_RemoveSelectedItem() { }
-    public void Client_ApplySelectedItem(int value) { }
-    public void Host_SetHasArrow(bool value) { }
-    public void Host_SetHasPebble(bool value) { }
-    public void RPC_RequestSetHasArrow(bool value) { }
-    public void RPC_RequestSetHasPebble(bool value) { }
+
+    PlayerToolManager playerToolManager;
+    public void Client_RemoveSelectedItem() => playerToolManager.Client_RemoveSelectedItem();
+    public void Client_ApplySelectedItem(int value) => playerToolManager.Client_ApplySelectedItem(value);
+    public void Host_SetHasArrow(bool value) => playerToolManager.Host_SetHasArrow(value);
+    public void Host_SetHasPebble(bool value) => playerToolManager.Host_SetHasPebble(value);
+    public void RPC_RequestSetHasArrow(bool value) => playerToolManager.RPC_RequestSetHasArrow(value);
+    public void RPC_RequestSetHasPebble(bool value) => playerToolManager.RPC_RequestSetHasPebble(value);
+}
+
+// 임시
+public class PlayerController
+{
+
 }

@@ -18,7 +18,8 @@ public class JumpState : MovementBaseState
         else if (movementManager.previousState == MovementState.Walk
             || movementManager.previousState == MovementState.Run)
             movementManager.CurrentMoveAnimation = MoveAnimatoinState.RunJump;
-        Debug.Log("Enter Jump State");
+
+        movementManager.flagManager.Set(PlayerFlags.Jump);
     }
 
     public override void UpdateState()
@@ -37,6 +38,7 @@ public class JumpState : MovementBaseState
 
     public override void ExitState()
     {
+        movementManager.flagManager.Clear(PlayerFlags.Jump);
         movementManager.CanLanding = false;
         Debug.Log("Exit Jump State");
     }

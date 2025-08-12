@@ -9,6 +9,7 @@ public class BaseStateManager : NetworkBehaviour
     [HideInInspector] public PlayerToolManager toolManager;
     [HideInInspector] public PlayerCameraManager cameraManager;
     [HideInInspector] public PlayerInteractUI interactUI;
+    [HideInInspector] public PlayerFlagManager flagManager;
 
     public PlayerNetworkInputData input { get; private set; }
     public NetworkButtons prevInputButtons;
@@ -23,6 +24,7 @@ public class BaseStateManager : NetworkBehaviour
         toolManager = GetComponent<PlayerToolManager>();
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
         interactUI = GetComponentInChildren<PlayerInteractUI>();
+        flagManager = GetComponentInChildren<PlayerFlagManager>();
     }
 
     public void SetInput(PlayerNetworkInputData inputData) => input = inputData;

@@ -9,16 +9,14 @@ public class AimState : ToolBaseState
 
     public override void EnterState()
     {
-        // 애니메이션
-        if (toolStateManager.movementManager.CurrentMoveState == MovementState.Idle)
+        if (toolStateManager.flagManager.IsMoveIdle)
             toolStateManager.CurrentToolAnimationState = ToolAnimationState.FullAim;
         else
             toolStateManager.CurrentToolAnimationState = ToolAnimationState.Aim;
 
         LookForward();
 
-        // Movement상태
-        if (toolStateManager.movementManager.CurrentMoveState == MovementState.Run)
+        if (toolStateManager.flagManager.IsRunning)
             toolStateManager.movementManager.Host_ChangeState(MovementState.Walk);
 
         toolStateManager.RPC_ApplySetAimCameraAndUI(true);
@@ -33,8 +31,7 @@ public class AimState : ToolBaseState
         if (toolStateManager.HasInputAuthority)
             toolStateManager.interactUI.ActiveCrosshair(true);
 
-        toolStateManager.moveManager.IsAiming = true;
-        toolStateManager.moveManager.CanRun_Tool = false;
+        toolStateManager.flagManager.Set(PlayerFlags.Aim);
     }
 
     public override void UpdateState()
@@ -42,7 +39,7 @@ public class AimState : ToolBaseState
         if (toolStateManager.input.currentView == ViewType.ThirdPerson)
             toolStateManager.Host_RotatePlayer(true);
 
-        if (toolStateManager.movementManager.CurrentMoveState == MovementState.Idle)
+        if (toolStateManager.flagManager.IsMoveIdle)
             toolStateManager.CurrentToolAnimationState = ToolAnimationState.FullAim;
         else
             toolStateManager.CurrentToolAnimationState = ToolAnimationState.Aim;
@@ -57,8 +54,8 @@ public class AimState : ToolBaseState
 
         else if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
-            toolStateManager.moveManager.CanRun_Tool = true;
-            toolStateManager.moveManager.IsAiming = false;
+            toolStateManager.flagManager.Clear(PlayerFlags.Aim);
+
             if (toolStateManager.CurrentToolType == ToolType.Bow)
             {
                 toolStateManager.toolManager.RPC_NotifySetBowPos(false);

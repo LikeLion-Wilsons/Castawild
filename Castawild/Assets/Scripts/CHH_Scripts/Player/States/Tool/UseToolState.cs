@@ -30,7 +30,6 @@ public class UseToolState : ToolBaseState
             toolStateManager.RPC_NotifySetArrowPull(true);
         }
 
-        toolStateManager.player.CanRecoverStamina = false;
         elapsed = 0f;
     }
 
@@ -45,7 +44,7 @@ public class UseToolState : ToolBaseState
 
         if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
-            toolStateManager.moveManager.IsAiming = false;
+            toolStateManager.flagManager.Clear(PlayerFlags.Aim);
             toolStateManager.RPC_ApplySetAimCameraAndUI(false);
 
             if (toolStateManager.CurrentToolType == ToolType.Bow)
@@ -88,8 +87,6 @@ public class UseToolState : ToolBaseState
         if (toolStateManager.HasStateAuthority && toolStateManager.DecreaseToolDuration
             && toolStateManager.All_IsDecreaseDurationTool())
             toolStateManager.player.inventory.RPC_SubtractDurability(toolStateManager.toolManager.currentToolInfoData.durability);
-
-        toolStateManager.player.CanRecoverStamina = true;
 
         toolStateManager.DecreaseToolDuration = false;
 

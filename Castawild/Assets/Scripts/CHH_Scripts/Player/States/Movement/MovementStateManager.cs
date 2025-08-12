@@ -220,7 +220,7 @@ public class MovementStateManager : BaseStateManager
     /// </summary>
     public bool All_CanRun()
     {
-        if (moveManager.CanRun_Tool && Stamina > player.playerData.maxStamina * 0.3f)
+        if (flagManager.CanRun_Tool && Stamina > player.playerData.maxStamina * 0.3f)
             return true;
 
         return false;

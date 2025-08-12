@@ -8,6 +8,7 @@ public class PlayerMoveManager : NetworkBehaviour
     private SimpleKCC kcc;
     private Player player;
     private PlayerCameraManager cameraManager;
+    private PlayerFlagManager flagManager;
 
     [Header("Movement")]
     [Networked, HideInInspector] public bool CanMove { get; set; } = true;
@@ -33,9 +34,6 @@ public class PlayerMoveManager : NetworkBehaviour
     [SerializeField] private float groundDistance = 0.5f;
 
     PlayerNetworkInputData input;
-    [Networked, HideInInspector] public bool IsRotate { get; set; } = true;
-    [Networked, HideInInspector] public bool CanRun_Tool { get; set; } = true;
-    [Networked, HideInInspector] public bool IsAiming { get; set; }
     [Networked, HideInInspector] public bool JumpTriggered { get; set; }
     [Networked, HideInInspector] public float currentMoveSpeed { get; set; }
     [Networked, HideInInspector] public bool IsChangePos { get; set; }
@@ -45,6 +43,7 @@ public class PlayerMoveManager : NetworkBehaviour
     {
         kcc = GetComponent<SimpleKCC>();
         player = GetComponent<Player>();
+        flagManager = GetComponent<PlayerFlagManager>();
         cameraManager = GetComponentInChildren<PlayerCameraManager>();
     }
 
@@ -73,6 +72,9 @@ public class PlayerMoveManager : NetworkBehaviour
             Host_Falling();
         }
 
+        if (flagManager.IsDead)
+            return;
+
         if (!CanMove)
         {
             if (HasStateAuthority)
@@ -80,16 +82,16 @@ public class PlayerMoveManager : NetworkBehaviour
             return;
         }
 
-        if (IsRotate)
-        {
-            Vector3 lookDirection = cameraManager.CurrenCam.transform.forward;
-            lookDirection.y = 0f;
-
-            Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-        }
-
         All_HandleMovement(input);
+    }
+
+    public void RotatePlayer()
+    {
+        Vector3 lookDirection = cameraManager.CurrenCam.transform.forward;
+        lookDirection.y = 0f;
+
+        Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
     }
 
     public override void Render()
@@ -208,7 +210,7 @@ public class PlayerMoveManager : NetworkBehaviour
             Quaternion yaw = Quaternion.Euler(0, input.lookValue.x * cameraManager.sensivity, 0);
             kcc.SetLookRotation(kcc.Transform.rotation * yaw);
         }
-        else if (input.currentView == ViewType.ThirdPerson && (input.moveValue.sqrMagnitude > 0.001f || IsAiming))
+        else if (input.currentView == ViewType.ThirdPerson && (input.moveValue.sqrMagnitude > 0.001f || flagManager.IsAiming))
         {
             if (input.camForward == Vector3.zero)
                 return;

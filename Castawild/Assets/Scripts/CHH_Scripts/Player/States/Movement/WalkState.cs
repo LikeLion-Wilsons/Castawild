@@ -9,6 +9,8 @@ public class WalkState : MovementBaseState
     public override void EnterState()
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.Walk;
+        movementManager.flagManager.Set(PlayerFlags.Walk);
+
         movementManager.moveManager.currentMoveSpeed = movementManager.walkSpeed;
         if (movementManager.HasInputAuthority)
             movementManager.cameraManager.walk = true;
@@ -38,6 +40,8 @@ public class WalkState : MovementBaseState
 
     public override void ExitState()
     {
+        movementManager.flagManager.Clear(PlayerFlags.Walk);
+
         if (movementManager.HasInputAuthority)
             movementManager.cameraManager.walk = false;
     }

@@ -16,6 +16,7 @@ public class EatState : ToolBaseState
             toolStateManager.CurrentToolAnimationState = ToolAnimationState.Drink;
 
         toolStateManager.moveManager.Host_FreezePosition(true);
+        toolStateManager.flagManager.Set(PlayerFlags.Eat);
     }
 
     public override void UpdateState()
@@ -30,6 +31,7 @@ public class EatState : ToolBaseState
         if (toolStateManager.HasStateAuthority)
             toolStateManager.player.Host_RestoreStatFromFood();
 
+        toolStateManager.flagManager.Clear(PlayerFlags.Eat);
         toolStateManager.moveManager.Host_FreezePosition(false);
     }
 }

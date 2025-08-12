@@ -12,6 +12,7 @@ public sealed class PlayerInteractManager : NetworkBehaviour
     private PlayerInteractUI playerInteractUI;
     private MovementStateManager movementManager;
     private ToolStateManager toolStateManager;
+    private PlayerFlagManager flagManager;
 
     [Header("Interact")]
     [SerializeField] private float interactHeight = 10f;
@@ -43,10 +44,15 @@ public sealed class PlayerInteractManager : NetworkBehaviour
 
         toolStateManager = GetComponent<ToolStateManager>();
         toolStateManager.Host_ChangeState(ToolState.Idle);
+
+        flagManager = GetComponent<PlayerFlagManager>();
     }
 
     public override void FixedUpdateNetwork()
     {
+        if (flagManager.IsDead)
+            return;
+
         if (!GetInput<PlayerNetworkInputData>(out var input))
             return;
 

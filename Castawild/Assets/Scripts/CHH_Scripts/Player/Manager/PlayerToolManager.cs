@@ -8,6 +8,7 @@ public class PlayerToolManager : NetworkBehaviour
 {
     private Player player;
     private PlayerCameraManager cameraManager;
+    private PlayerFlagManager flagManager;
 
     #region Tool
     [Header("Tool")]
@@ -34,6 +35,8 @@ public class PlayerToolManager : NetworkBehaviour
     private void Awake()
     {
         player = GetComponent<Player>();
+        cameraManager = GetComponentInChildren<PlayerCameraManager>();
+        flagManager = GetComponent<PlayerFlagManager>();
     }
 
     public override void Spawned()
@@ -43,7 +46,7 @@ public class PlayerToolManager : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (player.isDead)
+        if (flagManager.IsDead)
             return;
 
         if (HasStateAuthority)

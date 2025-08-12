@@ -33,7 +33,6 @@ public class PlayerInputManager : MonoBehaviour
     private PlayerCameraManager cameraManager;
     private PlayerMoveManager moveManager;
 
-
     void Start()
     {
         UIPart.openUI += HandleCursor;
