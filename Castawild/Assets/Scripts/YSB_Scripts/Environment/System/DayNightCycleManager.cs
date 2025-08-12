@@ -16,7 +16,7 @@ public class DayNightCycleManager : NetworkBehaviour
     [Tooltip("게임 내 낮과 밤의 주기 (s)")]
     [SerializeField] private float dayDurationInSeconds = 600f; //600s
     [Header("Is Night Time")]
-    [SerializeField] public bool isNightTime => TimeOfDay < 0.25f || TimeOfDay > 0.75f;
+    [HideInInspector] public bool isNightTime => TimeOfDay < 0.25f || TimeOfDay > 0.75f;
 
     [Header("Light Intensity Control")]
     [Tooltip("빛의 강도를 시간에 따라 조절하는 애니메이션 곡선(0-1)")]
