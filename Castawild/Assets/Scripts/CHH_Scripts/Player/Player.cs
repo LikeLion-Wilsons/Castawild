@@ -11,7 +11,7 @@ using UnityEngine.UI;
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
 public enum AttackType { None, Aim, Attack }
 public enum ItemType { None, Default, Tool, Food, Drink, Placeable }
-
+public enum StatType { Hp, Stamina, Hunger, Thirst }
 public class Player : NetworkBehaviour
 {
     #region Status
@@ -94,8 +94,6 @@ public class Player : NetworkBehaviour
     public ItemType currentItemType;
 
     public UIStats uiStats;
-    [SerializeField] Color restoreColor;
-    [SerializeField] Color decreaseColor;
 
     public event Action<int> Hit;
 
@@ -539,10 +537,10 @@ public class Player : NetworkBehaviour
 
         if (uiStats != null)
         {
-            //SetBarColor(uiStats.hungerBar, currentFoodInfoData.restoreHPValue);
-            //SetBarColor(uiStats.staminaBar, currentFoodInfoData.restoreStaminaValue);
-            //SetBarColor(uiStats.hungerBar, currentFoodInfoData.restoreHungerValue);
-            //SetBarColor(uiStats.thirstBar, currentFoodInfoData.restoreThirstValue);
+            uiStats.SetBarColor(StatType.Hp, currentFoodInfoData.restoreHPValue);
+            uiStats.SetBarColor(StatType.Stamina, currentFoodInfoData.restoreStaminaValue);
+            uiStats.SetBarColor(StatType.Hunger, currentFoodInfoData.restoreHungerValue);
+            uiStats.SetBarColor(StatType.Thirst, currentFoodInfoData.restoreThirstValue);
         }
 
         while (elapsed < foodRestoreTime)
@@ -558,16 +556,6 @@ public class Player : NetworkBehaviour
         }
 
         foodRestoreCoroutine = null;
-    }
-
-    private void SetBarColor(Image bar, float value)
-    {
-        if (value > 0)
-            bar.color = restoreColor;
-        else if (value < 0)
-            bar.color = decreaseColor;
-        else
-            bar.color = Color.white;
     }
 
     private float RestoreValue(float restoreHPPerSecond, float currentValue, float maxValue)

@@ -4126,9 +4126,9 @@ MonoBehaviour:
   zoomLerpSpeed: 10
   minDistance: 3
   maxDistance: 15
-  walk: 1
+  walk: 0
   run: 0
-  walkAmplitude: 0.2
+  walkAmplitude: 0.1
   walkFrequency: 8.5
   sprintAmplitude: 0.2
   sprintFrequency: 15
