@@ -80,12 +80,12 @@ Material:
     - _UseFog: 1
     - _ViewDistance: 10000
     - __dirty: 0
-    - _cloudsHeight: 200
-    - _cloudsPosition: 350
+    - _cloudsHeight: 300
+    - _cloudsPosition: 400
     m_Colors:
     - _CloudsColor: {r: 0.6194968, g: 0.8866587, b: 1, a: 1}
     - _DirectionSpeed: {r: -20, g: 11.2, b: 0, a: 31}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ScatteringColor: {r: 1, g: 1, b: 1, a: 0}
+    - _ScatteringColor: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -75,6 +75,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Tree
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3262da84c1664da7b1fee590d10fa651
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Bush3.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3fae6382d6462084fa13b8e1c06b6d44
     m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_6(sand).prefab
     m_ReadOnly: 0
@@ -92,6 +98,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6064bc7ce72a4b44aae75f5fcf0c9fc4
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Bush1.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 74e6c38884f728e45b4d9cb8d73d8c5b
     m_Address: Assets/Prefabs/YSB_Prefabs/Rocks/Boulder_4(sand).prefab
@@ -140,6 +152,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Stone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ced8aa8282584fec9788f9e159996331
+    m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Bush2.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tree
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d186013f062fd8648a7b8a0c0c07aff4
+    m_Address: Assets/Scripts/LSM_Scripts/Default Animal Data.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d6de07b6226a44d49af4fcaa7c722418
     m_Address: Assets/Prefabs/YSB_Prefabs/Trees/Pandanace3.prefab
