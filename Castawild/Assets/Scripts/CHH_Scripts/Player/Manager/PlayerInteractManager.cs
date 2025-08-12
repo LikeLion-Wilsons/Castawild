@@ -11,7 +11,7 @@ public sealed class PlayerInteractManager : NetworkBehaviour
     [SerializeField] private OptionUI optionUI;
     private PlayerInteractUI playerInteractUI;
     private MovementStateManager movementManager;
-    private ToolStateManager toolSateManager;
+    private ToolStateManager toolStateManager;
 
     [Header("Interact")]
     [SerializeField] private float interactHeight = 10f;
@@ -41,8 +41,8 @@ public sealed class PlayerInteractManager : NetworkBehaviour
         movementManager = GetComponent<MovementStateManager>();
         movementManager.Host_ChangeState(MovementState.Idle);
 
-        toolSateManager = GetComponent<ToolStateManager>();
-        toolSateManager.Host_ChangeState(ToolState.Idle);
+        toolStateManager = GetComponent<ToolStateManager>();
+        toolStateManager.Host_ChangeState(ToolState.Idle);
     }
 
     public override void FixedUpdateNetwork()
@@ -62,7 +62,7 @@ public sealed class PlayerInteractManager : NetworkBehaviour
     public override void Render()
     {
         movementManager.All_UpdateMoveAnimation(Runner.DeltaTime);
-        toolSateManager.All_UpdateMoveAnimation();
+        toolStateManager.All_UpdateMoveAnimation();
     }
 
     private void Client_TestTryOverlap(PlayerNetworkInputData input)
@@ -186,13 +186,13 @@ public sealed class PlayerInteractManager : NetworkBehaviour
         {
             att = toolManager.All_GetToolAtt("Axe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
-            toolSateManager.RPC_RequestDecreaseToolDuration(true);
+            toolStateManager.RPC_RequestDecreaseToolDuration(true);
         }
         else if (Client_currentInteractObject.interactableType == InteractableType.Stone && Client_currentInteractObject.CanInteract())
         {
             att = toolManager.All_GetToolAtt("Pickaxe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
-            toolSateManager.RPC_RequestDecreaseToolDuration(true);
+            toolStateManager.RPC_RequestDecreaseToolDuration(true);
         }
 
         else if (Client_currentInteractObject.interactableType == InteractableType.Gatherable && Client_currentInteractObject.CanInteract())
@@ -211,4 +211,6 @@ public sealed class PlayerInteractManager : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     private void RPC_DespawnObject(NetworkObject despawnObject) => Runner.Despawn(despawnObject);
 
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplySetWakeUpUI() => playerInteractUI.SetWakeUpUI();
 }

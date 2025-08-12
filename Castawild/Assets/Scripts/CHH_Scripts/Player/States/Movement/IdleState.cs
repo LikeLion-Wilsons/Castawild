@@ -31,11 +31,9 @@ public class IdleState : MovementBaseState
         // Jump
         if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput))
         {
-            Debug.Log("Press Jump Button");
             if (movementManager.moveManager.Grounded)
             {
-                Debug.Log("Change To Jump State");
-                movementManager.previousState = this;
+                movementManager.previousState = MovementState.Idle;
                 movementManager.Host_ChangeState(MovementState.Jump);
             }
         }

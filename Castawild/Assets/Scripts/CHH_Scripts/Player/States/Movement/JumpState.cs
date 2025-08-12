@@ -12,11 +12,11 @@ public class JumpState : MovementBaseState
         movementManager.moveManager.JumpTriggered = true;
         movementManager.CanLanding = false;
 
-        if (movementManager.previousState == movementManager.idleState)
+        if (movementManager.previousState == MovementState.Idle)
             movementManager.CurrentMoveAnimation = MoveAnimatoinState.IdleJump;
 
-        else if (movementManager.previousState == movementManager.walkState
-            || movementManager.previousState == movementManager.runState)
+        else if (movementManager.previousState == MovementState.Walk
+            || movementManager.previousState == MovementState.Run)
             movementManager.CurrentMoveAnimation = MoveAnimatoinState.RunJump;
         Debug.Log("Enter Jump State");
     }

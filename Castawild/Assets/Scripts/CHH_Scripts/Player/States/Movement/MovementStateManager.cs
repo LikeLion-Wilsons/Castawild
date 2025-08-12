@@ -9,11 +9,12 @@ public class MovementStateManager : BaseStateManager
 {
     #region Conponent
     private DayNightCycleManager dayNightManager;
+    public PlayerInteractManager interactManager;
     #endregion
 
     #region States
     [Header("State")]
-    public MovementBaseState previousState;
+    public MovementState previousState;
     public IdleState idleState;
     public WalkState walkState;
     public RunState runState;
@@ -24,7 +25,7 @@ public class MovementStateManager : BaseStateManager
     public DeathState deathState;
     public GatherState gatherState;
     public Dictionary<MovementState, MovementBaseState> movementStateDict;
-    public MovementBaseState currentState; // 호스트용 변수
+    public MovementBaseState currentState;
     #endregion
 
     #region Movement
@@ -46,7 +47,7 @@ public class MovementStateManager : BaseStateManager
     #region Network
     [Header("Networked")]
     [Networked, OnChangedRender(nameof(OnCurrentMoveStateChanged))]
-    public MovementState CurrentMoveState { get; set; }
+    public MovementState CurrentMoveState { get; set; } = MovementState.None;
     [Networked, HideInInspector] public bool CanLanding { get; set; }
     [Networked] public MoveAnimatoinState CurrentMoveAnimation { get; set; }
     [Networked, HideInInspector] public bool Revived { get; set; }
@@ -64,7 +65,6 @@ public class MovementStateManager : BaseStateManager
     {
         base.Awake();
         InitStates();
-        Host_ChangeState(MovementState.Idle);
     }
 
     public override void Spawned()
@@ -79,6 +79,9 @@ public class MovementStateManager : BaseStateManager
             DayNightCycleManager.OnTimeSkipStarted -= Host_WakeUp;
             DayNightCycleManager.OnTimeSkipStarted += Host_WakeUp;
         }
+
+        Host_ChangeState(MovementState.Idle);
+        OnCurrentMoveStateChanged();
     }
 
     private void ChangeToDeathState(bool isDeath)
@@ -99,7 +102,7 @@ public class MovementStateManager : BaseStateManager
     {
         if (HasStateAuthority)
             dayNightManager = FindAnyObjectByType<DayNightCycleManager>();
-
+        interactManager = GetComponent<PlayerInteractManager>();
     }
 
     private void InitStates()
@@ -133,7 +136,7 @@ public class MovementStateManager : BaseStateManager
     /// </summary>
     public void Host_ChangeState(MovementState newState)
     {
-        if (!HasStateAuthority)
+        if (!HasStateAuthority || CurrentMoveState == newState)
             return;
         CurrentMoveState = newState;
     }
@@ -142,12 +145,6 @@ public class MovementStateManager : BaseStateManager
     {
         if (movementStateDict.TryGetValue(CurrentMoveState, out var newState))
         {
-            if (currentState == newState)
-            {
-                Debug.Log("Same State");
-                return;
-            }
-
             currentState?.ExitState();
             currentState = newState;
             currentState.EnterState();

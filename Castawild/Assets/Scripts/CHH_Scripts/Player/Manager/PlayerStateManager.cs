@@ -9,6 +9,15 @@ public class PlayerStateManager : NetworkBehaviour
     private MovementStateManager movementManager;
     private ToolStateManager toolStateManager;
 
+    public override void Spawned()
+    {
+        movementManager = GetComponent<MovementStateManager>();
+        movementManager.Host_ChangeState(MovementState.Idle);
+
+        toolStateManager = GetComponent<ToolStateManager>();
+        toolStateManager.Host_ChangeState(ToolState.Idle);
+    }
+
     private void Awake()
     {
         player = GetComponent<Player>();
@@ -38,10 +47,11 @@ public class PlayerStateManager : NetworkBehaviour
             toolStateManager.SetInput(input);
         }
 
-        if (movementManager.movementStateDict.TryGetValue(movementManager.CurrentMoveState, out var movementState))
-            movementState.UpdateState();
-        if (toolStateManager.toolStateDict.TryGetValue(toolStateManager.CurrentToolState, out var toolState))
-            toolState.UpdateState();
+        if (HasStateAuthority)
+        {
+            movementManager.currentState?.UpdateState();
+            toolStateManager.currentState?.UpdateState();
+        }
 
         if (player.IsCursorLocked)
         {

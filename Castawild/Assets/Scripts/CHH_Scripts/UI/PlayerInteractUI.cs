@@ -1,7 +1,7 @@
+using Fusion;
 using System.Collections;
 using Test.Shoot;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 

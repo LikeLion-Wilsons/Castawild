@@ -16,7 +16,7 @@ public class CarryState : ToolBaseState
     public override void UpdateState()
     {
         if (toolStateManager.input.currentView == ViewType.ThirdPerson)
-            toolStateManager.All_RotatePlayer();
+            toolStateManager.Host_RotatePlayer(true);
 
         if (toolStateManager.player.currentItemType != ItemType.Placeable)
             toolStateManager.Host_ChangeState(ToolState.Idle);

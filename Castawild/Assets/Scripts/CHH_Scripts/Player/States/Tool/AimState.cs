@@ -21,13 +21,13 @@ public class AimState : ToolBaseState
         if (toolStateManager.movementManager.CurrentMoveState == MovementState.Run)
             toolStateManager.movementManager.Host_ChangeState(MovementState.Walk);
 
-        toolStateManager.Client_SetAimCameraAndUI(true);
+        toolStateManager.RPC_ApplySetAimCameraAndUI(true);
 
         if (toolStateManager.CurrentToolType == ToolType.Bow)
         {
-            toolStateManager.toolManager.All_SetBowPos(true);
+            toolStateManager.toolManager.RPC_NotifySetBowPos(true);
             toolStateManager.toolManager.All_SetArrowActive(true);
-            toolStateManager.All_SetArrowPull(true);
+            toolStateManager.RPC_NotifySetArrowPull(true);
         }
 
         if (toolStateManager.HasInputAuthority)
@@ -40,7 +40,7 @@ public class AimState : ToolBaseState
     public override void UpdateState()
     {
         if (toolStateManager.input.currentView == ViewType.ThirdPerson)
-            toolStateManager.All_RotatePlayer();
+            toolStateManager.Host_RotatePlayer(true);
 
         if (toolStateManager.movementManager.CurrentMoveState == MovementState.Idle)
             toolStateManager.CurrentToolAnimationState = ToolAnimationState.FullAim;
@@ -50,7 +50,7 @@ public class AimState : ToolBaseState
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
         {
             if (toolStateManager.CurrentToolType == ToolType.Bow)
-                toolStateManager.All_BowShootAnimation();
+                toolStateManager.RPC_NotifyBowShootAnimation();
 
             toolStateManager.Host_ChangeState(ToolState.UseTool);
         }
@@ -61,10 +61,10 @@ public class AimState : ToolBaseState
             toolStateManager.moveManager.IsAiming = false;
             if (toolStateManager.CurrentToolType == ToolType.Bow)
             {
-                toolStateManager.toolManager.All_SetBowPos(false);
-                toolStateManager.All_SetArrowPull(false);
+                toolStateManager.toolManager.RPC_NotifySetBowPos(false);
+                toolStateManager.RPC_NotifySetArrowPull(false);
             }
-            toolStateManager.Client_SetAimCameraAndUI(false);
+            toolStateManager.RPC_ApplySetAimCameraAndUI(false);
             toolStateManager.Host_ChangeState(ToolState.Idle);
         }
     }
@@ -73,6 +73,8 @@ public class AimState : ToolBaseState
     {
         base.ExitState();
 
+        if (toolStateManager.input.currentView == ViewType.ThirdPerson)
+            toolStateManager.Host_RotatePlayer(false);
 
         if (toolStateManager.HasInputAuthority && !toolStateManager.player.playerInteractUI.showCrosshair)
             toolStateManager.interactUI.ActiveCrosshair(false);

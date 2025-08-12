@@ -144,7 +144,8 @@ public class PlayerToolManager : NetworkBehaviour
     /// <summary>
     /// 화살 위치 설정
     /// </summary>
-    public void All_SetBowPos(bool isBowUse)
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_NotifySetBowPos(bool isBowUse)
     {
         if (currentToolObject == null)
             return;

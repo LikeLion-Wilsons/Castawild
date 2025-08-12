@@ -7,7 +7,7 @@ public class PlayerMoveManager : NetworkBehaviour
 {
     private SimpleKCC kcc;
     private Player player;
-    private PlayerCameraManager CameraManager;
+    private PlayerCameraManager cameraManager;
 
     [Header("Movement")]
     [Networked, HideInInspector] public bool CanMove { get; set; } = true;
@@ -33,6 +33,7 @@ public class PlayerMoveManager : NetworkBehaviour
     [SerializeField] private float groundDistance = 0.5f;
 
     PlayerNetworkInputData input;
+    [Networked, HideInInspector] public bool IsRotate { get; set; } = true;
     [Networked, HideInInspector] public bool CanRun_Tool { get; set; } = true;
     [Networked, HideInInspector] public bool IsAiming { get; set; }
     [Networked, HideInInspector] public bool JumpTriggered { get; set; }
@@ -44,7 +45,7 @@ public class PlayerMoveManager : NetworkBehaviour
     {
         kcc = GetComponent<SimpleKCC>();
         player = GetComponent<Player>();
-        CameraManager = GetComponentInChildren<PlayerCameraManager>();
+        cameraManager = GetComponentInChildren<PlayerCameraManager>();
     }
 
     public override void Spawned()
@@ -79,6 +80,15 @@ public class PlayerMoveManager : NetworkBehaviour
             return;
         }
 
+        if (IsRotate)
+        {
+            Vector3 lookDirection = cameraManager.CurrenCam.transform.forward;
+            lookDirection.y = 0f;
+
+            Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
+
         All_HandleMovement(input);
     }
 
@@ -92,7 +102,6 @@ public class PlayerMoveManager : NetworkBehaviour
         Gizmos.color = Grounded ? Color.green : Color.red;
         Gizmos.DrawLine(groundStartPoint.position, groundStartPoint.position + Vector3.down * groundDistance);
     }
-
 
     /// <summary>
     /// 움직일 수 있는지 확인
@@ -196,7 +205,7 @@ public class PlayerMoveManager : NetworkBehaviour
     {
         if (input.currentView == ViewType.FirstPerson)
         {
-            Quaternion yaw = Quaternion.Euler(0, input.lookValue.x * CameraManager.sensivity, 0);
+            Quaternion yaw = Quaternion.Euler(0, input.lookValue.x * cameraManager.sensivity, 0);
             kcc.SetLookRotation(kcc.Transform.rotation * yaw);
         }
         else if (input.currentView == ViewType.ThirdPerson && (input.moveValue.sqrMagnitude > 0.001f || IsAiming))
@@ -212,7 +221,6 @@ public class PlayerMoveManager : NetworkBehaviour
         Quaternion target = Quaternion.LookRotation(input.camForward);
         kcc.SetLookRotation(Quaternion.Slerp(kcc.Transform.rotation, target, rotationSpeed * Runner.DeltaTime));
     }
-
 
     private void All_HandleMovement(PlayerNetworkInputData input)
     {

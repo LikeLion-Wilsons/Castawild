@@ -44,7 +44,7 @@ public class RunState : MovementBaseState
         // Jump
         if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.moveManager.Grounded)
         {
-            movementManager.previousState = this;
+            movementManager.previousState = MovementState.Run;
             movementManager.Host_ChangeState(MovementState.Jump);
         }
     }

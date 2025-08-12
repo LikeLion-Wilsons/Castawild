@@ -66,9 +66,6 @@ public class ToolStateManager : BaseStateManager
 
     public override void Spawned()
     {
-        Host_ChangeState(ToolState.Idle);
-        CurrentToolType = ToolType.Fist;
-
         if (HasStateAuthority)
         {
             player.Host_TakeDamagedEvent -= ChangeToDeathState;
@@ -80,6 +77,10 @@ public class ToolStateManager : BaseStateManager
 
         toolManager.Host_ChangeSelectedItem -= All_ChangeSelectedItem;
         toolManager.Host_ChangeSelectedItem += All_ChangeSelectedItem;
+
+        CurrentToolType = ToolType.Fist;
+        Host_ChangeState(ToolState.Idle);
+        OnCurrentToolStateChanged();
     }
 
     private void ChangeToDeathState(bool isDeath) => Host_ChangeState(ToolState.Idle);
@@ -110,7 +111,7 @@ public class ToolStateManager : BaseStateManager
     /// </summary>
     public void Host_ChangeState(ToolState newState)
     {
-        if (!HasStateAuthority)
+        if (!HasStateAuthority || newState == CurrentToolState)
             return;
 
         CurrentToolState = newState;
@@ -120,8 +121,6 @@ public class ToolStateManager : BaseStateManager
     {
         if (toolStateDict.TryGetValue(CurrentToolState, out var newState))
         {
-            if (currentState == newState)
-                return;
 
             currentState?.ExitState();
             currentState = newState;
@@ -258,7 +257,7 @@ public class ToolStateManager : BaseStateManager
     public void Client_Throw(int isArrow)
     {
         if (isArrow == 1)
-            All_SetArrowPull(false);
+            RPC_NotifySetArrowPull(false);
 
         if (!HasInputAuthority)
             return;
@@ -276,11 +275,9 @@ public class ToolStateManager : BaseStateManager
     /// <summary>
     /// Aim 카메라,UI 설정
     /// </summary>
-    public void Client_SetAimCameraAndUI(bool aimStart)
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplySetAimCameraAndUI(bool aimStart)
     {
-        if (!HasInputAuthority)
-            return;
-
         cameraManager.MoveAimCamera(aimStart);
         interactUI.SetAimCrosshair(aimStart);
     }
@@ -288,7 +285,8 @@ public class ToolStateManager : BaseStateManager
     /// <summary>
     /// 활 조준 설정
     /// </summary>
-    public void All_SetArrowPull(bool isAiming)
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_NotifySetArrowPull(bool isAiming)
     {
         bowAnim.SetBool("Pull", isAiming);
         toolManager.All_SetArrowActive(isAiming);
@@ -297,16 +295,10 @@ public class ToolStateManager : BaseStateManager
     /// <summary>
     /// 활 쏘는 애니메이션 트리거
     /// </summary>
-    public void All_BowShootAnimation() => bowAnim.SetTrigger("Shoot");
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_NotifyBowShootAnimation() => bowAnim.SetTrigger("Shoot");
 
-    public void All_RotatePlayer()
-    {
-        Vector3 lookDirection = cameraManager.CurrenCam.transform.forward;
-        lookDirection.y = 0f;
-
-        Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-    }
+    public void Host_RotatePlayer(bool rotate) => moveManager.IsRotate = rotate;
 
     public bool All_IsDecreaseDurationTool()
     {

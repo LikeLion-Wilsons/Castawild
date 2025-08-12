@@ -4,6 +4,7 @@ public class UseToolState : ToolBaseState
     private int comboCount = 1;
     private float elapsed = 0f;
     private float rotateTime = 0.2f;
+
     public UseToolState(ToolStateManager _toolStateManager)
         : base(_toolStateManager)
     {
@@ -24,9 +25,9 @@ public class UseToolState : ToolBaseState
 
         else if (toolStateManager.CurrentToolType == ToolType.Bow)
         {
-            toolStateManager.toolManager.All_SetBowPos(true);
+            toolStateManager.toolManager.RPC_NotifySetBowPos(true);
             toolStateManager.toolManager.All_SetArrowActive(true);
-            toolStateManager.All_SetArrowPull(true);
+            toolStateManager.RPC_NotifySetArrowPull(true);
         }
 
         toolStateManager.player.CanRecoverStamina = false;
@@ -45,10 +46,10 @@ public class UseToolState : ToolBaseState
         if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
             toolStateManager.moveManager.IsAiming = false;
-            toolStateManager.Client_SetAimCameraAndUI(false);
+            toolStateManager.RPC_ApplySetAimCameraAndUI(false);
 
             if (toolStateManager.CurrentToolType == ToolType.Bow)
-                toolStateManager.All_SetArrowPull(false);
+                toolStateManager.RPC_NotifySetArrowPull(false);
         }
 
         // 곡괭이, 도끼는 손 때까지 상태 유지
@@ -75,7 +76,7 @@ public class UseToolState : ToolBaseState
             {
                 toolStateManager.Host_ChangeState(ToolState.Idle);
                 if (toolStateManager.HasInputAuthority)
-                    toolStateManager.Client_SetAimCameraAndUI(false);
+                    toolStateManager.RPC_ApplySetAimCameraAndUI(false);
             }
         }
     }
@@ -93,7 +94,7 @@ public class UseToolState : ToolBaseState
         toolStateManager.DecreaseToolDuration = false;
 
         if (toolStateManager.CurrentToolType == ToolType.Bow && toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
-            toolStateManager.toolManager.All_SetBowPos(false);
+            toolStateManager.toolManager.RPC_NotifySetBowPos(false);
 
         if (toolStateManager.CurrentToolType == ToolType.Throw)
             toolStateManager.toolManager.All_SetPebbleActive(true);
