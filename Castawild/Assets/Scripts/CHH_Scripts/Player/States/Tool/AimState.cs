@@ -29,6 +29,9 @@ public class AimState : ToolBaseState
             toolStateManager.player.All_SetArrowActive(true);
             toolStateManager.All_SetArrowPull(true);
         }
+
+        if (toolStateManager.HasInputAuthority)
+            toolStateManager.player.playerInteractUI.ActiveCrosshair(true);
     }
 
     public override void UpdateState()
@@ -64,6 +67,9 @@ public class AimState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
+
+        if (toolStateManager.HasInputAuthority && !toolStateManager.player.playerInteractUI.showCrosshair)
+            toolStateManager.player.playerInteractUI.ActiveCrosshair(false);
     }
 
 

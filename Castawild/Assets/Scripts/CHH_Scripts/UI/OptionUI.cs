@@ -37,6 +37,9 @@ public class OptionUI : UIPart
         {
             interactUI.showCrosshair = !interactUI.showCrosshair;
             UpdateButtonUI(crossHairButton, crossHairButtonText, interactUI.showCrosshair);
+
+            if (!interactUI.showCrosshair)
+                interactUI.ActiveCrosshair(false);
         }
     }
 
