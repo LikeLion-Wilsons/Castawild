@@ -1,8 +1,6 @@
 using TMPro;
-using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.ProBuilder.MeshOperations;
 using UnityEngine.UI;
 
 public class OptionUI : UIPart
@@ -20,36 +18,37 @@ public class OptionUI : UIPart
 
     [Header("Button")]
     [SerializeField] private TextMeshProUGUI cameraShakeButtonText;
-    [SerializeField] private Button cameraShakeButton;
+    [SerializeField] private Image cameraShakeButton;
     [SerializeField] private TextMeshProUGUI crossHairButtonText;
-    [SerializeField] private Button crossHairButton;
+    [SerializeField] private Image crossHairButton;
 
     [Header("Color")]
-    [SerializeField] private Color onColor;  // On 상태 색
+    [SerializeField] private Color onColor;
     [SerializeField] private Color offColor;
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-            Toggle();
-    }
 
     public void ChangeValue(string button)
     {
         if (button == "CameraShake")
+        {
+            cameraManager.MovingCamera = !cameraManager.MovingCamera;
             UpdateButtonUI(cameraShakeButton, cameraShakeButtonText, cameraManager.MovingCamera);
+        }
         else
+        {
+            interactUI.showCrosshair = !interactUI.showCrosshair;
             UpdateButtonUI(crossHairButton, crossHairButtonText, interactUI.showCrosshair);
+        }
     }
 
-    private void UpdateButtonUI(Button button, TextMeshProUGUI buttonText, bool target)
+    private void UpdateButtonUI(Image button, TextMeshProUGUI buttonText, bool on)
     {
-        target = !target;
+        Debug.Log("cameraManager.MovingCamera : " + cameraManager.MovingCamera);
 
-        ColorBlock colors = button.colors;
-        colors.normalColor = target ? onColor : offColor;
+        Color color = button.color;
+        color = on ? onColor : offColor;
+        button.color = color;
 
-        buttonText.text = target ? "On" : "Off";
+        buttonText.text = on ? "On" : "Off";
     }
 
     public void ChangeSliderValue(string name)
@@ -57,6 +56,17 @@ public class OptionUI : UIPart
         if (name == "Sensivity")
             cameraManager.sensivity = sensivitySlider.value;
         else
-            cameraManager.ChangeFOV(sensivitySlider.value);
+            cameraManager.ChangeFOV(fovSlider.value);
+    }
+
+    public void Return() => Close();
+
+    public void QuitGame()
+    {
+#if UNITY_EDITOR
+        EditorApplication.isPlaying = false; // 에디터 플레이모드 종료
+#else
+    Application.Quit(); // 빌드에서 종료
+#endif
     }
 }

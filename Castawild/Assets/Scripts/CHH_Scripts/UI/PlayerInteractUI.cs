@@ -1,4 +1,3 @@
-using Fusion;
 using System.Collections;
 using Test.Shoot;
 using TMPro;
@@ -60,7 +59,7 @@ public class PlayerInteractUI : MonoBehaviour
     void OnDestroy()
     {
         playerController.Hit -= OnTargetDamaged;
-        UIPart.openUI += Client_TurnOffInteractiveUI;
+        UIPart.openUI -= Client_TurnOffInteractiveUI;
     }
 
     private void OnTargetDamaged(int damage) => _hitNumber.OnHit(damage);

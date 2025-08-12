@@ -1,4 +1,6 @@
 
+using UnityEngine;
+
 public class UseToolState : ToolBaseState
 {
     private int comboCount = 1;
@@ -34,13 +36,6 @@ public class UseToolState : ToolBaseState
 
     public override void UpdateState()
     {
-        if (toolStateManager.HasStateAuthority && toolStateManager.DecreaseToolDuration && !toolStateManager.IsDecreased
-            && toolStateManager.All_IsDecreaseDurationTool())
-        {
-            toolStateManager.IsDecreased = true;
-            toolStateManager.player.inventory.RPC_SubtractDurability(toolStateManager.player.currentToolInfoData.durability);
-        }
-
         if (elapsed <= rotateTime)
         {
             elapsed += toolStateManager.Runner.DeltaTime;
@@ -48,10 +43,15 @@ public class UseToolState : ToolBaseState
                 toolStateManager.playerController.All_RotateForward(toolStateManager.input);
         }
 
-        if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
+        if (toolStateManager.HasStateAuthority && toolStateManager.DecreaseToolDuration && !toolStateManager.IsDecreased
+            && toolStateManager.All_IsDecreaseDurationTool())
         {
-            toolStateManager.Client_SetAimCameraAndUI(false);
+            toolStateManager.IsDecreased = true;
+            toolStateManager.player.inventory.RPC_SubtractDurability(toolStateManager.player.currentToolInfoData.durability);
         }
+
+        if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
+            toolStateManager.Client_SetAimCameraAndUI(false);
 
         // 곡괭이, 도끼는 손 때까지 상태 유지
         if (CraftingToolActionRelease())

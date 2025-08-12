@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EatState : ToolBaseState
@@ -26,6 +27,9 @@ public class EatState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
+        if (toolStateManager.HasStateAuthority)
+            toolStateManager.player.Host_RestoreStatFromFood();
+
         toolStateManager.playerController.Host_FreezePosition(false);
     }
 }

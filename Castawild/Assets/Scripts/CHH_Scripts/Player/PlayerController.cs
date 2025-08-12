@@ -8,6 +8,7 @@ public sealed class PlayerController : NetworkBehaviour
 {
     public SimpleKCC kcc;
     private Player player;
+    [SerializeField] private OptionUI optionUI;
     private PlayerInteractUI playerInteractUI;
     private Rigidbody rigid;
     private MovementStateManager movementManager;
@@ -16,7 +17,6 @@ public sealed class PlayerController : NetworkBehaviour
 
     [Header("Movement")]
     public float jumpImpulse = 3f;
-    public float maxSpeed = 2f;
     public float rotationSpeed = 15f;
 
     [Header("Falling")]
@@ -86,18 +86,13 @@ public sealed class PlayerController : NetworkBehaviour
         }
 
         Grounded = Physics.Raycast(checkStartPoint.position, Vector3.down, out RaycastHit hit, checkDistance);
-
-        Vector3 start = checkStartPoint.position;
-        Vector3 end = start + Vector3.down * checkDistance;
-
-        Debug.DrawLine(start, end, Grounded ? Color.green : Color.red);
     }
 
-    //private void OnDrawGizmos()
-    //{
-    //    Gizmos.color = Grounded ? Color.green : Color.red;
-    //    Gizmos.DrawLine(checkStartPoint.position, checkStartPoint.position + Vector3.down * checkDistance);
-    //}
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Grounded ? Color.green : Color.red;
+        Gizmos.DrawLine(checkStartPoint.position, checkStartPoint.position + Vector3.down * checkDistance);
+    }
 
     public override void FixedUpdateNetwork()
     {
@@ -122,7 +117,7 @@ public sealed class PlayerController : NetworkBehaviour
 
         All_HandleMovement(input);
 
-        if (HasInputAuthority && !player.inventory.canvasHolder.AnyUIOpen())
+        if (HasInputAuthority && !player.inventory.canvasHolder.AnyUIOpen() && !optionUI.gameObject.activeSelf)
             Client_TestTryOverlap(input);
 
         prevInputButtons = input.Buttons;
@@ -181,16 +176,22 @@ public sealed class PlayerController : NetworkBehaviour
 
     private void All_HandleState(PlayerNetworkInputData input)
     {
-        movementManager.SetInput(input);
-        toolManager.SetInput(input);
+        if (player.IsCursorLocked)
+        {
+            movementManager.SetInput(input);
+            toolManager.SetInput(input);
+        }
 
         if (movementManager.movementStateDict.TryGetValue(movementManager.CurrentMoveState, out var movementState))
             movementState.UpdateState();
         if (toolManager.toolStateDict.TryGetValue(toolManager.CurrentToolState, out var toolState))
             toolState.UpdateState();
 
-        movementManager.SetPrevInputButton(input.Buttons);
-        toolManager.SetPrevInputButton(input.Buttons);
+        if (player.IsCursorLocked)
+        {
+            movementManager.SetPrevInputButton(input.Buttons);
+            toolManager.SetPrevInputButton(input.Buttons);
+        }
     }
 
     private void Host_ChangePosition()
@@ -214,7 +215,6 @@ public sealed class PlayerController : NetworkBehaviour
 
     private void All_HandleMovement(PlayerNetworkInputData input)
     {
-        maxSpeed = player.All_CanMoving() ? movementManager.currentMoveSpeed : 0f;
         movementManager.MoveValue = input.moveValue;
 
         if (HasStateAuthority)
@@ -232,7 +232,7 @@ public sealed class PlayerController : NetworkBehaviour
             velocity.y = 0f;
 
         // 수평 속도
-        Vector3 horizontalVel = direction * maxSpeed;
+        Vector3 horizontalVel = direction * movementManager.currentMoveSpeed;
 
         velocity.x = horizontalVel.x;
         velocity.z = horizontalVel.z;
@@ -445,6 +445,7 @@ public sealed class PlayerController : NetworkBehaviour
     {
         if (!HasStateAuthority)
             return;
+
         if (freeze)
         {
             kcc.ResetVelocity();

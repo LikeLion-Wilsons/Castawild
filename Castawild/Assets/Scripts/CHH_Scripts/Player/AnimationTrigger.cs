@@ -25,7 +25,10 @@ public class AnimationTrigger : MonoBehaviour
         toolManager.DecreaseToolDuration = false;
         toolManager.IsAnimationFinished = true;
     }
-    public void ToolAnimationStartTrigger() => toolManager.IsAnimationFinished = false;
+    public void ToolAnimationStartTrigger()
+    {
+        toolManager.IsAnimationFinished = false;
+    }
     public void MoveAnimationFinishTrigger() => movementManager.IsAnimationFinished = true;
     public void MoveAnimationStartTrigger() => movementManager.IsAnimationFinished = false;
     public void CanLanding() => movementManager.CanLanding = true;

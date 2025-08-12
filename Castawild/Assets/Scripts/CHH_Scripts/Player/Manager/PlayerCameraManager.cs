@@ -33,8 +33,6 @@ public class PlayerCameraManager : MonoBehaviour
     [SerializeField] private float maxYaw = 90f;
     #endregion
 
-
-
     #region First Person
     [Header("1인칭")]
     [SerializeField] private GameObject[] playerMeshes;
@@ -60,10 +58,8 @@ public class PlayerCameraManager : MonoBehaviour
 
     private Vector3 thirdPerson_DefaultTargetPos;
 
-    private float defaultFov;
     private float currentFOV;
     #endregion
-
 
     #region Third Person Camera Zoom
     [Header("3인칭 Zoom")]
@@ -136,18 +132,16 @@ public class PlayerCameraManager : MonoBehaviour
 
     private void SubscribeEvents()
     {
+        inputManager.cursorLocked -= ActivateCameraInput;
         inputManager.cursorLocked += ActivateCameraInput;
-        inputManager.cursorUnLocked = InactivateCameraInput;
     }
 
     private void InitVariables()
     {
         thirdPerson_DefaultTargetPos = thirdPersonTarget.localPosition;
-        defaultFov = firstPersonCam.Lens.FieldOfView;
     }
 
-    public void ActivateCameraInput() => inputAxisController.enabled = true;
-    public void InactivateCameraInput() => inputAxisController.enabled = false;
+    public void ActivateCameraInput(bool cursorLocked) => inputAxisController.enabled = cursorLocked;
 
     private void Update()
     {
@@ -157,10 +151,9 @@ public class PlayerCameraManager : MonoBehaviour
         HandleViewChange();
         UpdateCameraPitch();
 
-        if (MovingCamera)
+        if (MovingCamera && player.All_CanMoving())
             MoveUpDownCamera();
     }
-
 
     private void MoveUpDownCamera()
     {
@@ -196,7 +189,6 @@ public class PlayerCameraManager : MonoBehaviour
             firstPersonTarget.transform.localPosition = Vector3.Lerp(firstPersonTarget.transform.localPosition, startPos, Time.deltaTime * transitionSpeed);
         }
     }
-
 
     private void HandleViewChange()
     {
@@ -264,7 +256,7 @@ public class PlayerCameraManager : MonoBehaviour
     // 1인칭 카메라 상하각도 조절
     private void UpdateCameraPitch()
     {
-        if (currentView == ViewType.ThirdPerson || !player.IsCursorLocked || !player.All_CanMoving())
+        if (currentView == ViewType.ThirdPerson || !player.All_CanMoving())
             return;
 
         pitch -= inputManager.lookInput.y * sensivity;
@@ -374,7 +366,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     public void ChangeFOV(float value)
     {
-        float changeAmount = value - defaultFov;
+        firstPersonCam.Lens.FieldOfView = value;
         thirdPersonCam.Lens.FieldOfView = value;
         currentFOV = value;
     }

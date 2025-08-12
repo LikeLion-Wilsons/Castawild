@@ -98,7 +98,7 @@ public class Player : NetworkBehaviour
     public ItemType currentItemType;
 
     public bool isNearFire;
-    public UIStats uiStats;
+    [HideInInspector] public UIStats uiStats;
     public event Action<int> Hit;
 
     public Coroutine fallingCoroutine;
@@ -121,6 +121,8 @@ public class Player : NetworkBehaviour
         InitStatus();
         InitTools();
 
+        RespawnPos = transform.position;
+
         if (HasInputAuthority)
             RPC_RequestSetNickname(PlayerTempData.nickname);
 
@@ -131,7 +133,7 @@ public class Player : NetworkBehaviour
     }
 
 
-    public void Init() => RespawnPos = transform.position;
+    public void Init() { }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     private void RPC_RequestSetNickname(string nickname) => this.nickname = nickname;
@@ -308,11 +310,6 @@ public class Player : NetworkBehaviour
     }
 
     /// <summary>
-    /// 도구 사용 가능한지
-    /// </summary>
-    public bool All_CanUseTool() => !IsUIOpen && CanMove;
-
-    /// <summary>
     /// 현재 들고있는 도구 + 플레이어 공격력
     /// </summary>
     public int All_GetToolAtt(string toolName = "")
@@ -322,7 +319,7 @@ public class Player : NetworkBehaviour
 
         if (currentToolInfoData.toolName.Contains(toolName))
             return playerData.attack + currentToolInfoData.att;
-        else if (currentToolInfoData.itemID > 400 || currentToolInfoData.itemID == 202)
+        else if ((currentToolInfoData.itemID > 400 && currentToolInfoData.itemID < 407) || currentToolInfoData.itemID == 202)
             return playerData.attack + 2;
         else
             return playerData.attack;
@@ -524,7 +521,7 @@ public class Player : NetworkBehaviour
         }
     }
 
-    public void RestoreStatFromFood()
+    public void Host_RestoreStatFromFood()
     {
         if (foodRestoreCoroutine != null)
             StopCoroutine(foodRestoreCoroutine);
@@ -576,11 +573,11 @@ public class Player : NetworkBehaviour
     {
         if (_currentItemIdx == 202)
             currentItemType = ItemType.Tool;
-        // 50 ~ 59 : Drink
-        else if (_currentItemIdx >= 50 && _currentItemIdx < 60)
+        // 407, 203, 204 : Drink
+        else if (_currentItemIdx == 407 || _currentItemIdx == 203 || _currentItemIdx == 204)
             currentItemType = ItemType.Drink;
-        // 60 ~ 69 : Food
-        else if (_currentItemIdx >= 60 && _currentItemIdx < 70)
+        // 6, 7 : Food
+        else if (_currentItemIdx == 6 || _currentItemIdx == 7)
             currentItemType = ItemType.Food;
         // 300 ~ 400 : Placeable
         else if (_currentItemIdx >= 300 && _currentItemIdx < 400)
