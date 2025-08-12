@@ -2212,6 +2212,8 @@ MonoBehaviour:
   temperatureBar: {fileID: 8254562132606757984}
   healthBar: {fileID: 7441853433576039053}
   staminaBar: {fileID: 2753404041570099846}
+  restoreColor: {r: 0.3333774, g: 0.6320754, b: 0, a: 0.7607843}
+  decreaseColor: {r: 0.7830189, g: 0.19575472, b: 0.19575472, a: 0.84313726}
 --- !u!1 &1525292573908377787
 GameObject:
   m_ObjectHideFlags: 0
