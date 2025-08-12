@@ -9,7 +9,7 @@ namespace YSB_Scripts
         public override void Spawned()
         {
             base.Spawned();
-            NetworkObjectVisibilityManager.Instance?.RegisterObject(this);
+            //NetworkObjectVisibilityManager.Instance?.RegisterObject(this); // Spawner로 이동
         }
 
         public override void Init(SpawnableDefinition def, int instanceId)
@@ -27,7 +27,6 @@ namespace YSB_Scripts
 
         public override void Interact(PlayerRef player, int att)
         {
-            Debug.Log($"Tree[{InstanceId}] Interact with player: {player} for {att} damage");
             if (!IsAlive()) return;
 
             RPC_RequestDamage(player, att);
@@ -52,6 +51,7 @@ namespace YSB_Scripts
                 Player _player = playerObj.GetComponent<Player>();
                 //InventoryDataManager inventoryData = _player.GetComponent<InventoryDataManager>();
                 //inventoryData.AddItem(definition.dropItemID, definition.dropAmount);//아이템 획득
+                Debug.Log($"Tree[{InstanceId}] Destroyed by player: {player}");
 
                 Die();
             }

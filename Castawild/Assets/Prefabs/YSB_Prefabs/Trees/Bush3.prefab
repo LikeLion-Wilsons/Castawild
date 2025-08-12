@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -3770143005643275101}
   - component: {fileID: 7485485263033936054}
   - component: {fileID: -2329140142539585828}
+  - component: {fileID: 7131290873947830395}
   m_Layer: 8
   m_Name: Bush3
   m_TagString: Untagged
@@ -118,7 +119,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactableType: 8
   visualRoot: {fileID: 9004953865888406921}
-  reviveTime: 10
+--- !u!136 &7131290873947830395
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1108199106518277594}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.2943103
+  m_Height: 2.5886207
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.3684832, z: 0.21608973}
 --- !u!1 &2227594373220883325
 GameObject:
   m_ObjectHideFlags: 0
