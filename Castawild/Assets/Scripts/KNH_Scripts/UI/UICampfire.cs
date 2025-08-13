@@ -34,6 +34,7 @@ public class UICampfire : UIPart
     {
         uiManager = uiCanvas.GetComponent<UI_Manager>();
         SetFuelIcon();
+        timerText.text = 0 + "m " + 0 + "s";
     }
 
     void Update()
@@ -66,8 +67,8 @@ public class UICampfire : UIPart
             if (arrowImage.fillAmount >= 1) arrowImage.fillAmount = 0f;//초기화
         }
         //현재 연료 남은 시간
-        currentTime = netWorkCampfire.RemainingFireTime;
-        //타이머 네트워크 동기화 필요(UI 닫혀있을 때에도 타이머 감소)
+        currentTime = netWorkCampfire.fireTime;
+
         if (currentTime > 0)
         {
             SetTimerText();
@@ -76,7 +77,6 @@ public class UICampfire : UIPart
         {
             campFire.SetFireActive(false);
             fireImage.SetActive(false);
-            netWorkCampfire.RPC_SetisFire(false);
         }
     }
     public void AddFuelButton()
@@ -119,10 +119,6 @@ public class UICampfire : UIPart
         fuelIcon.sprite = ItemDataBase.Instance.GetItemByID(fuelList[selectedFuelIndex]).image;
     }
 
-    void AddTime(float time)
-    {
-        currentTime += time;
-    }
 
     void SetTimerText()
     {
