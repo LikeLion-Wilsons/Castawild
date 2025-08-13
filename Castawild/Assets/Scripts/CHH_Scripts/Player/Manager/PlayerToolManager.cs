@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+// 현재 들고있는 무기
+public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe }
+
 [DisallowMultipleComponent]
 public class PlayerToolManager : NetworkBehaviour
 {
@@ -135,6 +138,7 @@ public class PlayerToolManager : NetworkBehaviour
     /// </summary>
     public void Client_RemoveSelectedItem()
     {
+        RPC_NotifySetCurrentItemType(-1);
         RPC_NotifyEquipmentTool();
         RPC_RequestSetCurrentTool(ToolInfoData.Empty);
         RPC_RequestSetCurrentFood(FoodInfoData.Empty);
@@ -284,7 +288,12 @@ public class PlayerToolManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_ChangeItemIdx(int idx) => currentItemIdx = idx;
+    private void RPC_ChangeItemIdx(int idx)
+    {
+        currentItemIdx = idx;
+        Debug.Log("currentItemIdx : " + currentItemIdx);
+        Debug.Log("prevItemIdx : " + prevItemIdx);
+    }
 
     private void All_AllToolInActive()
     {
@@ -311,10 +320,6 @@ public class PlayerToolManager : NetworkBehaviour
 
         All_AllToolInActive();
     }
-
-
-
-
 
     /// <summary>
     /// 곡괭이/도끼 들고있는지 확인
