@@ -9,6 +9,8 @@ interface IDamageable
 }
 public class DummyTarget : NetworkBehaviour,IDamageable
 {
+
+    public int ID;
     [SerializeField] private float _reviveTime = 3f;
     [Networked] private TickTimer _reviveCooldown { get; set; }
 
@@ -82,8 +84,25 @@ public class DummyTarget : NetworkBehaviour,IDamageable
         onDamaged?.Invoke(player, message);
     }
 
+
+    private SoundManager soundManager = null;
     void OnchangedHealth()
     {
-        Debug.Log($"[{gameObject.name}] hp:{health}");
+        //Debug.Log($"[{gameObject.name}] hp:{health}");
+        if (soundManager == null)
+        {
+            soundManager = FindAnyObjectByType<SoundManager>();
+        }
+        
+        //사운드 테스트.
+        switch (ID)
+        {
+            case 0:
+                soundManager.PlayGlobalSound3D("Env_1", transform.position);
+                break;
+            case 1:
+                soundManager.PlayLocalSound3D("Env_2", transform.position);
+                break;
+        } 
     }
 }
