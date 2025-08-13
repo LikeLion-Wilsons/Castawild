@@ -3,13 +3,11 @@ using UnityEngine;
 
 public class SoundTrigger : MonoBehaviour
 {
-    [SerializeField] private AudioSource source;
-
     private int triggerCount = 0;
 
     bool IsLocalPlayer(Collider other)
     {
-        if (other.CompareTag("Player") == false) return false;
+        if (other.gameObject.layer != LayerMask.NameToLayer("Player")) return false;
 
         var netObj = other.GetComponentInParent<NetworkObject>();
         if (netObj == null) return false;
@@ -21,12 +19,12 @@ public class SoundTrigger : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (IsLocalPlayer(other) == false) return;
-        triggerCount++;
-        if (triggerCount > 0 && !source.isPlaying)
+        if (triggerCount <1)
         {
-            Debug.Log($"Sound Trigger Enter : {source.clip.name}");
-            source.Play();
+            Debug.Log($"Sound Trigger Enter");
+            SoundManager.Instance.PlayBGM("Env_2");
         }
+        triggerCount++;
     }
 
     private void OnTriggerExit(Collider other)
@@ -35,8 +33,8 @@ public class SoundTrigger : MonoBehaviour
         triggerCount--;
         if (triggerCount <= 0)
         {
-            Debug.Log($"Sound Trigger Exit : {source.clip.name}");
-            source.Stop();
+            Debug.Log($"Sound Trigger Exit");
+            SoundManager.Instance.PlayBGM("의미없는텍스트");
             triggerCount = 0;
         }
     }
