@@ -234,7 +234,7 @@ public class PlayerMoveManager : NetworkBehaviour
     /// <summary>
     /// 리스폰 위치 변경
     /// </summary>
-    public void Host_SetPosition(Vector3 position)
+    public void Host_SetChangePosition(Vector3 position)
     {
         IsChangePos = true;
         ChangePos = position;
@@ -243,7 +243,7 @@ public class PlayerMoveManager : NetworkBehaviour
     /// <summary>
     /// 위치 변경
     /// </summary>
-    public void All_SetPosition(Vector3 position)
+    public void Host_SetPosition(Vector3 position)
     {
         if (HasStateAuthority)
         {

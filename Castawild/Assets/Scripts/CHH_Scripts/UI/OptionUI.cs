@@ -54,12 +54,14 @@ public class OptionUI : UIPart
         buttonText.text = on ? "On" : "Off";
     }
 
+    public void SetSessionName(string name) => sessionName.text = name;
+
     public void ChangeSliderValue(string name)
     {
-        if (name == "Sensivity")
-            cameraManager.sensitivity = sensitivitySlider.value;
-        else
+        if (name == "FOV")
             cameraManager.ChangeFOV(fovSlider.value);
+        else
+            cameraManager.sensitivity = sensitivitySlider.value;
     }
 
     public void Return()

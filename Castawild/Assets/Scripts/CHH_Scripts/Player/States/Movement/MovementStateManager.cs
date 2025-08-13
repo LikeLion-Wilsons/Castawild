@@ -231,7 +231,7 @@ public class MovementStateManager : BaseStateManager
     /// <summary>
     /// Sleep 상태로 변경하는 RPC
     /// </summary>
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_RequestChangeSleepState(PlayerRef playerRef)
     {
         Host_ChangeState(MovementState.Sleep);

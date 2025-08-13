@@ -34,7 +34,7 @@ public class DeathState : MovementBaseState
             movementManager.player.Client_SleepDeadCameraTarget(false, false);
 
         if (movementManager.HasStateAuthority)
-            movementManager.moveManager.Host_SetPosition(movementManager.player.RespawnPos);
+            movementManager.moveManager.Host_SetChangePosition(movementManager.player.RespawnPos);
 
         movementManager.Revived = true;
         movementManager.moveManager.Host_FreezePosition(false);

@@ -13,33 +13,33 @@ public class Bed : InteractableObject
     }
 
     public override bool CanInteract() => CanSleep;
-    public void FinishSleep() => CanSleep = true;
 
     public override void Interact(PlayerRef playerRef)
     {
         if (!CanSleep)
             return;
 
+        RPC_RequestTrySleep(playerRef);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_RequestTrySleep(PlayerRef playerRef)
+    {
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
-        MovementStateManager movementManager = playerObj.GetComponent<MovementStateManager>();
+        if (playerObj == null || !CanSleep)
+            return;
+
         Player player = playerObj.GetComponent<Player>();
+        MovementStateManager movementManager = playerObj.GetComponent<MovementStateManager>();
+        PlayerMoveManager moveManager = playerObj.GetComponent<PlayerMoveManager>();
+        if (player == null || movementManager == null || moveManager == null)
+            return;
 
-        if (playerObj.HasStateAuthority)
-        {
-            CanSleep = false;
-            player.Host_currentBed = this;
-            movementManager.Host_ChangeState(MovementState.Sleep);
-        }
-        else
-        {
-            player.RPC_RequestCanSleep_Bed(this, false);
-            player.RPC_RequestCurrentBed(this);
-            movementManager.RPC_RequestChangeSleepState(playerRef);
-        }
+        CanSleep = false;
+        player.Host_currentBed = this;
 
-        player.All_SetRespawnPos(sleepPos.position);
-
-        PlayerMoveManager controller = playerObj.GetComponent<PlayerMoveManager>();
-        controller.All_SetPosition(sleepPos.position);
+        movementManager.Host_ChangeState(MovementState.Sleep);
+        player.Host_SetRespawnPos(sleepPos.position);
+        moveManager.Host_SetPosition(sleepPos.position);
     }
 }
