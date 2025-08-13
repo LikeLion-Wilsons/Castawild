@@ -1,7 +1,4 @@
-using Polyperfect.Common;
-using TMPro;
 using UnityEngine;
-using UnityEngine.AI;
 
 //_bearAnim 이런거 통일하기
 

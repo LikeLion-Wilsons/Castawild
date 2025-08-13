@@ -1,8 +1,4 @@
-using Polyperfect.Common;
-using TMPro;
 using UnityEngine;
-using UnityEngine.AI;
-
 /// <summary>
 /// 평상시 곰을 나타내는 클래스
 /// </summary>
