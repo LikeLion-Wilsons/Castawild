@@ -21,8 +21,8 @@ namespace YSB_Scripts
                 return;
             }
             definition = def as BranchDefinition;
-            MaxHP = definition.maxHealth;
-            Health = MaxHP;
+            MaxHP = definition.maxHealth;//EnvironmentObject에 가도됨. 나중에 tree 등 세부 설계가 달리지면 이런식으로..
+            Health = MaxHP;//EnvironmentObject에 가도됨. 나중에 tree 등 세부 설계가 달리지면 이런식으로..
         }
 
         public override void Interact(PlayerRef player, int att)
