@@ -53,8 +53,6 @@ public class PlayerToolManager : NetworkBehaviour
 
     private void ChangeToEmptyCup()
     {
-        // inven 에서도 바꾸는 로직 추가하기
-
         currentToolObject.SetActive(false);
         emptyCup.SetActive(true);
         currentToolObject = emptyCup;

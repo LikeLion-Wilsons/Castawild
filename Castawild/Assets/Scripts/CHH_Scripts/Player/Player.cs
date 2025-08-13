@@ -350,8 +350,8 @@ public class Player : NetworkBehaviour
             StopCoroutine(foodRestoreCoroutine);
 
         foodRestoreCoroutine = StartCoroutine(RestoreStatFromFoodCoroutine());
-        inventory.RPC_ClearCup();
 
+        inventory.RPC_ClearCup();
         ClearCup?.Invoke();
     }
 
