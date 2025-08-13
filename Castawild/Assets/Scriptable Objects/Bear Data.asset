@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16e65e7c1da5b0647b0f48df3b4c76ff, type: 3}
+  m_Name: Bear Data
+  m_EditorClassIdentifier: 
+  characterName: Bear
+  maxHp: 30
+  currentHp: 30
+  armor: 5
+  attack: 5
+  moveSpeed: 1
+  maxDetectionRadius: 10
+  minDetectionRadius: 5
+  attackRange: 3
+  attackCooldown: 1
+  canBeHarvested: 1
+  alertTime: 3
+  idleRadius: 50
+  escapeRadius: 10
+  escapeSpeed: 2
+  spawnType: 1
