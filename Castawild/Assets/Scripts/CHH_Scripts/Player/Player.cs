@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using Test;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
@@ -76,7 +77,7 @@ public class Player : NetworkBehaviour
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isSpawned;
 
-    [HideInInspector] public bool isNearFire;
+    [HideInInspector] public float isNearFire = 0f;
     [HideInInspector] public UIStats uiStats;
 
     public event Action<bool> Host_TakeDamagedEvent;
@@ -178,12 +179,16 @@ public class Player : NetworkBehaviour
         if (dayNightManager == null)
             return;
 
-        if ((IsCooling || (dayNightManager.isNightTime && !isNearFire)) && Temperature > 0f)
+        if ((IsCooling || dayNightManager.isNightTime && (isNearFire < 2f)) && Temperature > 0f)
             Temperature -= temperatureDecreaseRate * Runner.DeltaTime;
 
-        else if ((!IsCooling || !dayNightManager.isNightTime || isNearFire) && Temperature < playerData.maxTemperature)
-            Temperature += temperatureReceoveryRate * Runner.DeltaTime;
+        else if (Temperature < playerData.maxTemperature)
+        {
+            if (!IsCooling && (!dayNightManager.isNightTime || (dayNightManager.isNightTime && isNearFire >= 2)))
+                Temperature += temperatureDecreaseRate * Runner.DeltaTime;
+        }
     }
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -284,13 +289,7 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 리스폰 위치 설정
     /// </summary>
-    public void All_SetRespawnPos(Vector3 respawnPos)
-    {
-        if (HasInputAuthority)
-            RPC_RequestSetRespawnPos(respawnPos);
-        else
-            RespawnPos = respawnPos;
-    }
+    public void Host_SetRespawnPos(Vector3 respawnPos) => RespawnPos = respawnPos;
 
     /// <summary>
     /// 부활 스테이터스
@@ -449,12 +448,6 @@ public class Player : NetworkBehaviour
     }
 
     /// <summary>
-    /// 리스폰 장소 설정
-    /// </summary>
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_RequestSetRespawnPos(Vector3 respawnPos) { RespawnPos = respawnPos; }
-
-    /// <summary>
     /// 스테이터스 회복
     /// </summary>
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -487,6 +480,8 @@ public class Player : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_ApplyShakeCamera(Vector3 direction, float force) => cameraManager.ShakeCamera(direction, force);
 
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_RequestSetNearFire(float nearFire) => isNearFire += nearFire;
 
 
     // 임시 
@@ -499,10 +494,4 @@ public class Player : NetworkBehaviour
     public void Host_SetHasPebble(bool value) => playerToolManager.Host_SetHasPebble(value);
     public void RPC_RequestSetHasArrow(bool value) => playerToolManager.RPC_RequestSetHasArrow(value);
     public void RPC_RequestSetHasPebble(bool value) => playerToolManager.RPC_RequestSetHasPebble(value);
-}
-
-// 임시
-public class PlayerController
-{
-
 }

@@ -264,6 +264,11 @@ public class PlayerToolManager : NetworkBehaviour
             player.currentItemType = ItemType.Tool;
         else
             player.currentItemType = ItemType.Default;
+
+        if (_currentItemIdx == 402)
+            player.isNearFire++;
+        else
+            player.isNearFire--;
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
