@@ -14,8 +14,10 @@ public class PlayerToolManager : NetworkBehaviour
     [Header("Tool")]
     [SerializeField] private Transform tools;
     private Dictionary<int, GameObject> toolDict = new Dictionary<int, GameObject>();
+    [SerializeField] private GameObject emptyCup;
     private GameObject currentToolObject;
-    [Networked] public ToolInfoData currentToolInfoData { get; set; }
+    [Networked] public ToolType CurrentToolType { get; set; } // 지금 들고있는 도구 타입, 상태 관련 -> 애니메이션 재생
+    [Networked] public ToolInfoData currentToolInfoData { get; set; } // 들고있는 도구 정보 -> 공격력, 내구도 등
 
     [Header("Bow")]
     [SerializeField] private Transform bowOriginalParent;
@@ -42,6 +44,22 @@ public class PlayerToolManager : NetworkBehaviour
     public override void Spawned()
     {
         InitTools();
+        player.ClearCup -= ChangeToEmptyCup;
+        player.ClearCup += ChangeToEmptyCup;
+    }
+
+    private void ChangeToEmptyCup()
+    {
+        // inven 에서도 바꾸는 로직 추가하기
+
+        currentToolObject.SetActive(false);
+        emptyCup.SetActive(true);
+        currentToolObject = emptyCup;
+
+        FoodInfo foodInfo = emptyCup.GetComponent<FoodInfo>();
+        RPC_RequestSetCurrentFood(foodInfo.GetData());
+        ToolInfo toolInfo = emptyCup.GetComponent<ToolInfo>();
+        RPC_RequestSetCurrentTool(toolInfo.GetData());
     }
 
     public override void FixedUpdateNetwork()
@@ -293,4 +311,34 @@ public class PlayerToolManager : NetworkBehaviour
 
         All_AllToolInActive();
     }
+
+
+
+
+
+    /// <summary>
+    /// 곡괭이/도끼 들고있는지 확인
+    /// </summary>
+    public bool All_HoldCraftingTool()
+    {
+        if (CurrentToolType == ToolType.Axe || CurrentToolType == ToolType.Pickaxe)
+            return true;
+        else
+            return false;
+    }
+
+    /// <summary>
+    /// 조준가능한 도구인지 확인
+    /// </summary>
+    public bool All_HoldAimTool() => CurrentToolType == ToolType.Bow || CurrentToolType == ToolType.Throw;
+
+
+    public bool All_IsDecreaseDurationTool()
+    {
+        if (CurrentToolType == ToolType.Fist || CurrentToolType == ToolType.Bow || CurrentToolType == ToolType.Throw)
+            return false;
+        else
+            return true;
+    }
+
 }

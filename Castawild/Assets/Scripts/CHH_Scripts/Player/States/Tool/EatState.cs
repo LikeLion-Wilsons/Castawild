@@ -28,8 +28,6 @@ public class EatState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
-        if (toolStateManager.HasStateAuthority)
-            toolStateManager.player.Host_RestoreStatFromFood();
 
         toolStateManager.flagManager.Clear(PlayerFlags.Eat);
         toolStateManager.moveManager.Host_FreezePosition(false);

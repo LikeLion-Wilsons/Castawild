@@ -16,7 +16,7 @@ public class ToolIdleState : ToolBaseState
     {
         // Aim
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.aimInput)
-                && toolStateManager.All_HoldAimTool())
+                && toolStateManager.toolManager.All_HoldAimTool())
             toolStateManager.Host_ChangeState(ToolState.Aim);
 
         // UseTool
