@@ -18,7 +18,7 @@ MonoBehaviour:
     m_SubObjectGUID: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  maxHealth: 10
+  maxHealth: 1
   reviveTime: 10
   dropItemID: 0
   dropAmount: 1

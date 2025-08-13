@@ -44,7 +44,6 @@ public class WeatherManagerEditor : Editor
         lightingFoldout = EditorGUILayout.Foldout(lightingFoldout, "Global Lighting", foldoutStyle);
         if (lightingFoldout)
         {
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("directionalLight"), new GUIContent("Directional Light"));
             EditorGUILayout.BeginHorizontal();
             overrideSunColorProp.boolValue = EditorGUILayout.ToggleLeft("Sun", overrideSunColorProp.boolValue, GUILayout.Width(70));
             using (new EditorGUI.DisabledScope(!overrideSunColorProp.boolValue))
