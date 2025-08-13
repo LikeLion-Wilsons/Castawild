@@ -23,7 +23,7 @@ public class PlayerInteractUI : MonoBehaviour
     [SerializeField] private Sprite originImage;
     [SerializeField] private Sprite axeImage;
     [SerializeField] private Sprite pickaxeImage;
-    [HideInInspector] public bool showCrosshair = true;
+    [HideInInspector] public bool showCrosshair = false;
 
     [Header("Death")]
     [SerializeField] private GameObject deathUI;

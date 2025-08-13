@@ -5877,6 +5877,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6388187669656790763}
     m_Modifications:
+    - target: {fileID: 519742806063914764, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 519742806063914764, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1784353766779552798, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
       propertyPath: player
       value: 
@@ -5929,9 +5937,61 @@ PrefabInstance:
       propertyPath: cameraManager
       value: 
       objectReference: {fileID: 1839165641840884093}
+    - target: {fileID: 3535100661562062360, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+      propertyPath: m_Color.b
+      value: 0.2627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 3535100661562062360, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+      propertyPath: m_Color.g
+      value: 0.28627452
+      objectReference: {fileID: 0}
+    - target: {fileID: 3535100661562062360, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+      propertyPath: m_Color.r
+      value: 0.2901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 3725900820575889268, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3725900820575889268, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3725900820575889268, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3967227188587561804, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5173643480732979652, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5173643480732979652, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5777786391078981706, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
       propertyPath: m_Name
       value: OptionManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 8138345209581370686, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8138345209581370686, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8138345209581370686, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8424013637454259275, guid: 2757784ae878ff64f8467a2a453a850d, type: 3}
+      propertyPath: m_text
+      value: OFF
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
