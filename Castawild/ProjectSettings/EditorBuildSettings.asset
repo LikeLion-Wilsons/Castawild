@@ -4,7 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/KNH_Scenes/Main.unity
+    guid: e578c33bf8601244ca3712c3d91da328
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 2bbce45a8c9b27f4cbdfa6084f1fc2f9, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

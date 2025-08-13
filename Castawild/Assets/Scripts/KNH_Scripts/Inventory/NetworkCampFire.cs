@@ -5,16 +5,24 @@ using UnityEngine.UI;
 
 public class NetworkCampFire : NetworkBehaviour
 {
+    [Header("슬롯")]
     [Networked] public Item cookPotItem { get; set; }
     [Networked] public Item resultItem { get; set; }
-    [Networked] public bool isFire { get; set; } = false;//나중에 바꾸기
 
+    [Header("불")]
+    [Networked] public bool isFire { get; set; } = false;
+    [SerializeField] GameObject fireVFX;
+
+    [Header("시간")]
     [Networked] public float fireTime { get; set; }
+    [Networked] public float nextCookTime { get; set; }
+
+    public bool isCooking;
+
     Player player;
     Campfire campfire;
     public InventoryDataManager inventoryData;
-    private float nextCookTime;
-    public bool isCooking;
+    
 
 
 
@@ -37,12 +45,15 @@ public class NetworkCampFire : NetworkBehaviour
     private double nextFireDecreaseTime;
     public override void FixedUpdateNetwork()
     {
-        if (!Object.HasStateAuthority) return; // 호스트만 로직 수행
+        //if (!Object.HasStateAuthority) return; // 호스트만 로직 수행
         if (inventoryData == null) return;
 
+        if (fireTime > 0) isFire = true;
         // 불이 켜져 있을 때 fireTime 감소 처리
         if (isFire)
         {
+            if (Object.HasStateAuthority)
+                RPC_SetFireVFX(true);
             // 1초마다 감소
             if (Runner.SimulationTime >= nextFireDecreaseTime)
             {
@@ -54,13 +65,18 @@ public class NetworkCampFire : NetworkBehaviour
                     fireTime = 0;
                     isFire = false;
                     isCooking = false; // 불 꺼졌으니 요리 중지
+                    if (Object.HasStateAuthority)
+                        RPC_SetFireVFX(false);
                     return; // 불 꺼졌으면 아래 요리 로직은 실행 안 함
                 }
             }
+
         }
         else
         {
             isCooking = false;
+            if (Object.HasStateAuthority)
+                RPC_SetFireVFX(false);
             return;
         }
 
@@ -127,17 +143,25 @@ public class NetworkCampFire : NetworkBehaviour
         resultItem = item;
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_AddFireTime(float time)
     {
         fireTime += time;
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_SetisFire(bool tof)
     {
         isFire = tof;
+        RPC_SetFireVFX(tof);
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_SetFireVFX(bool tof)
+    {
+        fireVFX.SetActive(tof);
+    }
+
 
     public float RemainingCookTime
     {

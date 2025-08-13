@@ -1,7 +1,6 @@
 using Fusion;
 using UnityEngine;
 using Test;
-using System.Collections;
 
 public class YSB_Player : NetworkBehaviour
 {
@@ -24,30 +23,30 @@ public class YSB_Player : NetworkBehaviour
         if (HasInputAuthority)
         {
             RPC_SetNickname(PlayerTempData.nickname);
-            if (NetworkObjectVisibilityManager.Instance != null)
-            {
-                NetworkObjectVisibilityManager.Instance.SetPlayerTransform(Object.InputAuthority, transform);
-            }
-            else
-            {
-                Debug.LogWarning("[Spawned] VisibilityManager instance is null! Delaying registration...");
+            // if (NetworkObjectVisibilityManager.Instance != null)//Spawner로 이동
+            // {
+            //     NetworkObjectVisibilityManager.Instance.SetPlayerTransform(Object.InputAuthority, transform);
+            // }
+            // else
+            // {
+            //     Debug.LogWarning("[Spawned] VisibilityManager instance is null! Delaying registration...");
 
-                // 예: 코루틴이나 타이머를 써서 나중에 다시 등록 시도
-                StartCoroutine(RegisterPlayerTransformDelayed());
-            }
+            //     // 예: 코루틴이나 타이머를 써서 나중에 다시 등록 시도
+            //     StartCoroutine(RegisterPlayerTransformDelayed());
+            // }
         }
 
         //다른플레이어 닉네임 refresh.
         OnChangedNickname();
     }
 
-    private IEnumerator RegisterPlayerTransformDelayed()
-    {
-        while (NetworkObjectVisibilityManager.Instance == null)
-            yield return null;
+    // private IEnumerator RegisterPlayerTransformDelayed()//Spawner로 이동
+    // {,,
+    //     while (NetworkObjectVisibilityManager.Instance == null)
+    //         yield return null;
 
-        NetworkObjectVisibilityManager.Instance.SetPlayerTransform(Object.InputAuthority, transform);
-    }
+    //     NetworkObjectVisibilityManager.Instance.SetPlayerTransform(Object.InputAuthority, transform);
+    // }
 
     public override void FixedUpdateNetwork()
     {

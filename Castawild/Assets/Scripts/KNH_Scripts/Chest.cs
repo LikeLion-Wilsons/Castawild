@@ -29,7 +29,7 @@ public class Chest : InteractableObject
 
         player = playerObj.GetComponent<Player>();
 
-        PlayerController playerController = playerObj.GetComponent<PlayerController>();
+        //PlayerController playerController = playerObj.GetComponent<PlayerController>();
 
         canvasHolder = playerObj.GetComponent<InventoryDataManager>().canvasHolder;
         chestData = GetComponent<ChestDataManager>();
