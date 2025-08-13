@@ -40,12 +40,17 @@ public class SoundManager : NetworkBehaviour
         {
             _audioClips.Add(clip.name, clip);
         }
+
+        bgmSource.loop = true;
+        sfxSources.ForEach(x => x.loop = false);
+        bgmSource.playOnAwake = false;
+        sfxSources.ForEach(x => x.playOnAwake = false);
     }
     
 
     #region BGM
 
-    public void PlayBGM(string name, float volume = 1f)
+    public void PlayBGM(string name, float volume = 0.2f)
     {
         if (_bgmCo != null)
         {
@@ -55,12 +60,13 @@ public class SoundManager : NetworkBehaviour
         _bgmCo = StartCoroutine(BgmFadeInOut(name, volume));
     }
 
+
     private Coroutine _bgmCo = null;
 
     private IEnumerator BgmFadeInOut(string name, float volume)
     {
         //볼륨을 서서히 줄이기.
-        float _fadeSpeed = 0.1f;
+        float _fadeSpeed = 0.5f;
         while (bgmSource.volume > 0)
         {
             bgmSource.volume -= Time.deltaTime * _fadeSpeed;
@@ -68,6 +74,10 @@ public class SoundManager : NetworkBehaviour
         }
 
         bgmSource.Stop();
+        if (_audioClips.ContainsKey(name) == false)
+        {
+            yield break;
+        }
         bgmSource.clip = _audioClips[name];
         bgmSource.Play();
         
