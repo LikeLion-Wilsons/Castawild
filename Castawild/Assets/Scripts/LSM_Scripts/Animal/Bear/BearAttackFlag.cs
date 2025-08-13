@@ -16,7 +16,7 @@ public class BearAttackFlag : MonoBehaviour
             //태이크 데미지 호출
             if (player != null)
             {
-                player.TakeDamage(true, bearObject.Attack); 
+                //player.TakeDamage(true, bearObject.Attack); 
             }
         }
     }    
