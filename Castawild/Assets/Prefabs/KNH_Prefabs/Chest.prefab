@@ -313,7 +313,7 @@ GameObject:
   - component: {fileID: 4883542714525335335}
   m_Layer: 8
   m_Name: Chest
-  m_TagString: Untagged
+  m_TagString: Interactable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -427,6 +427,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactableType: 0
+  itemIndex: 305
   text: Open
   isPlaceable: 1
   _CanOpen: 1

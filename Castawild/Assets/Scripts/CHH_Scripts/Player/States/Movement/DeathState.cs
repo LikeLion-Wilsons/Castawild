@@ -1,20 +1,26 @@
-using UnityEngine;
-using UnityEngine.UIElements;
 
 public class DeathState : MovementBaseState
 {
 
-    public DeathState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
-        : base(_movementManager, _inputManager)
+    public DeathState(MovementStateManager _movementManager)
+        : base(_movementManager)
     {
     }
 
     public override void EnterState()
     {
-        movementManager.CurrentMoveState = MoveAnimationState.Death;
-        movementManager.player.RPC_AttachCameraToHead(true);
+        movementManager.CurrentMoveAnimation = MoveAnimatoinState.Death;
+
+        if (movementManager.HasInputAuthority)
+            movementManager.player.inventory.ThrowAllItem();
+
+        if (movementManager.HasInputAuthority)
+            movementManager.player.Client_SleepDeadCameraTarget(true, false);
+
         movementManager.Revived = false;
-        movementManager.playerController.RPC_FreezePosition(true);
+        movementManager.moveManager.Host_FreezePosition(true);
+
+        movementManager.flagManager.Set(PlayerFlags.Death);
     }
 
     public override void UpdateState()
@@ -23,10 +29,14 @@ public class DeathState : MovementBaseState
 
     public override void ExitState()
     {
-        movementManager.player.RPC_AttachCameraToHead(false);
-        movementManager.playerController.SetPosition(movementManager.player.RespawnPos);
+        movementManager.flagManager.Clear(PlayerFlags.Death);
+        if (movementManager.HasInputAuthority)
+            movementManager.player.Client_SleepDeadCameraTarget(false, false);
+
+        if (movementManager.HasStateAuthority)
+            movementManager.moveManager.Host_SetPosition(movementManager.player.RespawnPos);
+
         movementManager.Revived = true;
-        movementManager.RPC_TriggerSet(false);
-        movementManager.playerController.RPC_FreezePosition(false);
+        movementManager.moveManager.Host_FreezePosition(false);
     }
 }

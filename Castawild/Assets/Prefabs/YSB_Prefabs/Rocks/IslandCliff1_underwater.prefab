@@ -9,7 +9,7 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3561246944062382096, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: ff1cab631b2946eb9f6f6e010527fc4c, type: 2}
     - target: {fileID: 5901609915621537468, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
@@ -53,7 +53,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6305326563906947740, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: ff1cab631b2946eb9f6f6e010527fc4c, type: 2}
     - target: {fileID: 6533995593411013638, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
@@ -61,7 +61,7 @@ PrefabInstance:
       value: IslandCliff1_underwater
       objectReference: {fileID: 0}
     - target: {fileID: 7822372157212731866, guid: c66bdc3baacd4171bfb9402e69687fe1, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: ff1cab631b2946eb9f6f6e010527fc4c, type: 2}
     m_RemovedComponents: []

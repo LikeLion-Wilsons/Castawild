@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 301_CampFire
   m_EditorClassIdentifier: 
   itemID: 301
-  image: {fileID: 21300000, guid: e4572f8d440ec8045bb20f6a278054fc, type: 3}
+  image: {fileID: 21300000, guid: 36cb265e616dec044aa765fa37517ae2, type: 3}
   itemName: "\uBAA8\uB2E5\uBD88"
   description: "\uBD88\uC744 \uD53C\uC6B8 \uC218 \uC788\uB2E4."
   type: 3
@@ -23,3 +23,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8a4a708c8d089da419ff325b52b9a76e, type: 2}
   - {fileID: 11400000, guid: f65e9d8fd998e834da200d7b1ce7c28a, type: 2}
   ingredientCount: 0500000005000000
+  buildPreviewPrefab: {fileID: 4755449990836686537, guid: 10a6adec4e70868439e30da8718b3161, type: 3}
+  buildPrefab: {fileID: 6167062138974328233, guid: b3205841b2c54e84e941859841c61959, type: 3}

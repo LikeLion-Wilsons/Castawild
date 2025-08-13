@@ -1,40 +1,54 @@
-using UnityEngine;
 
 public class UseToolState : ToolBaseState
 {
     private int comboCount = 1;
+    private float elapsed = 0f;
+    private float rotateTime = 0.2f;
 
-    public UseToolState(ToolStateManager _toolStateManager, PlayerInputManager _inputManager)
-        : base(_toolStateManager, _inputManager)
+    public UseToolState(ToolStateManager _toolStateManager)
+        : base(_toolStateManager)
     {
     }
 
     public override void EnterState()
     {
-        toolStateManager.playerController.RPC_FreezePosition(true);
-        toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
+        toolStateManager.CurrentToolAnimationState = ToolAnimationState.UseTool;
+        toolStateManager.movementManager.Host_ChangeState(MovementState.Idle);
+        toolStateManager.moveManager.Host_FreezePosition(true);
 
-        toolStateManager.CurrentToolUseState = ToolAnimationState.FullUse;
+        toolStateManager.DecreaseToolDuration = false;
 
-        if (toolStateManager.CurrentToolType == ToolType.Fist || toolStateManager.CurrentToolType == ToolType.Throw)
+        if (toolStateManager.CurrentToolType== ToolType.Fist || toolStateManager.CurrentToolType== ToolType.Throw)
         {
-            SetActiveArmMesh(true);
-            if (toolStateManager.CurrentToolType == ToolType.Throw)
-                toolStateManager.player.CurrentToolActive(true);
+            toolStateManager.Client_ArmVisibleChanged(true);
         }
 
-        else if (toolStateManager.CurrentToolType == ToolType.Bow)
-            toolStateManager.RPC_BowAim(true);
+        else if (toolStateManager.CurrentToolType== ToolType.Bow)
+        {
+            toolStateManager.toolManager.RPC_NotifySetBowPos(true);
+            toolStateManager.toolManager.All_SetArrowActive(true);
+            toolStateManager.RPC_NotifySetArrowPull(true);
+        }
+
+        elapsed = 0f;
     }
 
     public override void UpdateState()
     {
-        if (toolStateManager.input.currentView == ViewType.ThirdPerson)
-            toolStateManager.playerController.LookForward_ThirdPerson(toolStateManager.input);
+        if (elapsed <= rotateTime)
+        {
+            elapsed += toolStateManager.Runner.DeltaTime;
+            if (toolStateManager.input.currentView == ViewType.ThirdPerson)
+                toolStateManager.moveManager.All_RotateForward(toolStateManager.input);
+        }
 
         if (toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
         {
-            toolStateManager.StartAim(false);
+            toolStateManager.flagManager.Clear(PlayerFlags.Aim);
+            toolStateManager.RPC_ApplySetAimCameraAndUI(false);
+
+            if (toolStateManager.CurrentToolType== ToolType.Bow)
+                toolStateManager.RPC_NotifySetArrowPull(false);
         }
 
         // 곡괭이, 도끼는 손 때까지 상태 유지
@@ -46,6 +60,7 @@ public class UseToolState : ToolBaseState
         {
             if (CanComboAttack() && comboCount == 1)
             {
+                toolStateManager.DecreaseToolDuration = false;
                 comboCount++;
                 toolStateManager.CanComboAttack = true;
                 return;
@@ -54,11 +69,13 @@ public class UseToolState : ToolBaseState
 
         if (toolStateManager.IsAnimationFinished)
         {
-            if (toolStateManager.input.IsDown(PlayerNetworkInputData.aimInput) && toolStateManager.HoldAimTool())
-                toolStateManager.ChangeState(toolStateManager.aimState);
+            if (toolStateManager.input.IsDown(PlayerNetworkInputData.aimInput) && toolStateManager.toolManager.All_HoldAimTool())
+                toolStateManager.Host_ChangeState(ToolState.Aim);
             else
             {
-                toolStateManager.ChangeState(toolStateManager.idleState);
+                toolStateManager.Host_ChangeState(ToolState.Idle);
+                if (toolStateManager.HasInputAuthority)
+                    toolStateManager.RPC_ApplySetAimCameraAndUI(false);
             }
         }
     }
@@ -67,13 +84,22 @@ public class UseToolState : ToolBaseState
     {
         base.ExitState();
 
-        if (toolStateManager.CurrentToolType == ToolType.Fist)
-            SetActiveArmMesh(false);
+        if (toolStateManager.HasStateAuthority && toolStateManager.DecreaseToolDuration
+            && toolStateManager.toolManager.All_IsDecreaseDurationTool())
+            toolStateManager.player.inventory.RPC_SubtractDurability(toolStateManager.toolManager.currentToolInfoData.durability);
 
-        else if (toolStateManager.CurrentToolType == ToolType.Bow)
-            toolStateManager.RPC_BowAim(false);
+        toolStateManager.DecreaseToolDuration = false;
 
-        toolStateManager.playerController.RPC_FreezePosition(false);
+        if (toolStateManager.CurrentToolType== ToolType.Bow && toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
+            toolStateManager.toolManager.RPC_NotifySetBowPos(false);
+
+        if (toolStateManager.CurrentToolType== ToolType.Throw)
+            toolStateManager.toolManager.All_SetPebbleActive(true);
+
+        if (toolStateManager.CurrentToolType== ToolType.Fist)
+            toolStateManager.Client_ArmVisibleChanged(false);
+
+        toolStateManager.moveManager.Host_FreezePosition(false);
 
         comboCount = 1;
         toolStateManager.ComboAttack = false;
@@ -81,10 +107,10 @@ public class UseToolState : ToolBaseState
 
     private bool CraftingToolActionRelease()
     {
-        if (toolStateManager.HoldCraftingTool())
+        if (toolStateManager.toolManager.All_HoldCraftingTool())
         {
             if (!toolStateManager.input.IsDown(PlayerNetworkInputData.toolUseInput) && toolStateManager.IsAnimationFinished)
-                toolStateManager.ChangeState(toolStateManager.idleState);
+                toolStateManager.Host_ChangeState(ToolState.Idle);
             return true;
         }
         return false;
@@ -92,17 +118,12 @@ public class UseToolState : ToolBaseState
 
     private bool CanComboAttack()
     {
-        ToolType type = toolStateManager.CurrentToolType;
+        ToolType type = toolStateManager.toolManager.CurrentToolType;
 
         bool isMelee = type == ToolType.Sword || type == ToolType.Fist;
         bool pressed = toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput);
         bool canCombo = toolStateManager.CanReceiveInput;
 
         return isMelee && pressed && canCombo;
-    }
-
-    public void SetActiveArmMesh(bool isActive)
-    {
-        toolStateManager.RPC_ArmVisibleChanged(isActive);
     }
 }

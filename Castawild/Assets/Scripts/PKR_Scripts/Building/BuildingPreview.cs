@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class BuildingPreview : MonoBehaviour
@@ -6,18 +7,19 @@ public class BuildingPreview : MonoBehaviour
     [SerializeField] private Color invalidColor;
     [SerializeField] private LayerMask groundLayerMask = 1; // 지면 레이어 마스크
     [SerializeField] private LayerMask obstacleLayerMask = 1; // 장애물 레이어 마스크
+    [SerializeField] private float maxSlopeAngle = 70f;
+    [SerializeField] private float gridSize = 1f;
 
     private GameObject previewObject;
-    private Renderer previewRenderer;
+    private Renderer[] previewRenderers;
     private Camera cam;
-    private Material validMaterial;
-    private Material invalidMaterial;
     private bool isPreviewing = false;
     private bool onAirPos = false;
 
+    private bool onWallPos = false;
+
     // 저장된 bounds 정보
     private Bounds savedBounds;
-    private bool hasSavedBounds = false;
     private Vector3 savedPosition;
     private Quaternion savedRotation;
     public bool IsBuildable => CheckBuildable();
@@ -25,20 +27,6 @@ public class BuildingPreview : MonoBehaviour
     void Awake()
     {
         cam = Camera.main;
-        validMaterial = CreateMaterial(validColor, 0.5f);
-        invalidMaterial = CreateMaterial(invalidColor, 0.5f);
-    }
-
-    private Material CreateMaterial(Color color, float alpha)
-    {
-        Material material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        color.a = alpha;
-        material.SetColor("_BaseColor", color); // URP Lit 쉐이더는 _BaseColor 사용
-        material.SetFloat("_Surface", 1); // 0: Opaque, 1: Transparent
-        material.SetFloat("_Blend", 0); // Alpha
-        material.SetFloat("_ZWrite", 0);
-        material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-        return material;
     }
 
     void Update()
@@ -59,7 +47,7 @@ public class BuildingPreview : MonoBehaviour
     {
         isPreviewing = true;
         previewObject = Instantiate(prefab);
-        previewRenderer = previewObject.GetComponent<Renderer>();
+        previewRenderers = previewObject.GetComponentsInChildren<Renderer>();
 
         // 미리보기 오브젝트의 콜라이더를 비활성화하여 자기 자신과 충돌하지 않도록 함
         SetupPreviewObject();
@@ -74,11 +62,6 @@ public class BuildingPreview : MonoBehaviour
         if (previewCollider != null)
         {
             savedBounds = previewCollider.bounds;
-            hasSavedBounds = true;
-        }
-        else
-        {
-            hasSavedBounds = false;
         }
 
         // 모든 콜라이더를 비활성화
@@ -92,22 +75,17 @@ public class BuildingPreview : MonoBehaviour
     public void PreviewStop()
     {
         isPreviewing = false;
-        hasSavedBounds = false;
         Destroy(previewObject);
     }
 
     private bool CheckBuildable()
     {
-        if (onAirPos || previewObject == null) return false;
+        if (onWallPos || onAirPos || previewObject == null) return false;
 
-        if (!hasSavedBounds) return true; // 저장된 bounds가 없으면 건설 가능
+        // bounds의 중심점을 현재 위치로 업데이트하고 스케일 적용
+        Vector3 currentCenter = previewObject.transform.position + savedBounds.center + Vector3.up * 0.1f;
 
-        // 저장된 bounds를 사용하여 충돌 검사
-        // bounds의 중심점을 현재 위치로 업데이트
-        Vector3 currentCenter = previewObject.transform.position + (savedBounds.center - previewObject.transform.position);
-
-        // 약간의 여유 공간을 주어서 딱 맞는 경우에도 건설할 수 있도록 함
-        Vector3 adjustedExtents = savedBounds.extents * 0.95f; // 5% 여유 공간
+        Vector3 adjustedExtents = savedBounds.extents;
 
         Collider[] obstacles = Physics.OverlapBox(
             currentCenter,
@@ -119,7 +97,7 @@ public class BuildingPreview : MonoBehaviour
         return obstacles.Length == 0;
     }
 
-    private void UpdatePreviewPosition()
+    public void UpdatePreviewPosition()
     {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit[] hits = Physics.RaycastAll(ray, 20f, groundLayerMask);
@@ -141,48 +119,63 @@ public class BuildingPreview : MonoBehaviour
             }
         }
 
+        Vector3 targetPosition;
         if (closestHit.HasValue)
         {
-            Vector3 targetPosition = closestHit.Value.point;
+            //Vector3 targetPosition = closestHit.Value.point;
+            targetPosition = closestHit.Value.point;
             Vector3 normal = closestHit.Value.normal;
 
-            // 콜라이더의 크기를 고려하여 높이 조정
-            if (hasSavedBounds)
+            float slopeAngle = Vector3.Angle(Vector3.up, normal);
+            if (slopeAngle <= maxSlopeAngle) // 지면으로 판단
             {
-                // normal 벡터를 고려하여 건설물을 지면에 올바르게 배치
-                float colliderHeight = savedBounds.size.y;
-
-                // normal 벡터가 위쪽을 향하는지 확인 (지면인지 확인)
-                if (normal.y > 0.5f) // 대략 30도 이내의 경사면
-                {
-                    // 지면에 수직으로 배치
-                    targetPosition.y += colliderHeight * 0.5f;
-                }
-                else
-                {
-                    // 경사면에 맞춰서 배치
-                    // normal 벡터 방향으로 콜라이더 높이의 절반만큼 이동
-                    Vector3 offset = normal * (colliderHeight * 0.5f);
-                    targetPosition += offset;
-                }
+                onWallPos = false;
+            }
+            else // 벽면으로 판단
+            {
+                // bounds의 x 또는 z 중 더 큰 값의 절반만큼 벽면으로부터 떨어뜨림
+                float offset = Mathf.Max(savedBounds.size.x, savedBounds.size.z) * 0.5f;
+                targetPosition += normal * offset;
+                onWallPos = true;//벽면에는 설치불가로 가정.
             }
 
-            previewObject.transform.position = targetPosition;
             onAirPos = false;
         }
+
         else
         {
-            previewObject.transform.position = ray.GetPoint(10f);
+            targetPosition = ray.GetPoint(10f);
+            //previewObject.transform.position = ray.GetPoint(10f);
+
             onAirPos = true;
         }
-        
+
+        targetPosition.x = Mathf.Round(targetPosition.x / gridSize) * gridSize;
+        targetPosition.y = Mathf.Round(targetPosition.y / gridSize) * gridSize;
+        targetPosition.z = Mathf.Round(targetPosition.z / gridSize) * gridSize;
+        previewObject.transform.position = targetPosition;
+
+        savedRotation = previewObject.transform.rotation;
         savedPosition = previewObject.transform.position;
     }
 
-    private void UpdatePreviewColor()
+    public void UpdatePreviewColor()
     {
         bool canBuild = CheckBuildable();
-        previewRenderer.material = canBuild ? validMaterial : invalidMaterial;
+
+        foreach (Renderer renderer in previewRenderers)
+        {
+            if (renderer == null)
+                continue;
+
+            Material[] materials = renderer.materials;
+            for (int i = 0; i < materials.Length; i++)
+            {
+                materials[i].color = canBuild ? validColor : invalidColor;
+            }
+
+            renderer.materials = materials;
+        }
     }
 
     public Vector3 GetPreviewPosition()

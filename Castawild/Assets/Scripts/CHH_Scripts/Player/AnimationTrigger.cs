@@ -1,63 +1,55 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
 public class AnimationTrigger : MonoBehaviour
 {
     private Player player;
-    private PlayerController playercontroller;
+    private PlayerInteractManager playercontroller;
     private MovementStateManager movementManager;
-    private ToolStateManager toolManager;
-    private PlayerCameraManager cameraManager;
+    private ToolStateManager toolStateManager;
     private PlayerInteractUI interactUI;
 
     private void Awake()
     {
         player = GetComponentInParent<Player>();
-        playercontroller = GetComponentInParent<PlayerController>();
+        playercontroller = GetComponentInParent<PlayerInteractManager>();
         movementManager = GetComponentInParent<MovementStateManager>();
-        toolManager = GetComponentInParent<ToolStateManager>();
-        cameraManager = transform.parent.GetComponentInChildren<PlayerCameraManager>();
+        toolStateManager = GetComponentInParent<ToolStateManager>();
         interactUI = transform.parent.GetComponentInChildren<PlayerInteractUI>();
     }
 
-    public void ToolAnimationFinishTrigger() => toolManager.IsAnimationFinished = true;
-    public void ToolAnimationStartTrigger() => toolManager.IsAnimationFinished = false;
+    public void ToolAnimationFinishTrigger()
+    {
+        toolStateManager.DecreaseToolDuration = false;
+        toolStateManager.IsAnimationFinished = true;
+    }
+    public void ToolAnimationStartTrigger()
+    {
+        toolStateManager.IsAnimationFinished = false;
+    }
     public void MoveAnimationFinishTrigger() => movementManager.IsAnimationFinished = true;
     public void MoveAnimationStartTrigger() => movementManager.IsAnimationFinished = false;
-    public void Jumped() => movementManager.isJumping = true;
-    public void ReceiveInput() => toolManager.CanReceiveInput = true;
+    public void CanLanding() => movementManager.CanLanding = true;
+    public void ReceiveInput() => toolStateManager.CanReceiveInput = true;
     public void StopReceiveInput()
     {
-        if (toolManager.CanComboAttack)
-            toolManager.ComboAttack = true;
-        toolManager.CanComboAttack = false;
-        toolManager.CanReceiveInput = false;
+        if (toolStateManager.CanComboAttack)
+            toolStateManager.ComboAttack = true;
+        toolStateManager.CanComboAttack = false;
+        toolStateManager.CanReceiveInput = false;
     }
 
-    public void Interact() => playercontroller.Interact();
-    public void FinishSleep()
+    public void Interact() => playercontroller.Client_Interact();
+
+    public void Throw(int isArrow)
     {
-        playercontroller.RPC_FreezePosition(false);
-        player.FinishSleep();
+        toolStateManager.Client_Throw(isArrow);
+
+        if (isArrow == 1)
+            toolStateManager.DecreaseToolDuration = true;
     }
 
-    public void CanWakeUp()
-    {
-        if (player.HasStateAuthority)
-            movementManager.CanWakeUp = true;
-
-        if (player.HasInputAuthority)
-        {
-            player.playerInteractUI.SetWakeUpUI();
-            movementManager.isLyingOrGettingUp = false;
-        }
-    }
-
-    public void LyingOrGettingUp(int playing) => movementManager.isLyingOrGettingUp = (playing != 0);
-
-    public void Throw(int isArrow) => toolManager.SetTargetPos(isArrow);
-
-    //public void SetTargetPos() => toolManager.SetTargetPos();
     public void ActiveDeathUI()
     {
         if (movementManager.HasInputAuthority)
@@ -66,13 +58,17 @@ public class AnimationTrigger : MonoBehaviour
 
     public void StartHit()
     {
-        if (toolManager.HasStateAuthority)
-            toolManager.StartHit();
+        //toolManager.Host_StartHit();
     }
 
     public void FinishHit()
     {
-        if (toolManager.HasStateAuthority)
-            toolManager.FinishHit();
+        //toolManager.Host_FinishHit();
+    }
+
+    public void Eat()
+    {
+        if (toolStateManager.HasStateAuthority)
+            toolStateManager.player.Host_RestoreStatFromFood();
     }
 }

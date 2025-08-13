@@ -3,26 +3,26 @@ using UnityEngine;
 
 public class GetHitState : MovementBaseState
 {
-    public GetHitState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
-        : base(_movementManager, _inputManager)
+    public GetHitState(MovementStateManager _movementManager)
+        : base(_movementManager)
     {
     }
 
     public override void EnterState()
     {
-        movementManager.CurrentMoveState = MoveAnimationState.GetHit;
-        movementManager.playerController.RPC_FreezePosition(true);
+        movementManager.CurrentMoveAnimation = MoveAnimatoinState.GetHit;
+        movementManager.moveManager.Host_FreezePosition(true);
     }
 
     public override void UpdateState()
     {
-        if (movementManager.IsAnimationFinished == true)
-            movementManager.ChangeState(movementManager.idleState);
+        if (movementManager.IsAnimationFinished)
+            movementManager.Host_ChangeState(MovementState.Idle);
     }
 
     public override void ExitState()
     {
-        movementManager.RPC_TriggerSet(false);
-        movementManager.playerController.RPC_FreezePosition(false);
+        movementManager.IsAnimationFinished = false;
+        movementManager.moveManager.Host_FreezePosition(false);
     }
 }

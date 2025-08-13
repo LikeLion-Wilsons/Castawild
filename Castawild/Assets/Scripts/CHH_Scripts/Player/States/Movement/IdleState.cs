@@ -3,43 +3,45 @@ using UnityEngine;
 
 public class IdleState : MovementBaseState
 {
-    public IdleState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
-        : base(_movementManager, _inputManager)
+    public IdleState(MovementStateManager _movementManager)
+        : base(_movementManager)
     {
     }
 
     public override void EnterState()
     {
-        movementManager.CurrentMoveState = MoveAnimationState.Idle;
+        movementManager.CurrentMoveAnimation = MoveAnimatoinState.Idle;
+        movementManager.flagManager.Set(PlayerFlags.MoveIdle);
     }
 
     public override void UpdateState()
     {
         // Move
-        if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput) && movementManager.player.CanMoving())
+        if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
         {
-            if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.HasEnoughStaminaToRun()
-                && movementManager.toolStateManager.currentState != movementManager.toolStateManager.aimState)
-                movementManager.ChangeState(movementManager.runState);
+            if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.All_CanRun())
+                movementManager.Host_ChangeState(MovementState.Run);
             else
-                movementManager.ChangeState(movementManager.walkState);
+                movementManager.Host_ChangeState(MovementState.Walk);
         }
 
         // Crouch
         if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.crouchInput))
-            movementManager.ChangeState(movementManager.crouchState);
+            movementManager.Host_ChangeState(MovementState.Crouch);
 
         // Jump
-        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.canJump)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput))
         {
-            movementManager.canJump = false;
-            movementManager.previousState = this;
-            movementManager.ChangeState(movementManager.jumpState);
+            if (movementManager.moveManager.Grounded)
+            {
+                movementManager.previousState = MovementState.Idle;
+                movementManager.Host_ChangeState(MovementState.Jump);
+            }
         }
     }
 
     public override void ExitState()
     {
-
+        movementManager.flagManager.Clear(PlayerFlags.MoveIdle);
     }
 }

@@ -95,11 +95,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2787470206478461830}
-  - component: {fileID: 6451969351442084532}
   - component: {fileID: 3473311185633009029}
   - component: {fileID: 6983898623678621808}
   - component: {fileID: -7374916689860518824}
   - component: {fileID: 4199764797745822454}
+  - component: {fileID: 4801192569651053234}
+  - component: {fileID: 3343529374187580883}
   m_Layer: 8
   m_Name: ItemBox
   m_TagString: Untagged
@@ -123,23 +124,6 @@ Transform:
   - {fileID: 5989705425515398239}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6451969351442084532
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8916761579934458356}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _stateAuthorityChangeErrorCorrectionDelta: 0
-  SyncScale: 0
-  SyncParent: 0
-  _autoAOIOverride: 1
-  DisableSharedModeInterpolation: 0
 --- !u!114 &3473311185633009029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,8 +141,9 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 6451969351442084532}
   - {fileID: -7374916689860518824}
+  - {fileID: 4801192569651053234}
+  - {fileID: 3343529374187580883}
   ForceRemoteRenderTimeframe: 0
 --- !u!65 &6983898623678621808
 BoxCollider:
@@ -194,6 +179,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactableType: 0
+  itemIndex: 0
   text: 
   isPlaceable: 0
   item:
@@ -227,3 +213,38 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &4801192569651053234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8916761579934458356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a591d221a634417e9827eb58e17de84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 1
+  _interpolationTarget: {fileID: 0}
+  UsePreciseRotation: 0
+  UseRenderSleepThresholds: 1
+  RenderThresholds:
+    UseEnergy: 1
+    Position: 0.01
+    Rotation: 0.01
+    Scale: 0.01
+--- !u!114 &3343529374187580883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8916761579934458356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f50bb4936e2e86847be8ad314a238da1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

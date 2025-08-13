@@ -1,33 +1,33 @@
 
 public class CrouchState : MovementBaseState
 {
-    public CrouchState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
-        : base(_movementManager, _inputManager)
+    public CrouchState(MovementStateManager _movementManager)
+        : base(_movementManager)
     {
     }
 
     public override void EnterState()
     {
-        movementManager.CurrentMoveState = MoveAnimationState.CrouchIdle;
-        movementManager.currentMoveSpeed = movementManager.crouchSpeed;
+        movementManager.CurrentMoveAnimation = MoveAnimatoinState.CrouchIdle;
+        movementManager.moveManager.currentMoveSpeed = movementManager.crouchSpeed;
     }
 
     public override void UpdateState()
     {
         if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
-            movementManager.CurrentMoveState = MoveAnimationState.CrouchWalk;
+            movementManager.CurrentMoveAnimation = MoveAnimatoinState.CrouchWalk;
         else
-            movementManager.CurrentMoveState = MoveAnimationState.CrouchWalk;
+            movementManager.CurrentMoveAnimation = MoveAnimatoinState.CrouchWalk;
 
-        if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.HasEnoughStaminaToRun())
-            movementManager.ChangeState(movementManager.runState);
+        if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.All_CanRun())
+            movementManager.Host_ChangeState(MovementState.Run);
 
         else if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.crouchInput))
         {
             if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
-                movementManager.ChangeState(movementManager.idleState);
+                movementManager.Host_ChangeState(MovementState.Idle);
             else
-                movementManager.ChangeState(movementManager.walkState);
+                movementManager.Host_ChangeState(MovementState.Walk);
         }
     }
 

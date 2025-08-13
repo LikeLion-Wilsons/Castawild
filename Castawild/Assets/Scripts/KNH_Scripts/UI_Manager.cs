@@ -14,7 +14,9 @@ public class UI_Manager : MonoBehaviour
     // 수정한 부분
     public Player player;
     public UIStats uiStats;
+    [Header("상호작용중인 오브젝트")]
     public ChestDataManager currentOpenedChest;
+    public GameObject currentCampFire;
 
     public void SetOpenedChest(ChestDataManager chest)
     {
@@ -27,7 +29,7 @@ public class UI_Manager : MonoBehaviour
     {
         if (uiParts.ContainsKey(uiName))
         {
-            uiParts[uiName].Open(player.inputManager);
+            uiParts[uiName].Open();
         }
         else Debug.LogWarning($"UI {uiName} not found.");
     }
@@ -36,7 +38,7 @@ public class UI_Manager : MonoBehaviour
     {
         if (uiParts.ContainsKey(uiName))
         {
-            uiParts[uiName].Close(player.inputManager);
+            uiParts[uiName].Close();
         }
     }
 
@@ -45,12 +47,11 @@ public class UI_Manager : MonoBehaviour
         foreach (var part in uiParts.Values)
         {
             if (part.name == "HotBar") continue;
-            part.Close(player.inputManager);
+            part.Close();
         }
         if (currentOpenedChest != null)
-        {
             currentOpenedChest.GetComponent<Chest>().FinishInteract();
-        }
+        if (currentCampFire != null) currentCampFire.GetComponent<Campfire>().FinishInteract();
     }
 
     [SerializeField] private Transform ui_Part_Parent;
@@ -70,9 +71,9 @@ public class UI_Manager : MonoBehaviour
     {
         // 수정한 부분
         if (uiParts["Inventory"].IsOpen())
-            player.RPC_IsUIOpen(true);
+            player.RPC_RequestSetUIOpen(true);
         else
-            player.RPC_IsUIOpen(false);
+            player.RPC_RequestSetUIOpen(false);
 
         if (Input.GetKeyDown(KeyCode.Tab) && isDragging == false)
         {
@@ -82,8 +83,8 @@ public class UI_Manager : MonoBehaviour
             }
             else
             {
-                uiParts["Inventory"].Toggle(player.inputManager);
-                uiParts["Table"].Toggle(player.inputManager);
+                uiParts["Inventory"].Toggle();
+                uiParts["Table"].Toggle();
             }
         }
     }
@@ -97,6 +98,8 @@ public class UI_Manager : MonoBehaviour
     {
         foreach (var part in uiParts.Values)
         {
+            if (part.name == "HotBar")
+                continue;
             if (part.IsOpen())
                 return true;
         }
@@ -107,5 +110,6 @@ public class UI_Manager : MonoBehaviour
     {
         player = _player;
         uiStats.player = player;
+        player.uiStats = uiStats;
     }
 }

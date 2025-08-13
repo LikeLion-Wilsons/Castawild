@@ -16,7 +16,7 @@ public class UIInventory : UIPart
     public void BindToInventoryData(InventoryDataManager data)
     {
         inventoryData = data;
-        data.onInventoryUpdated += SetItemList;
+        InventoryDataManager.onInventoryUpdated += SetItemList;
         Init();
     }
 
@@ -49,6 +49,7 @@ public class UIInventory : UIPart
             {
                 item.itemID = -1;
                 item.count = 0;
+                item.durability = 1;
             }
             //Debug.Log(i + " : " + items[i].itemID+" " + items[i].count);
             itemPanels[i].SlotInit(item);
@@ -65,7 +66,7 @@ public class UIInventory : UIPart
         // 슬롯 수 부족할 경우 확장
         while (items.Count <= Mathf.Max(indexA, indexB))
         {
-            var item = new Item { itemID = -1, count = 0 };
+            var item = new Item { itemID = -1, count = 0, durability = 1 };
             items.Add(item);
 
             inventoryData.RPC_SetItem(indexB, item);

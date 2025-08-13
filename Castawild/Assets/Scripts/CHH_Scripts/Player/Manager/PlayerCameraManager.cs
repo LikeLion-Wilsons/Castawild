@@ -1,17 +1,17 @@
-using Fusion;
 using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 
 public enum ViewType { None, FirstPerson, ThirdPerson }
 
+[DisallowMultipleComponent]
 public class PlayerCameraManager : MonoBehaviour
 {
     #region Components
-    public CinemachineImpulseSource impulseSource;
-    private PlayerController playerController;
+
+    [SerializeField] private CinemachineImpulseSource impulseSource;
+    private PlayerMoveManager moveManager;
     private PlayerInputManager inputManager;
-    private MovementStateManager movementManager;
     private CinemachineOrbitalFollow orbital;
     private CinemachineInputAxisController inputAxisController;
     private ToolStateManager toolManager;
@@ -23,7 +23,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     #region Mouse Settings
     [Header("마우스")]
-    public float sensitivity = 1.5f;
+    public float sensitivity;
     private float pitch = 0f;
     private float yaw = 0f;
 
@@ -36,12 +36,17 @@ public class PlayerCameraManager : MonoBehaviour
     #region First Person
     [Header("1인칭")]
     [SerializeField] private GameObject[] playerMeshes;
-    [SerializeField] private GameObject playerHead;
 
     public CinemachineCamera firstPersonCam;
     [SerializeField] private Transform firstPersonTarget;
-    [SerializeField] private float firstPerson_AimFov;
-    private float firstPerson_DefaultFov;
+    [SerializeField] private float firstPerson_AimFovDelta = 5f;
+
+    [Header("CameraMove")]
+    private Vector3 originfirstPersonTargetPos;
+    [SerializeField] private Transform sleepCameraTarget;
+    [SerializeField] private float sleepTransitionTime;
+    [SerializeField] private Transform deadCameraTarget;
+    [SerializeField] private float deadTransitionTime;
     #endregion
 
     #region Third Person
@@ -49,10 +54,11 @@ public class PlayerCameraManager : MonoBehaviour
     public CinemachineCamera thirdPersonCam;
     [SerializeField] private Transform thirdPersonTarget;
     [SerializeField] private Transform thirdPerson_AimTargetPos;
-    [SerializeField] private float thirdPerson_AimFov;
+    [SerializeField] private float thirdPerson_AimFovDelta = 20f;
 
     private Vector3 thirdPerson_DefaultTargetPos;
-    private float thirdPerson_DefaultFov;
+
+    private float currentFOV;
     #endregion
 
     #region Third Person Camera Zoom
@@ -62,10 +68,28 @@ public class PlayerCameraManager : MonoBehaviour
     [SerializeField] private float zoomLerpSpeed = 10f;
     [SerializeField] private float minDistance = 3f;
     [SerializeField] private float maxDistance = 15f;
-
-    private float targetZoom;
-    private float currentZoom;
     #endregion
+
+    [Header("Move Camera")]
+    [HideInInspector] public bool MovingCamera = true;
+    [HideInInspector] public bool walk = false;
+    [HideInInspector] public bool run = false;
+    [Header("Walk")]
+    [SerializeField] private float walkAmplitude = 0.2f; // 세기
+    [SerializeField] private float walkFrequency = 8.5f; // 속도
+    [Header("Run")]
+    [SerializeField] private float sprintAmplitude = 0.2f;
+    [SerializeField] private float sprintFrequency = 15f;
+    [SerializeField] private float transitionSpeed = 10f;
+
+    private float targetAmplitude = 0f;
+    private float targetFrequency = 0f;
+
+    private float currentAmplitude;
+    private float currentFrequency;
+
+    private Vector3 startPos;
+    private float bobTimer = 0f;
 
     private Coroutine moveCameraCoroutine;
 
@@ -85,42 +109,39 @@ public class PlayerCameraManager : MonoBehaviour
         InitComponents();
         InitVariables();
         SubscribeEvents();
+        originfirstPersonTargetPos = firstPersonTarget.localPosition;
     }
 
     private void Start()
     {
         ViewChange(ViewType.FirstPerson);
+        startPos = firstPersonCam.transform.localPosition;
     }
 
     private void InitComponents()
     {
-        impulseSource = GetComponentInParent<CinemachineImpulseSource>();
         player = GetComponentInParent<Player>();
-        playerController = GetComponentInParent<PlayerController>();
+        moveManager = GetComponentInParent<PlayerMoveManager>();
         inputManager = GetComponentInParent<PlayerInputManager>();
-        movementManager = GetComponentInParent<MovementStateManager>();
         toolManager = GetComponentInParent<ToolStateManager>();
         orbital = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
         inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
         Camera.main.GetComponent<CinemachineBrain>().DefaultBlend = new(CinemachineBlendDefinition.Styles.Cut, 0f);
+        currentFOV = 60f;
     }
 
     private void SubscribeEvents()
     {
+        inputManager.cursorLocked -= ActivateCameraInput;
         inputManager.cursorLocked += ActivateCameraInput;
-        inputManager.cursorUnLocked = InactivateCameraInput;
     }
 
     private void InitVariables()
     {
         thirdPerson_DefaultTargetPos = thirdPersonTarget.localPosition;
-        thirdPerson_DefaultFov = thirdPersonCam.Lens.FieldOfView;
-        firstPerson_DefaultFov = firstPersonCam.Lens.FieldOfView;
-        targetZoom = currentZoom = orbital.Radius;
     }
 
-    public void ActivateCameraInput() => inputAxisController.enabled = true;
-    public void InactivateCameraInput() => inputAxisController.enabled = false;
+    public void ActivateCameraInput(bool cursorLocked) => inputAxisController.enabled = cursorLocked;
 
     private void Update()
     {
@@ -129,29 +150,69 @@ public class PlayerCameraManager : MonoBehaviour
 
         HandleViewChange();
         UpdateCameraPitch();
-        //ZoomCamera();
+
+        if (MovingCamera && moveManager.All_CanMoving())
+            MoveUpDownCamera();
+    }
+
+    private void MoveUpDownCamera()
+    {
+        if (walk)
+        {
+            targetAmplitude = walkAmplitude;
+            targetFrequency = walkFrequency;
+        }
+        else if (run)
+        {
+            targetAmplitude = sprintAmplitude;
+            targetFrequency = sprintFrequency;
+        }
+        if (!walk && !run)
+        {
+            targetAmplitude = 0f;
+            targetFrequency = 0f;
+        }
+
+        currentAmplitude = Mathf.Lerp(currentAmplitude, targetAmplitude, Time.deltaTime * transitionSpeed);
+        currentFrequency = Mathf.Lerp(currentFrequency, targetFrequency, Time.deltaTime * transitionSpeed);
+
+        if (walk || run)
+        {
+            bobTimer += Time.deltaTime * currentFrequency;
+            float newY = startPos.y + Mathf.Sin(bobTimer) * currentAmplitude;
+
+            firstPersonTarget.transform.localPosition = new Vector3(startPos.x, newY, startPos.z);
+        }
+        else
+        {
+            bobTimer = 0f;
+            firstPersonTarget.transform.localPosition = Vector3.Lerp(firstPersonTarget.transform.localPosition, startPos, Time.deltaTime * transitionSpeed);
+        }
     }
 
     private void HandleViewChange()
     {
         if (inputManager.viewChangeAction.WasPressedThisFrame()
-            && (toolManager.CurrentToolUseState == ToolAnimationState.Idle || toolManager.CurrentToolUseState == ToolAnimationState.Carry))
+            && (toolManager.CurrentToolState == ToolState.Idle || toolManager.CurrentToolState == ToolState.Carry))
         {
             ViewChange(currentView == ViewType.FirstPerson ? ViewType.ThirdPerson : ViewType.FirstPerson);
         }
     }
 
+    /// <summary>
+    /// 다른 플레이어 카메라 우선순위 설정
+    /// </summary>
     public void SetNetworkCamera()
     {
         firstPersonCam.Priority = 1;
         thirdPersonCam.Priority = 0;
     }
 
-    public void ViewChange(ViewType viewType)
+    private void ViewChange(ViewType viewType)
     {
         if (viewType == ViewType.FirstPerson)
         {
-            if (playerController.HasInputAuthority)
+            if (player.HasInputAuthority)
             {
                 currentView = ViewType.FirstPerson;
                 foreach (var mesh in playerMeshes)
@@ -160,13 +221,13 @@ public class PlayerCameraManager : MonoBehaviour
                 }
                 firstPersonCam.Priority = 10;
                 thirdPersonCam.Priority = 0;
-                player.AttachToCamera(true);
+                player.Client_AttachToCamera(true);
             }
         }
 
         else if (viewType == ViewType.ThirdPerson)
         {
-            if (playerController.HasInputAuthority)
+            if (player.HasInputAuthority)
             {
                 currentView = ViewType.ThirdPerson;
 
@@ -178,74 +239,36 @@ public class PlayerCameraManager : MonoBehaviour
                 }
                 firstPersonCam.Priority = 0;
                 thirdPersonCam.Priority = 10;
-                player.AttachToCamera(false);
+                player.Client_AttachToCamera(false);
             }
         }
     }
 
+    // 플레이어가 바라보는 방향의 각도를 카메라 회전값으로 설정
     private void SettingThirdPersonCam()
     {
-        var transposer = thirdPersonCam.GetComponent<CinemachineOrbitalFollow>();
+        float targetYaw = player.transform.eulerAngles.y;
+        orbital.HorizontalAxis.Value = targetYaw;
 
-        if (transposer != null)
-        {
-            // 플레이어가 바라보는 방향의 각도를 카메라 회전값으로 설정
-            float targetYaw = player.transform.eulerAngles.y;
-            transposer.HorizontalAxis.Value = targetYaw;
-        }
-
-        thirdPersonCam.GetComponent<CinemachineOrbitalFollow>().VerticalAxis.Value = 22f;
+        orbital.VerticalAxis.Value = 22f;
     }
 
     // 1인칭 카메라 상하각도 조절
     private void UpdateCameraPitch()
     {
-        if (movementManager.isLyingOrGettingUp && currentView == ViewType.FirstPerson)
-        {
-            pitch = 0f;
-            yaw = 0f;
-            Vector3 flatForward = new Vector3(player.transform.forward.x, 0f, player.transform.forward.z).normalized;
-            firstPersonCam.transform.rotation = Quaternion.LookRotation(flatForward);
-            return;
-        }
-
-        if (currentView == ViewType.ThirdPerson || !player.IsCursorLocked || !player.CanMoving())
+        if (currentView == ViewType.ThirdPerson || !moveManager.All_CanMoving())
             return;
 
         pitch -= inputManager.lookInput.y * sensitivity;
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
-        // 자고있을 때 좌우회전 추가
-        if (movementManager.CurrentMoveState == MoveAnimationState.Sleep)
-        {
-            yaw += inputManager.lookInput.x * sensitivity;
-            yaw = Mathf.Clamp(yaw, minYaw, maxYaw);
-        }
-        else if (movementManager.currentState != movementManager.sleepState && yaw != 0f)
-            yaw = 0f;
-
         firstPersonCam.transform.localEulerAngles = new Vector3(pitch, yaw, 0f);
     }
 
-    private void ZoomCamera()
-    {
-        if (inputManager.zoomInput.y != 0 && inputAxisController.enabled)
-        {
-            if (orbital != null)
-            {
-                targetZoom = Mathf.Clamp(orbital.Radius - inputManager.zoomInput.y * zoomSpeed, minDistance, maxDistance);
-                inputManager.zoomInput = Vector2.zero;
-            }
-        }
-
-        currentZoom = Mathf.Lerp(currentZoom, targetZoom, Time.deltaTime * zoomLerpSpeed);
-        orbital.Radius = currentZoom;
-    }
-
     /// <summary>
-    /// 3인칭 조준할 때 카메라 움직이는 함수
+    /// 조준할 때 카메라 움직이는 함수
     /// </summary>
-    public void MoveCamera(bool _isAiming)
+    public void MoveAimCamera(bool _isAiming)
     {
         if (isAiming == _isAiming)
             return;
@@ -259,17 +282,27 @@ public class PlayerCameraManager : MonoBehaviour
 
         if (_isAiming)
         {
+
             if (currentView == ViewType.FirstPerson)
-                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(firstPerson_AimFov));
+            {
+                Debug.Log("CurrentFOV : " + firstPersonCam.Lens.FieldOfView);
+                Debug.Log("TargetFOV : " + (currentFOV - firstPerson_AimFovDelta));
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV - firstPerson_AimFovDelta));
+            }
             else
-                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(thirdPerson_AimFov, thirdPerson_AimTargetPos.localPosition));
+            {
+                Debug.Log("CurrentFOV : " + thirdPersonCam.Lens.FieldOfView);
+                Debug.Log("TargetFOV : " + (currentFOV - thirdPerson_AimFovDelta));
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV - thirdPerson_AimFovDelta, thirdPerson_AimTargetPos.localPosition));
+            }
         }
         else
         {
+            Debug.Log("CurrentFOV : " + currentFOV);
             if (currentView == ViewType.FirstPerson)
-                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(firstPerson_DefaultFov));
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV));
             else
-                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(thirdPerson_DefaultFov, thirdPerson_DefaultTargetPos));
+                moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV, thirdPerson_DefaultTargetPos));
         }
     }
 
@@ -302,26 +335,49 @@ public class PlayerCameraManager : MonoBehaviour
             thirdPersonTarget.localPosition = targetPos;
     }
 
-    public void AttachCameraToHead(bool attachCamera)
+    /// <summary>
+    /// 죽거나 잘 때 카메라 위치
+    /// </summary>
+    public void SleepDeadCameraTarget(bool moveCamera, bool isSleep)
     {
-        if (attachCamera)
+        if (moveCamera)
         {
-            player.AttachToCamera(false);
-
-            firstPersonCam.Follow = playerHead.transform;
-            firstPersonCam.LookAt = playerHead.transform;
+            if (moveCameraCoroutine != null)
+            {
+                StopCoroutine(moveCameraCoroutine);
+                moveCameraCoroutine = null;
+            }
+            if (isSleep)
+                firstPersonTarget.localPosition = sleepCameraTarget.localPosition;
+            else
+                firstPersonTarget.localPosition = deadCameraTarget.localPosition;
         }
+
         else
         {
-            player.AttachToCamera(true);
-
-            firstPersonCam.Follow = firstPersonTarget;
-            firstPersonCam.LookAt = firstPersonTarget;
+            if (moveCameraCoroutine != null)
+            {
+                StopCoroutine(moveCameraCoroutine);
+                moveCameraCoroutine = null;
+            }
+            else
+                firstPersonTarget.localPosition = originfirstPersonTargetPos;
         }
     }
 
-    public void ShakeCamera()
+    /// <summary>
+    /// 카메라 쉐이크
+    /// </summary>
+    public void ShakeCamera(Vector3 direction, float force)
     {
-        impulseSource.GenerateImpulse();
+        if (MovingCamera)
+            impulseSource.GenerateImpulse(direction.normalized * force);
+    }
+
+    public void ChangeFOV(float value)
+    {
+        firstPersonCam.Lens.FieldOfView = value;
+        thirdPersonCam.Lens.FieldOfView = value;
+        currentFOV = value;
     }
 }

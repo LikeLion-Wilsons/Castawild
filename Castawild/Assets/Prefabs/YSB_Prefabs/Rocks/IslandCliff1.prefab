@@ -9,7 +9,7 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -9084597640280925237, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 427576d58bb444f7875ad2b570144e1c, type: 2}
     - target: {fileID: -8679921383154817045, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
@@ -52,16 +52,40 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -52384491921587503, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 83
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
       propertyPath: m_Name
       value: IslandCliff1
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 83
+      objectReference: {fileID: 0}
+    - target: {fileID: 3536649312410189866, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 83
+      objectReference: {fileID: 0}
+    - target: {fileID: 3832616859161726190, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 83
+      objectReference: {fileID: 0}
     - target: {fileID: 4243135793924946061, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 427576d58bb444f7875ad2b570144e1c, type: 2}
+    - target: {fileID: 4742473837712756890, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4742473837712756890, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
+      propertyPath: m_LODs.Array.data[1].screenRelativeHeight
+      value: 0.75
+      objectReference: {fileID: 0}
     - target: {fileID: 7421954951170928967, guid: f7ddc028098e4e8781558f3955b9cead, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 427576d58bb444f7875ad2b570144e1c, type: 2}
     m_RemovedComponents: []

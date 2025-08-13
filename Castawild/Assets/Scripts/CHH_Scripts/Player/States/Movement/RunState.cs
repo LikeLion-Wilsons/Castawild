@@ -3,22 +3,27 @@ using static Unity.Collections.Unicode;
 
 public class RunState : MovementBaseState
 {
-    public RunState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
-        : base(_movementManager, _inputManager)
+    public RunState(MovementStateManager _movementManager)
+        : base(_movementManager)
     {
     }
 
     public override void EnterState()
     {
-        movementManager.CurrentMoveState = MoveAnimationState.Run;
-        movementManager.currentMoveSpeed = movementManager.runSpeed;
+        movementManager.CurrentMoveAnimation = MoveAnimatoinState.Run;
+        movementManager.flagManager.Set(PlayerFlags.Run);
+
+        movementManager.moveManager.currentMoveSpeed = movementManager.runSpeed;
+
+        if (movementManager.HasInputAuthority)
+            movementManager.cameraManager.run = true;
     }
 
     public override void UpdateState()
     {
         if (movementManager.Stamina <= 0)
         {
-            movementManager.ChangeState(movementManager.walkState);
+            movementManager.Host_ChangeState(MovementState.Walk);
             return;
         }
         else
@@ -26,26 +31,29 @@ public class RunState : MovementBaseState
 
         // Walk
         if (movementManager.input.IsUp(PlayerNetworkInputData.sprintInput) || movementManager.Stamina <= 0)
-            movementManager.ChangeState(movementManager.walkState);
+            movementManager.Host_ChangeState(MovementState.Walk);
 
         // Idle
         else if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
-            movementManager.ChangeState(movementManager.idleState);
+            movementManager.Host_ChangeState(MovementState.Idle);
 
         // Crouch
         else if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.crouchInput))
-            movementManager.ChangeState(movementManager.crouchState);
+            movementManager.Host_ChangeState(MovementState.Crouch);
 
         // Jump
-        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.canJump)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.moveManager.Grounded)
         {
-            movementManager.canJump = false;
-            movementManager.previousState = this;
-            movementManager.ChangeState(movementManager.jumpState);
+            movementManager.previousState = MovementState.Run;
+            movementManager.Host_ChangeState(MovementState.Jump);
         }
     }
 
     public override void ExitState()
     {
+        movementManager.flagManager.Clear(PlayerFlags.Run);
+
+        if (movementManager.HasInputAuthority)
+            movementManager.cameraManager.run = false;
     }
 }

@@ -2,44 +2,43 @@ using UnityEngine;
 
 public class JumpState : MovementBaseState
 {
-    float fallingElapsed = 0f;
-    public JumpState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
-        : base(_movementManager, _inputManager)
+    public JumpState(MovementStateManager _movementManager)
+        : base(_movementManager)
     {
     }
 
     public override void EnterState()
     {
-        movementManager.JumpTriggered = true;
+        movementManager.moveManager.JumpTriggered = true;
+        movementManager.CanLanding = false;
 
-        if (movementManager.previousState == movementManager.idleState)
-            movementManager.CurrentMoveState = MoveAnimationState.IdleJump;
+        if (movementManager.previousState == MovementState.Idle)
+            movementManager.CurrentMoveAnimation = MoveAnimatoinState.IdleJump;
 
-        else if (movementManager.previousState == movementManager.walkState
-            || movementManager.previousState == movementManager.runState)
-            movementManager.CurrentMoveState = MoveAnimationState.RunJump;
+        else if (movementManager.previousState == MovementState.Walk
+            || movementManager.previousState == MovementState.Run)
+            movementManager.CurrentMoveAnimation = MoveAnimatoinState.RunJump;
 
-        fallingElapsed = 0f;
+        movementManager.flagManager.Set(PlayerFlags.Jump);
     }
 
     public override void UpdateState()
     {
-        if (movementManager.isJumping && movementManager.playerController.Grounded)
+        if (movementManager.moveManager.Grounded && movementManager.CanLanding)
         {
-            movementManager.isJumping = false;
-
             if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
-                movementManager.ChangeState(movementManager.idleState);
-            else if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.HasEnoughStaminaToRun())
-                movementManager.ChangeState(movementManager.runState);
+                movementManager.Host_ChangeState(MovementState.Idle);
+            else if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput)
+                 && movementManager.All_CanRun())
+                movementManager.Host_ChangeState(MovementState.Run);
             else
-                movementManager.ChangeState(movementManager.walkState);
+                movementManager.Host_ChangeState(MovementState.Walk);
         }
     }
 
     public override void ExitState()
     {
-        movementManager.canJump = true;
-        movementManager.RPC_TriggerSet(false);
+        movementManager.flagManager.Clear(PlayerFlags.Jump);
+        movementManager.CanLanding = false;
     }
 }

@@ -2,40 +2,35 @@ using System.Diagnostics;
 
 public class ToolIdleState : ToolBaseState
 {
-    public ToolIdleState(ToolStateManager _toolStateManager, PlayerInputManager _inputManager)
-        : base(_toolStateManager, _inputManager)
+    public ToolIdleState(ToolStateManager _toolStateManager)
+        : base(_toolStateManager)
     {
     }
 
     public override void EnterState()
     {
-        toolStateManager.CurrentToolUseState = ToolAnimationState.Idle;
+        toolStateManager.CurrentToolAnimationState = ToolAnimationState.Idle;
     }
 
     public override void UpdateState()
     {
-        if (toolStateManager.movementManager.IsDeath())
-            return;
-
         // Aim
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.aimInput)
-            && toolStateManager.HoldAimTool() && toolStateManager.player.CanUseTool())
-            toolStateManager.ChangeState(toolStateManager.aimState);
+                && toolStateManager.toolManager.All_HoldAimTool())
+            toolStateManager.Host_ChangeState(ToolState.Aim);
 
         // UseTool
-        else if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput)
-            && toolStateManager.player.CanUseTool())
+        else if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
         {
-            toolStateManager.movementManager.ChangeState(toolStateManager.movementManager.idleState);
-
             // 음식 들고있을 땐 먹기
             if (toolStateManager.player.currentItemType == ItemType.Food || toolStateManager.player.currentItemType == ItemType.Drink)
             {
-                toolStateManager.ChangeState(toolStateManager.eatState);
+                toolStateManager.Host_ChangeState(ToolState.Eat);
                 return;
             }
 
-            toolStateManager.ChangeState(toolStateManager.useToolState);
+            toolStateManager.movementManager.Host_ChangeState(MovementState.Idle);
+            toolStateManager.Host_ChangeState(ToolState.UseTool);
         }
     }
 

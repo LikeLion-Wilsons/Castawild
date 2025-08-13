@@ -22,7 +22,7 @@ Material:
   - _VERTEXCOLORCHANNEL_RGBA
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 1
-  m_DoubleSidedGI: 0
+  m_DoubleSidedGI: 1
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
@@ -78,10 +78,10 @@ Material:
     - _Tiling01: 0.5
     - _Tiling02: 1
     - _UseFog: 1
-    - _ViewDistance: 10000
+    - _ViewDistance: 100000
     - __dirty: 0
-    - _cloudsHeight: 194.37
-    - _cloudsPosition: 800
+    - _cloudsHeight: 200
+    - _cloudsPosition: 700
     m_Colors:
     - _CloudsColor: {r: 0.6194968, g: 0.8866587, b: 1, a: 1}
     - _DirectionSpeed: {r: -20, g: 11.2, b: 0, a: 31}
