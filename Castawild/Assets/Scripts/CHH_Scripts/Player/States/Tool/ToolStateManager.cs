@@ -2,8 +2,7 @@ using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
 
-// 현재 들고있는 무기
-public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe }
+
 
 public enum ToolState { None, Idle, Aim, UseTool, Carry, Eat, Drink }
 // 재생해야할 애니메이션 상태
@@ -80,7 +79,8 @@ public class ToolStateManager : BaseStateManager
             player.Host_DecreaseToolDuration += SetDecreaseToolDuration;
         }
 
-        toolManager.Host_ChangeSelectedItem += All_ChangeSelectedItem;
+        toolManager.Host_ChangeSelectedItem -= All_SetCurrentHoldItem;
+        toolManager.Host_ChangeSelectedItem += All_SetCurrentHoldItem;
 
         CurrentToolType = ToolType.Fist;
         Host_ChangeState(ToolState.Idle);
@@ -309,7 +309,7 @@ public class ToolStateManager : BaseStateManager
     /// <summary>
     /// 현재 아이템 변경 
     /// </summary>
-    public void All_ChangeSelectedItem(int itemIdx = -1)
+    public void All_SetCurrentHoldItem(int itemIdx = -1)
     {
         // 설치가능한 아이템 
         if (itemIdx >= 300 && itemIdx < 400)
