@@ -67,8 +67,6 @@ public class SoundManager : NetworkBehaviour
     public static SoundManager Instance { get; private set; }
     [SerializeField] private AudioSource bgmSource;
     [SerializeField] private List<AudioSource> sfxSources;
-
-    // 로드된 오디오 클립들을 저장하는 딕셔너리
     private Dictionary<Sound, AudioClip> _audioClips = new Dictionary<Sound, AudioClip>();
 
 
@@ -96,24 +94,13 @@ public class SoundManager : NetworkBehaviour
     void Init()
     {
         var clips = Resources.LoadAll<AudioClip>("Sound");
-        List<string> temp = new List<string>();
         foreach (AudioClip clip in clips)
         {
-            temp.Add(clip.name);
             if (Enum.TryParse(clip.name, out Sound sfx))
             {
                 _audioClips.Add(sfx, clip);
             }
         }
-
-        temp.Sort();
-        StringBuilder sb = new StringBuilder();
-        foreach (var t in temp)
-        {
-            sb.Append($"{t},\n");
-        }
-        Debug.Log(sb.ToString());
-            
 
         bgmSource.loop = true;
         sfxSources.ForEach(x => x.loop = false);
