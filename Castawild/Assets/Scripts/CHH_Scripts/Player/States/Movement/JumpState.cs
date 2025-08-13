@@ -40,6 +40,5 @@ public class JumpState : MovementBaseState
     {
         movementManager.flagManager.Clear(PlayerFlags.Jump);
         movementManager.CanLanding = false;
-        Debug.Log("Exit Jump State");
     }
 }

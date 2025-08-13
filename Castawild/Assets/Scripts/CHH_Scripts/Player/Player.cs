@@ -39,7 +39,8 @@ public class Player : NetworkBehaviour
 
     [Space]
     [SerializeField] private float foodRestoreTime = 5f;
-    public ItemType currentItemType;
+    public ItemType currentItemType; // 이걸로 도구 장착 
+    [Networked] public FoodInfoData currentFoodInfoData { get; set; } // 지금 들고있는 음식 정보 -> 인벤 아이템 인덱스로 가져옴
 
     [Header("Recovery Rate")]
     public float staminaRecoveryRate = 2f;
@@ -67,7 +68,6 @@ public class Player : NetworkBehaviour
 
     public PlayerNetworkInputData input { get; set; }
     [Header("Networked")]
-    [Networked] public FoodInfoData currentFoodInfoData { get; set; }
     [Networked, HideInInspector] public Vector3 RespawnPos { get; set; }
     [Networked, HideInInspector] public bool CanPVP { get; set; } = true;
     [Networked, HideInInspector] public bool IsUIOpen { get; set; }
@@ -81,6 +81,7 @@ public class Player : NetworkBehaviour
 
     public event Action<bool> Host_TakeDamagedEvent;
     public event Action Host_DecreaseToolDuration;
+    public event Action ClearCup;
 
     public Coroutine fallingCoroutine;
     private Coroutine foodRestoreCoroutine;
@@ -335,6 +336,8 @@ public class Player : NetworkBehaviour
             StopCoroutine(foodRestoreCoroutine);
 
         foodRestoreCoroutine = StartCoroutine(RestoreStatFromFoodCoroutine());
+
+        ClearCup?.Invoke();
     }
 
     private IEnumerator RestoreStatFromFoodCoroutine()
@@ -357,12 +360,24 @@ public class Player : NetworkBehaviour
         {
             elapsed += Runner.DeltaTime;
 
-            Hp = RestoreValue(restoreHPPerSecond, Hp, playerData.maxHp);
-            Stamina = RestoreValue(restoreStaminaPerSecond, Stamina, playerData.maxStamina);
-            Hunger = RestoreValue(restoreHungerPerSecond, Hunger, playerData.maxHunger);
-            Thirst = RestoreValue(restoreThirstPerSecond, Thirst, playerData.maxThirst);
+            if (restoreHPPerSecond != 0)
+                Hp = RestoreValue(restoreHPPerSecond, Hp, playerData.maxHp);
+            if (restoreStaminaPerSecond != 0)
+                Stamina = RestoreValue(restoreStaminaPerSecond, Stamina, playerData.maxStamina);
+            if (restoreHungerPerSecond != 0)
+                Hunger = RestoreValue(restoreHungerPerSecond, Hunger, playerData.maxHunger);
+            if (restoreThirstPerSecond != 0)
+                Thirst = RestoreValue(restoreThirstPerSecond, Thirst, playerData.maxThirst);
 
             yield return null;
+        }
+
+        if (uiStats != null)
+        {
+            uiStats.SetBarColor(StatType.Hp, 0);
+            uiStats.SetBarColor(StatType.Stamina, 0);
+            uiStats.SetBarColor(StatType.Hunger, 0);
+            uiStats.SetBarColor(StatType.Thirst, 0);
         }
 
         foodRestoreCoroutine = null;
