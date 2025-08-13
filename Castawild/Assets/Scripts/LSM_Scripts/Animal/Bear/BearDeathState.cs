@@ -16,9 +16,9 @@ public class BearDeathState : BearState
         Debug.Log("BearDeathState Enter");  
         base.Enter(); 
     } 
-    public override void Update()
+    public override void FixedUpdateNetwork()
     { 
-        base.Update(); 
+        base.FixedUpdateNetwork(); 
     }
     public override void Exit()
     { 

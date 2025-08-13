@@ -32,9 +32,9 @@ public class SeagullAnim : AnimalAnim
         base.Start();        
         stateMachine.Initialize(idleState);
     }
-    protected override void Update()
+    public override void FixedUpdateNetwork()
     {
-        base.Update();
+        base.FixedUpdateNetwork();
     }
-     
+
 }

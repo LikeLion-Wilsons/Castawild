@@ -10,9 +10,8 @@ public class RabbitEscapeState : RabbitState
     }    
 
     public override void Enter()
-    {  
-        Debug.Log("RabbitEscapeState Enter");
-        base.Enter(); 
+    {
+        rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Escape, true);
         if (targetPosition == Vector3.zero)
         {
             rabbitAnim.agent.speed = animalObject.EscapeSpeed;
@@ -21,18 +20,18 @@ public class RabbitEscapeState : RabbitState
         } 
     }
 
-    public override void Update()
+    public override void FixedUpdateNetwork()
     { 
-        base.Update(); 
+        base.FixedUpdateNetwork(); 
         // 목적지에 도달했으면 상태 종료
-        if (!rabbitAnim.agent.pathPending && rabbitAnim.agent.remainingDistance <= rabbitAnim.agent.stoppingDistance) 
-            ChangeReturnState(); 
+        if (!rabbitAnim.agent.pathPending && rabbitAnim.agent.remainingDistance <= rabbitAnim.agent.stoppingDistance)
+            rabbitAnim.ChangeRabbitState(RabbitAnim.RabbitState.Return);
     }
 
     public override void Exit()
     {
         targetPosition = Vector3.zero;
-        base.Exit(); 
+        rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Escape, false);
     }
      
 }

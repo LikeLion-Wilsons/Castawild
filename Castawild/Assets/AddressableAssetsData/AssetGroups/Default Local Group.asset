@@ -27,6 +27,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9e57cf46322fec74382fd25d91552718
+    m_Address: Assets/Scriptable Objects/Bear Data.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c064942bee3fbdf4a93cd81e71554927
     m_Address: DefaultCharacter
     m_ReadOnly: 0

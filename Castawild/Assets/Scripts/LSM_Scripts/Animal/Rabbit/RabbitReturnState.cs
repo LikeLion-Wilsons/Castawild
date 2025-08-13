@@ -10,27 +10,22 @@ public class RabbitReturnState : RabbitState
     } 
 
     public override void Enter()
-    { 
-        Debug.Log("RabbitReturnState Enter");
-        base.Enter();
+    {
+        rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Return, true);
         Vector2 randCircle = Random.insideUnitCircle * rabbitObject.HomeRadius;
         targetPosition = rabbitObject.HomeCenter + new Vector3(randCircle.x, 0, randCircle.y);
-
         rabbitAnim.agent.SetDestination(targetPosition);
     }
 
-    public override void Update()
+    public override void FixedUpdateNetwork()
     { 
-        base.Update();
+        base.FixedUpdateNetwork();
         if (!rabbitAnim.agent.pathPending && rabbitAnim.agent.remainingDistance <= rabbitAnim.agent.stoppingDistance + 0.1f)
-        {
-            ChangeIdleState();        
-        }
+            rabbitAnim.ChangeRabbitState(RabbitAnim.RabbitState.Idle);
     }
 
     public override void Exit()
-    { 
-        base.Exit();
-    }
-     
+    {
+        rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Return, false);
+    }     
 }

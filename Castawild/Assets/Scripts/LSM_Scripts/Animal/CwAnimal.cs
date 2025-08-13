@@ -1,3 +1,4 @@
+using Fusion;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.AI;
@@ -16,14 +17,16 @@ public class CwAnimal : CwCharacter
     [SerializeField] protected float maxDetectionRadius;
     [SerializeField] protected float minDetectionRadius;
     [SerializeField] protected float attackRange;
-    [SerializeField] protected float attackCooldown;
     [SerializeField] protected bool canBeHarvested;
-    [SerializeField] protected float alertTime;
     [SerializeField] protected float idleRadius;
     [SerializeField] protected float escapeRadius;
     [SerializeField] protected float escapeSpeed;
     [SerializeField] protected LayerMask playerLayer;
     [SerializeField] protected LayerMask obstacleLayer;
+
+    [Header("Network Info")]
+    [Networked][SerializeField] protected float alertTime { set; get; }
+    [Networked][SerializeField] protected float attackCooldown { set; get; }
 
     #endregion
 
@@ -111,12 +114,16 @@ public class CwAnimal : CwCharacter
             MaxDetectionRadius = data.maxDetectionRadius;
             MinDetectionRadius = data.minDetectionRadius;
             AttackRange = data.attackRange;
-            AttackCooldown = data.attackCooldown;
             CanBeHarvested = data.canBeHarvested;
-            AlertTime = data.alertTime;
             IdleRadius = data.idleRadius;
             EscapeRadius = data.escapeRadius;
-            EscapeSpeed = data.escapeSpeed; 
+            EscapeSpeed = data.escapeSpeed;
+           
+            if (Object.HasStateAuthority)
+            {
+                AlertTime = data.alertTime;
+                AttackCooldown = data.attackCooldown;
+            }
         }
         else
         {
@@ -193,7 +200,7 @@ public class CwAnimal : CwCharacter
             float distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
 
             if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleLayer))
-            {
+            { 
                 return target.transform.position;
             }
         }
@@ -211,6 +218,14 @@ public class CwAnimal : CwCharacter
          
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, maxDetectionRadius);
+
+        // [최소 이동 범위] Gizmos
+        Gizmos.color = Color.gray;
+        Gizmos.DrawSphere(transform.position, minDetectionRadius);
+
+        // [최대 이동 범위] Gizmos
+        Gizmos.color = Color.white;
+        Gizmos.DrawWireSphere(transform.position, minDetectionRadius);
     }
 
     /// <summary>
@@ -218,16 +233,13 @@ public class CwAnimal : CwCharacter
     /// </summary>
     public virtual Vector3 RandomNavSphere(Vector3 origin, float minDist, float maxDist, int layermask)
     {
-        Vector3 randDirection = Random.insideUnitSphere.normalized;
-        float randomDistance = Random.Range(minDist, maxDist);
-        randDirection *= randomDistance;
-        randDirection += origin;
+        Vector3 randomDirection = Random.insideUnitSphere.normalized * Random.Range(minDist, maxDist); 
+        Vector3 targetPos = origin + randomDirection; 
         NavMeshHit navHit;
 
-        if (NavMesh.SamplePosition(randDirection, out navHit, maxDist, layermask))
+        if (NavMesh.SamplePosition(targetPos, out navHit, maxDist, layermask))
             return navHit.position;
         else
             return origin; // 실패 시 제자리
     }
 }
-

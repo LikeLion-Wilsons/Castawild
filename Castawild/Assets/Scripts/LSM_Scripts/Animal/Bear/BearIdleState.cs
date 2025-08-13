@@ -7,47 +7,63 @@ public class BearIdleState : BearState
 {
     public BearIdleState(BearAnim _bearAnim, AnimalStateMachine _stateMachine, CwBear _bearObject, string _animBoolName) : base(_bearAnim, _stateMachine, _bearObject, _animBoolName)
     {
-    }
-
+    } 
 
     protected override void Awake()
     {
         base.Awake();
-        bearAnim.agent.speed = animalObject.MoveSpeed;
-        for (int i = 0; i < 3; i++)
-            layOver[i] = bearObject.RandomNavSphere(bearAnim.transform.position, bearObject.IdleRadius, bearObject.IdleRadius, -1);
+        bearAnim.agent.speed = animalObject.MoveSpeed;        
     }
 
     public override void Enter()
     {
         Debug.Log("BearIdleState Enter");
-        base.Enter();
-
-        if(IsReturned) //가던 길 이어서 가기
+        base.Enter(); 
+        bearAnim.agent.isStopped = false;
+        bearAnim.agent.updatePosition = true;
+         
+        // 곰이 귀환 상태라면 가던 길로 계속 이동
+        if (bearObject.IsReturned) 
         { 
-            bearAnim.agent.SetDestination(layOver[layOverIndex]);
+            bearAnim.agent.SetDestination(bearObject.layOver[bearObject.layOverIndex]);
             bearAnim.anim.SetBool("IdleMove", true);
         } 
     }
 
-    public override void Update()
+    public override void FixedUpdateNetwork()
     {
-        base.Update();
+        base.FixedUpdateNetwork();
 
-        if (bearObject.IsPlayerDetection() != null) //플레이어 감지
+        // 곰이 이동할 위치가 비어있다면 새로 생성 후 이동 시작
+        if (bearObject.layOver[0] == Vector3.zero && bearObject.layOver[1] == Vector3.zero && bearObject.layOver[2] == Vector3.zero)
         {
-            idlePosition = bearAnim.transform.position; 
-            ChangeAlertState();  
-            return;
-        } 
-        if (!bearAnim.agent.pathPending && bearAnim.agent.remainingDistance <= bearAnim.agent.stoppingDistance) //다음 목적지를 찾아서
-        {
-            IsReturned = false; 
-            layOverIndex = (layOverIndex + 1) % layOver.Length;  
-            bearAnim.agent.SetDestination(layOver[layOverIndex]);
-            bearAnim.anim.SetBool("IdleMove", true);
+            bearObject.RandomNavTriangle(bearAnim.transform.position, bearObject.IdleRadius * 0.8f, bearObject.IdleRadius, -1); 
+            bearAnim.agent.SetDestination(bearObject.layOver[bearObject.layOverIndex]);
         }
-        
+        else if (bearObject.layOver[0] == bearObject.layOver[1])
+        {
+            // 제대로 생성 안되었으면 다시 생성
+            bearObject.RandomNavTriangle(bearAnim.transform.position, bearObject.IdleRadius * 0.8f, bearObject.IdleRadius, -1);
+        }
+
+        // 플레이어 감지
+        if (bearObject.IsPlayerDetection() != null)
+        {
+            idlePosition = bearAnim.transform.position;
+            ChangeAlertState();
+            return;
+        }
+
+        // 곰이 이동 중이 아니고 목적지에 도착했다면 다음 위치로 이동
+        if (!bearAnim.agent.pathPending && bearAnim.agent.remainingDistance <= bearAnim.agent.stoppingDistance) 
+        {
+            bearObject.IsReturned = false; 
+            bearObject.layOverIndex = (bearObject.layOverIndex + 1) % bearObject.layOver.Length;  
+            bearAnim.agent.SetDestination(bearObject.layOver[bearObject.layOverIndex]);
+            bearAnim.anim.SetBool("IdleMove", true);
+        } 
+
+
     }
     public override void Exit()
     { 

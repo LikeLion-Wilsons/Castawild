@@ -15,9 +15,6 @@ public class BearState : AnimalState
     protected BearAnim bearAnim; // 곰 애니메이션 
     protected CwBear bearObject; // 곰 속성
     protected Vector3 idlePosition; // 현재 idle 위치 
-    protected Vector3[] layOver = new Vector3[3]; // 곰의 이동 포인트
-    protected int layOverIndex = 0;               // 현재 이동 포인트
-    protected bool IsReturned = false; // 곰이 귀환 상태인지 여부
 
     protected virtual void Awake()
     {  
@@ -30,15 +27,16 @@ public class BearState : AnimalState
         base.Enter();
     }
 
-    public override void Update()
-    { 
-        base.Update();
-    }
+    public override void FixedUpdateNetwork()
+    {
+        base.FixedUpdateNetwork();
+    } 
 
     public override void Exit()
     { 
         base.Exit();
-    }
+    } 
+
     protected void ChangeIdleState()
     {
         bearAnim.stateMachine.ChangeState(bearAnim.idleState);

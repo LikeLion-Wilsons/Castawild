@@ -24,9 +24,9 @@ public class SeagullDeathState : SeagullState
         base.Enter(); 
     }
 
-    public override void Update()
+    public override void FixedUpdateNetwork()
     { 
-        base.Update(); 
+        base.FixedUpdateNetwork(); 
     }
     public override void Exit()
     { 

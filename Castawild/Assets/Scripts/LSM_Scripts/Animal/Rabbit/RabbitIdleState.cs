@@ -14,26 +14,23 @@ public class RabbitIdleState : RabbitState
     }
 
     public override void Enter()
-    {
-        //현재 state 디버그
-        Debug.Log("RabbitIdleState Enter");
-        base.Enter();
-        rabbitAnim.anim.SetBool("IdleMove", true); 
+    { 
+        rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.IdleMove, true); 
     }
 
-    public override void Update()
+    public override void FixedUpdateNetwork()
     {
-        base.Update();
+        base.FixedUpdateNetwork();
         if (rabbitObject.IsPlayerDetection() != null) 
         {
-            ChangeAlertState();
+            rabbitAnim.ChangeRabbitState(RabbitAnim.RabbitState.Alert);
             return;
         }
         
         if (rabbitAnim.IdleMoveing)
         {
-            rabbitAnim.anim.SetBool("IdleMove", true);
-             
+            rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.IdleMove, true);
+
             if (targetPosition == Vector3.zero)
             {  
                 rabbitAnim.agent.speed = animalObject.MoveSpeed;
@@ -53,15 +50,14 @@ public class RabbitIdleState : RabbitState
         }
         else
         {
-            rabbitAnim.anim.SetBool("IdleMove", false);
+            rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.IdleMove, false);
             targetPosition = Vector3.zero;
         }
     }
     public override void Exit()
-    { 
-        base.Exit();
-        rabbitAnim.anim.SetBool("Idle", false);
-        rabbitAnim.anim.SetBool("IdleMove", false);
+    {  
+        rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Idle, false);
+        rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.IdleMove, false);
     } 
 
 }

@@ -10,36 +10,35 @@ public class RabbitAlertState : RabbitState
     } 
     private float timer;
     public override void Enter()
-    {
-        //현재 state 디버그
-        Debug.Log("RabbitAlertState Enter");
-        base.Enter();
+    { 
+        rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Alert, true);
         timer = rabbitObject.AlertTime;
     }
      
-    public override void Update()
+    public override void FixedUpdateNetwork()
     { 
-        base.Update();
+        base.FixedUpdateNetwork();
         timer -= Time.deltaTime;
         if (rabbitObject.IsPlayerDetection() == null)
         {
-            ChangeIdleState();
+
+            rabbitAnim.ChangeRabbitState(RabbitAnim.RabbitState.Idle);
             return;
         }
         else if (rabbitObject.IsPlayerDetection() < rabbitObject.MinDetectionRadius)
         {
-            ChangeEscapeState();
+            rabbitAnim.ChangeRabbitState(RabbitAnim.RabbitState.Escape);
             return;
         }
         else if (timer <= 0f)
         {
-            ChangeEscapeState();
+            rabbitAnim.ChangeRabbitState(RabbitAnim.RabbitState.Escape);
             return;
         }
     }
 
     public override void Exit()
-    { 
-        base.Exit(); 
+    {
+        rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Alert, false);
     } 
 }

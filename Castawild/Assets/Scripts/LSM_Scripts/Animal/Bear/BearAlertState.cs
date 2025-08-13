@@ -13,12 +13,15 @@ public class BearAlertState : BearState
         Debug.Log("BearAlertState Enter");  
         base.Enter();
         timer = bearObject.AlertTime;
-        bearAnim.anim.SetBool("Alert", true);
+        bearAnim.anim.SetBool("Alert", true);        
+        bearAnim.agent.isStopped = true;
+        bearAnim.agent.updatePosition = false;
+
     }
 
-    public override void Update()
+    public override void FixedUpdateNetwork()
     { 
-        base.Update();
+        base.FixedUpdateNetwork();
         timer -= Time.deltaTime;
         if (bearObject.IsPlayerDetection() == null)
         {

@@ -15,15 +15,14 @@ public class BearAnim : AnimalAnim
     #region States 
     public CwBear bearObject { get; private set; } // 속성을 관리하는 객체   
 
-    #endregion
-
+    #endregion 
     protected override void Awake() 
     {
         base.Awake();  
         bearObject = GetComponent<CwBear>(); 
 
         // 각 상태 인스턴스 생성 (this: 플레이어 객체, stateMachine: 상태 머신, "Idle"/"Move": 상태 이름)
-        idleState = new BearIdleState(this, stateMachine, bearObject, "Idle");
+        idleState = new BearIdleState(this, stateMachine, bearObject, "IdleMove");
         alertState = new BearAlertState(this, stateMachine, bearObject, "Alert");
         attackState = new BearAttackState(this, stateMachine, bearObject, "Attack");
         returnState = new BearReturnState(this, stateMachine, bearObject, "Return");
@@ -35,9 +34,9 @@ public class BearAnim : AnimalAnim
         base.Start();        
         stateMachine.Initialize(idleState);
     }
-    protected override void Update()
+    public override void FixedUpdateNetwork()
     {
-        base.Update();
+        base.FixedUpdateNetwork();
     }
      
 }

@@ -9,18 +9,17 @@ public class RabbitDeathState : RabbitState
     { 
     }  
     public override void Enter()
-    { 
-        Debug.Log("RabbitDeathState Enter");
-        base.Enter();
+    {
+        rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Death, true);
     }
 
-    public override void Update()
+    public override void FixedUpdateNetwork()
     { 
-        base.Update();
+        base.FixedUpdateNetwork();
     }
 
     public override void Exit()
-    { 
-        base.Exit();
+    {
+        rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Death, false);
     } 
 }

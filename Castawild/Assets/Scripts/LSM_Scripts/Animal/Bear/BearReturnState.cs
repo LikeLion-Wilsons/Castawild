@@ -17,13 +17,14 @@ public class BearReturnState : BearState
 
     public override void Enter()
     { 
-        Debug.Log("BearReturnState Enter");  
+        Debug.Log("BearReturnState Enter");
+        bearAnim.anim.SetBool("IdleMove", true);
         base.Enter(); 
     }
 
-    public override void Update()
+    public override void FixedUpdateNetwork()
     {
-        base.Update(); 
+        base.FixedUpdateNetwork(); 
         if (bearObject.IsPlayerDetection() != null) //플레이어 감지
         { 
             ChangeAlertState();
@@ -35,8 +36,7 @@ public class BearReturnState : BearState
             //경로 계산중이 아님 + 목적지 도착함 
             if (!bearAnim.agent.pathPending && bearAnim.agent.remainingDistance <= bearAnim.agent.stoppingDistance)
                 ChangeIdleState();
-        }
-
+        } 
     }
     public override void Exit()
     { 

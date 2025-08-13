@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
 /// 공격중인 곰을 나타내는 클래스
@@ -21,24 +22,29 @@ public class BearAttackState : BearState
         base.Enter(); 
     }
 
-    public override void Update()
+    public override void FixedUpdateNetwork()
     { 
-        base.Update();
-        if (bearObject.IsPlayerDetection() == null) //플레이어 사라짐
+        base.FixedUpdateNetwork();
+        if (bearObject.IsPlayerDetection() == null) 
         {
-            LookAtPlayer();
-            bearAnim.anim.SetInteger("Attack", 0);
+            LookAtPlayer(); 
             ChangeReturnState();
         }
-        else if (bearObject.IsPlayerDetection() >= 2) //플레이어 멈
+        else if (bearObject.IsPlayerDetection() > bearObject.AttackRange) 
         {
+            bearAnim.agent.isStopped = false;
+            bearAnim.agent.updatePosition = true;
             LookAtPlayer();
-            bearAnim.anim.SetBool("Run", true);
-            bearAnim.agent.SetDestination(bearObject.GetPlayerPosition());            
-            return;
+            bearAnim.anim.SetBool("Run", true);            
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(bearObject.GetPlayerPosition(), out hit, 1f, NavMesh.AllAreas))
+            {
+                bearAnim.agent.SetDestination(hit.position);
+            }
         }
-        else if (bearObject.IsPlayerDetection() < 2) //플레이어 가까움
+        else if (bearObject.IsPlayerDetection() <= bearObject.AttackRange) 
         {
+            bearAnim.anim.SetBool("Run", false);
             bearAnim.agent.isStopped = true;
             bearAnim.agent.updatePosition = false;
             LookAtPlayer(); 
@@ -47,22 +53,24 @@ public class BearAttackState : BearState
     }
     public override void Exit()
     { 
-        base.Exit();  
-    }
-
+        base.Exit();
+        bearAnim.anim.SetBool("Run", false);
+    } 
     private void LookAtPlayer()
     {
         Vector3 playerPos = bearObject.GetPlayerPosition();
         Vector3 dir = playerPos - bearObject.transform.position;
         dir.y = 0;
         Quaternion lookRot = Quaternion.LookRotation(dir);
-        bearObject.transform.rotation = Quaternion.RotateTowards(bearObject.transform.rotation, lookRot, Time.deltaTime * 10f);
+        bearObject.transform.rotation = Quaternion.RotateTowards(bearObject.transform.rotation, lookRot, Time.deltaTime * 100);
     }
 
     private void AttackPlayer()
     {
-        bearAnim.anim.SetInteger("Attack", AttackType); 
-        AttackType = Random.Range(1, 3);  
+        AttackType = Random.Range(1, 4);
+        bearAnim.anim.SetInteger("AttackIndex", AttackType); 
     }
 
 }
+
+

@@ -1,7 +1,8 @@
-using UnityEngine;
+using Fusion;
+using UnityEngine; 
 
 /// <summary>
-/// 곰 상태 상위클래스
+/// 토끼 상태 상위클래스
 /// </summary>
 public class RabbitState : AnimalState
 {  
@@ -13,52 +14,26 @@ public class RabbitState : AnimalState
 
     #region Components 
     protected RabbitAnim rabbitAnim; // 토끼 애니메이션 
-    protected CwRabbit rabbitObject; // 토끼 속성 
-
+    protected CwRabbit rabbitObject; // 토끼 속성  
     protected virtual void Awake()
     {  
+        
     }
 
     #endregion
 
     public override void Enter()
-    { 
-        base.Enter();
+    {
+        rabbitAnim.ChangeRabbitAnim(rabbitAnim.currentAnim, true); // 애니메이션 시작
     }
 
-    public override void Update()
+    public override void FixedUpdateNetwork()
     { 
-        base.Update();
+        base.FixedUpdateNetwork();
     }
 
     public override void Exit()
-    { 
-        base.Exit();
-    }
-
-    protected void ChangeIdleState()
     {
-        rabbitAnim.stateMachine.ChangeState(rabbitAnim.idleState);
+        rabbitAnim.ChangeRabbitAnim(rabbitAnim.currentAnim, false); // 애니메이션 시작
     }
-
-    protected void ChangeAlertState()
-    {
-        rabbitAnim.stateMachine.ChangeState(rabbitAnim.alertState);
-    }
-
-    protected void ChangeEscapeState()
-    {
-        rabbitAnim.stateMachine.ChangeState(rabbitAnim.escapeState);
-    }
-
-    protected void ChangeReturnState()
-    {
-        rabbitAnim.stateMachine.ChangeState(rabbitAnim.returnState);
-    }
-
-    protected void ChangeDeathState()
-    {
-        rabbitAnim.stateMachine.ChangeState(rabbitAnim.deathState);
-    }   
-
 }

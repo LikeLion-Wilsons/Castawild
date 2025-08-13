@@ -1,8 +1,7 @@
-using UnityEngine;
-using UnityEngine.AI;
+using UnityEngine;  
 
 /// <summary>
-/// 플레이어의 상태를 나타내는 클래스 
+/// 동물의 상태를 나타내는 클래스 
 /// </summary>
 public class AnimalState
 {
@@ -11,13 +10,11 @@ public class AnimalState
     protected AnimalAnim animalAnim; 
     protected CwAnimal animalObject;
     protected Vector3 targetPosition = Vector3.zero;
-
     #endregion
 
     #region Variables // 상태를 나타내는 변수들
     private string animBoolName;  
-    protected float stateTimer;
-    protected bool triggerCalled;
+    protected float stateTimer; 
     #endregion  
 
     public AnimalState(AnimalAnim _animalAnim, AnimalStateMachine _stateMachine, CwAnimal _animalObject, string _animBoolName)
@@ -30,25 +27,16 @@ public class AnimalState
 
     public virtual void Enter()
     {
-        animalAnim.anim.SetBool(animBoolName, true); 
-        triggerCalled = false; 
+        animalAnim.anim.SetBool(animBoolName, true);  
     }
 
-    public virtual void Update()
+    public virtual void FixedUpdateNetwork()
     { 
     }
 
     public virtual void Exit()
     {
         animalAnim.anim.SetBool(animBoolName, false);
-    }
-
-    /// <summary>
-    /// 애니메이션이 끝났을 때 호출되는 메셔드
-    /// </summary>
-    public virtual void AnimationFinishTrigger()
-    {
-        triggerCalled = true;
-    }
+    } 
 
 }
