@@ -65,8 +65,6 @@ public class PlayerInteractUI : MonoBehaviour
         UIPart.openUI -= Client_TurnOffInteractiveUI;
     }
 
-
-
     private void OnTargetDamaged(int damage) => _hitNumber.OnHit(damage);
 
     private void Update()
@@ -105,8 +103,6 @@ public class PlayerInteractUI : MonoBehaviour
     /// </summary>
     public void InteractUI(InteractableType interactableType = InteractableType.None)
     {
-        ActiveCrosshair(true);
-
         if (interactableType == InteractableType.Bed ||
             interactableType == InteractableType.Box ||
             interactableType == InteractableType.Campfire ||
@@ -118,9 +114,6 @@ public class PlayerInteractUI : MonoBehaviour
 
         else if (interactableType == InteractableType.Tree || interactableType == InteractableType.Stone)
         {
-            if (showCrosshair)
-                ActiveCrosshair(false);
-
             interactableUI.alpha = 0f;
             placeableUI.alpha = 0f;
         }
@@ -133,9 +126,6 @@ public class PlayerInteractUI : MonoBehaviour
 
         else if (interactableType == InteractableType.None)
         {
-            if (showCrosshair)
-                ActiveCrosshair(false);
-
             interactableUI.alpha = 0f;
             placeableUI.alpha = 0f;
         }
@@ -170,9 +160,12 @@ public class PlayerInteractUI : MonoBehaviour
     {
         if (turnOff)
         {
+            crosshairUI.SetActive(false);
             interactableUI.alpha = 0f;
             placeableUI.alpha = 0f;
         }
+        else if (!turnOff && showCrosshair)
+            crosshairUI.SetActive(true);
     }
 
     /// <summary>
