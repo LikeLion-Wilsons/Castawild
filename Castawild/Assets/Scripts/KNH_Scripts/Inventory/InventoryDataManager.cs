@@ -117,7 +117,7 @@ public class InventoryDataManager : NetworkBehaviour
             if (inventorySlots[selectedSlot].IsEmpty())
                 player.Client_RemoveSelectedItem();
             player.Client_ApplySelectedItem(itemList[selectedSlot].itemID);
-            Debug.Log("ChangeSelectedSlot " + selectedSlot);
+            //Debug.Log("ChangeSelectedSlot " + selectedSlot);
             onItemSelected?.Invoke(inventorySlots[selectedSlot].item.itemID);
         }
     }
@@ -231,7 +231,7 @@ public class InventoryDataManager : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_SubtractDurability(float amount)
     {
-        Debug.Log("RPC_SubtractDurability" + selectedSlot);
+        //Debug.Log("RPC_SubtractDurability" + selectedSlot);
         var item = itemList.Get(selectedSlot);
         if (item.itemID == -1) return;
         //내구도 감소
@@ -266,7 +266,7 @@ public class InventoryDataManager : NetworkBehaviour
     {
         itemList.Set(index, item);
     }
-    //상자로부터 아이템 데이터 받아오기
+    //상자 -> 인벤토리
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_SetItemFromChest(ChestDataManager chestData)
     {
@@ -279,7 +279,7 @@ public class InventoryDataManager : NetworkBehaviour
         RPC_UpdateInventoryUI();
         Debug.Log("chest -> inventory");
     }
-    //인벤토리에서 상자로 데이터 보내기
+    //인벤토리 -> 상자
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestStoreToChest(ChestDataManager chestData)
     {
@@ -307,16 +307,16 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
 
-    //모닥불로부터 아이템 데이터 받아오기
+    //모닥불 -> 인벤토리
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_SetItemFromCampfire(NetworkCampFire campfire)
     {
         itemList.Set(45, campfire.cookPotItem);
-        itemList.Set(45, campfire.resultItem);
+        itemList.Set(46, campfire.resultItem);
         RPC_UpdateInventoryUI();
         Debug.Log("campfire -> inventory");
     }
-    //모닥불에서 상자로 데이터 보내기
+    //인벤토리 -> 모닥불
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestStoreToCampfire(NetworkCampFire campfire)
     {
@@ -421,7 +421,6 @@ public class InventoryDataManager : NetworkBehaviour
         {
             if (itemList[i].itemID == -1)
             {
-                Debug.Log(dur);
                 Item newItem = new Item { itemID = id, count = amount, durability = dur };
                 itemList.Set(i, newItem);
 

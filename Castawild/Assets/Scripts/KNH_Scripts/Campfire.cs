@@ -6,7 +6,7 @@ public class Campfire : InteractableObject
 {
     [Networked] public bool CanOpen { get; set; } = true;
     public bool isFire { get; set; } = false;
-    UI_Manager canvasHolder;
+    public UI_Manager canvasHolder;
     public Player player;
     InventoryDataManager inventoryData;
     NetworkCampFire networkCampfire;
@@ -41,11 +41,16 @@ public class Campfire : InteractableObject
 
         //PlayerController playerController = playerObj.GetComponent<PlayerController>();
         inventoryData = player.GetComponent<InventoryDataManager>();
+
         networkCampfire = GetComponent<NetworkCampFire>();
+        networkCampfire.player = player;
         networkCampfire.inventoryData = inventoryData;
 
         canvasHolder = inventoryData.canvasHolder;
         canvasHolder.currentCampFire = gameObject;
+
+        //chest -> inventory
+        inventoryData.RPC_SetItemFromCampfire(networkCampfire);
 
         if (CanOpen)
         {
