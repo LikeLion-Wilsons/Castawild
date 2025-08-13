@@ -9,13 +9,12 @@ public class MovementStateManager : BaseStateManager
 {
     #region Conponent
     private DayNightCycleManager dayNightManager;
-    [HideInInspector] public PlayerInteractUI interactUI;
-    [HideInInspector] public ToolStateManager toolStateManager;
+    public PlayerInteractManager interactManager;
     #endregion
 
     #region States
     [Header("State")]
-    public MovementBaseState previousState;
+    public MovementState previousState;
     public IdleState idleState;
     public WalkState walkState;
     public RunState runState;
@@ -26,7 +25,7 @@ public class MovementStateManager : BaseStateManager
     public DeathState deathState;
     public GatherState gatherState;
     public Dictionary<MovementState, MovementBaseState> movementStateDict;
-    public MovementBaseState currentState; // 호스트용 변수
+    public MovementBaseState currentState;
     #endregion
 
     #region Movement
@@ -40,7 +39,6 @@ public class MovementStateManager : BaseStateManager
 
     #region GoundCheck
     [Header("GoundCheck")]
-    [SerializeField] private float groundYOffset;
     [SerializeField] private LayerMask groundMask;
     [SerializeField] private float fallMultiplier = 1.5f;
     private Vector3 spherePos;
@@ -49,12 +47,10 @@ public class MovementStateManager : BaseStateManager
     #region Network
     [Header("Networked")]
     [Networked, OnChangedRender(nameof(OnCurrentMoveStateChanged))]
-    public MovementState CurrentMoveState { get; set; }
-    [Networked] public bool CanLanding { get; set; }
+    public MovementState CurrentMoveState { get; set; } = MovementState.None;
+    [Networked, HideInInspector] public bool CanLanding { get; set; }
     [Networked] public MoveAnimatoinState CurrentMoveAnimation { get; set; }
-    [Networked] public float currentMoveSpeed { get; set; }
     [Networked, HideInInspector] public bool Revived { get; set; }
-    [Networked, HideInInspector] public bool JumpTriggered { get; set; }
     [Networked, HideInInspector] public Vector2 MoveValue { get; set; }
     [Networked, HideInInspector] public bool kneel { get; set; }
     #endregion
@@ -69,38 +65,57 @@ public class MovementStateManager : BaseStateManager
     {
         base.Awake();
         InitStates();
-        Host_ChangeState(MovementState.Idle);
     }
 
     public override void Spawned()
     {
         InitComponents();
+
         if (HasStateAuthority)
         {
+            player.Host_TakeDamagedEvent -= ChangeToDeathState;
+            player.Host_TakeDamagedEvent += ChangeToDeathState;
+
             DayNightCycleManager.OnTimeSkipStarted -= Host_WakeUp;
             DayNightCycleManager.OnTimeSkipStarted += Host_WakeUp;
         }
+
+        Host_ChangeState(MovementState.Idle);
+        OnCurrentMoveStateChanged();
+    }
+
+    private void ChangeToDeathState(bool isDeath)
+    {
+        if (isDeath)
+            Host_ChangeState(MovementState.Death);
+        else
+            Host_ChangeState(MovementState.GetHit);
+    }
+
+    private void Host_WakeUp()
+    {
+        Host_ChangeState(MovementState.Idle);
+        player.Host_NewDayStatus();
     }
 
     private void InitComponents()
     {
         if (HasStateAuthority)
             dayNightManager = FindAnyObjectByType<DayNightCycleManager>();
-        interactUI = GetComponentInChildren<PlayerInteractUI>();
-        toolStateManager = GetComponent<ToolStateManager>();
+        interactManager = GetComponent<PlayerInteractManager>();
     }
 
     private void InitStates()
     {
-        idleState = new IdleState(this, inputManager);
-        walkState = new WalkState(this, inputManager);
-        runState = new RunState(this, inputManager);
-        crouchState = new CrouchState(this, inputManager);
-        jumpState = new JumpState(this, inputManager);
-        sleepState = new SleepState(this, inputManager);
-        getHitState = new GetHitState(this, inputManager);
-        deathState = new DeathState(this, inputManager);
-        gatherState = new GatherState(this, inputManager);
+        idleState = new IdleState(this);
+        walkState = new WalkState(this);
+        runState = new RunState(this);
+        crouchState = new CrouchState(this);
+        jumpState = new JumpState(this);
+        sleepState = new SleepState(this);
+        getHitState = new GetHitState(this);
+        deathState = new DeathState(this);
+        gatherState = new GatherState(this);
 
         movementStateDict = new Dictionary<MovementState, MovementBaseState>
         {
@@ -121,7 +136,7 @@ public class MovementStateManager : BaseStateManager
     /// </summary>
     public void Host_ChangeState(MovementState newState)
     {
-        if (!HasStateAuthority)
+        if (!HasStateAuthority || CurrentMoveState == newState)
             return;
         CurrentMoveState = newState;
     }
@@ -130,20 +145,10 @@ public class MovementStateManager : BaseStateManager
     {
         if (movementStateDict.TryGetValue(CurrentMoveState, out var newState))
         {
-            if (currentState == newState)
-                return;
-
             currentState?.ExitState();
             currentState = newState;
             currentState.EnterState();
         }
-    }
-
-    private void Host_WakeUp()
-    {
-
-        Host_ChangeState(MovementState.Idle);
-        player.Host_NewDayStatus();
     }
 
     /// <summary>
@@ -151,7 +156,7 @@ public class MovementStateManager : BaseStateManager
     /// </summary>
     public void All_UpdateMoveAnimation(float deltaTime)
     {
-        if (player.All_CanMoving())
+        if (moveManager.All_CanMoving())
         {
             anim.SetFloat("Horizontal", MoveValue.x, 0.1f, deltaTime);
             anim.SetFloat("Vertical", MoveValue.y, 0.1f, deltaTime);
@@ -196,7 +201,7 @@ public class MovementStateManager : BaseStateManager
                 break;
         }
 
-        if (player.All_CanMoving())
+        if (moveManager.All_CanMoving())
         {
             // 이 부분 없으면 착지할 때 애니메이션 전환 이상함
             if (input.moveValue != Vector2.zero)
@@ -207,32 +212,19 @@ public class MovementStateManager : BaseStateManager
                     anim.SetBool("Walking", true);
             }
         }
-        anim.SetBool("Falling", !playerController.Grounded);
+        anim.SetBool("Falling", !moveManager.Grounded);
     }
 
+    /// <summary>
+    /// 달릴 수 있는지 체크
+    /// </summary>
     public bool All_CanRun()
     {
-        if (toolStateManager.CurrentToolState == ToolState.Aim || toolStateManager.CurrentToolState == ToolState.Carry
-            || !All_HasEnoughStaminaToRun())
-            return false;
-        return true;
+        if (flagManager.CanRun_Tool && Stamina > player.playerData.maxStamina * 0.3f)
+            return true;
+
+        return false;
     }
-
-    /// <summary>
-    /// 달릴 수 있는 기력 체크
-    /// </summary>
-    public bool All_HasEnoughStaminaToRun()
-    {
-        if (Stamina <= player.playerData.maxStamina * 0.3f)
-            return false;
-
-        return true;
-    }
-
-    /// <summary>
-    /// 스테미나 회복가능한지 확인
-    /// </summary>
-    public bool All_CanRecoverStamina() => CurrentMoveState != MovementState.Run && CurrentMoveState != MovementState.Death;
 
     public void Host_Sleep(bool isSleep) => dayNightManager.Rpc_SetSleepingState(isSleep, Object.InputAuthority);
 

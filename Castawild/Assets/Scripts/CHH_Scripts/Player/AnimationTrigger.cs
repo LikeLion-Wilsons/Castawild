@@ -5,47 +5,49 @@ using static UnityEngine.Rendering.DebugUI;
 public class AnimationTrigger : MonoBehaviour
 {
     private Player player;
-    private PlayerController playercontroller;
+    private PlayerInteractManager playercontroller;
     private MovementStateManager movementManager;
-    private ToolStateManager toolManager;
+    private ToolStateManager toolStateManager;
     private PlayerInteractUI interactUI;
 
     private void Awake()
     {
         player = GetComponentInParent<Player>();
-        playercontroller = GetComponentInParent<PlayerController>();
+        playercontroller = GetComponentInParent<PlayerInteractManager>();
         movementManager = GetComponentInParent<MovementStateManager>();
-        toolManager = GetComponentInParent<ToolStateManager>();
+        toolStateManager = GetComponentInParent<ToolStateManager>();
         interactUI = transform.parent.GetComponentInChildren<PlayerInteractUI>();
     }
 
     public void ToolAnimationFinishTrigger()
     {
-        toolManager.IsDecreased = false;
-        toolManager.DecreaseToolDuration = false;
-        toolManager.IsAnimationFinished = true;
+        toolStateManager.DecreaseToolDuration = false;
+        toolStateManager.IsAnimationFinished = true;
     }
-    public void ToolAnimationStartTrigger() => toolManager.IsAnimationFinished = false;
+    public void ToolAnimationStartTrigger()
+    {
+        toolStateManager.IsAnimationFinished = false;
+    }
     public void MoveAnimationFinishTrigger() => movementManager.IsAnimationFinished = true;
     public void MoveAnimationStartTrigger() => movementManager.IsAnimationFinished = false;
     public void CanLanding() => movementManager.CanLanding = true;
-    public void ReceiveInput() => toolManager.CanReceiveInput = true;
+    public void ReceiveInput() => toolStateManager.CanReceiveInput = true;
     public void StopReceiveInput()
     {
-        if (toolManager.CanComboAttack)
-            toolManager.ComboAttack = true;
-        toolManager.CanComboAttack = false;
-        toolManager.CanReceiveInput = false;
+        if (toolStateManager.CanComboAttack)
+            toolStateManager.ComboAttack = true;
+        toolStateManager.CanComboAttack = false;
+        toolStateManager.CanReceiveInput = false;
     }
 
     public void Interact() => playercontroller.Client_Interact();
 
     public void Throw(int isArrow)
     {
-        toolManager.Client_Throw(isArrow);
+        toolStateManager.Client_Throw(isArrow);
 
         if (isArrow == 1)
-            toolManager.DecreaseToolDuration = true;
+            toolStateManager.DecreaseToolDuration = true;
     }
 
     public void ActiveDeathUI()
@@ -62,5 +64,11 @@ public class AnimationTrigger : MonoBehaviour
     public void FinishHit()
     {
         //toolManager.Host_FinishHit();
+    }
+
+    public void Eat()
+    {
+        if (toolStateManager.HasStateAuthority)
+            toolStateManager.player.Host_RestoreStatFromFood();
     }
 }

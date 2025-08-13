@@ -2097,15 +2097,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactableUI: {fileID: 1050507204357047267}
-  placeableUI: {fileID: 6974805839104486064}
-  crosshairImage: {fileID: 6433231100233316107}
   interactableText: {fileID: 917690023558389716}
+  placeableUI: {fileID: 6974805839104486064}
+  crosshairUI: {fileID: 8791585138133313767}
+  crosshairImage: {fileID: 6433231100233316107}
   originImage: {fileID: 21300000, guid: e63e19b592fc89c46b22961b98684cd8, type: 3}
   axeImage: {fileID: 21300000, guid: 1963a850e6795bd48a4297d98d345277, type: 3}
   pickaxeImage: {fileID: 21300000, guid: 4e20a6e4a49bb5548992241a1c2f79c2, type: 3}
+  showCrosshair: 1
+  deathUI: {fileID: 1470346524120931568}
   reviveTime: 1
   autoReviveTime: 5
-  deathUI: {fileID: 1470346524120931568}
   deathBackground: {fileID: 1927288793396717324}
   revivedBar: {fileID: 6313869777731101977}
   deathText: {fileID: 4705496782829080018}

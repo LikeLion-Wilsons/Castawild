@@ -88,7 +88,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75d608491e0b3104c8add8603597e0da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemID: 0
+  itemID: 7
   toolName: CookedMeat
   interactAtt: 0
   durability: 1
@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 380a05df0aede884399ee781d387f02f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  restoreHPValue: 0
+  restoreHPValue: 20
   restoreStaminaValue: 0
-  restoreThirstValue: 0
-  restoreHungerValue: 0
+  restoreThirstValue: -10
+  restoreHungerValue: 30

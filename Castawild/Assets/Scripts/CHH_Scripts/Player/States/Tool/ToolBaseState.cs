@@ -4,10 +4,9 @@ public abstract class ToolBaseState : BaseState
 {
     protected ToolStateManager toolStateManager;
 
-    public ToolBaseState(ToolStateManager _toolStateManager, PlayerInputManager _inputManager)
+    public ToolBaseState(ToolStateManager _toolStateManager)
     {
         toolStateManager = _toolStateManager;
-        inputManager = _inputManager;
     }
 
     public override void ExitState()

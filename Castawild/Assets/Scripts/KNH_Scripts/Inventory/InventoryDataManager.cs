@@ -142,17 +142,23 @@ public class InventoryDataManager : NetworkBehaviour
         {
             if (scroll > 0f)
             {
-                if (player != null && player.toolStateManager.CurrentToolState == ToolState.Idle) ;
-                int next = (selectedSlot - 1 + maxSlotCount) % maxSlotCount;
-                ChangeSelectedSlot(next);
-                nextScrollTime = Time.time + scrollCooldown;
+                //if (player != null && player.toolStateManager.CurrentToolState == ToolState.Idle) ;
+                if (!player.flagManager.IsUsingTool)
+                {
+                    int next = (selectedSlot - 1 + maxSlotCount) % maxSlotCount;
+                    ChangeSelectedSlot(next);
+                    nextScrollTime = Time.time + scrollCooldown;
+                }
             }
             else if (scroll < 0f)
             {
-                if (player != null && player.toolStateManager.CurrentToolState == ToolState.Idle) ;
-                int next = (selectedSlot + 1) % maxSlotCount;
-                ChangeSelectedSlot(next);
-                nextScrollTime = Time.time + scrollCooldown;
+                //if (player != null && player.toolStateManager.CurrentToolState == ToolState.Idle) ;
+                if (!player.flagManager.IsUsingTool)
+                {
+                    int next = (selectedSlot + 1) % maxSlotCount;
+                    ChangeSelectedSlot(next);
+                    nextScrollTime = Time.time + scrollCooldown;
+                }
             }
         }
 
@@ -318,6 +324,14 @@ public class InventoryDataManager : NetworkBehaviour
         campfire.RPC_SetResultItem(itemList[46]);
         Debug.Log("inventory->campfire");
         RPC_UpdateInventoryUI();
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ClearCup()
+    {
+        if (itemList[selectedSlot].itemID != 204) return;
+        UseItem(itemList[selectedSlot].itemID, 1);
+        AddItem(407, 1);
     }
 
     #endregion

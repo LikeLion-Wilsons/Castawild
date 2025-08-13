@@ -1,9 +1,10 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EatState : ToolBaseState
 {
-    public EatState(ToolStateManager _toolStateManager, PlayerInputManager _inputManager)
-        : base(_toolStateManager, _inputManager)
+    public EatState(ToolStateManager _toolStateManager)
+        : base(_toolStateManager)
     {
     }
 
@@ -14,7 +15,8 @@ public class EatState : ToolBaseState
         if (toolStateManager.player.currentItemType == ItemType.Drink)
             toolStateManager.CurrentToolAnimationState = ToolAnimationState.Drink;
 
-        toolStateManager.playerController.Host_FreezePosition(true);
+        toolStateManager.moveManager.Host_FreezePosition(true);
+        toolStateManager.flagManager.Set(PlayerFlags.Eat);
     }
 
     public override void UpdateState()
@@ -26,6 +28,8 @@ public class EatState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
-        toolStateManager.playerController.Host_FreezePosition(false);
+
+        toolStateManager.flagManager.Clear(PlayerFlags.Eat);
+        toolStateManager.moveManager.Host_FreezePosition(false);
     }
 }

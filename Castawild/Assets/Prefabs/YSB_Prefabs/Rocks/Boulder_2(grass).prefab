@@ -201,7 +201,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactableType: 2
   visualRoot: {fileID: 5414854231017912197}
-  reviveTime: 10
 --- !u!136 &-9039576816379411828
 CapsuleCollider:
   m_ObjectHideFlags: 0

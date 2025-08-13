@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 384296411215608051}
   - component: {fileID: 2863630399083837473}
   - component: {fileID: 2184143154126297667}
+  - component: {fileID: 8440331638083178936}
   m_Layer: 8
   m_Name: Campfire
   m_TagString: Interactable
@@ -160,6 +161,8 @@ MonoBehaviour:
   itemIndex: 0
   text: Campfire
   isPlaceable: 1
+  _CanOpen: 1
+  player: {fileID: 0}
   fireVFX: {fileID: 5839911783318004443}
 --- !u!114 &2863630399083837473
 MonoBehaviour:
@@ -180,6 +183,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 384296411215608051}
   - {fileID: 2184143154126297667}
+  - {fileID: 8440331638083178936}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &2184143154126297667
 MonoBehaviour:
@@ -193,6 +197,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66c238924adf4e8418db3cdb63265712, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _cookPotItem:
+    itemID: 0
+    count: 0
+    durability: 0
+  _resultItem:
+    itemID: 0
+    count: 0
+    durability: 0
+  _isFire: 0
+  _fireTime: 0
+  fireVFX: {fileID: 5839911783318004443}
+  inventoryData: {fileID: 0}
+  isCooking: 0
+--- !u!114 &8440331638083178936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6167062138974328233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1001 &2455680331382048836
 PrefabInstance:
   m_ObjectHideFlags: 0

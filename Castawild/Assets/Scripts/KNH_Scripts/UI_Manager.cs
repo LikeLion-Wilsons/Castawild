@@ -50,9 +50,8 @@ public class UI_Manager : MonoBehaviour
             part.Close();
         }
         if (currentOpenedChest != null)
-        {
             currentOpenedChest.GetComponent<Chest>().FinishInteract();
-        }
+        if (currentCampFire != null) currentCampFire.GetComponent<Campfire>().FinishInteract();
     }
 
     [SerializeField] private Transform ui_Part_Parent;

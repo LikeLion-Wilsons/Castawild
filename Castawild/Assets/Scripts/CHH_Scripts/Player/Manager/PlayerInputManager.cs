@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[DisallowMultipleComponent]
 public class PlayerInputManager : MonoBehaviour
 {
     #region Input Action
@@ -25,12 +26,13 @@ public class PlayerInputManager : MonoBehaviour
     #endregion
 
     #region Cursor
-    public Action cursorLocked;
-    public Action cursorUnLocked;
+    public Action<bool> cursorLocked;
     #endregion 
 
-    private PlayerCameraManager cameraManager;
     private Player player;
+    private PlayerCameraManager cameraManager;
+    private PlayerMoveManager moveManager;
+
     void Start()
     {
         UIPart.openUI += HandleCursor;
@@ -53,8 +55,9 @@ public class PlayerInputManager : MonoBehaviour
 
     private void Awake()
     {
-        cameraManager = GetComponentInChildren<PlayerCameraManager>();
         player = GetComponent<Player>();
+        cameraManager = GetComponentInChildren<PlayerCameraManager>();
+        moveManager = GetComponent<PlayerMoveManager>();
         InitInputActions();
     }
 
@@ -80,17 +83,19 @@ public class PlayerInputManager : MonoBehaviour
         if (!player.isSpawned || !player.HasInputAuthority)
             return;
 
-        // 게임 포커스가 사라지면 커서 해제
-        if (!Application.isFocused && player.IsCursorLocked)
-            UnlockCursor();
+        //// 게임 포커스가 사라지면 커서 해제
+        //if (!Application.isFocused && player.IsCursorLocked)
+        //    UnlockCursor();
 
-        // Game 창이 포커스된 상태에서 클릭 시 커서 잠금
-        if (!player.IsCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame && !player.IsUIOpen)
-            LockCursor();
+        //// Game 창이 포커스된 상태에서 클릭 시 커서 잠금
+        //if (!player.IsCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame && !player.IsUIOpen)
+        //    LockCursor();
 
-        // ESC 눌렀을 때 해제
-        if (player.IsCursorLocked && Keyboard.current.escapeKey.wasPressedThisFrame && !player.IsUIOpen)
-            UnlockCursor();
+        //// ESC 눌렀을 때 해제
+        //if (player.IsCursorLocked && Keyboard.current.escapeKey.wasPressedThisFrame && !player.IsUIOpen)
+        //    UnlockCursor();
+
+        //if (optionUI.gameObject.activeSelf)
 
         HandleCameraInput();
     }
@@ -109,7 +114,7 @@ public class PlayerInputManager : MonoBehaviour
         Cursor.visible = false;
         player.Client_SetCursorLocked(true);
 
-        cursorLocked?.Invoke();
+        cursorLocked?.Invoke(true);
     }
 
     public void UnlockCursor()
@@ -118,7 +123,7 @@ public class PlayerInputManager : MonoBehaviour
         Cursor.visible = true;
         player.Client_SetCursorLocked(false);
 
-        cursorUnLocked?.Invoke();
+        cursorLocked?.Invoke(false);
     }
 
     public PlayerNetworkInputData CollectInput()
@@ -156,7 +161,7 @@ public class PlayerInputManager : MonoBehaviour
             inputData.camForward = new Vector3(camForward.x, 0f, camForward.z);
         }
 
-        if (player.All_CanMoving())
+        if (moveManager.All_CanMoving())
         {
             if (cameraManager.currentView == ViewType.FirstPerson)
             {

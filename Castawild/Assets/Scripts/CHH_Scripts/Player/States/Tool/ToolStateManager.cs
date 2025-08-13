@@ -1,7 +1,5 @@
 using Fusion;
 using System.Collections.Generic;
-// using UnityEditor.Build;
-// using UnityEditor.EditorTools;
 using UnityEngine;
 
 // 현재 들고있는 무기
@@ -15,7 +13,6 @@ public class ToolStateManager : BaseStateManager
 {
     #region Components
     [HideInInspector] public MovementStateManager movementManager;
-    [HideInInspector] public AnimationTrigger animTrigger;
     #endregion
 
     #region States
@@ -46,23 +43,23 @@ public class ToolStateManager : BaseStateManager
     [SerializeField] private Transform thirdPersonArrowPos;
     [SerializeField] private Transform throwPos;
 
-    [Header("Hit")]
-    [SerializeField] private Vector3 hitBox = new Vector3(1f, 1f, 1.0f);
-    public HashSet<Transform> Host_alreadyHit = new HashSet<Transform>();
-
-
+    [HideInInspector] public bool CanComboAttack { get; set; }
+    [HideInInspector] public bool CanReceiveInput { get; set; }
     #region Network
+
     [Header("Network")]
     [Networked, OnChangedRender(nameof(OnCurrentToolStateChanged))]
     public ToolState CurrentToolState { get; set; }
     [Networked] public ToolAnimationState CurrentToolAnimationState { get; set; }
-    [Networked] public ToolType CurrentToolType { get; set; }
-    [Networked, HideInInspector] public bool CanComboAttack { get; set; }
     [Networked, HideInInspector] public bool ComboAttack { get; set; }
-    [Networked, HideInInspector] public bool CanReceiveInput { get; set; }
     [Networked, HideInInspector] public bool DecreaseToolDuration { get; set; }
-    [Networked, HideInInspector] public bool IsDecreased { get; set; }
     #endregion
+
+    public ToolType CurrentToolType
+    {
+        get => toolManager.CurrentToolType;
+        set => toolManager.CurrentToolType = value;
+    }
 
     protected override void Awake()
     {
@@ -74,29 +71,34 @@ public class ToolStateManager : BaseStateManager
 
     public override void Spawned()
     {
-        Host_ChangeState(ToolState.Idle);
+        if (HasStateAuthority)
+        {
+            player.Host_TakeDamagedEvent -= ChangeToDeathState;
+            player.Host_TakeDamagedEvent += ChangeToDeathState;
+
+            player.Host_DecreaseToolDuration -= SetDecreaseToolDuration;
+            player.Host_DecreaseToolDuration += SetDecreaseToolDuration;
+        }
+
+        toolManager.Host_ChangeSelectedItem += All_ChangeSelectedItem;
+
         CurrentToolType = ToolType.Fist;
+        Host_ChangeState(ToolState.Idle);
+        OnCurrentToolStateChanged();
     }
 
-    public override void FixedUpdateNetwork()
-    {
-        //if (Host_canHit && HasStateAuthority && CurrentToolType == ToolType.Fist)
-        //    Host_FistAttack();
-    }
+    private void ChangeToDeathState(bool isDeath) => Host_ChangeState(ToolState.Idle);
+    private void SetDecreaseToolDuration() => DecreaseToolDuration = true;
 
-    private void InitComponents()
-    {
-        movementManager = GetComponent<MovementStateManager>();
-        animTrigger = GetComponentInChildren<AnimationTrigger>();
-    }
+    private void InitComponents() => movementManager = GetComponent<MovementStateManager>();
 
     private void InitStates()
     {
-        idleState = new ToolIdleState(this, inputManager);
-        useToolState = new UseToolState(this, inputManager);
-        aimState = new AimState(this, inputManager);
-        carryState = new CarryState(this, inputManager);
-        eatState = new EatState(this, inputManager);
+        idleState = new ToolIdleState(this);
+        useToolState = new UseToolState(this);
+        aimState = new AimState(this);
+        carryState = new CarryState(this);
+        eatState = new EatState(this);
 
         toolStateDict = new Dictionary<ToolState, ToolBaseState>
         {
@@ -113,7 +115,7 @@ public class ToolStateManager : BaseStateManager
     /// </summary>
     public void Host_ChangeState(ToolState newState)
     {
-        if (!HasStateAuthority)
+        if (!HasStateAuthority || newState == CurrentToolState)
             return;
 
         CurrentToolState = newState;
@@ -123,9 +125,6 @@ public class ToolStateManager : BaseStateManager
     {
         if (toolStateDict.TryGetValue(CurrentToolState, out var newState))
         {
-            if (currentState == newState)
-                return;
-
             currentState?.ExitState();
             currentState = newState;
             currentState.EnterState();
@@ -145,21 +144,21 @@ public class ToolStateManager : BaseStateManager
         switch (CurrentToolAnimationState)
         {
             case ToolAnimationState.Aim:
-                anim.SetInteger("WeaponType", (int)CurrentToolType);
+                anim.SetInteger("WeaponType", (int)toolManager.CurrentToolType);
                 anim.SetBool("Aiming", true);
                 break;
             case ToolAnimationState.FullAim:
-                anim.SetInteger("WeaponType", (int)CurrentToolType);
+                anim.SetInteger("WeaponType", (int)toolManager.CurrentToolType);
                 anim.SetBool("FullAiming", true);
                 break;
             case ToolAnimationState.UseTool:
-                if (input.IsDown(PlayerNetworkInputData.aimInput) && All_HoldAimTool())
+                if (input.IsDown(PlayerNetworkInputData.aimInput) && toolManager.All_HoldAimTool())
                 {
-                    anim.SetInteger("WeaponType", (int)CurrentToolType);
+                    anim.SetInteger("WeaponType", (int)toolManager.CurrentToolType);
                     anim.SetBool("Aiming", true);
                     anim.SetBool("FullAiming", true);
                 }
-                anim.SetInteger("WeaponType", (int)CurrentToolType);
+                anim.SetInteger("WeaponType", (int)toolManager.CurrentToolType);
                 anim.SetBool("FullUseTool", true);
                 break;
             case ToolAnimationState.Carry:
@@ -188,34 +187,6 @@ public class ToolStateManager : BaseStateManager
 
         Client_armMesh.SetActive(isVisible);
     }
-
-    /// <summary>
-    /// 공격 무기 들고있는지 확인
-    /// </summary>
-    public bool All_HoldAttackTool()
-    {
-        if (CurrentToolType == ToolType.Throw || CurrentToolType == ToolType.Fist || CurrentToolType == ToolType.Spear || CurrentToolType == ToolType.Sword)
-            return true;
-        else
-            return false;
-    }
-
-    /// <summary>
-    /// 곡괭이/도끼 들고있는지 확인
-    /// </summary>
-    public bool All_HoldCraftingTool()
-    {
-        if (CurrentToolType == ToolType.Axe || CurrentToolType == ToolType.Pickaxe)
-            return true;
-        else
-            return false;
-    }
-
-    /// <summary>
-    /// 조준가능한 도구인지 확인
-    /// </summary>
-    public bool All_HoldAimTool() => CurrentToolType == ToolType.Bow || CurrentToolType == ToolType.Throw;
-
     /// <summary>
     /// 돌맹이/화살 생성
     /// </summary>
@@ -225,7 +196,7 @@ public class ToolStateManager : BaseStateManager
             return;
 
         NetworkObject throwObject;
-        if (isArrow && player.HasArrow)
+        if (isArrow && toolManager.HasArrow)
         {
             if (input.currentView == ViewType.FirstPerson)
             {
@@ -241,8 +212,8 @@ public class ToolStateManager : BaseStateManager
             player.inventory.UseItem(201, 1);
             if (player.inventory.GetItemCount(201) <= 0)
             {
-                player.HasArrow = false;
-                player.RPC_NotifyArrowActive(false);
+                toolManager.HasArrow = false;
+                toolManager.RPC_NotifyArrowActive(false);
             }
         }
         else if (!isArrow)
@@ -260,21 +231,11 @@ public class ToolStateManager : BaseStateManager
             if (player.inventory.GetItemCount(202) <= 0)
             {
                 Debug.Log("돌맹이 없음, 주먹으로 변경");
-                player.Host_InitCurrentTool();
+                toolManager.Host_InitCurrentTool();
                 CurrentToolType = ToolType.Fist;
             }
         }
     }
-
-    /// <summary>
-    /// 스태미나 회복 가능한지 확인
-    /// </summary>
-    public bool All_CanRecoverStamina() => CurrentToolState != ToolState.UseTool;
-
-    /// <summary>
-    /// 현재 조준중인지 확인
-    /// </summary>
-    public bool All_IsAiming() => CurrentToolState == ToolState.Aim;
 
     /// <summary>
     /// Ray로 조준 위치 설정
@@ -282,68 +243,73 @@ public class ToolStateManager : BaseStateManager
     public void Client_Throw(int isArrow)
     {
         if (isArrow == 1)
-            All_SetArrowPull(false);
+            RPC_NotifySetArrowPull(false);
 
         if (!HasInputAuthority)
             return;
 
-        if (cameraManager.currentView == ViewType.FirstPerson && player.HasArrow)
+        if (cameraManager.currentView == ViewType.FirstPerson && toolManager.HasArrow)
             cameraManager.ShakeCamera(transform.right, 0.1f);
 
         Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
         Ray ray = Camera.main.ScreenPointToRay(screenCenter);
         Vector3 rayTargetPos = ray.GetPoint(30f);
+
         RPC_RequestThrow(isArrow, rayTargetPos);
     }
 
     /// <summary>
     /// Aim 카메라,UI 설정
     /// </summary>
-    public void Client_SetAimCameraAndUI(bool aimStart)
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplySetAimCameraAndUI(bool aimStart)
     {
-        if (!HasInputAuthority)
-            return;
-
         cameraManager.MoveAimCamera(aimStart);
-        player.playerInteractUI.SetAimCrosshair(aimStart);
+        interactUI.SetAimCrosshair(aimStart);
     }
 
     /// <summary>
     /// 활 조준 설정
     /// </summary>
-    public void All_SetArrowPull(bool isAiming)
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_NotifySetArrowPull(bool isAiming)
     {
         bowAnim.SetBool("Pull", isAiming);
-        player.All_SetArrowActive(isAiming);
+        toolManager.All_SetArrowActive(isAiming);
     }
 
     /// <summary>
     /// 활 쏘는 애니메이션 트리거
     /// </summary>
-    public void All_BowShootAnimation() => bowAnim.SetTrigger("Shoot");
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_NotifyBowShootAnimation() => bowAnim.SetTrigger("Shoot");
 
-    public void All_RotatePlayer()
-    {
-        Vector3 lookDirection = cameraManager.CurrenCam.transform.forward;
-        lookDirection.y = 0f;
+    public void Host_RotatePlayer(bool rotate) => moveManager.RotatePlayer();
 
-        Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-    }
-
-    public bool All_IsDecreaseDurationTool()
-    {
-        if (CurrentToolType == ToolType.Fist || CurrentToolType == ToolType.Bow || CurrentToolType == ToolType.Throw)
-            return false;
-        else
-            return true;
-    }
 
     /// <summary>
-    /// 현재 아이템 변경 RPC
+    /// 던지기
     /// </summary>
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    public void RPC_NotifyChangeSelectedItem(int itemIdx = -1)
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestThrow(int isArrow, Vector3 rayTargetPos)
+    {
+        Host_SpawnThrowObject(isArrow == 0 ? false : true, rayTargetPos);
+
+        if (isArrow == 0)
+            toolManager.All_SetPebbleActive(false);
+        else
+            toolManager.arrow.SetActive(false);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestDecreaseToolDuration(bool isDecreased)
+       => DecreaseToolDuration = isDecreased;
+
+
+    /// <summary>
+    /// 현재 아이템 변경 
+    /// </summary>
+    public void All_ChangeSelectedItem(int itemIdx = -1)
     {
         // 설치가능한 아이템 
         if (itemIdx >= 300 && itemIdx < 400)
@@ -376,32 +342,12 @@ public class ToolStateManager : BaseStateManager
             case 406: // 활
                 {
                     CurrentToolType = ToolType.Bow;
-                    player.arrow.SetActive(false);
+                    toolManager.arrow.SetActive(false);
                 }
                 break;
             default:
                 CurrentToolType = ToolType.Fist;
                 break;
         }
-    }
-
-    /// <summary>
-    /// 던지기
-    /// </summary>
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_RequestThrow(int isArrow, Vector3 rayTargetPos)
-    {
-        Host_SpawnThrowObject(isArrow == 0 ? false : true, rayTargetPos);
-
-        if (isArrow == 0)
-            player.All_SetPebbleActive(false);
-        else
-            player.arrow.SetActive(false);
-    }
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_RequestDecreaseToolDuration(bool isDecreased)
-    {
-        DecreaseToolDuration = isDecreased;
-        Debug.Log("DecreaseToolDuration : " + DecreaseToolDuration);
     }
 }
