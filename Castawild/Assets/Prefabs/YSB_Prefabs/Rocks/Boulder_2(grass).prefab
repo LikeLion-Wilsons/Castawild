@@ -199,9 +199,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a6493853c7f9b94bbb2b938d13201e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactableType: 2
+  interactableType: 8
   visualRoot: {fileID: 5414854231017912197}
-  reviveTime: 10
 --- !u!136 &-9039576816379411828
 CapsuleCollider:
   m_ObjectHideFlags: 0

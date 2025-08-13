@@ -96,17 +96,20 @@ public sealed class PlayerInteractManager : NetworkBehaviour
                         playerInteractUI.InteractUI(interactable.interactableType);
                         Client_currentInteractObject = interactable;
 
-                        if (interactable.interactableType == InteractableType.Gatherable
-                            && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
+                        if (interactable.interactableType == InteractableType.Gatherable)
                         {
-                            movementManager.RPC_RequestChangeGatherState(Object.InputAuthority);
                             playerInteractUI.SetInteractText("줍기");
 
-                            float targetTopY = interact.bounds.max.y;
-                            if (targetTopY - transform.position.y >= kneelY)
-                                movementManager.RPC_RequestSetKneel(false);
-                            else
-                                movementManager.RPC_RequestSetKneel(true);
+                            if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
+                            {
+                                movementManager.RPC_RequestChangeGatherState(Object.InputAuthority);
+
+                                float targetTopY = interact.bounds.max.y;
+                                if (targetTopY - transform.position.y >= kneelY)
+                                    movementManager.RPC_RequestSetKneel(false);
+                                else
+                                    movementManager.RPC_RequestSetKneel(true);
+                            }
                         }
                         break;
                     }

@@ -1,7 +1,7 @@
 using Fusion;
 
 [System.Serializable]
-public enum InteractableType { None, Tree, Stone, Bed, Box, Campfire, WaterPurifier, Item, Gatherable, Pebble }
+public enum InteractableType { None, Tree, Stone, Bed, Box, Campfire, WaterPurifier, Item, Gatherable }
 public abstract class InteractableObject : NetworkBehaviour
 {
     public InteractableType interactableType;
