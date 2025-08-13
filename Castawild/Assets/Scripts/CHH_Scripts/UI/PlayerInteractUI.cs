@@ -114,6 +114,7 @@ public class PlayerInteractUI : MonoBehaviour
 
         else if (interactableType == InteractableType.Tree || interactableType == InteractableType.Stone)
         {
+            ActiveCrosshair(true);
             interactableUI.alpha = 0f;
             placeableUI.alpha = 0f;
         }
@@ -126,6 +127,8 @@ public class PlayerInteractUI : MonoBehaviour
 
         else if (interactableType == InteractableType.None)
         {
+            if (!showCrosshair)
+                ActiveCrosshair(false);
             interactableUI.alpha = 0f;
             placeableUI.alpha = 0f;
         }

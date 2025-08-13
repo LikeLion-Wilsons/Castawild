@@ -99,7 +99,6 @@ public sealed class PlayerInteractManager : NetworkBehaviour
                         if (interactable.interactableType == InteractableType.Gatherable)
                         {
                             playerInteractUI.SetInteractText("줍기");
-
                             if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
                             {
                                 movementManager.RPC_RequestChangeGatherState(Object.InputAuthority);
