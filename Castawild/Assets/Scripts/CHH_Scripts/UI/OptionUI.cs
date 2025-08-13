@@ -58,10 +58,10 @@ public class OptionUI : UIPart
 
     public void ChangeSliderValue(string name)
     {
-        if (name == "Sensivity")
-            cameraManager.sensitivity = sensitivitySlider.value;
-        else
+        if (name == "FOV")
             cameraManager.ChangeFOV(fovSlider.value);
+        else
+            cameraManager.sensitivity = sensitivitySlider.value;
     }
 
     public void Return()
