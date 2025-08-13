@@ -326,6 +326,14 @@ public class InventoryDataManager : NetworkBehaviour
         RPC_UpdateInventoryUI();
     }
 
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ClearCup()
+    {
+        if (itemList[selectedSlot].itemID != 204) return;
+        UseItem(itemList[selectedSlot].itemID, 1);
+        AddItem(407, 1);
+    }
+
     #endregion
     //아이템 비우기
     public void ClearItem(Item item)
