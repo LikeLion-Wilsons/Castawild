@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -25,6 +26,8 @@ public class OptionUI : UIPart
     [Header("Color")]
     [SerializeField] private Color onColor;
     [SerializeField] private Color offColor;
+
+    public static Action ReturnToMainMenu;
 
     public void ChangeValue(string button)
     {
@@ -59,7 +62,11 @@ public class OptionUI : UIPart
             cameraManager.ChangeFOV(fovSlider.value);
     }
 
-    public void Return() => Close();
+    public void Return()
+    {
+        ReturnToMainMenu?.Invoke();
+        Close();
+    }
 
     public void QuitGame()
     {
