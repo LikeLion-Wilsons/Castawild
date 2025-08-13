@@ -86,20 +86,21 @@ public class DummyTarget : NetworkBehaviour, IDamageable
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_Broadcast(PlayerRef player, int message)
     {
-        if (Runner.LocalPlayer != player) return;
-        onDamaged?.Invoke(player, message);
-
         //사운드 테스트.
         switch (ID)
         {
             case 0:
-                SoundManager.Instance.PlayGlobalSound3D("Env_1", transform.position);
+                SoundManager.Instance.PlayGlobalSound3D(Sound.Env_NightBird, transform.position);
                 break;
             case 1:
-                if (player == Runner.LocalPlayer)
-                    SoundManager.Instance.PlayLocalSound3D("Mon_1", transform.position);
+                    SoundManager.Instance.PlayLocalSound3D(player,Sound.Mon_Damaged, transform.position);
                 break;
         }
+        
+        
+        if (Runner.LocalPlayer != player) return;
+        onDamaged?.Invoke(player, message);
+
     }
 
 

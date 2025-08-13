@@ -22,7 +22,7 @@ public class SoundTrigger : MonoBehaviour
         if (triggerCount <1)
         {
             Debug.Log($"Sound Trigger Enter");
-            SoundManager.Instance.PlayBGM("Env_2");
+            SoundManager.Instance.PlayBGM(Sound.Env_Coast);
         }
         triggerCount++;
     }
@@ -34,7 +34,7 @@ public class SoundTrigger : MonoBehaviour
         if (triggerCount <= 0)
         {
             Debug.Log($"Sound Trigger Exit");
-            SoundManager.Instance.PlayBGM("의미없는텍스트");
+            SoundManager.Instance.StopBGM();
             triggerCount = 0;
         }
     }
