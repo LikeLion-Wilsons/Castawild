@@ -142,17 +142,23 @@ public class InventoryDataManager : NetworkBehaviour
         {
             if (scroll > 0f)
             {
-                if (player != null && player.toolStateManager.CurrentToolState == ToolState.Idle) ;
-                int next = (selectedSlot - 1 + maxSlotCount) % maxSlotCount;
-                ChangeSelectedSlot(next);
-                nextScrollTime = Time.time + scrollCooldown;
+                //if (player != null && player.toolStateManager.CurrentToolState == ToolState.Idle) ;
+                if (!player.flagManager.IsUsingTool)
+                {
+                    int next = (selectedSlot - 1 + maxSlotCount) % maxSlotCount;
+                    ChangeSelectedSlot(next);
+                    nextScrollTime = Time.time + scrollCooldown;
+                }
             }
             else if (scroll < 0f)
             {
-                if (player != null && player.toolStateManager.CurrentToolState == ToolState.Idle) ;
-                int next = (selectedSlot + 1) % maxSlotCount;
-                ChangeSelectedSlot(next);
-                nextScrollTime = Time.time + scrollCooldown;
+                //if (player != null && player.toolStateManager.CurrentToolState == ToolState.Idle) ;
+                if (!player.flagManager.IsUsingTool)
+                {
+                    int next = (selectedSlot + 1) % maxSlotCount;
+                    ChangeSelectedSlot(next);
+                    nextScrollTime = Time.time + scrollCooldown;
+                }
             }
         }
 

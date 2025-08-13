@@ -13,7 +13,7 @@ public class OptionUI : UIPart
     [SerializeField] private TextMeshProUGUI sessionName;
 
     [Header("Slider")]
-    [SerializeField] private Slider sensivitySlider;
+    [SerializeField] private Slider sensitivitySlider;
     [SerializeField] private Slider fovSlider;
 
     [Header("Button")]
@@ -57,7 +57,7 @@ public class OptionUI : UIPart
     public void ChangeSliderValue(string name)
     {
         if (name == "Sensivity")
-            cameraManager.sensivity = sensivitySlider.value;
+            cameraManager.sensitivity = sensitivitySlider.value;
         else
             cameraManager.ChangeFOV(fovSlider.value);
     }

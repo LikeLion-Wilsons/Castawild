@@ -23,7 +23,7 @@ public class PlayerCameraManager : MonoBehaviour
 
     #region Mouse Settings
     [Header("마우스")]
-    public float sensivity = 1.5f;
+    public float sensitivity;
     private float pitch = 0f;
     private float yaw = 0f;
 
@@ -259,7 +259,7 @@ public class PlayerCameraManager : MonoBehaviour
         if (currentView == ViewType.ThirdPerson || !moveManager.All_CanMoving())
             return;
 
-        pitch -= inputManager.lookInput.y * sensivity;
+        pitch -= inputManager.lookInput.y * sensitivity;
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         firstPersonCam.transform.localEulerAngles = new Vector3(pitch, yaw, 0f);

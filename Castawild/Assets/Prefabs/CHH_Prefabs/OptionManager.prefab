@@ -846,7 +846,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.2784314, b: 0.25882354, a: 1}
+  m_Color: {r: 0.31764707, g: 0.57254905, b: 0.21568628, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1065,7 +1065,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1792483406982856572}
   m_Layer: 5
-  m_Name: Sensivity
+  m_Name: Sensitivity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1510,7 +1510,7 @@ MonoBehaviour:
   cameraManager: {fileID: 0}
   interactUI: {fileID: 0}
   sessionName: {fileID: 8695964101510237887}
-  sensivitySlider: {fileID: 3721399901069163586}
+  sensitivitySlider: {fileID: 3721399901069163586}
   fovSlider: {fileID: 3053866215285264863}
   cameraShakeButtonText: {fileID: 6286065872649805860}
   cameraShakeButton: {fileID: 8606458335197169220}
@@ -2670,7 +2670,7 @@ GameObject:
   - component: {fileID: 919296213754731056}
   - component: {fileID: 3721399901069163586}
   m_Layer: 5
-  m_Name: Sensivity_Slider
+  m_Name: Sensitivity_Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3020,7 +3020,7 @@ GameObject:
   - component: {fileID: 8793662040380280815}
   - component: {fileID: 2623241744869349190}
   m_Layer: 5
-  m_Name: Sensivity
+  m_Name: Sensitivity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

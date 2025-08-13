@@ -207,7 +207,7 @@ public class PlayerMoveManager : NetworkBehaviour
     {
         if (input.currentView == ViewType.FirstPerson)
         {
-            Quaternion yaw = Quaternion.Euler(0, input.lookValue.x * cameraManager.sensivity, 0);
+            Quaternion yaw = Quaternion.Euler(0, input.lookValue.x * cameraManager.sensitivity, 0);
             kcc.SetLookRotation(kcc.Transform.rotation * yaw);
         }
         else if (input.currentView == ViewType.ThirdPerson && (input.moveValue.sqrMagnitude > 0.001f || flagManager.IsAiming))

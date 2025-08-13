@@ -3477,7 +3477,7 @@ MonoBehaviour:
   fallingDeadTime: 5
   _Grounded_Physics: 0
   groundStartPoint: {fileID: 7339163387627562639}
-  groundDistance: 0.5
+  groundDistance: 1
   _JumpTriggered: 0
   _currentMoveSpeed: 0
   _IsChangePos: 0
@@ -4172,7 +4172,7 @@ MonoBehaviour:
   impulseSource: {fileID: 1517099654388170568}
   isAiming: 0
   currentView: 1
-  sensivity: 1.5
+  sensitivity: 0.2
   minPitch: -80
   maxPitch: 80
   minYaw: -90

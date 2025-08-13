@@ -46,8 +46,8 @@ public class ToolStateManager : BaseStateManager
     [HideInInspector] public bool CanComboAttack { get; set; }
     [HideInInspector] public bool CanReceiveInput { get; set; }
     #region Network
-    [Header("Network")]
 
+    [Header("Network")]
     [Networked, OnChangedRender(nameof(OnCurrentToolStateChanged))]
     public ToolState CurrentToolState { get; set; }
     [Networked] public ToolAnimationState CurrentToolAnimationState { get; set; }
