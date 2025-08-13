@@ -1,6 +1,7 @@
 using Fusion;
 using System;
 using UnityEngine;
+using static Unity.Collections.Unicode;
 
 [DisallowMultipleComponent]
 public sealed class PlayerInteractManager : NetworkBehaviour
@@ -30,6 +31,7 @@ public sealed class PlayerInteractManager : NetworkBehaviour
     public override void Spawned()
     {
         InitComponents();
+        optionUI.SetSessionName(Runner.SessionInfo.Name);
     }
 
     private void InitComponents()

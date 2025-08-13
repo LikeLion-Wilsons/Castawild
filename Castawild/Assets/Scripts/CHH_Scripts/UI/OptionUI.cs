@@ -54,6 +54,8 @@ public class OptionUI : UIPart
         buttonText.text = on ? "On" : "Off";
     }
 
+    public void SetSessionName(string name) => sessionName.text = name;
+
     public void ChangeSliderValue(string name)
     {
         if (name == "Sensivity")
