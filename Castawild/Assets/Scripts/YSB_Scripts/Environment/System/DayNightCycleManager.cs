@@ -15,6 +15,15 @@ public class DayNightCycleManager : NetworkBehaviour
     [Header("Time Settings")]
     [Tooltip("게임 내 낮과 밤의 주기 (s)")]
     [SerializeField] private float dayDurationInSeconds = 600f; //600s
+
+    [Header("Skybox Settings")]
+    [SerializeField] private Material daySkybox;
+    [SerializeField] private Material nightSkybox;
+    [Tooltip("전환 지속시간 (하루 길이 0-1 비율)")]
+    [SerializeField, Range(0, 0.5f)] private float transitionDuration = 0.1f;
+    private Material _daySkyboxInstance;
+    private Material _nightSkyboxInstance;
+
     [Header("Is Night Time")]
     [HideInInspector] public bool isNightTime => TimeOfDay < 0.25f || TimeOfDay > 0.75f;
 
@@ -33,6 +42,9 @@ public class DayNightCycleManager : NetworkBehaviour
     [Tooltip("에디터 미리보기 (0-1)")]
     [SerializeField, Range(0, 1)] private float previewTimeOfDay = 0.25f;
 
+    [Header("Time Pause Settings")]
+    [SerializeField] private KeyCode togglePauseKey = KeyCode.P;
+
     [Header("Time Skip Settings")]
     [SerializeField] private float skipSpeed = 200f;
 
@@ -43,11 +55,25 @@ public class DayNightCycleManager : NetworkBehaviour
     [Networked] private TimeSkipState CurrentState { get; set; }
     [Networked] private float TargetTimeOfDay { get; set; }
     [Networked, Capacity(16)] private NetworkLinkedList<PlayerRef> SleepingPlayers { get; }
+    [Networked] private NetworkBool IsTimePaused { get; set; }
     public static event Action OnTimeSkipStarted;
+
+    private void Awake()
+    {
+        if (daySkybox != null) _daySkyboxInstance = new Material(daySkybox);
+        if (nightSkybox != null) _nightSkyboxInstance = new Material(nightSkybox);
+    }
+
+    private void OnDestroy()
+    {
+        if (_daySkyboxInstance != null) Destroy(_daySkyboxInstance);
+        if (_nightSkyboxInstance != null) Destroy(_nightSkyboxInstance);
+    }
 
     public override void FixedUpdateNetwork()
     {
         if (!Object.HasStateAuthority) return;
+        if (IsTimePaused) return;
 
         switch (CurrentState)
         {
@@ -82,6 +108,17 @@ public class DayNightCycleManager : NetworkBehaviour
         {
             developerMode = !developerMode;
         }
+
+        if (Input.GetKeyDown(togglePauseKey))
+        {
+            Rpc_ToggleTimePause();
+        }
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void Rpc_ToggleTimePause()
+    {
+        IsTimePaused = !IsTimePaused;
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -147,24 +184,109 @@ public class DayNightCycleManager : NetworkBehaviour
 
     private void UpdateLights()
     {
-        if (sunLight != null)//태양
+        // Light rotation and intensity
+        if (sunLight != null)
         {
             sunLight.transform.rotation = Quaternion.Euler(TimeOfDay * 360f - 90f, 170f, 0);
-            if (sunIntensityCurve != null)
-            {
-                sunLight.intensity = sunIntensityCurve.Evaluate(TimeOfDay);
-            }
+            if (sunIntensityCurve != null) sunLight.intensity = sunIntensityCurve.Evaluate(TimeOfDay);
         }
 
-        if (moonLight != null)//달
+        if (moonLight != null)
         {
             moonLight.transform.rotation = Quaternion.Euler(TimeOfDay * 360f - 90f + 180f, 170f, 0);
-            if (moonIntensityCurve != null)
+            if (moonIntensityCurve != null) moonLight.intensity = moonIntensityCurve.Evaluate(TimeOfDay);
+        }
+
+        // Skybox transition
+        UpdateSkybox();
+
+        // Weather integration
+        var weatherManager = WeatherManager.Instance;
+        if (weatherManager != null)
+        {
+            Light activeLight = sunLight.intensity > moonLight.intensity ? sunLight : moonLight;
+            if (activeLight == null) return;
+
+            float dot = Vector3.Dot(activeLight.transform.forward, Vector3.up);
+            float time = (dot + 1f) / 2f;
+
+            activeLight.intensity *= weatherManager.Net_LightIntensity;
+
+            if (weatherManager.overrideSunColor)
             {
-                moonLight.intensity = moonIntensityCurve.Evaluate(TimeOfDay);
+                activeLight.color = weatherManager.sunColorGradient.Evaluate(time) * weatherManager.Net_LightColorTint;
             }
+
+            if (weatherManager.overrideFogColor)
+                RenderSettings.fogColor = weatherManager.fogColorGradient.Evaluate(time) * weatherManager.Net_FogColorTint;
+
+            if (weatherManager.overrideAmbientColor)
+                RenderSettings.ambientLight = weatherManager.ambientColorGradient.Evaluate(time);
+
+            if (weatherManager.cloudsMaterial != null && weatherManager.cloudsMaterial.HasProperty("_ScatteringColor"))
+            {
+                weatherManager.cloudsMaterial.SetColor("_ScatteringColor", activeLight.color);
+            }
+            Shader.SetGlobalColor("_WaterColor", RenderSettings.fogColor);
         }
     }
+
+    private void UpdateSkybox()
+    {
+        if (_daySkyboxInstance == null || _nightSkyboxInstance == null) return;
+
+        float sunriseTime = 0.25f;
+        float sunsetTime = 0.75f;
+        float halfDuration = transitionDuration / 2f;
+
+        // DUSK (Day -> Night)
+        if (TimeOfDay >= sunsetTime - halfDuration && TimeOfDay <= sunsetTime)
+        {
+            RenderSettings.skybox = _daySkyboxInstance;
+            float t = Mathf.InverseLerp(sunsetTime, sunsetTime - halfDuration, TimeOfDay);
+            SetSkyboxTint(_daySkyboxInstance, t);
+        }
+        else if (TimeOfDay > sunsetTime && TimeOfDay <= sunsetTime + halfDuration)
+        {
+            RenderSettings.skybox = _nightSkyboxInstance;
+            float t = Mathf.InverseLerp(sunsetTime, sunsetTime + halfDuration, TimeOfDay);
+            SetSkyboxTint(_nightSkyboxInstance, t);
+        }
+        // DAWN (Night -> Day)
+        else if (TimeOfDay >= sunriseTime - halfDuration && TimeOfDay <= sunriseTime)
+        {
+            RenderSettings.skybox = _nightSkyboxInstance;
+            float t = Mathf.InverseLerp(sunriseTime, sunriseTime - halfDuration, TimeOfDay);
+            SetSkyboxTint(_nightSkyboxInstance, t);
+        }
+        else if (TimeOfDay > sunriseTime && TimeOfDay <= sunriseTime + halfDuration)
+        {
+            RenderSettings.skybox = _daySkyboxInstance;
+            float t = Mathf.InverseLerp(sunriseTime, sunriseTime + halfDuration, TimeOfDay);
+            SetSkyboxTint(_daySkyboxInstance, t);
+        }
+        // DAY TIME
+        else if (TimeOfDay > sunriseTime + halfDuration && TimeOfDay < sunsetTime - halfDuration)
+        {
+            RenderSettings.skybox = _daySkyboxInstance;
+            SetSkyboxTint(_daySkyboxInstance, 1f);
+        }
+        // NIGHT TIME
+        else
+        {
+            RenderSettings.skybox = _nightSkyboxInstance;
+            SetSkyboxTint(_nightSkyboxInstance, 1f);
+        }
+    }
+
+    private void SetSkyboxTint(Material skybox, float t)
+    {
+        if (skybox != null && skybox.HasProperty("_Tint"))
+        {
+            skybox.SetColor("_Tint", Color.Lerp(Color.black, Color.white, t));
+        }
+    }
+
 
     private void OnValidate()
     {
@@ -185,6 +307,19 @@ public class DayNightCycleManager : NetworkBehaviour
         {
             moonLight.transform.rotation = Quaternion.Euler(previewTime * 360f - 90f + 180f, 170f, 0);
             moonLight.intensity = moonCurve.Evaluate(previewTime);
+        }
+
+        // Preview skybox
+        if (daySkybox != null && nightSkybox != null)
+        {
+            if (previewTime > 0.25f && previewTime < 0.75f)
+            {
+                RenderSettings.skybox = daySkybox;
+            }
+            else
+            {
+                RenderSettings.skybox = nightSkybox;
+            }
         }
     }
 }
