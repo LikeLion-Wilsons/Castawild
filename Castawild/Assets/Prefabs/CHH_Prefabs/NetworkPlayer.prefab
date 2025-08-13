@@ -125,7 +125,7 @@ MonoBehaviour:
     FieldOfView: 60
     OrthographicSize: 5
     NearClipPlane: 0.01
-    FarClipPlane: 1000
+    FarClipPlane: 8000
     Dutch: 0
     ModeOverride: 0
     PhysicalProperties:
@@ -1167,7 +1167,7 @@ MonoBehaviour:
     FieldOfView: 60
     OrthographicSize: 5
     NearClipPlane: 0.3
-    FarClipPlane: 1000
+    FarClipPlane: 8000
     Dutch: 0
     ModeOverride: 0
     PhysicalProperties:
@@ -3447,7 +3447,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   optionUI: {fileID: 9031955928824126459}
-  interactHeight: 10
+  interactHeight: 5
   thirdPersonInteractPos: {fileID: 7467696255462433047}
   interactRadius: 1
   interactLayer:

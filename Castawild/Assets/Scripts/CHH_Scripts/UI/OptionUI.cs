@@ -36,17 +36,14 @@ public class OptionUI : UIPart
         else
         {
             interactUI.showCrosshair = !interactUI.showCrosshair;
-            UpdateButtonUI(crossHairButton, crossHairButtonText, interactUI.showCrosshair);
+            interactUI.ActiveCrosshair(interactUI.showCrosshair);
 
-            if (!interactUI.showCrosshair)
-                interactUI.ActiveCrosshair(false);
+            UpdateButtonUI(crossHairButton, crossHairButtonText, interactUI.showCrosshair);
         }
     }
 
     private void UpdateButtonUI(Image button, TextMeshProUGUI buttonText, bool on)
     {
-        Debug.Log("cameraManager.MovingCamera : " + cameraManager.MovingCamera);
-
         Color color = button.color;
         color = on ? onColor : offColor;
         button.color = color;
