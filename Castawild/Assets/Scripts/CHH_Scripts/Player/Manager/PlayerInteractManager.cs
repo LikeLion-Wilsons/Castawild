@@ -104,7 +104,7 @@ public sealed class PlayerInteractManager : NetworkBehaviour
                                 movementManager.RPC_RequestChangeGatherState(Object.InputAuthority);
 
                                 float targetTopY = interact.bounds.max.y;
-                                if (targetTopY - transform.position.y >= kneelY)
+                                if (targetTopY - transform.position.y <= kneelY)
                                     movementManager.RPC_RequestSetKneel(false);
                                 else
                                     movementManager.RPC_RequestSetKneel(true);
@@ -207,10 +207,7 @@ public sealed class PlayerInteractManager : NetworkBehaviour
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
 
         if (att != 0)
-        {
-            Debug.Log("Hit Invoke");
             Hit?.Invoke(att);
-        }
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
