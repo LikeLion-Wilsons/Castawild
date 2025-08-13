@@ -2,8 +2,8 @@ using System.Diagnostics;
 
 public class ToolIdleState : ToolBaseState
 {
-    public ToolIdleState(ToolStateManager _toolStateManager, PlayerInputManager _inputManager)
-        : base(_toolStateManager, _inputManager)
+    public ToolIdleState(ToolStateManager _toolStateManager)
+        : base(_toolStateManager)
     {
     }
 
@@ -14,17 +14,13 @@ public class ToolIdleState : ToolBaseState
 
     public override void UpdateState()
     {
-        if (toolStateManager.player.All_IsDead())
-            return;
-
         // Aim
         if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.aimInput)
-            && toolStateManager.All_HoldAimTool() && toolStateManager.player.All_CanUseTool())
+                && toolStateManager.All_HoldAimTool())
             toolStateManager.Host_ChangeState(ToolState.Aim);
 
         // UseTool
-        else if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput)
-            && toolStateManager.player.All_CanUseTool())
+        else if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
         {
             // 음식 들고있을 땐 먹기
             if (toolStateManager.player.currentItemType == ItemType.Food || toolStateManager.player.currentItemType == ItemType.Drink)

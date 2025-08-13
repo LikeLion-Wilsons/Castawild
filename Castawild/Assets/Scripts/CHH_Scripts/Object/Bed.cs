@@ -21,24 +21,25 @@ public class Bed : InteractableObject
             return;
 
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
+        MovementStateManager movementManager = playerObj.GetComponent<MovementStateManager>();
         Player player = playerObj.GetComponent<Player>();
 
         if (playerObj.HasStateAuthority)
         {
             CanSleep = false;
             player.Host_currentBed = this;
-            player.movementManager.Host_ChangeState(MovementState.Sleep);
+            movementManager.Host_ChangeState(MovementState.Sleep);
         }
         else
         {
             player.RPC_RequestCanSleep_Bed(this, false);
             player.RPC_RequestCurrentBed(this);
-            player.movementManager.RPC_RequestChangeSleepState(playerRef);
+            movementManager.RPC_RequestChangeSleepState(playerRef);
         }
 
         player.All_SetRespawnPos(sleepPos.position);
 
-        PlayerController playerController = playerObj.GetComponent<PlayerController>();
-        playerController.All_SetPosition(sleepPos.position);
+        PlayerMoveManager controller = playerObj.GetComponent<PlayerMoveManager>();
+        controller.All_SetPosition(sleepPos.position);
     }
 }

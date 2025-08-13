@@ -100,10 +100,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75d608491e0b3104c8add8603597e0da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemID: 20
+  itemID: 407
   toolName: Cup
   interactAtt: 0
-  durability: 0.5
+  durability: 0
 --- !u!114 &9194426659630297799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,5 +118,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   restoreHPValue: 0
   restoreStaminaValue: 0
-  restoreThirstValue: 0
+  restoreThirstValue: 30
   restoreHungerValue: 0

@@ -7,43 +7,46 @@ using UnityEngine.UI;
 
 public class PlayerInteractUI : MonoBehaviour
 {
-    private PlayerController playerController;
+    private PlayerInteractManager interactManager;
     private PlayerInputManager inputManager;
     private MovementStateManager movementStateManager;
 
     [Header("Interact")]
     public CanvasGroup interactableUI;
-    [SerializeField] private CanvasGroup placeableUI;
-    public Image crosshairImage;
-
-    private string originalText;
     public TextMeshProUGUI interactableText;
+    private string originalText;
+    [SerializeField] private CanvasGroup placeableUI;
+
+    [Header("CrossHair")]
+    [SerializeField] private GameObject crosshairUI;
+    public Image crosshairImage;
     [SerializeField] private Sprite originImage;
     [SerializeField] private Sprite axeImage;
     [SerializeField] private Sprite pickaxeImage;
+    [HideInInspector] public bool showCrosshair = true;
 
-    [Header("DeathUI")]
+    [Header("Death")]
+    [SerializeField] private GameObject deathUI;
     [SerializeField] private float reviveTime = 1f;
     [SerializeField] private float autoReviveTime = 5f;
-    [SerializeField] private GameObject deathUI;
     [SerializeField] private Image deathBackground;
     [SerializeField] private Image revivedBar;
     [SerializeField] private CanvasGroup deathText;
     private Animator deathAnim;
 
-    [Header("Aim & Hit")]
-    [SerializeField] private CanvasGroup aimCrosshairGroup;
-    [SerializeField] public float aimZoomDuration = 0.3f;
-    private Coroutine aimCrosshairCoroutine;
-    [SerializeField] private UIHitNumbers _hitNumber;
-
     private bool canRevived = false;
     private float pressedRevivedElapsed;
     private float autoRevivedElapsed;
 
+    [Header("Aim")]
+    [SerializeField] private CanvasGroup aimCrosshairGroup;
+    [SerializeField] public float aimZoomDuration = 0.3f;
+    [SerializeField] private UIHitNumbers _hitNumber;
+    private Coroutine aimCrosshairCoroutine;
+
     private void Awake()
     {
-        playerController = GetComponentInParent<PlayerController>();
+        interactManager = GetComponentInParent<PlayerInteractManager>();
         inputManager = GetComponentInParent<PlayerInputManager>();
         movementStateManager = GetComponentInParent<MovementStateManager>();
         deathAnim = GetComponent<Animator>();
@@ -52,15 +55,17 @@ public class PlayerInteractUI : MonoBehaviour
 
     void Start()
     {
-        playerController.Hit += OnTargetDamaged;
+        interactManager.Hit += OnTargetDamaged;
         UIPart.openUI += Client_TurnOffInteractiveUI;
     }
 
     void OnDestroy()
     {
-        playerController.Hit -= OnTargetDamaged;
-        UIPart.openUI += Client_TurnOffInteractiveUI;
+        interactManager.Hit -= OnTargetDamaged;
+        UIPart.openUI -= Client_TurnOffInteractiveUI;
     }
+
+
 
     private void OnTargetDamaged(int damage) => _hitNumber.OnHit(damage);
 
@@ -100,6 +105,8 @@ public class PlayerInteractUI : MonoBehaviour
     /// </summary>
     public void InteractUI(InteractableType interactableType = InteractableType.None)
     {
+        ActiveCrosshair(true);
+
         if (interactableType == InteractableType.Bed ||
             interactableType == InteractableType.Box ||
             interactableType == InteractableType.Campfire ||
@@ -111,6 +118,9 @@ public class PlayerInteractUI : MonoBehaviour
 
         else if (interactableType == InteractableType.Tree || interactableType == InteractableType.Stone)
         {
+            if (showCrosshair)
+                ActiveCrosshair(false);
+
             interactableUI.alpha = 0f;
             placeableUI.alpha = 0f;
         }
@@ -123,6 +133,9 @@ public class PlayerInteractUI : MonoBehaviour
 
         else if (interactableType == InteractableType.None)
         {
+            if (showCrosshair)
+                ActiveCrosshair(false);
+
             interactableUI.alpha = 0f;
             placeableUI.alpha = 0f;
         }
@@ -241,4 +254,5 @@ public class PlayerInteractUI : MonoBehaviour
     }
 
     public void SetInteractText(string text) => interactableText.text = originalText + text;
+    public void ActiveCrosshair(bool active) => crosshairUI.SetActive(active);
 }

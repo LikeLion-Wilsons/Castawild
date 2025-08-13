@@ -1,17 +1,17 @@
 
-using UnityEngine;
-
 public class WalkState : MovementBaseState
 {
-    public WalkState(MovementStateManager _movementManager, PlayerInputManager _inputManager)
-        : base(_movementManager, _inputManager)
+    public WalkState(MovementStateManager _movementManager)
+        : base(_movementManager)
     {
     }
 
     public override void EnterState()
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.Walk;
-        movementManager.currentMoveSpeed = movementManager.walkSpeed;
+        movementManager.flagManager.Set(PlayerFlags.Walk);
+
+        movementManager.moveManager.currentMoveSpeed = movementManager.walkSpeed;
         if (movementManager.HasInputAuthority)
             movementManager.cameraManager.walk = true;
     }
@@ -19,8 +19,7 @@ public class WalkState : MovementBaseState
     public override void UpdateState()
     {
         // Run
-        if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.All_CanRun()
-            && movementManager.toolStateManager.CurrentToolState != ToolState.Aim && movementManager.toolStateManager.CurrentToolState != ToolState.Carry)
+        if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.All_CanRun())
             movementManager.Host_ChangeState(MovementState.Run);
 
         // Crouch
@@ -32,15 +31,17 @@ public class WalkState : MovementBaseState
             movementManager.Host_ChangeState(MovementState.Idle);
 
         // Jump
-        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.playerController.Grounded)
+        if (movementManager.input.WasPressed(movementManager.prevInputButtons, PlayerNetworkInputData.jumpInput) && movementManager.moveManager.Grounded)
         {
-            movementManager.previousState = this;
+            movementManager.previousState = MovementState.Walk;
             movementManager.Host_ChangeState(MovementState.Jump);
         }
     }
 
     public override void ExitState()
     {
+        movementManager.flagManager.Clear(PlayerFlags.Walk);
+
         if (movementManager.HasInputAuthority)
             movementManager.cameraManager.walk = false;
     }
