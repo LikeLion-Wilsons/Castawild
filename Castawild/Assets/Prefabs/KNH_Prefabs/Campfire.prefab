@@ -162,8 +162,8 @@ MonoBehaviour:
   text: Campfire
   isPlaceable: 1
   _CanOpen: 1
-  fireVFX: {fileID: 5839911783318004443}
   player: {fileID: 0}
+  fireVFX: {fileID: 5839911783318004443}
 --- !u!114 &2863630399083837473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,6 +207,7 @@ MonoBehaviour:
     durability: 0
   _isFire: 0
   _fireTime: 0
+  fireVFX: {fileID: 5839911783318004443}
   inventoryData: {fileID: 0}
   isCooking: 0
 --- !u!114 &8440331638083178936
