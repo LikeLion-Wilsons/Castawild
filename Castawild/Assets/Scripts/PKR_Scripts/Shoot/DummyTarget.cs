@@ -101,7 +101,7 @@ public class DummyTarget : NetworkBehaviour,IDamageable
                 soundManager.PlayGlobalSound3D("Env_1", transform.position);
                 break;
             case 1:
-                soundManager.PlayLocalSound3D("Env_2", transform.position);
+                soundManager.PlayLocalSound3D("Mon_1", transform.position);
                 break;
         } 
     }
