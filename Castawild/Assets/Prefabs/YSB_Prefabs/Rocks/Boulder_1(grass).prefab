@@ -319,7 +319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a6493853c7f9b94bbb2b938d13201e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactableType: 8
+  interactableType: 2
   visualRoot: {fileID: 3540373503155800183}
 --- !u!136 &6623205693187150269
 CapsuleCollider:

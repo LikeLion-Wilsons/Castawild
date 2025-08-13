@@ -86,26 +86,38 @@ public class Player : NetworkBehaviour
     public Coroutine fallingCoroutine;
     private Coroutine foodRestoreCoroutine;
 
-    private void Awake()
-    {
-        InitComponents();
-    }
+    // Test
+    [Networked] private bool IsCooling { get; set; } = false;
 
     private void Update()
     {
+        if (!HasInputAuthority)
+            return;
+        // 테스트용
         if (Input.GetKeyDown(KeyCode.K))
             Host_TakeDamage(true, 10);
 
-        // 테스트용
-        if (HasInputAuthority && Input.GetKeyDown(KeyCode.H))
+        if (Input.GetKeyDown(KeyCode.H))
         {
             screenEffect.TakeDamageEffect(0f);
             RPC_RequestHeal();
         }
+
+        if (Input.GetKeyDown(KeyCode.O))
+            RPC_RequestCool();
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_RequestCool()
+    {
+        IsCooling = !IsCooling;
+        Debug.Log("IsCooling : " + IsCooling);
     }
 
     override public void Spawned()
     {
+        InitComponents();
+
         isSpawned = true;
         InitStatus();
 
@@ -165,9 +177,11 @@ public class Player : NetworkBehaviour
 
         if (dayNightManager == null)
             return;
-        if (dayNightManager.isNightTime && !isNearFire)
+
+        if ((IsCooling || (dayNightManager.isNightTime && !isNearFire)) && Temperature > 0f)
             Temperature -= temperatureDecreaseRate * Runner.DeltaTime;
-        else if (dayNightManager.isNightTime && isNearFire)
+
+        else if ((!IsCooling || !dayNightManager.isNightTime || isNearFire) && Temperature < playerData.maxTemperature)
             Temperature += temperatureReceoveryRate * Runner.DeltaTime;
     }
 
@@ -336,6 +350,7 @@ public class Player : NetworkBehaviour
             StopCoroutine(foodRestoreCoroutine);
 
         foodRestoreCoroutine = StartCoroutine(RestoreStatFromFoodCoroutine());
+        inventory.RPC_ClearCup();
 
         ClearCup?.Invoke();
     }

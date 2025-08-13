@@ -3447,7 +3447,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   optionUI: {fileID: 9031955928824126459}
-  interactHeight: 10
+  interactHeight: 5
   thirdPersonInteractPos: {fileID: 7467696255462433047}
   interactRadius: 1
   interactLayer:
