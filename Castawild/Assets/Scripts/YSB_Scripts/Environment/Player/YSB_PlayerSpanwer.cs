@@ -1,34 +1,57 @@
 using Fusion;
 using UnityEngine;
+using System.Collections;
 
-//임시
-public class YSB_PlayerSpawner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
+namespace YSB_Scripts
 {
-    [SerializeField] private NetworkObject PlayerPrefab;
-
-    public void PlayerJoined(PlayerRef playerRef)
+    public class PlayerSpawner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     {
-        if (HasStateAuthority == false) return;
+        [SerializeField] private NetworkObject PlayerPrefab;
 
-        var x = UnityEngine.Random.Range(-3f, 0f);
-        var z = UnityEngine.Random.Range(-3f, 3f);
-        var spawnPosition = transform.position + new Vector3(x, 3f, z);
-
-        var playerObj = Runner.Spawn(PlayerPrefab, spawnPosition, Quaternion.identity, playerRef, (runner, o) =>
+        public void PlayerJoined(PlayerRef playerRef)
         {
-            o.GetComponent<YSB_Player>().Init();
-        });
-        Runner.SetPlayerObject(playerRef, playerObj);
-    }
+            if (HasStateAuthority == false) return;
 
-    public void PlayerLeft(PlayerRef playerRef)
-    {
-        if (HasStateAuthority == false) return;
+            var x = UnityEngine.Random.Range(-3f, 0f);
+            var z = UnityEngine.Random.Range(-3f, 3f);
+            var spawnPosition = transform.position + new Vector3(x, 3f, z);
 
-        var player = Runner.GetPlayerObject(playerRef);
-        if (player != null)
-        {
-            Runner.Despawn(player);
+            var playerObj = Runner.Spawn(PlayerPrefab, spawnPosition, Quaternion.identity, playerRef, (runner, o) =>
+            {
+                //o.GetComponent<YSB_Player>().Init();
+
+            });
+            Runner.SetPlayerObject(playerRef, playerObj);
+
+            if (NetworkObjectVisibilityManager.Instance != null)
+            {
+                NetworkObjectVisibilityManager.Instance.SetPlayerTransform(playerRef, transform);
+            }
+            else
+            {
+                Debug.LogWarning("[Spawned] VisibilityManager instance is null! Delaying registration...");
+
+                StartCoroutine(RegisterPlayerTransformDelayed());
+            }
         }
+
+        private IEnumerator RegisterPlayerTransformDelayed()
+        {
+            while (NetworkObjectVisibilityManager.Instance == null) yield return null;
+
+            NetworkObjectVisibilityManager.Instance.SetPlayerTransform(Object.InputAuthority, transform);
+        }
+
+        public void PlayerLeft(PlayerRef playerRef)
+        {
+            if (HasStateAuthority == false) return;
+
+            var player = Runner.GetPlayerObject(playerRef);
+            if (player != null)
+            {
+                Runner.Despawn(player);
+            }
+        }
+
     }
 }

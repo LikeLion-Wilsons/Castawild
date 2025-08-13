@@ -32,10 +32,11 @@ public struct WeatherPreset
 [RequireComponent(typeof(NetworkObject))]
 public class WeatherManager : NetworkBehaviour
 {
+    public static WeatherManager Instance { get; private set; }
+
     // --- VISUAL & LIGHTING PROPERTIES ---
     [Header("Lighting & Color")]
     [Space(5)]
-    public Light directionalLight;
     public Gradient sunColorGradient;
     public Gradient fogColorGradient;
     public Gradient ambientColorGradient;
@@ -100,11 +101,11 @@ public class WeatherManager : NetworkBehaviour
     [Networked, OnChangedRender(nameof(OnWeatherChanged))]
     private float Net_BurstsScale { get; set; }
     [Networked, OnChangedRender(nameof(OnWeatherChanged))]
-    private Color Net_LightColorTint { get; set; } = Color.white;
+    public Color Net_LightColorTint { get; private set; } = Color.white;
     [Networked, OnChangedRender(nameof(OnWeatherChanged))]
-    private float Net_LightIntensity { get; set; } = 1f;
+    public float Net_LightIntensity { get; private set; } = 1f;
     [Networked, OnChangedRender(nameof(OnWeatherChanged))]
-    private Color Net_FogColorTint { get; set; } = Color.white;
+    public Color Net_FogColorTint { get; private set; } = Color.white;
     [Networked, OnChangedRender(nameof(OnPresetIndexChanged))]
     private int Net_CurrentPresetIndex { get; set; } = -1;
 
@@ -129,6 +130,13 @@ public class WeatherManager : NetworkBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+
         quadMesh = Resources.GetBuiltinResource<Mesh>("Quad.fbx");
         UpdateMatrixArray();
     }
@@ -162,7 +170,6 @@ public class WeatherManager : NetworkBehaviour
         if (!Application.isPlaying)
         {
             UpdateWindShaderValues();
-            UpdateLighting();
             UpdateCloudsVolume();
         }
     }
@@ -174,7 +181,6 @@ public class WeatherManager : NetworkBehaviour
             DeveloperMode_CheckInput();
         }
 
-        UpdateLighting();
         UpdateCloudsVolume();
     }
 
@@ -309,7 +315,6 @@ public class WeatherManager : NetworkBehaviour
     void OnWeatherChanged()
     {
         UpdateWindShaderValues();
-        UpdateLighting();
     }
 
     private void UpdateWindShaderValues()
@@ -335,35 +340,6 @@ public class WeatherManager : NetworkBehaviour
         Shader.SetGlobalFloat("MicroSpeed", microSpeed);
         Shader.SetGlobalFloat("MicroFrequency", microFrequency);
         Shader.SetGlobalFloat("GrassRenderDist", renderDistance);
-    }
-
-    private void UpdateLighting()
-    {
-        if (directionalLight == null) return;
-
-        float dot = Vector3.Dot(directionalLight.transform.forward, Vector3.up);
-        float time = (dot + 1f) / 2f;
-
-        Color lightTint = Application.isPlaying ? Net_LightColorTint : (weatherPresets.Length > 0 ? weatherPresets[0].lightColorTint : Color.white);
-        Color fogTint = Application.isPlaying ? Net_FogColorTint : (weatherPresets.Length > 0 ? weatherPresets[0].fogColorTint : Color.white);
-        float lightIntensity = Application.isPlaying ? Net_LightIntensity : (weatherPresets.Length > 0 ? weatherPresets[0].lightIntensity : 1f);
-
-        directionalLight.intensity = lightIntensity;
-
-        if (overrideSunColor)
-            directionalLight.color = sunColorGradient.Evaluate(time) * lightTint;
-
-        if (overrideFogColor)
-            RenderSettings.fogColor = fogColorGradient.Evaluate(time) * fogTint;
-
-        if (overrideAmbientColor)
-            RenderSettings.ambientLight = ambientColorGradient.Evaluate(time);
-
-        if (cloudsMaterial != null && cloudsMaterial.HasProperty("_ScatteringColor"))
-        {
-            cloudsMaterial.SetColor("_ScatteringColor", directionalLight.color);
-        }
-        Shader.SetGlobalColor("_WaterColor", RenderSettings.fogColor);
     }
 
     private void UpdateCloudsVolume()
