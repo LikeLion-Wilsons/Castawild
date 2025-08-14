@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static Unity.Collections.Unicode;
 
 public class UICampfire : UIPart
 {
@@ -22,7 +21,7 @@ public class UICampfire : UIPart
     [SerializeField] Image fuelIcon;
 
     [Header("시간")]
-    float currentTime;//남은 지속 시간
+    public float currentTime;//남은 지속 시간
     float addTime;//더할 시간(나뭇가지 : 20초, 통나무 : 40초)
     int min;
     int sec;
@@ -46,9 +45,6 @@ public class UICampfire : UIPart
         if (campFire == null) return;
         netWorkCampfire = campFire.GetComponent<NetworkCampFire>();
 
-        //요리 남은 시간
-        float timeLeft = netWorkCampfire.RemainingCookTime;
-
         if (!netWorkCampfire.isFire)//불이 꺼져 있을 때
         {
             arrowImage.fillAmount = 0f;
@@ -59,6 +55,9 @@ public class UICampfire : UIPart
         }
         else//요리중일 때
         {
+            //요리 남은 시간
+            float timeLeft = netWorkCampfire.RemainingCookTime;
+
             double totalDuration = 10.0;
             double elapsed = totalDuration - timeLeft;
             float progress = Mathf.Clamp01((float)(elapsed / totalDuration));
@@ -67,16 +66,18 @@ public class UICampfire : UIPart
             if (arrowImage.fillAmount >= 1) arrowImage.fillAmount = 0f;//초기화
         }
         //현재 연료 남은 시간
-        currentTime = netWorkCampfire.fireTime;
 
-        if (currentTime > 0)
+        if (netWorkCampfire.isFire)
         {
-            SetTimerText();
-        }
-        else
-        {
-            campFire.SetFireActive(false);
-            fireImage.SetActive(false);
+            if (currentTime > 0)
+            {
+
+            }
+            else
+            {
+                campFire.SetFireActive(false);
+                fireImage.SetActive(false);
+            }
         }
     }
     public void AddFuelButton()
@@ -93,7 +94,7 @@ public class UICampfire : UIPart
         else if (fuelList[selectedFuelIndex] == 3) addTime = 40;
 
         netWorkCampfire.RPC_AddFireTime(addTime);
-        //AddTime(addTime);
+        //currentTime += addTime;
 
         //불 켜기
         netWorkCampfire.RPC_SetisFire(true);
@@ -119,11 +120,9 @@ public class UICampfire : UIPart
         fuelIcon.sprite = ItemDataBase.Instance.GetItemByID(fuelList[selectedFuelIndex]).image;
     }
 
-
-    void SetTimerText()
+    public void SetTimerText(int min, int sec)
     {
-        min = (int)currentTime / 60;
-        sec = (int)currentTime % 60;
+        Debug.Log(min.ToString() + "m " + sec.ToString() + "s");
         timerText.text = min.ToString() + "m " + sec.ToString() + "s";
     }
 }
