@@ -33,7 +33,7 @@ public class PlayerMoveManager : NetworkBehaviour
     [SerializeField] private Transform groundStartPoint;
     [SerializeField] private float groundDistance = 0.5f;
 
-    PlayerNetworkInputData input;
+    private PlayerNetworkInputData input;
     [Networked, HideInInspector] public bool JumpTriggered { get; set; }
     [Networked, HideInInspector] public float currentMoveSpeed { get; set; }
     [Networked, HideInInspector] public bool IsChangePos { get; set; }
