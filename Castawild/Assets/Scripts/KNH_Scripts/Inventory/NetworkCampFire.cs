@@ -15,7 +15,8 @@ public class NetworkCampFire : NetworkBehaviour
 
     [Header("시간")]
     [Networked] public float fireTime { get; set; }
-    [Networked] public float nextCookTime { get; set; }
+    [Networked] private TickTimer fireDecreaseTimer { get; set; }
+    [Networked] public TickTimer nextCookTime { get; set; }
 
     public bool isCooking;
 
@@ -40,29 +41,32 @@ public class NetworkCampFire : NetworkBehaviour
             resultItem = item;
         }
 
+
+
         campfire = GetComponent<Campfire>();
     }
     private double nextFireDecreaseTime;
-    public void Update()
+
+    public override void FixedUpdateNetwork()
     {
-        if (player == null) return;
-        if (inventoryData == null) return;
-        //Debug.Log("isFire "+isFire);
         // 불이 켜져 있을 때 fireTime 감소 처리
-        if (isFire)
+        if (isFire && Object.HasStateAuthority)
         {
-            if (Object.HasStateAuthority)
-                RPC_SetFireVFX(true);
+            RPC_SetFireVFX(true);
+
             // 1초마다 감소
-            if (Runner.SimulationTime >= nextFireDecreaseTime)
+            if (fireDecreaseTimer.Expired(Runner))
             {
                 Debug.Log("fire Time : " + fireTime);
-                fireTime -= 1;
+                fireTime = Mathf.Max(0, fireTime - 1);
                 int min = (int)fireTime / 60;
                 int sec = (int)fireTime % 60;
+                //RPC_SetTimerText(min, sec);
                 campfire.canvasHolder.campfireUI.GetComponent<UICampfire>().SetTimerText(min, sec);
 
-                nextFireDecreaseTime = Runner.SimulationTime + 1.0;
+                // 다음 1초 타이머 재설정
+                if (!fireDecreaseTimer.IsRunning)
+                    fireDecreaseTimer = TickTimer.CreateFromSeconds(Runner, 1f);
 
                 if (fireTime <= 0)
                 {
@@ -72,6 +76,7 @@ public class NetworkCampFire : NetworkBehaviour
                     RPC_SetFireVFX(false);
                     return; // 불 꺼졌으면 아래 요리 로직은 실행 안 함
                 }
+
             }
         }
         else
@@ -82,29 +87,21 @@ public class NetworkCampFire : NetworkBehaviour
                 RPC_SetFireVFX(false);
             return;
         }
+        if (inventoryData == null) return;
         // 아이템이 있을 때만 타이머 작동
         if (inventoryData.itemList[45].itemID != -1 || cookPotItem.itemID != -1)
         {
             if (!isCooking)
             {
-                // 처음 조건 만족 시 타이머 시작
-                nextCookTime = Runner.SimulationTime + 10f;
+                nextCookTime = TickTimer.CreateFromSeconds(Runner, 10f);
                 isCooking = true;
             }
 
-            ////fillAmount 갱신
-            //if (isCooking)
-            //{
-            //    double totalDuration = 10.0;
-            //    double elapsed = totalDuration - (nextCookTime - Runner.SimulationTime);
-            //    float progress = Mathf.Clamp01((float)(elapsed / totalDuration));
-            //}
-
             // 10초가 지났으면 Cook 실행 후 다음 시간 예약
-            if (Runner.SimulationTime >= nextCookTime)
+            if (nextCookTime.Expired(Runner))
             {
                 Cook();
-                nextCookTime = Runner.SimulationTime + 10f; // 다음 10초 예약
+                nextCookTime = TickTimer.CreateFromSeconds(Runner, 10f);
             }
         }
         else
@@ -112,10 +109,8 @@ public class NetworkCampFire : NetworkBehaviour
             //타이머 초기화
             isCooking = false;
         }
-
-
-
     }
+
     private void Cook()
     {
         Debug.Log("요리 완성!");
@@ -178,6 +173,11 @@ public class NetworkCampFire : NetworkBehaviour
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_SetisFire(bool tof)
     {
+        if (!isFire && tof == true)
+        {
+            Debug.Log("fireDecreaseTimer 초기화");
+            fireDecreaseTimer = TickTimer.CreateFromSeconds(Runner, 1f);
+        }
         isFire = tof;
         RPC_SetFireVFX(tof);
     }
@@ -205,10 +205,15 @@ public class NetworkCampFire : NetworkBehaviour
     {
         get
         {
-            if (!isCooking) return 0f;
-            return Mathf.Max(0f, (float)(nextCookTime - Runner.SimulationTime));
+            if (!isCooking || !nextCookTime.IsRunning)
+                return 0f;
+
+            // TickTimer.RemainingTime은 double? 타입이라 null 체크 필요
+            var remaining = nextCookTime.RemainingTime(Runner);
+            return remaining.HasValue ? Mathf.Max(0f, (float)remaining.Value) : 0f;
         }
     }
+
 
     public float RemainingFireTime
     {
