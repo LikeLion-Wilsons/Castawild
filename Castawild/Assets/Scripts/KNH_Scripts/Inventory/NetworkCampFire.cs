@@ -10,7 +10,7 @@ public class NetworkCampFire : NetworkBehaviour
     [Networked] public Item resultItem { get; set; }
 
     [Header("불")]
-    [Networked] public bool isFire { get; set; } = false;
+    public bool isFire => fireTime > 0;
     [SerializeField] GameObject fireVFX;
 
     [Header("시간")]
@@ -47,30 +47,25 @@ public class NetworkCampFire : NetworkBehaviour
     public override void FixedUpdateNetwork()
     {
         // 불이 켜져 있을 때 fireTime 감소 처리
-        if (isFire && Object.HasStateAuthority)
+
+        if (fireTime > 0 && Object.HasStateAuthority)
         {
             RPC_SetFireVFX(true);
             
-
-            // 아직 안 달리면 시작(최초 1회만)
             //만료되었거나, 시작되지않았으면.
             if (fireDecreaseTimer.ExpiredOrNotRunning(Runner))
             { 
                 fireDecreaseTimer = TickTimer.CreateFromSeconds(Runner, 1f);
                 
                 //여기가 1초마다 실행됨.
-
+                fireTime--;
                 int min = (int)fireTime / 60;
                 int sec = (int)fireTime % 60;
-                fireTime--;
-
-                fireDecreaseTimer = TickTimer.CreateFromSeconds(Runner, 1f);
                 RPC_SetTimerText(min, sec);
-
-                if (fireTime == 0)
+                Debug.Log("fireTime : " + fireTime);
+                if (fireTime <= 0)
                 {
-                    fireTime = 0;
-                    isFire = false;
+                    Debug.Log("모닥불 꺼짐...?");
                     isCooking = false; // 불 꺼졌으니 요리 중지
                     RPC_SetFireVFX(false);
                     return; // 불 꺼졌으면 아래 요리 로직은 실행 안 함
@@ -79,7 +74,6 @@ public class NetworkCampFire : NetworkBehaviour
         }
         else
         {
-            if (fireTime > 0) isFire = true;
             isCooking = false;
             if (Object.HasStateAuthority)
                 RPC_SetFireVFX(false);
@@ -171,11 +165,12 @@ public class NetworkCampFire : NetworkBehaviour
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_SetisFire(bool tof)
     {
+        
         if (!isFire && tof == true)
         {
             fireDecreaseTimer = TickTimer.CreateFromSeconds(Runner, 1f);
         }
-        isFire = tof;
+        //isFire = tof;
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
