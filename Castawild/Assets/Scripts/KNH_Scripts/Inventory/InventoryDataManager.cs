@@ -115,7 +115,7 @@ public class InventoryDataManager : NetworkBehaviour
             RPC_SetSelectedSlot(newValue);
 
             if (inventorySlots[selectedSlot].IsEmpty())
-                player.Client_RemoveSelectedItem();
+                player.All_RemoveSelectedItem();
             player.Client_ApplySelectedItem(itemList[selectedSlot].itemID);
             //Debug.Log("ChangeSelectedSlot " + selectedSlot);
             onItemSelected?.Invoke(inventorySlots[selectedSlot].item.itemID);
@@ -329,7 +329,7 @@ public class InventoryDataManager : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestSetTimerText(int min, int sec)
     {
-        canvasHolder.campfireUI.GetComponent<UICampfire>().SetTimerText(min,sec);
+        canvasHolder.campfireUI.GetComponent<UICampfire>().SetTimerText(min, sec);
         Debug.Log("클라이언트에서 요청");
     }
 
@@ -348,7 +348,7 @@ public class InventoryDataManager : NetworkBehaviour
         item.itemID = -1;
         item.count = 0;
         if (inventorySlots[selectedSlot].IsEmpty())
-            player.Client_RemoveSelectedItem();
+            player.All_RemoveSelectedItem();
         RPC_UpdateInventoryUI();
     }
     public Item_Scriptable GetSeletedItem(bool use)
@@ -439,8 +439,6 @@ public class InventoryDataManager : NetworkBehaviour
                 // 수정한 부분
                 if (Object.HasInputAuthority)
                 {
-                    if (inventorySlots[selectedSlot].IsEmpty())
-                        player.Client_RemoveSelectedItem();
                     player.Client_ApplySelectedItem(itemList[selectedSlot].itemID);
                     onItemSelected?.Invoke(inventorySlots[selectedSlot].item.itemID);
                 }
@@ -541,6 +539,8 @@ public class InventoryDataManager : NetworkBehaviour
                     count -= item.count;
                     item.count = 0;
                     itemList.Set(i, item);
+
+                    player.All_RemoveSelectedItem();
                 }
 
             }

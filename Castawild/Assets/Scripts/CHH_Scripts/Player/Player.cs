@@ -488,7 +488,7 @@ public class Player : NetworkBehaviour
     [HideInInspector] public ToolStateManager toolStateManager;
 
     PlayerToolManager playerToolManager;
-    public void Client_RemoveSelectedItem() => playerToolManager.Client_RemoveSelectedItem();
+    public void All_RemoveSelectedItem() => playerToolManager.All_RemoveSelectedItem();
     public void Client_ApplySelectedItem(int value) => playerToolManager.Client_ApplySelectedItem(value);
     public void Host_SetHasArrow(bool value) => playerToolManager.Host_SetHasArrow(value);
     public void Host_SetHasPebble(bool value) => playerToolManager.Host_SetHasPebble(value);

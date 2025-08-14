@@ -128,20 +128,20 @@ public class PlayerToolManager : NetworkBehaviour
             RPC_RequestSetCurrentFood(FoodInfoData.Empty);
         }
 
-        RPC_ChangeItemIdx(itemIdx);
+        RPC_RequestChangeItemIdx(itemIdx);
     }
 
     /// <summary>
     /// 도구 해제
     /// </summary>
-    public void Client_RemoveSelectedItem()
+    public void All_RemoveSelectedItem()
     {
         RPC_NotifySetCurrentItemType(-1);
         RPC_NotifyEquipmentTool();
         RPC_RequestSetCurrentTool(ToolInfoData.Empty);
         RPC_RequestSetCurrentFood(FoodInfoData.Empty);
 
-        RPC_ChangeItemIdx(-1);
+        RPC_RequestChangeItemIdx(-1);
     }
 
     /// <summary>
@@ -245,7 +245,7 @@ public class PlayerToolManager : NetworkBehaviour
             return player.playerData.attack;
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    [Rpc(RpcSources.All, RpcTargets.All)]
     private void RPC_NotifySetCurrentItemType(int _currentItemIdx)
     {
         if (_currentItemIdx == 202)
@@ -271,7 +271,7 @@ public class PlayerToolManager : NetworkBehaviour
             player.isNearFire--;
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    [Rpc(RpcSources.All, RpcTargets.All)]
     private void RPC_NotifyEquipmentTool(int itemIdx = -1)
     {
         All_AllToolInActive();
@@ -290,8 +290,8 @@ public class PlayerToolManager : NetworkBehaviour
         }
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_ChangeItemIdx(int idx)
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_RequestChangeItemIdx(int idx)
     {
         currentItemIdx = idx;
         Debug.Log("currentItemIdx : " + currentItemIdx);
@@ -307,11 +307,11 @@ public class PlayerToolManager : NetworkBehaviour
         }
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     private void RPC_RequestSetCurrentTool(ToolInfoData toolInfoData)
         => currentToolInfoData = toolInfoData.IsEmpty() ? ToolInfoData.Empty : toolInfoData;
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     private void RPC_RequestSetCurrentFood(FoodInfoData foodInfoData)
         => player.currentFoodInfoData = foodInfoData.IsEmpty() ? FoodInfoData.Empty : foodInfoData;
 
