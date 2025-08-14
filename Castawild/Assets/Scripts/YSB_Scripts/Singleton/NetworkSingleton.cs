@@ -52,7 +52,6 @@ public class NetworkSingleton<T> : NetworkBehaviour where T : NetworkBehaviour
         if (!_isReady)
         {
             _isReady = true;
-            Debug.Log($"[NetworkSingleton<{typeof(T).Name}>] Spawned and ready.");
         }
     }
 }

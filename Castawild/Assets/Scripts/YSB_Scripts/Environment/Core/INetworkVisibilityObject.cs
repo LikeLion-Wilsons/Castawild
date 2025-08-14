@@ -6,7 +6,7 @@ public interface INetworkVisibilityObject
 {
     event Action<INetworkVisibilityObject> OnDestroyed;
     bool CanBeVisible();
-    GameObject GameObject { get; }
+    NetworkObject NetworkObject { get; }
     GameObject VisualRoot { get; }
     Collider Collider { get; }
 }

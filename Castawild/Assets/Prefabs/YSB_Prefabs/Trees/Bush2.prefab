@@ -181,6 +181,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8442597385352485476}
+  - component: {fileID: -8618241058845067791}
   m_Layer: 8
   m_Name: VisualRoot
   m_TagString: Untagged
@@ -207,6 +208,18 @@ Transform:
   - {fileID: 2451497999390790327}
   m_Father: {fileID: 5109124260247234097}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-8618241058845067791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4142427608291397254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81ea7f04f06369840b308fad231824d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4480591337707962238
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,8 +404,8 @@ GameObject:
   - component: {fileID: 7901983351075831528}
   - component: {fileID: 4865739590519513580}
   - component: {fileID: 1514714268252461678}
-  - component: {fileID: -263096166651436663}
   - component: {fileID: 8460588743969765057}
+  - component: {fileID: 2987564839791065999}
   m_Layer: 8
   m_Name: Bush2
   m_TagString: Untagged
@@ -460,12 +473,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SortKey: 981393543
-  ObjectInterest: 1
+  ObjectInterest: 2
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1514714268252461678}
-  - {fileID: -263096166651436663}
+  - {fileID: 2987564839791065999}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &1514714268252461678
 MonoBehaviour:
@@ -484,20 +497,6 @@ MonoBehaviour:
   SyncParent: 0
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 0
---- !u!114 &-263096166651436663
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8472310925725490517}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48347602cdbd5884bbf7b4b10aaac864, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactableType: 8
-  visualRoot: {fileID: 4142427608291397254}
 --- !u!136 &8460588743969765057
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -521,3 +520,17 @@ CapsuleCollider:
   m_Height: 1.7191601
   m_Direction: 1
   m_Center: {x: 0, y: 0.35958004, z: -0.014749408}
+--- !u!114 &2987564839791065999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8472310925725490517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abec6706089d70c4386046dc849b6aa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactableType: 8
+  visualRoot: {fileID: 4142427608291397254}
