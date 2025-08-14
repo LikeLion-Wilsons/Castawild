@@ -1,4 +1,7 @@
 
+
+using UnityEngine;
+
 public class WalkState : MovementBaseState
 {
     public WalkState(MovementStateManager _movementManager)
