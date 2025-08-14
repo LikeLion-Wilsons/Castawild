@@ -29,7 +29,7 @@ public class Chest : InteractableObject
 
         player = playerObj.GetComponent<Player>();
 
-        //PlayerController playerController = playerObj.GetComponent<PlayerController>();
+        SoundManager.Instance.PlayLocalSound3D(playerRef, Sound.Env_InvenOpen, transform.position);
 
         canvasHolder = playerObj.GetComponent<InventoryDataManager>().canvasHolder;
         chestData = GetComponent<ChestDataManager>();

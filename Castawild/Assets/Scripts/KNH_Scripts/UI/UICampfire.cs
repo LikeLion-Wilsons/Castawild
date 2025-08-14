@@ -1,3 +1,4 @@
+using Fusion;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -53,18 +54,6 @@ public class UICampfire : UIPart
         {
             arrowImage.fillAmount = 0f;
         }
-        else//요리중일 때
-        {
-            //요리 남은 시간
-            float timeLeft = netWorkCampfire.RemainingCookTime;
-
-            double totalDuration = 10.0;
-            double elapsed = totalDuration - timeLeft;
-            float progress = Mathf.Clamp01((float)(elapsed / totalDuration));
-            arrowImage.fillAmount = progress;
-
-            if (arrowImage.fillAmount >= 1) arrowImage.fillAmount = 0f;//초기화
-        }
         //현재 연료 남은 시간
 
         if (netWorkCampfire.isFire)
@@ -119,7 +108,20 @@ public class UICampfire : UIPart
 
     public void SetTimerText(int min, int sec)
     {
-        Debug.Log(min.ToString() + "m " + sec.ToString() + "s");
+        //Debug.Log(min.ToString() + "m " + sec.ToString() + "s");
         timerText.text = min.ToString() + "m " + sec.ToString() + "s";
+    }
+
+    public void CookingProgressBar(float timeLeft)
+    {
+        double totalDuration = 10.0;
+        double elapsed = totalDuration - timeLeft;
+        float progress = Mathf.Clamp01((float)(elapsed / totalDuration));
+        arrowImage.fillAmount = progress;
+    }
+
+    public void ResetCookingProgressBar()
+    {
+        arrowImage.fillAmount = 0f;
     }
 }
