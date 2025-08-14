@@ -41,6 +41,7 @@ public class InventoryDataManager : NetworkBehaviour
 
         }
 
+        player = GetComponent<Player>();
         if (Object.HasInputAuthority)
         {
             // 본인의 UI만 생성
@@ -53,7 +54,6 @@ public class InventoryDataManager : NetworkBehaviour
             uiTable.BindToInventoryData(this);
 
             canvasHolder = uiCanvas.GetComponent<UI_Manager>();
-            player = GetComponent<Player>();
             canvasHolder.SetPlayer(player);
 
             #region item slot Init
