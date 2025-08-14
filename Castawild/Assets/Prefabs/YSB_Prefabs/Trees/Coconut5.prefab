@@ -183,6 +183,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1714744082169592434}
+  - component: {fileID: -1459126939930826099}
   m_Layer: 8
   m_Name: VisualRoot
   m_TagString: Untagged
@@ -208,6 +209,18 @@ Transform:
   - {fileID: 8060692779035592306}
   m_Father: {fileID: 8231295529826284045}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-1459126939930826099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6592654173537027663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81ea7f04f06369840b308fad231824d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7879671626416344266
 GameObject:
   m_ObjectHideFlags: 0
@@ -218,10 +231,10 @@ GameObject:
   m_Component:
   - component: {fileID: 8231295529826284045}
   - component: {fileID: 7805980000168074031}
-  - component: {fileID: 6910946456009844935}
   - component: {fileID: 1713484144596499494}
   - component: {fileID: 8230242334521089511}
   - component: {fileID: 8695909813743185043}
+  - component: {fileID: 2004974662801427038}
   m_Layer: 8
   m_Name: Coconut5
   m_TagString: Untagged
@@ -272,21 +285,6 @@ LODGroup:
     renderers:
     - renderer: {fileID: 4959158804883778774}
   m_Enabled: 1
---- !u!114 &6910946456009844935
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7879671626416344266}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 971352eea68afe14e965ec568800bb03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactableType: 1
-  visualRoot: {fileID: 6592654173537027663}
-  reviveTime: 10
 --- !u!114 &1713484144596499494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300,12 +298,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SortKey: 3428620700
-  ObjectInterest: 1
+  ObjectInterest: 2
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 6910946456009844935}
   - {fileID: 8230242334521089511}
+  - {fileID: 2004974662801427038}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &8230242334521089511
 MonoBehaviour:
@@ -347,6 +345,20 @@ CapsuleCollider:
   m_Height: 5.641542
   m_Direction: 1
   m_Center: {x: 0, y: 2.0971105, z: -0.11455405}
+--- !u!114 &2004974662801427038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7879671626416344266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83e2dd5e5a74b1642b15ca37bb8ca1a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactableType: 1
+  visualRoot: {fileID: 6592654173537027663}
 --- !u!1 &8008399272174728864
 GameObject:
   m_ObjectHideFlags: 0

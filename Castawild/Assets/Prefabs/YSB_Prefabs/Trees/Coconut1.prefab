@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 818165054393195202}
+  - component: {fileID: 2426430231451532343}
   m_Layer: 8
   m_Name: VisualRoot
   m_TagString: Untagged
@@ -34,6 +35,18 @@ Transform:
   - {fileID: 114086688545874985}
   m_Father: {fileID: 2150493920908066840}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2426430231451532343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057274572752878765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81ea7f04f06369840b308fad231824d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4445757397335692056
 GameObject:
   m_ObjectHideFlags: 0
@@ -44,10 +57,10 @@ GameObject:
   m_Component:
   - component: {fileID: 2150493920908066840}
   - component: {fileID: 7944786107689879708}
-  - component: {fileID: 8722764026981258867}
   - component: {fileID: 3550234414826201151}
   - component: {fileID: -2932382964224354444}
   - component: {fileID: 6694845653441070672}
+  - component: {fileID: -6274476459444906970}
   m_Layer: 8
   m_Name: Coconut1
   m_TagString: Untagged
@@ -98,21 +111,6 @@ LODGroup:
     renderers:
     - renderer: {fileID: 7335228672870143713}
   m_Enabled: 1
---- !u!114 &8722764026981258867
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4445757397335692056}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 971352eea68afe14e965ec568800bb03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactableType: 1
-  visualRoot: {fileID: 1057274572752878765}
-  reviveTime: 10
 --- !u!114 &3550234414826201151
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126,12 +124,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SortKey: 3718379115
-  ObjectInterest: 1
+  ObjectInterest: 2
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 8722764026981258867}
   - {fileID: -2932382964224354444}
+  - {fileID: -6274476459444906970}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &-2932382964224354444
 MonoBehaviour:
@@ -173,6 +171,20 @@ CapsuleCollider:
   m_Height: 2.8096137
   m_Direction: 1
   m_Center: {x: 0, y: 0.8408723, z: -0.05137302}
+--- !u!114 &-6274476459444906970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4445757397335692056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83e2dd5e5a74b1642b15ca37bb8ca1a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactableType: 1
+  visualRoot: {fileID: 1057274572752878765}
 --- !u!1 &5232928061694041009
 GameObject:
   m_ObjectHideFlags: 0

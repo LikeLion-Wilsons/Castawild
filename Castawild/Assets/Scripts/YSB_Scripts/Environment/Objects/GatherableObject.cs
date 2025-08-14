@@ -30,15 +30,23 @@ namespace YSB_Scripts
             //this object can be picked up
             if (!IsAlive()) return;
 
-            Health = 0;
+            Debug.Log("Gatherable Object Interacted");
+            RPC_RequestDamage(player, att);
+        }
 
-            var playerObj = Runner.GetPlayerObject(player);
-            Player _player = playerObj.GetComponent<Player>();
-            InventoryDataManager inventoryData = _player.inventory;
-            inventoryData.AddItem(definition.dropItemID, definition.dropAmount);//아이템 획득
-            Debug.Log($"{Object.name}[{InstanceId}] Destroyed by player: {player}");
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_RequestDamage(PlayerRef player, int att)
+        {
+            if (!IsAlive()) return;
 
-            Die();
+            Health -= definition.maxHealth;
+            Debug.Log($"Gatherable Object Damaged {definition.maxHealth}");
+
+            if (Health <= 0)
+            {
+                DropItem(player, definition);
+                Die();
+            }
         }
     }
 }

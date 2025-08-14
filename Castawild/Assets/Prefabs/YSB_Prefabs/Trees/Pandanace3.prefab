@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 2014650303113280946}
   - component: {fileID: 5348162966701448785}
-  - component: {fileID: 7200686568032571884}
   - component: {fileID: 2259280786911367193}
   - component: {fileID: -7890066991860993974}
   - component: {fileID: 2865451721294420043}
+  - component: {fileID: -8020221075071723049}
   m_Layer: 8
   m_Name: Pandanace3
   m_TagString: Untagged
@@ -68,21 +68,6 @@ LODGroup:
     renderers:
     - renderer: {fileID: 7876774781265788184}
   m_Enabled: 1
---- !u!114 &7200686568032571884
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3437732448028791867}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 971352eea68afe14e965ec568800bb03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactableType: 1
-  visualRoot: {fileID: 8823977202030829708}
-  reviveTime: 10
 --- !u!114 &2259280786911367193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,12 +81,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SortKey: 2129909446
-  ObjectInterest: 1
+  ObjectInterest: 2
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 7200686568032571884}
   - {fileID: -7890066991860993974}
+  - {fileID: -8020221075071723049}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &-7890066991860993974
 MonoBehaviour:
@@ -143,6 +128,20 @@ CapsuleCollider:
   m_Height: 6.717341
   m_Direction: 1
   m_Center: {x: 0, y: 2.8586705, z: 0}
+--- !u!114 &-8020221075071723049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3437732448028791867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83e2dd5e5a74b1642b15ca37bb8ca1a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactableType: 1
+  visualRoot: {fileID: 8823977202030829708}
 --- !u!1 &3873483061554063977
 GameObject:
   m_ObjectHideFlags: 0
@@ -499,6 +498,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7653569955553618061}
+  - component: {fileID: -1797743912784216338}
   m_Layer: 8
   m_Name: VisualRoot
   m_TagString: Untagged
@@ -525,3 +525,15 @@ Transform:
   - {fileID: 7762770232402114838}
   m_Father: {fileID: 2014650303113280946}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-1797743912784216338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8823977202030829708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81ea7f04f06369840b308fad231824d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
