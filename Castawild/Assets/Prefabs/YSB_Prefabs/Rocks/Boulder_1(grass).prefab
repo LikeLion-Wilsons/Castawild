@@ -95,6 +95,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6021272680706332309}
+  - component: {fileID: 2256535699170876100}
   m_Layer: 8
   m_Name: VisualRoot
   m_TagString: Untagged
@@ -120,6 +121,18 @@ Transform:
   - {fileID: 5690054323264637626}
   m_Father: {fileID: 3106883577838169433}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2256535699170876100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3540373503155800183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81ea7f04f06369840b308fad231824d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7146084140680567944
 GameObject:
   m_ObjectHideFlags: 0
@@ -218,8 +231,8 @@ GameObject:
   - component: {fileID: 534164933647378409}
   - component: {fileID: 4498306085591671622}
   - component: {fileID: 3732947994286343583}
-  - component: {fileID: 7766311070870771112}
   - component: {fileID: 6623205693187150269}
+  - component: {fileID: 8275902488399634506}
   m_Layer: 8
   m_Name: Boulder_1(grass)
   m_TagString: Untagged
@@ -283,12 +296,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SortKey: 2321762653
-  ObjectInterest: 1
+  ObjectInterest: 2
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 3732947994286343583}
-  - {fileID: 7766311070870771112}
+  - {fileID: 8275902488399634506}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &3732947994286343583
 MonoBehaviour:
@@ -307,20 +320,6 @@ MonoBehaviour:
   SyncParent: 0
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 0
---- !u!114 &7766311070870771112
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7667470835736043912}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6493853c7f9b94bbb2b938d13201e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactableType: 2
-  visualRoot: {fileID: 3540373503155800183}
 --- !u!136 &6623205693187150269
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -344,6 +343,20 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8275902488399634506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7667470835736043912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83e2dd5e5a74b1642b15ca37bb8ca1a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactableType: 2
+  visualRoot: {fileID: 3540373503155800183}
 --- !u!1 &8532020922202040401
 GameObject:
   m_ObjectHideFlags: 0

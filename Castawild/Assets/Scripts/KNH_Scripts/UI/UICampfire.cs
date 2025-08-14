@@ -71,7 +71,6 @@ public class UICampfire : UIPart
         {
             if (currentTime > 0)
             {
-
             }
             else
             {
@@ -94,10 +93,8 @@ public class UICampfire : UIPart
         else if (fuelList[selectedFuelIndex] == 3) addTime = 40;
 
         netWorkCampfire.RPC_AddFireTime(addTime);
-        //currentTime += addTime;
 
         //불 켜기
-        netWorkCampfire.RPC_SetisFire(true);
         fireImage.SetActive(true);
         campFire.SetFireActive(true);
     }

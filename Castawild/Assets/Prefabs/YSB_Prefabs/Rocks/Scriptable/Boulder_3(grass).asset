@@ -18,9 +18,9 @@ MonoBehaviour:
     m_SubObjectGUID: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  maxHealth: 30
+  maxHealth: 1
   reviveTime: 10
-  dropItemID: 0
+  dropItem: {fileID: 11400000, guid: f65e9d8fd998e834da200d7b1ce7c28a, type: 2}
   dropAmount: 1
   destroySFX: 
   destroyVFX: 

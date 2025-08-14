@@ -13,7 +13,7 @@ public abstract class SpawnableDefinition : ScriptableObject
     public float reviveTime = 10f;
 
     [Header("Drop")]
-    public int dropItemID;      // 드랍할 아이템 ID
+    public Item_Scriptable dropItem;      // 드랍할 아이템 ID
     public int dropAmount = 1;     // 드랍 개수
 
     [Header("Effect & Sound")]

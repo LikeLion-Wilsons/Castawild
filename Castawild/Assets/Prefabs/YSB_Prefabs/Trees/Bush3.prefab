@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 924561237972991041}
   - component: {fileID: -3770143005643275101}
   - component: {fileID: 7485485263033936054}
-  - component: {fileID: -2329140142539585828}
   - component: {fileID: 7131290873947830395}
+  - component: {fileID: -825919206479602823}
   m_Layer: 8
   m_Name: Bush3
   m_TagString: Untagged
@@ -81,12 +81,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SortKey: 2686425600
-  ObjectInterest: 1
+  ObjectInterest: 2
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 7485485263033936054}
-  - {fileID: -2329140142539585828}
+  - {fileID: -825919206479602823}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &7485485263033936054
 MonoBehaviour:
@@ -105,20 +105,6 @@ MonoBehaviour:
   SyncParent: 0
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 0
---- !u!114 &-2329140142539585828
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1108199106518277594}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48347602cdbd5884bbf7b4b10aaac864, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactableType: 8
-  visualRoot: {fileID: 9004953865888406921}
 --- !u!136 &7131290873947830395
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -142,6 +128,20 @@ CapsuleCollider:
   m_Height: 2.5886207
   m_Direction: 1
   m_Center: {x: 0, y: 0.3684832, z: 0.21608973}
+--- !u!114 &-825919206479602823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1108199106518277594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abec6706089d70c4386046dc849b6aa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactableType: 8
+  visualRoot: {fileID: 9004953865888406921}
 --- !u!1 &2227594373220883325
 GameObject:
   m_ObjectHideFlags: 0
@@ -495,6 +495,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 211268650707631135}
+  - component: {fileID: -4570048963344837917}
   m_Layer: 8
   m_Name: VisualRoot
   m_TagString: Untagged
@@ -521,3 +522,15 @@ Transform:
   - {fileID: 1780199063435499964}
   m_Father: {fileID: 3408699594225979237}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-4570048963344837917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9004953865888406921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81ea7f04f06369840b308fad231824d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
