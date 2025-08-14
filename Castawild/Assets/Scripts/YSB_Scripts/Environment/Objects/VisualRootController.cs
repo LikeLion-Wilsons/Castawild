@@ -11,7 +11,8 @@ public class VisualRootController : MonoBehaviour
 
     public void SetVisible(bool visible)
     {
-        if (_renderers == null) return;
+        if (_renderers == null || _renderers.Length == 0)
+            _renderers = GetComponentsInChildren<Renderer>(true); // 아직 초기화 안 된 경우 다시 가져오기
 
         for (int i = 0; i < _renderers.Length; i++)
         {

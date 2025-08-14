@@ -152,10 +152,10 @@ public class WeatherManager : NetworkBehaviour
                 {
                     StartCoroutine(WeatherChangeRoutine());
                 }
-                else
-                {
-                    Debug.Log("<color=yellow>DEV_MODE: Automatic weather change is DISABLED.</color>");
-                }
+                // else
+                // {
+                //     Debug.Log("<color=yellow>DEV_MODE: Automatic weather change is DISABLED.</color>");
+                // }
             }
         }
 
