@@ -46,8 +46,7 @@ public class UICampfire : UIPart
         if (campFire == null) return;
         netWorkCampfire = campFire.GetComponent<NetworkCampFire>();
 
-        //요리 남은 시간
-        float timeLeft = netWorkCampfire.RemainingCookTime;
+        
 
         if (!netWorkCampfire.isFire)//불이 꺼져 있을 때
         {
@@ -59,6 +58,9 @@ public class UICampfire : UIPart
         }
         else//요리중일 때
         {
+            //요리 남은 시간
+            float timeLeft = netWorkCampfire.RemainingCookTime;
+
             double totalDuration = 10.0;
             double elapsed = totalDuration - timeLeft;
             float progress = Mathf.Clamp01((float)(elapsed / totalDuration));
@@ -71,7 +73,7 @@ public class UICampfire : UIPart
 
         if (currentTime > 0)
         {
-            SetTimerText();
+            //SetTimerText();
         }
         else
         {
@@ -119,11 +121,10 @@ public class UICampfire : UIPart
         fuelIcon.sprite = ItemDataBase.Instance.GetItemByID(fuelList[selectedFuelIndex]).image;
     }
 
-
-    void SetTimerText()
+    public void SetTimerText(int min, int sec)
     {
-        min = (int)currentTime / 60;
-        sec = (int)currentTime % 60;
+        //min = (int)currentTime / 60;
+        //sec = (int)currentTime % 60;
         timerText.text = min.ToString() + "m " + sec.ToString() + "s";
     }
 }
