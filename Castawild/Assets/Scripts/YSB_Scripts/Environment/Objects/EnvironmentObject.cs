@@ -17,6 +17,17 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, YSB_Scri
     [Networked] protected int MaxHP { get; set; }
     [Networked] protected TickTimer ReviveTimer { get; set; }
     private float reviveTime;
+
+    public override void Spawned()
+    {
+        base.Spawned();
+
+        if (visualRootController == null && visualRoot != null)
+            visualRootController = visualRoot.GetComponent<VisualRootController>();
+
+        col = GetComponent<Collider>();
+    }
+
     public override void FixedUpdateNetwork()
     {
         if (HasStateAuthority && CanRevive())
@@ -27,8 +38,6 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, YSB_Scri
 
     public virtual void Init(SpawnableDefinition def, int instanceId)
     {
-        col = GetComponent<Collider>();
-        visualRootController = visualRoot.GetComponent<VisualRootController>();
         reviveTime = def.reviveTime;
         InstanceId = instanceId;
     }
@@ -49,8 +58,7 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, YSB_Scri
     public virtual void Revive()
     {
         Health = MaxHP;
-        col.enabled = true;
-        visualRootController.SetVisible(true);
+        RPC_UpdateVisualState(true);
     }
 
     // void OnChangedHealth()
@@ -58,13 +66,25 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, YSB_Scri
     //     Debug.Log($"{Object.name}[{InstanceId}] Health changed: {Health}/{MaxHP}");
     // }
 
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_UpdateVisualState(bool isAlive)
+    {
+        if (visualRootController == null && visualRoot != null)
+            visualRootController = visualRoot.GetComponent<VisualRootController>();
+
+        if (visualRootController != null)
+        {
+            visualRootController.SetVisible(isAlive);
+            col.enabled = isAlive;
+        }
+    }
+
     protected void Die()
     {
         Debug.Log($"{Object.name}[{InstanceId}] Destroyed");
         //OnDestroyed?.Invoke(this);
         ReviveTimer = TickTimer.CreateFromSeconds(Runner, reviveTime);
-        col.enabled = false;
-        visualRootController.SetVisible(false);
+        RPC_UpdateVisualState(false);
     }
 
     protected void DropItem(PlayerRef player, SpawnableDefinition definition)
