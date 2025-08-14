@@ -16,6 +16,9 @@ public class IdleState : MovementBaseState
 
     public override void UpdateState()
     {
+        if (movementManager.player.IsUIOpen)
+            return;
+
         // Move
         if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
         {

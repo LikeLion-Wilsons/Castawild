@@ -21,6 +21,9 @@ public class RunState : MovementBaseState
 
     public override void UpdateState()
     {
+        if (movementManager.player.IsUIOpen)
+            movementManager.Host_ChangeState(MovementState.Idle);
+
         if (movementManager.Stamina <= 0)
         {
             movementManager.Host_ChangeState(MovementState.Walk);
