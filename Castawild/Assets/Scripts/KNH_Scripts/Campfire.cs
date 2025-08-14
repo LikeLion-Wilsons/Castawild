@@ -20,15 +20,6 @@ public class Campfire : InteractableObject
 
     private void Update()
     {
-        //if (networkCampfire != null)
-        //{
-        //    if (networkCampfire.isFire) fireVFX.SetActive(true);
-        //    else fireVFX.SetActive(false);
-        //}
-
-        //if (canvasHolder == null) return;
-        //bool isInventoryOpen = canvasHolder.uiParts["Inventory"].IsOpen();
-        //CanOpen = !isInventoryOpen;
     }
 
     public override bool CanInteract() => CanOpen;
@@ -38,8 +29,6 @@ public class Campfire : InteractableObject
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
 
         player = playerObj.GetComponent<Player>();
-
-        //PlayerController playerController = playerObj.GetComponent<PlayerController>();
         inventoryData = player.GetComponent<InventoryDataManager>();
 
         networkCampfire = GetComponent<NetworkCampFire>();

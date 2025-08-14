@@ -46,78 +46,75 @@ public class NetworkCampFire : NetworkBehaviour
     public void Update()
     {
         if (player == null) return;
-        if (player.HasInputAuthority)
+        if (inventoryData == null) return;
+        //Debug.Log("isFire "+isFire);
+        // 불이 켜져 있을 때 fireTime 감소 처리
+        if (isFire)
         {
-            RPC_RequestSetTimerText();
-        }
-        if(player.HasStateAuthority)
-        {
-            if (inventoryData == null) return;
-
-            // 불이 켜져 있을 때 fireTime 감소 처리
-            if (isFire)
-            {
+            if (Object.HasStateAuthority)
                 RPC_SetFireVFX(true);
-                // 1초마다 감소
-                if (Runner.SimulationTime >= nextFireDecreaseTime)
-                {
-                    Debug.Log("fire Time : " + fireTime);
-                    fireTime -= 1;
-                    int min = (int)fireTime / 60;
-                    int sec = (int)fireTime % 60;
-                    RPC_SetTimerText(min, sec);
-                    nextFireDecreaseTime = Runner.SimulationTime + 1.0;
-
-                    if (fireTime <= 0)
-                    {
-                        fireTime = 0;
-                        isFire = false;
-                        isCooking = false; // 불 꺼졌으니 요리 중지
-                        RPC_SetFireVFX(false);
-                        return; // 불 꺼졌으면 아래 요리 로직은 실행 안 함
-                    }
-                }
-            }
-            else
+            // 1초마다 감소
+            if (Runner.SimulationTime >= nextFireDecreaseTime)
             {
-                if (fireTime > 0) isFire = true;
-                isCooking = false;
-                RPC_SetFireVFX(false);
-                return;
-            }
+                Debug.Log("fire Time : " + fireTime);
+                fireTime -= 1;
+                int min = (int)fireTime / 60;
+                int sec = (int)fireTime % 60;
+                campfire.canvasHolder.campfireUI.GetComponent<UICampfire>().SetTimerText(min, sec);
 
-            // 아이템이 있을 때만 타이머 작동
-            if (inventoryData.itemList[45].itemID != -1 || cookPotItem.itemID != -1)
-            {
-                if (!isCooking)
+                nextFireDecreaseTime = Runner.SimulationTime + 1.0;
+
+                if (fireTime <= 0)
                 {
-                    // 처음 조건 만족 시 타이머 시작
-                    nextCookTime = Runner.SimulationTime + 10f;
-                    isCooking = true;
+                    fireTime = 0;
+                    isFire = false;
+                    isCooking = false; // 불 꺼졌으니 요리 중지
+                    RPC_SetFireVFX(false);
+                    return; // 불 꺼졌으면 아래 요리 로직은 실행 안 함
                 }
-
-                ////fillAmount 갱신
-                //if (isCooking)
-                //{
-                //    double totalDuration = 10.0;
-                //    double elapsed = totalDuration - (nextCookTime - Runner.SimulationTime);
-                //    float progress = Mathf.Clamp01((float)(elapsed / totalDuration));
-                //}
-
-                // 10초가 지났으면 Cook 실행 후 다음 시간 예약
-                if (Runner.SimulationTime >= nextCookTime)
-                {
-                    Cook();
-                    nextCookTime = Runner.SimulationTime + 10f; // 다음 10초 예약
-                }
-            }
-            else
-            {
-                //타이머 초기화
-                isCooking = false;
             }
         }
-        
+        else
+        {
+            if (fireTime > 0) isFire = true;
+            isCooking = false;
+            if (Object.HasStateAuthority)
+                RPC_SetFireVFX(false);
+            return;
+        }
+        // 아이템이 있을 때만 타이머 작동
+        if (inventoryData.itemList[45].itemID != -1 || cookPotItem.itemID != -1)
+        {
+            if (!isCooking)
+            {
+                // 처음 조건 만족 시 타이머 시작
+                nextCookTime = Runner.SimulationTime + 10f;
+                isCooking = true;
+            }
+
+            ////fillAmount 갱신
+            //if (isCooking)
+            //{
+            //    double totalDuration = 10.0;
+            //    double elapsed = totalDuration - (nextCookTime - Runner.SimulationTime);
+            //    float progress = Mathf.Clamp01((float)(elapsed / totalDuration));
+            //}
+
+            // 10초가 지났으면 Cook 실행 후 다음 시간 예약
+            if (Runner.SimulationTime >= nextCookTime)
+            {
+                Cook();
+                nextCookTime = Runner.SimulationTime + 10f; // 다음 10초 예약
+            }
+        }
+        else
+        {
+            //타이머 초기화
+            isCooking = false;
+        }
+
+
+
     }
     private void Cook()
     {
@@ -202,15 +199,6 @@ public class NetworkCampFire : NetworkBehaviour
     {
         campfire.canvasHolder.campfireUI.GetComponent<UICampfire>().SetTimerText(min, sec);
         Debug.Log("RPC_SetTimerText");
-    }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_RequestSetTimerText()
-    {
-        int min = (int)fireTime / 60;
-        int sec = (int)fireTime % 60;
-        campfire.canvasHolder.campfireUI.GetComponent<UICampfire>().SetTimerText(min, sec);
-        Debug.Log("클라이언트에서 요청");
     }
 
     public float RemainingCookTime
