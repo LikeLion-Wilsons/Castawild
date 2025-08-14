@@ -42,6 +42,8 @@ public class AnimationTrigger : MonoBehaviour
 
     public void Interact() => playercontroller.Client_Interact();
 
+    public void Gather() => playercontroller.Client_Gather();
+
     public void Throw(int isArrow)
     {
         toolStateManager.Client_Throw(isArrow);

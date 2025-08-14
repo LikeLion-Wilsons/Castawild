@@ -101,11 +101,9 @@ public sealed class PlayerInteractManager : NetworkBehaviour
 
                         if (interactable.interactableType == InteractableType.Gatherable)
                         {
-                            Client_currentInteractObject = null;
                             playerInteractUI.SetInteractText("줍기");
                             if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
                             {
-                                interactable.Interact(Object.InputAuthority, 999);
                                 movementManager.RPC_RequestChangeGatherState(Object.InputAuthority);
 
                                 float targetTopY = interact.bounds.max.y;
@@ -191,7 +189,8 @@ public sealed class PlayerInteractManager : NetworkBehaviour
     /// </summary>
     public void Client_Interact()
     {
-        if (Client_currentInteractObject == null || !HasInputAuthority)
+        if (Client_currentInteractObject == null || !HasInputAuthority
+            || Client_currentInteractObject.interactableType == InteractableType.Gatherable)
             return;
 
         int att = 0;
@@ -208,12 +207,11 @@ public sealed class PlayerInteractManager : NetworkBehaviour
             toolStateManager.RPC_RequestDecreaseToolDuration(true);
         }
 
-        else if (Client_currentInteractObject.interactableType == InteractableType.Gatherable && Client_currentInteractObject.CanInteract())
-            Client_currentInteractObject?.Interact(Object.InputAuthority, att);
-
         if (att != 0)
             Hit?.Invoke(att);
     }
+
+    public void Client_Gather() => Client_currentInteractObject?.Interact(Object.InputAuthority, 999);
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_ApplyHitInvoke(int dmg) => Hit?.Invoke(dmg);
