@@ -184,7 +184,7 @@ public class Player : NetworkBehaviour
 
         else if (Temperature < playerData.maxTemperature)
         {
-            if (!IsCooling && (!dayNightManager.isNightTime || (dayNightManager.isNightTime && isNearFire >= 2)))
+            if (!IsCooling && (!dayNightManager.isNightTime || (dayNightManager.isNightTime && isNearFire >= 1)))
                 Temperature += temperatureDecreaseRate * Runner.DeltaTime;
         }
     }
