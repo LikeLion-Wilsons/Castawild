@@ -114,11 +114,11 @@ public class InventoryDataManager : NetworkBehaviour
             inventorySlots[newValue].Select();
             RPC_SetSelectedSlot(newValue);
 
-            if (inventorySlots[selectedSlot].IsEmpty())
+            if (inventorySlots[newValue].IsEmpty())
                 player.All_RemoveSelectedItem();
-            player.Client_ApplySelectedItem(itemList[selectedSlot].itemID);
+            player.Client_ApplySelectedItem(itemList[newValue].itemID);
             //Debug.Log("ChangeSelectedSlot " + selectedSlot);
-            onItemSelected?.Invoke(inventorySlots[selectedSlot].item.itemID);
+            onItemSelected?.Invoke(inventorySlots[newValue].item.itemID);
         }
     }
 
