@@ -40,9 +40,6 @@ public class NetworkCampFire : NetworkBehaviour
             cookPotItem = item;
             resultItem = item;
         }
-
-
-
         campfire = GetComponent<Campfire>();
     }
     private double nextFireDecreaseTime;
@@ -53,22 +50,24 @@ public class NetworkCampFire : NetworkBehaviour
         if (isFire && Object.HasStateAuthority)
         {
             RPC_SetFireVFX(true);
+            
 
-            // 1초마다 감소
-            if (fireDecreaseTimer.Expired(Runner))
-            {
-                Debug.Log("fire Time : " + fireTime);
-                fireTime = Mathf.Max(0, fireTime - 1);
+            // 아직 안 달리면 시작(최초 1회만)
+            //만료되었거나, 시작되지않았으면.
+            if (fireDecreaseTimer.ExpiredOrNotRunning(Runner))
+            { 
+                fireDecreaseTimer = TickTimer.CreateFromSeconds(Runner, 1f);
+                
+                //여기가 1초마다 실행됨.
+
                 int min = (int)fireTime / 60;
                 int sec = (int)fireTime % 60;
-                //RPC_SetTimerText(min, sec);
-                campfire.canvasHolder.campfireUI.GetComponent<UICampfire>().SetTimerText(min, sec);
+                fireTime--;
 
-                // 다음 1초 타이머 재설정
-                if (!fireDecreaseTimer.IsRunning)
-                    fireDecreaseTimer = TickTimer.CreateFromSeconds(Runner, 1f);
+                fireDecreaseTimer = TickTimer.CreateFromSeconds(Runner, 1f);
+                RPC_SetTimerText(min, sec);
 
-                if (fireTime <= 0)
+                if (fireTime == 0)
                 {
                     fireTime = 0;
                     isFire = false;
@@ -76,7 +75,6 @@ public class NetworkCampFire : NetworkBehaviour
                     RPC_SetFireVFX(false);
                     return; // 불 꺼졌으면 아래 요리 로직은 실행 안 함
                 }
-
             }
         }
         else
@@ -175,11 +173,9 @@ public class NetworkCampFire : NetworkBehaviour
     {
         if (!isFire && tof == true)
         {
-            Debug.Log("fireDecreaseTimer 초기화");
             fireDecreaseTimer = TickTimer.CreateFromSeconds(Runner, 1f);
         }
         isFire = tof;
-        RPC_SetFireVFX(tof);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -198,7 +194,6 @@ public class NetworkCampFire : NetworkBehaviour
     public void RPC_SetTimerText(int min, int sec)
     {
         campfire.canvasHolder.campfireUI.GetComponent<UICampfire>().SetTimerText(min, sec);
-        Debug.Log("RPC_SetTimerText");
     }
 
     public float RemainingCookTime
