@@ -1,5 +1,6 @@
 using Fusion;
 using System;
+using System.Linq;
 using UnityEngine;
 using static Unity.Collections.Unicode;
 
@@ -100,9 +101,11 @@ public sealed class PlayerInteractManager : NetworkBehaviour
 
                         if (interactable.interactableType == InteractableType.Gatherable)
                         {
+                            Client_currentInteractObject = null;
                             playerInteractUI.SetInteractText("줍기");
                             if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
                             {
+                                interactable.Interact(Object.InputAuthority, 999);
                                 movementManager.RPC_RequestChangeGatherState(Object.InputAuthority);
 
                                 float targetTopY = interact.bounds.max.y;
