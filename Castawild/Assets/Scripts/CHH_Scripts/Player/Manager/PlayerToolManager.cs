@@ -128,7 +128,7 @@ public class PlayerToolManager : NetworkBehaviour
             RPC_RequestSetCurrentFood(FoodInfoData.Empty);
         }
 
-        RPC_ChangeItemIdx(itemIdx);
+        RPC_RequestChangeItemIdx(itemIdx);
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ public class PlayerToolManager : NetworkBehaviour
         RPC_RequestSetCurrentTool(ToolInfoData.Empty);
         RPC_RequestSetCurrentFood(FoodInfoData.Empty);
 
-        RPC_ChangeItemIdx(-1);
+        RPC_RequestChangeItemIdx(-1);
     }
 
     /// <summary>
@@ -290,8 +290,8 @@ public class PlayerToolManager : NetworkBehaviour
         }
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_ChangeItemIdx(int idx)
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_RequestChangeItemIdx(int idx)
     {
         currentItemIdx = idx;
         Debug.Log("currentItemIdx : " + currentItemIdx);
