@@ -31,22 +31,9 @@ namespace YSB_Scripts
             if (!IsAlive()) return;
 
             Debug.Log("Gatherable Object Interacted");
-            RPC_RequestDamage(player, att);
-        }
-
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPC_RequestDamage(PlayerRef player, int att)
-        {
-            if (!IsAlive()) return;
-
-            Health -= definition.maxHealth;
-            Debug.Log($"Gatherable Object Damaged {definition.maxHealth}");
-
-            if (Health <= 0)
-            {
-                DropItem(player, definition);
-                Die();
-            }
+            Health = 0;
+            DropItem(player, definition);
+            Die();
         }
     }
 }
