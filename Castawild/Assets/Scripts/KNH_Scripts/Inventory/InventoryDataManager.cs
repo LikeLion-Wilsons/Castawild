@@ -326,6 +326,13 @@ public class InventoryDataManager : NetworkBehaviour
         RPC_UpdateInventoryUI();
     }
 
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestSetTimerText(int min, int sec)
+    {
+        canvasHolder.campfireUI.GetComponent<UICampfire>().SetTimerText(min,sec);
+        Debug.Log("클라이언트에서 요청");
+    }
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_ClearCup()
     {
