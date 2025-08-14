@@ -43,7 +43,7 @@ public class PlayerStateManager : NetworkBehaviour
 
     private void All_HandleState(PlayerNetworkInputData input)
     {
-        if (player.IsCursorLocked)
+        if (player.IsCursorLocked || (!player.IsCursorLocked && player.IsUIOpen))
         {
             movementManager.SetInput(input);
             toolStateManager.SetInput(input);
@@ -56,7 +56,7 @@ public class PlayerStateManager : NetworkBehaviour
                 toolStateManager.currentState?.UpdateState();
         }
 
-        if (player.IsCursorLocked)
+        if (player.IsCursorLocked || (!player.IsCursorLocked && player.IsUIOpen))
         {
             movementManager.SetPrevInputButton(input.Buttons);
             toolStateManager.SetPrevInputButton(input.Buttons);

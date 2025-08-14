@@ -1,4 +1,7 @@
 
+
+using UnityEngine;
+
 public class WalkState : MovementBaseState
 {
     public WalkState(MovementStateManager _movementManager)
@@ -41,6 +44,7 @@ public class WalkState : MovementBaseState
     public override void ExitState()
     {
         movementManager.flagManager.Clear(PlayerFlags.Walk);
+        Debug.Log("Exit Walk State");
 
         if (movementManager.HasInputAuthority)
             movementManager.cameraManager.walk = false;
