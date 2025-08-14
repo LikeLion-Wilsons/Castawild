@@ -290,7 +290,7 @@ GameObject:
   - component: {fileID: 8145432303921854057}
   m_Layer: 6
   m_Name: ShootPlayer
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -409,10 +409,10 @@ MonoBehaviour:
     Radius: 0.5
     Height: 2
     Extent: 0.035
-    ColliderLayer: 0
+    ColliderLayer: 6
     CollisionLayerMask:
       serializedVersion: 2
-      m_Bits: 1
+      m_Bits: 479
     ProxyInterpolationMode: 0
     MaxPenetrationSteps: 8
     CCDRadiusMultiplier: 0.75

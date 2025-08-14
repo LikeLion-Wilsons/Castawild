@@ -13,6 +13,18 @@ public class ScreenEffect : MonoBehaviour
     [SerializeField] private Volume takeDamageEffect;
     [SerializeField] private Animator takeDamageEffectAnim;
 
+    private void Awake()
+    {
+        OptionUI.ReturnToMainMenu -= TurnOffAllEffect;
+        OptionUI.ReturnToMainMenu += TurnOffAllEffect;
+    }
+
+    private void TurnOffAllEffect()
+    {
+        takeDamageEffect.weight = 0f;
+        coldEffect.SetFloat("_VignetteIntensity", 0f);
+    }
+
     public void ContinuousDamageEffect(float hp, float maxHp)
     {
         float hpPercent = hp / maxHp;

@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+// 현재 들고있는 무기
+public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe }
+
 [DisallowMultipleComponent]
 public class PlayerToolManager : NetworkBehaviour
 {
@@ -50,8 +53,6 @@ public class PlayerToolManager : NetworkBehaviour
 
     private void ChangeToEmptyCup()
     {
-        // inven 에서도 바꾸는 로직 추가하기
-
         currentToolObject.SetActive(false);
         emptyCup.SetActive(true);
         currentToolObject = emptyCup;
@@ -135,6 +136,7 @@ public class PlayerToolManager : NetworkBehaviour
     /// </summary>
     public void Client_RemoveSelectedItem()
     {
+        RPC_NotifySetCurrentItemType(-1);
         RPC_NotifyEquipmentTool();
         RPC_RequestSetCurrentTool(ToolInfoData.Empty);
         RPC_RequestSetCurrentFood(FoodInfoData.Empty);
@@ -262,6 +264,11 @@ public class PlayerToolManager : NetworkBehaviour
             player.currentItemType = ItemType.Tool;
         else
             player.currentItemType = ItemType.Default;
+
+        if (_currentItemIdx == 402)
+            player.isNearFire++;
+        else
+            player.isNearFire--;
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
@@ -284,7 +291,12 @@ public class PlayerToolManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_ChangeItemIdx(int idx) => currentItemIdx = idx;
+    private void RPC_ChangeItemIdx(int idx)
+    {
+        currentItemIdx = idx;
+        Debug.Log("currentItemIdx : " + currentItemIdx);
+        Debug.Log("prevItemIdx : " + prevItemIdx);
+    }
 
     private void All_AllToolInActive()
     {
@@ -311,10 +323,6 @@ public class PlayerToolManager : NetworkBehaviour
 
         All_AllToolInActive();
     }
-
-
-
-
 
     /// <summary>
     /// 곡괭이/도끼 들고있는지 확인

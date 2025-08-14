@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -26,6 +27,8 @@ public class OptionUI : UIPart
     [SerializeField] private Color onColor;
     [SerializeField] private Color offColor;
 
+    public static Action ReturnToMainMenu;
+
     public void ChangeValue(string button)
     {
         if (button == "CameraShake")
@@ -51,15 +54,21 @@ public class OptionUI : UIPart
         buttonText.text = on ? "On" : "Off";
     }
 
+    public void SetSessionName(string name) => sessionName.text = name;
+
     public void ChangeSliderValue(string name)
     {
-        if (name == "Sensivity")
-            cameraManager.sensitivity = sensitivitySlider.value;
-        else
+        if (name == "FOV")
             cameraManager.ChangeFOV(fovSlider.value);
+        else
+            cameraManager.sensitivity = sensitivitySlider.value;
     }
 
-    public void Return() => Close();
+    public void Return()
+    {
+        ReturnToMainMenu?.Invoke();
+        Close();
+    }
 
     public void QuitGame()
     {
