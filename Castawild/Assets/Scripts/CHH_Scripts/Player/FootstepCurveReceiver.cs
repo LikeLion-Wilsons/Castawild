@@ -20,8 +20,11 @@ public class FootstepCurveReceiver : MonoBehaviour
 
     void Update()
     {
+        int randomNumber = UnityEngine.Random.Range(0, 8);
+        Sound[] walkSounds = { Sound.Player_Sleep3, Sound.Player_Sleep3 };
+
         if (step >= threshold && prevStep < threshold)
-            SoundManager.Instance.PlayLocalSound3D(player.Object.InputAuthority, Sound.Player_Walk, footTransform.position);
+            SoundManager.Instance.PlayGlobalSound3D(walkSounds[randomNumber], transform.position);
 
         prevStep = step;
     }
