@@ -254,6 +254,8 @@ public class MovementStateManager : BaseStateManager
     {
         Host_ChangeState(MovementState.Idle);
         player.Host_RevivedStatus();
+
+        SoundManager.Instance.PlayLocalSound3D(Object.InputAuthority, Sound.Player_Revive, transform.position);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]

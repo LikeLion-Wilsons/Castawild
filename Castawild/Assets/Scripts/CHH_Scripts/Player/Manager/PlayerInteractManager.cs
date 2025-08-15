@@ -196,12 +196,14 @@ public sealed class PlayerInteractManager : NetworkBehaviour
         int att = 0;
         if (Client_currentInteractObject.interactableType == InteractableType.Tree && Client_currentInteractObject.CanInteract())
         {
+            SoundManager.Instance.PlayGlobalSound3D(Sound.Player_Attack, transform.position);
             att = toolManager.All_GetToolAtt("Axe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
             toolStateManager.RPC_RequestDecreaseToolDuration(true);
         }
         else if (Client_currentInteractObject.interactableType == InteractableType.Stone && Client_currentInteractObject.CanInteract())
         {
+            SoundManager.Instance.PlayGlobalSound3D(Sound.Player_Attack, transform.position);
             att = toolManager.All_GetToolAtt("Pickaxe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
             toolStateManager.RPC_RequestDecreaseToolDuration(true);

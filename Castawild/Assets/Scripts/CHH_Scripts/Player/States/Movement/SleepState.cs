@@ -1,6 +1,4 @@
 
-using UnityEngine;
-
 public class SleepState : MovementBaseState
 {
     float elapsed = 0f;
@@ -14,6 +12,13 @@ public class SleepState : MovementBaseState
     public override void EnterState()
     {
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.Sleep;
+
+        if (movementManager.HasInputAuthority)
+        {
+            int randomNumber = UnityEngine.Random.Range(0, 1);
+            Sound[] SleepSounds = { Sound.Player_Sleep3, Sound.Player_Sleep3 };
+            SoundManager.Instance.PlayLocalSound3D(movementManager.Object.InputAuthority, SleepSounds[randomNumber], movementManager.transform.position);
+        }
 
         movementManager.moveManager.Host_FreezePosition(true);
 
