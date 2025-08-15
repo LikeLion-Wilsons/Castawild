@@ -109,8 +109,17 @@ public class PlayerCameraManager : MonoBehaviour
     {
         InitComponents();
         InitVariables();
-        SubscribeEvents();
         originfirstPersonTargetPos = firstPersonTarget.localPosition;
+    }
+
+    private void OnEnable()
+    {
+        inputManager.cursorLocked += ActivateCameraInput;
+    }
+
+    private void OnDisable()
+    {
+        inputManager.cursorLocked -= ActivateCameraInput;
     }
 
     private void Start()
@@ -129,12 +138,6 @@ public class PlayerCameraManager : MonoBehaviour
         inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
         Camera.main.GetComponent<CinemachineBrain>().DefaultBlend = new(CinemachineBlendDefinition.Styles.Cut, 0f);
         currentFOV = 60f;
-    }
-
-    private void SubscribeEvents()
-    {
-        inputManager.cursorLocked -= ActivateCameraInput;
-        inputManager.cursorLocked += ActivateCameraInput;
     }
 
     private void InitVariables()
