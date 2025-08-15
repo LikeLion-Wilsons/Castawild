@@ -1,4 +1,5 @@
 using Unity.VisualScripting;
+using UnityEditor.Purchasing;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -72,5 +73,11 @@ public class AnimationTrigger : MonoBehaviour
     {
         if (toolStateManager.HasStateAuthority)
             toolStateManager.player.Host_RestoreStatFromFood();
+    }
+
+    public void PlayDrinkSound()
+    {
+        if (toolStateManager.HasInputAuthority)
+            SoundManager.Instance.PlayLocalSound3D(toolStateManager.Object.InputAuthority, Sound.Player_Drink, transform.position);
     }
 }

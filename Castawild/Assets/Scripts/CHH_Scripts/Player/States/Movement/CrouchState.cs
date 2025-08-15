@@ -33,5 +33,6 @@ public class CrouchState : MovementBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
     }
 }

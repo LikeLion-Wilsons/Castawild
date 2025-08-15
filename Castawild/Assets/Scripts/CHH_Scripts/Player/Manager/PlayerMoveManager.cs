@@ -138,7 +138,7 @@ public class PlayerMoveManager : NetworkBehaviour
             if (fallingElapsed > fallingDeadTime)
             {
                 fallingElapsed = 0f;
-                player.Host_TakeDamage(false, 10000f);
+                player.Host_TakeDamaged(false, 10000f);
             }
         }
 
@@ -153,7 +153,7 @@ public class PlayerMoveManager : NetworkBehaviour
             if (fallDistance > fallThreshold)
             {
                 float damage = (fallDistance - fallThreshold) * fallDamagePerMeter;
-                player.Host_TakeDamage(false, damage);
+                player.Host_TakeDamaged(false, damage);
                 if (input.currentView == ViewType.FirstPerson)
                     player.RPC_ApplyShakeCamera(transform.up, 0.5f);
                 else

@@ -46,6 +46,7 @@ public class WalkState : MovementBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
         movementManager.flagManager.Clear(PlayerFlags.Walk);
 
         if (movementManager.HasInputAuthority)
