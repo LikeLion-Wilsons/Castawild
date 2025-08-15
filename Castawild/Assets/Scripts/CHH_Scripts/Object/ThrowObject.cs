@@ -4,17 +4,17 @@ using UnityEngine;
 public enum ThrowType { stone, arrow }
 public class ThrowObject : AttackObject
 {
-    public bool canAttack;
     public GameObject thrower;
     public ThrowType throwType;
     private Rigidbody rigid;
+
+    public int Att => att;
 
     public override void Spawned()
     {
         rigid = GetComponent<Rigidbody>();
         rigid.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         rigid.interpolation = RigidbodyInterpolation.Interpolate;
-        canAttack = true;
     }
 
     public void AddForce(float force, float upForce, Vector3 targetPos)
@@ -27,37 +27,35 @@ public class ThrowObject : AttackObject
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!HasStateAuthority)
-            return;
+        rigid.isKinematic = true;
+        GetComponent<Collider>().enabled = false;
+        GetComponentInChildren<TrailRenderer>().enabled = false;
 
         if (throwType == ThrowType.arrow)
         {
-            RPC_NotifyFall();
-
-            if (collision.gameObject.CompareTag("Player") /*&& collision.gameObject.CompareTag("Animal")*/)
-            {
-                NetworkObject networkObject = collision.gameObject.GetComponent<NetworkObject>();
-
-                if (collision.gameObject.CompareTag("Player"))
-                    Runner.Despawn(Object);
-                else
-                    transform.SetParent(networkObject.transform);
-            }
+            rigid.linearVelocity = Vector3.zero;
+            rigid.angularVelocity = Vector3.zero;
         }
 
-        // 사람이나 동물일 경우 canAttack false 처리는 그쪽에서
-        if (!collision.gameObject.CompareTag("Player") /*&& !collision.gameObject.CompareTag("Animal")*/)
-            canAttack = false;
-    }
+        if (collision.gameObject.CompareTag("Player") /*&& collision.gameObject.CompareTag("Animal")*/)
+        {
+            if (collision.gameObject.CompareTag("Player"))
+            {
+                Player player = collision.gameObject.GetComponent<Player>();
+                player.Host_TakeDamaged(true, Att);
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_NotifyFall()
-    {
-        rigid.linearVelocity = Vector3.zero;
-        rigid.angularVelocity = Vector3.zero;
-        rigid.isKinematic = true;
+                thrower.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(Att);
 
-        GetComponent<Collider>().enabled = false;
-        GetComponentInChildren<TrailRenderer>().enabled = false;
+                Runner.Despawn(Object);
+            }
+
+            //else if (collision.gameObject.CompareTag("Animal"))
+            //{
+            //    collision.gameObject.GetComponent<CwAnimal>().TakeDamage(Att);
+
+            //    if (throwType == ThrowType.arrow)
+            //        transform.SetParent(networkObject.transform);
+            //}
+        }
     }
 }

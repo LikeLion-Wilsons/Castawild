@@ -98,8 +98,8 @@ GameObject:
   - component: {fileID: 6058721415923594424}
   - component: {fileID: 6613583204250422679}
   - component: {fileID: 9095002593621906688}
-  - component: {fileID: 8219823424123808954}
   - component: {fileID: -1821036931749205436}
+  - component: {fileID: -2764818507804598874}
   m_Layer: 8
   m_Name: Boulder_7(sand)
   m_TagString: Untagged
@@ -163,12 +163,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SortKey: 2194097007
-  ObjectInterest: 1
+  ObjectInterest: 2
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 9095002593621906688}
-  - {fileID: 8219823424123808954}
+  - {fileID: -2764818507804598874}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &9095002593621906688
 MonoBehaviour:
@@ -187,20 +187,6 @@ MonoBehaviour:
   SyncParent: 0
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 0
---- !u!114 &8219823424123808954
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3874558147655475509}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6493853c7f9b94bbb2b938d13201e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactableType: 8
-  visualRoot: {fileID: 8742057509759505680}
 --- !u!136 &-1821036931749205436
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -224,6 +210,20 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-2764818507804598874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3874558147655475509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abec6706089d70c4386046dc849b6aa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactableType: 8
+  visualRoot: {fileID: 8742057509759505680}
 --- !u!1 &6053776649544519646
 GameObject:
   m_ObjectHideFlags: 0
@@ -405,6 +405,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2316940470109634694}
+  - component: {fileID: -7521016223764956509}
   m_Layer: 8
   m_Name: VisualRoot
   m_TagString: Untagged
@@ -430,3 +431,15 @@ Transform:
   - {fileID: 7791125080349699964}
   m_Father: {fileID: 3457384411054293484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-7521016223764956509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8742057509759505680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81ea7f04f06369840b308fad231824d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

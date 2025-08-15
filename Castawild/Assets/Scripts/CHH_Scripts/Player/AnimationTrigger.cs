@@ -1,4 +1,5 @@
 using Unity.VisualScripting;
+using UnityEditor.Purchasing;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -42,6 +43,8 @@ public class AnimationTrigger : MonoBehaviour
 
     public void Interact() => playercontroller.Client_Interact();
 
+    public void Gather() => playercontroller.Client_Gather();
+
     public void Throw(int isArrow)
     {
         toolStateManager.Client_Throw(isArrow);
@@ -70,5 +73,21 @@ public class AnimationTrigger : MonoBehaviour
     {
         if (toolStateManager.HasStateAuthority)
             toolStateManager.player.Host_RestoreStatFromFood();
+    }
+
+    public void PlayEatSound()
+    {
+        if (toolStateManager.HasInputAuthority)
+            SoundManager.Instance.PlayLocalSound3D(toolStateManager.Object.InputAuthority, Sound.Player_Eat, transform.position);
+    }
+    public void PlayDrinkSound()
+    {
+        if (toolStateManager.HasInputAuthority)
+            SoundManager.Instance.PlayLocalSound3D(toolStateManager.Object.InputAuthority, Sound.Player_Drink, transform.position);
+    }
+
+    public void PlayWalkinSound()
+    {
+
     }
 }

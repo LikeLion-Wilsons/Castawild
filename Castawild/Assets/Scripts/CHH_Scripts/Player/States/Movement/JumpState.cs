@@ -20,6 +20,8 @@ public class JumpState : MovementBaseState
             movementManager.CurrentMoveAnimation = MoveAnimatoinState.RunJump;
 
         movementManager.flagManager.Set(PlayerFlags.Jump);
+
+        SoundManager.Instance.PlayLocalSound3D(movementManager.Object.InputAuthority, Sound.Player_Jump, movementManager.transform.position);
     }
 
     public override void UpdateState()
@@ -38,6 +40,7 @@ public class JumpState : MovementBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
         movementManager.flagManager.Clear(PlayerFlags.Jump);
         movementManager.CanLanding = false;
     }

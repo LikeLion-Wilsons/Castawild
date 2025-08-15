@@ -30,14 +30,9 @@ namespace YSB_Scripts
             //this object can be picked up
             if (!IsAlive()) return;
 
+            Debug.Log("Gatherable Object Interacted");
             Health = 0;
-
-            var playerObj = Runner.GetPlayerObject(player);
-            Player _player = playerObj.GetComponent<Player>();
-            InventoryDataManager inventoryData = _player.inventory;
-            inventoryData.AddItem(definition.dropItemID, definition.dropAmount);//아이템 획득
-            Debug.Log($"{Object.name}[{InstanceId}] Destroyed by player: {player}");
-
+            DropItem(player, definition);
             Die();
         }
     }

@@ -1,7 +1,11 @@
 using Fusion;
+using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+
+// 현재 들고있는 무기
+public enum ToolType { None, Fist, Throw, Spear, Sword, Bow, Axe, Pickaxe }
 
 [DisallowMultipleComponent]
 public class PlayerToolManager : NetworkBehaviour
@@ -50,8 +54,6 @@ public class PlayerToolManager : NetworkBehaviour
 
     private void ChangeToEmptyCup()
     {
-        // inven 에서도 바꾸는 로직 추가하기
-
         currentToolObject.SetActive(false);
         emptyCup.SetActive(true);
         currentToolObject = emptyCup;
@@ -75,6 +77,20 @@ public class PlayerToolManager : NetworkBehaviour
                 Host_ChangeSelectedItem?.Invoke(currentItemIdx);
             }
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!HasStateAuthority)
+            return;
+
+        // 동물 공격
+        //if (other.CompareTag("Animal"))
+        //{
+        //    SoundManager.Instance.PlayGlobalSound3D(Sound.Player_Attack, transform.position);
+        //    CwAnimal animal = GetComponentInParent<CwAnimal>();
+        //    animal.TakeDamage(All_GetToolAtt());
+        //}
     }
 
     private void InitTools()
@@ -127,19 +143,20 @@ public class PlayerToolManager : NetworkBehaviour
             RPC_RequestSetCurrentFood(FoodInfoData.Empty);
         }
 
-        RPC_ChangeItemIdx(itemIdx);
+        RPC_RequestChangeItemIdx(itemIdx);
     }
 
     /// <summary>
     /// 도구 해제
     /// </summary>
-    public void Client_RemoveSelectedItem()
+    public void All_RemoveSelectedItem()
     {
+        RPC_NotifySetCurrentItemType(-1);
         RPC_NotifyEquipmentTool();
         RPC_RequestSetCurrentTool(ToolInfoData.Empty);
         RPC_RequestSetCurrentFood(FoodInfoData.Empty);
 
-        RPC_ChangeItemIdx(-1);
+        RPC_RequestChangeItemIdx(-1);
     }
 
     /// <summary>
@@ -243,7 +260,7 @@ public class PlayerToolManager : NetworkBehaviour
             return player.playerData.attack;
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    [Rpc(RpcSources.All, RpcTargets.All)]
     private void RPC_NotifySetCurrentItemType(int _currentItemIdx)
     {
         if (_currentItemIdx == 202)
@@ -262,9 +279,14 @@ public class PlayerToolManager : NetworkBehaviour
             player.currentItemType = ItemType.Tool;
         else
             player.currentItemType = ItemType.Default;
+
+        if (_currentItemIdx == 402)
+            player.isNearFire++;
+        else
+            player.isNearFire--;
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    [Rpc(RpcSources.All, RpcTargets.All)]
     private void RPC_NotifyEquipmentTool(int itemIdx = -1)
     {
         All_AllToolInActive();
@@ -283,8 +305,13 @@ public class PlayerToolManager : NetworkBehaviour
         }
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_ChangeItemIdx(int idx) => currentItemIdx = idx;
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_RequestChangeItemIdx(int idx)
+    {
+        currentItemIdx = idx;
+        Debug.Log("currentItemIdx : " + currentItemIdx);
+        Debug.Log("prevItemIdx : " + prevItemIdx);
+    }
 
     private void All_AllToolInActive()
     {
@@ -295,11 +322,11 @@ public class PlayerToolManager : NetworkBehaviour
         }
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     private void RPC_RequestSetCurrentTool(ToolInfoData toolInfoData)
         => currentToolInfoData = toolInfoData.IsEmpty() ? ToolInfoData.Empty : toolInfoData;
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     private void RPC_RequestSetCurrentFood(FoodInfoData foodInfoData)
         => player.currentFoodInfoData = foodInfoData.IsEmpty() ? FoodInfoData.Empty : foodInfoData;
 
@@ -311,10 +338,6 @@ public class PlayerToolManager : NetworkBehaviour
 
         All_AllToolInActive();
     }
-
-
-
-
 
     /// <summary>
     /// 곡괭이/도끼 들고있는지 확인

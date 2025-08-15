@@ -82,7 +82,5 @@ public abstract class EnvironmentSpawner<T, U> : NetworkBehaviour
                 activeList.Add(netObj);
             }
         }
-
-        NetworkObjectVisibilityManager.Instance?.RegisterObject(netObj.GetComponent<EnvironmentObject>());
     }
 }

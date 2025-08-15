@@ -39,20 +39,9 @@ namespace YSB_Scripts
 
             Health -= att;
 
-            if (Health > 0)
+            if (Health <= 0)
             {
-                float ratio = MaxHP > 0 ? (float)Health / MaxHP : 0;
-                string log = $"{Object.name}[{InstanceId}] Health: {Health}/{MaxHP} ({ratio:P})";
-                NetworkLogManager.Instance.Log(log, player);
-            }
-            else
-            {
-                var playerObj = Runner.GetPlayerObject(player);
-                Player _player = playerObj.GetComponent<Player>();
-                InventoryDataManager inventoryData = _player.inventory;
-                inventoryData.AddItem(definition.dropItemID, definition.dropAmount);//아이템 획득
-                Debug.Log($"{Object.name}[{InstanceId}] Destroyed by player: {player}");
-
+                DropItem(player, definition);
                 Die();
             }
         }

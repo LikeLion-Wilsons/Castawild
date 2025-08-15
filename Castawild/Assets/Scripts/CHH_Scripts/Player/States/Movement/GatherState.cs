@@ -26,7 +26,7 @@ public class GatherState : MovementBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
         movementManager.moveManager.Host_FreezePosition(false);
-        Debug.Log("Exit GatherState");
     }
 }

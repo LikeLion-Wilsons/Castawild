@@ -1,8 +1,10 @@
+using Fusion;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class UI_Manager : MonoBehaviour
+public class UI_Manager : NetworkBehaviour
 {
     public GameObject hotBarUI;
     public GameObject inventoryUI;
@@ -17,6 +19,7 @@ public class UI_Manager : MonoBehaviour
     [Header("상호작용중인 오브젝트")]
     public ChestDataManager currentOpenedChest;
     public GameObject currentCampFire;
+    public PlayerRef playerRef;
 
     public void SetOpenedChest(ChestDataManager chest)
     {
@@ -62,7 +65,6 @@ public class UI_Manager : MonoBehaviour
         {
             uiParts.Add(part.name, part);
         }
-
         // 수정한 부분
         CloseAllUI();
     }
@@ -85,6 +87,9 @@ public class UI_Manager : MonoBehaviour
             {
                 uiParts["Inventory"].Toggle();
                 uiParts["Table"].Toggle();
+
+                var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
+                SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.Env_InvenOpen, player.transform.position);
             }
         }
     }

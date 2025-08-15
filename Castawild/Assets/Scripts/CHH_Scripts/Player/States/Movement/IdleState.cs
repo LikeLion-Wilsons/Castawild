@@ -16,6 +16,9 @@ public class IdleState : MovementBaseState
 
     public override void UpdateState()
     {
+        if (movementManager.player.IsUIOpen)
+            return;
+
         // Move
         if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
         {
@@ -42,6 +45,7 @@ public class IdleState : MovementBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
         movementManager.flagManager.Clear(PlayerFlags.MoveIdle);
     }
 }

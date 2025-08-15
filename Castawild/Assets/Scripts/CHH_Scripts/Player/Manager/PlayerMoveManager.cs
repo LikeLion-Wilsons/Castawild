@@ -33,7 +33,7 @@ public class PlayerMoveManager : NetworkBehaviour
     [SerializeField] private Transform groundStartPoint;
     [SerializeField] private float groundDistance = 0.5f;
 
-    PlayerNetworkInputData input;
+    private PlayerNetworkInputData input;
     [Networked, HideInInspector] public bool JumpTriggered { get; set; }
     [Networked, HideInInspector] public float currentMoveSpeed { get; set; }
     [Networked, HideInInspector] public bool IsChangePos { get; set; }
@@ -138,7 +138,7 @@ public class PlayerMoveManager : NetworkBehaviour
             if (fallingElapsed > fallingDeadTime)
             {
                 fallingElapsed = 0f;
-                player.Host_TakeDamage(false, 10000f);
+                player.Host_TakeDamaged(false, 10000f);
             }
         }
 
@@ -153,7 +153,7 @@ public class PlayerMoveManager : NetworkBehaviour
             if (fallDistance > fallThreshold)
             {
                 float damage = (fallDistance - fallThreshold) * fallDamagePerMeter;
-                player.Host_TakeDamage(false, damage);
+                player.Host_TakeDamaged(false, damage);
                 if (input.currentView == ViewType.FirstPerson)
                     player.RPC_ApplyShakeCamera(transform.up, 0.5f);
                 else
@@ -234,8 +234,10 @@ public class PlayerMoveManager : NetworkBehaviour
     /// <summary>
     /// 리스폰 위치 변경
     /// </summary>
-    public void Host_SetPosition(Vector3 position)
+    public void Host_SetChangePosition(Vector3 position)
     {
+        if (!HasStateAuthority)
+            return;
         IsChangePos = true;
         ChangePos = position;
     }
@@ -243,7 +245,7 @@ public class PlayerMoveManager : NetworkBehaviour
     /// <summary>
     /// 위치 변경
     /// </summary>
-    public void All_SetPosition(Vector3 position)
+    public void Host_SetPosition(Vector3 position)
     {
         if (HasStateAuthority)
         {

@@ -3,22 +3,30 @@ using UnityEngine;
 using System;
 using UnityEditor;
 
-[RequireComponent(typeof(NetworkObject),typeof(NetworkTransform))]
-public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, INetworkVisibilityObject, YSB_Scripts.IInteractable, IRevivable
+[RequireComponent(typeof(NetworkObject), typeof(NetworkTransform))]
+public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, YSB_Scripts.IInteractable, IRevivable
 {
-    public event Action<INetworkVisibilityObject> OnDestroyed;
+    //public event Action<INetworkVisibilityObject> OnDestroyed;
     public InteractableType interactableType;
     public int InstanceId { get; set; }
-    public GameObject GameObject { get { return gameObject; } }
-    public GameObject VisualRoot { get { return visualRoot; } }
-    public Collider Collider { get { return cachedCollider; } }
-    private Collider cachedCollider;
+    private Collider col;
     [SerializeField] private GameObject visualRoot;
+    private VisualRootController visualRootController;
 
-    [Networked] protected int Health { get; set; }
+    [Networked, /*OnChangedRender(nameof(OnChangedHealth))*/] protected int Health { get; set; }
     [Networked] protected int MaxHP { get; set; }
     [Networked] protected TickTimer ReviveTimer { get; set; }
     private float reviveTime;
+
+    public override void Spawned()
+    {
+        base.Spawned();
+
+        if (visualRootController == null && visualRoot != null)
+            visualRootController = visualRoot.GetComponent<VisualRootController>();
+
+        col = GetComponent<Collider>();
+    }
 
     public override void FixedUpdateNetwork()
     {
@@ -30,7 +38,6 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, INetwork
 
     public virtual void Init(SpawnableDefinition def, int instanceId)
     {
-        cachedCollider = GetComponent<Collider>();
         reviveTime = def.reviveTime;
         InstanceId = instanceId;
     }
@@ -51,11 +58,41 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, INetwork
     public virtual void Revive()
     {
         Health = MaxHP;
+        RPC_UpdateVisualState(true);
+    }
+
+    // void OnChangedHealth()
+    // {
+    //     Debug.Log($"{Object.name}[{InstanceId}] Health changed: {Health}/{MaxHP}");
+    // }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_UpdateVisualState(bool isAlive)
+    {
+        if (visualRootController == null && visualRoot != null)
+            visualRootController = visualRoot.GetComponent<VisualRootController>();
+
+        if (visualRootController != null)
+        {
+            visualRootController.SetVisible(isAlive);
+            col.enabled = isAlive;
+        }
     }
 
     protected void Die()
     {
-        OnDestroyed?.Invoke(this);
+        Debug.Log($"{Object.name}[{InstanceId}] Destroyed");
+        //OnDestroyed?.Invoke(this);
         ReviveTimer = TickTimer.CreateFromSeconds(Runner, reviveTime);
+        RPC_UpdateVisualState(false);
+    }
+
+    protected void DropItem(PlayerRef player, SpawnableDefinition definition)
+    {
+        Debug.Log($"{Object.name}[{InstanceId}] Dropping item: {definition.dropItem.itemID}, Amount: {definition.dropAmount}");
+        var playerObj = Runner.GetPlayerObject(player);
+        Player _player = playerObj.GetComponent<Player>();
+        InventoryDataManager inventoryData = _player.inventory;
+        inventoryData.AddItem(definition.dropItem.itemID, definition.dropAmount);
     }
 }

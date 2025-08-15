@@ -10,6 +10,8 @@ public class PlayerStateManager : NetworkBehaviour
     private ToolStateManager toolStateManager;
     private PlayerFlagManager flagManager;
 
+    private bool isUIClosed = false;
+
     public override void Spawned()
     {
         movementManager = GetComponent<MovementStateManager>();
@@ -17,6 +19,18 @@ public class PlayerStateManager : NetworkBehaviour
 
         toolStateManager = GetComponent<ToolStateManager>();
         toolStateManager.Host_ChangeState(ToolState.Idle);
+
+        if (HasInputAuthority)
+        {
+            OptionUI.openUI -= CloseUI;
+            OptionUI.openUI += CloseUI;
+        }
+    }
+
+    private void CloseUI(bool isOpen)
+    {
+        if (!isOpen)
+            isUIClosed = true;
     }
 
     private void Awake()
@@ -43,8 +57,10 @@ public class PlayerStateManager : NetworkBehaviour
 
     private void All_HandleState(PlayerNetworkInputData input)
     {
-        if (player.IsCursorLocked)
+        if (player.IsCursorLocked || isUIClosed)
         {
+            isUIClosed = false;
+            input.moveValue = Vector2.zero;
             movementManager.SetInput(input);
             toolStateManager.SetInput(input);
         }

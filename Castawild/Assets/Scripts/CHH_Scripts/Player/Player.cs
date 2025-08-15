@@ -2,7 +2,9 @@ using Fusion;
 using System;
 using System.Collections;
 using Test;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 // 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
@@ -76,11 +78,10 @@ public class Player : NetworkBehaviour
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isSpawned;
 
-    [HideInInspector] public bool isNearFire;
+    [HideInInspector] public float isNearFire = 0f;
     [HideInInspector] public UIStats uiStats;
 
     public event Action<bool> Host_TakeDamagedEvent;
-    public event Action Host_DecreaseToolDuration;
     public event Action ClearCup;
 
     public Coroutine fallingCoroutine;
@@ -95,7 +96,7 @@ public class Player : NetworkBehaviour
             return;
         // 테스트용
         if (Input.GetKeyDown(KeyCode.K))
-            Host_TakeDamage(true, 10);
+            Host_TakeDamaged(true, 10);
 
         if (Input.GetKeyDown(KeyCode.H))
         {
@@ -161,7 +162,7 @@ public class Player : NetworkBehaviour
 
         if (Hunger <= 0 || Temperature <= 0)
         {
-            Host_TakeDamage(false, hpDecreaseRate * Runner.DeltaTime);
+            Host_TakeDamaged(false, hpDecreaseRate * Runner.DeltaTime);
             Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
         }
         else if (Hunger > 0)
@@ -178,44 +179,13 @@ public class Player : NetworkBehaviour
         if (dayNightManager == null)
             return;
 
-        if ((IsCooling || (dayNightManager.isNightTime && !isNearFire)) && Temperature > 0f)
+        if ((IsCooling || dayNightManager.isNightTime && (isNearFire < 2f)) && Temperature > 0f)
             Temperature -= temperatureDecreaseRate * Runner.DeltaTime;
 
-        else if ((!IsCooling || !dayNightManager.isNightTime || isNearFire) && Temperature < playerData.maxTemperature)
-            Temperature += temperatureReceoveryRate * Runner.DeltaTime;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!HasStateAuthority)
-            return;
-
-        // 플레이어 공격
-        if (CanPVP && other.TryGetComponent<AttackObject>(out AttackObject attackObject))
+        else if (Temperature < playerData.maxTemperature)
         {
-            if (other.GetComponent<ThrowObject>() != null)
-                return;
-
-            Host_TakeDamage(true, attackObject.Att);
-
-            attackObject.player.Host_DecreaseToolDuration?.Invoke();
-            attackObject.player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(attackObject.Att);
-        }
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (!HasStateAuthority)
-            return;
-
-        if (CanPVP && collision.gameObject.TryGetComponent<ThrowObject>(out ThrowObject throwObject))
-        {
-            if (throwObject.canAttack)
-            {
-                Host_TakeDamage(true, throwObject.Att);
-                throwObject.canAttack = false;
-                throwObject.player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(throwObject.Att);
-            }
+            if (!IsCooling && (!dayNightManager.isNightTime || (dayNightManager.isNightTime && isNearFire >= 1)))
+                Temperature += temperatureDecreaseRate * Runner.DeltaTime;
         }
     }
 
@@ -284,13 +254,7 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 리스폰 위치 설정
     /// </summary>
-    public void All_SetRespawnPos(Vector3 respawnPos)
-    {
-        if (HasInputAuthority)
-            RPC_RequestSetRespawnPos(respawnPos);
-        else
-            RespawnPos = respawnPos;
-    }
+    public void Host_SetRespawnPos(Vector3 respawnPos) => RespawnPos = respawnPos;
 
     /// <summary>
     /// 부활 스테이터스
@@ -309,7 +273,7 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 플레이어 공격을 받았을 때 호출
     /// </summary>
-    public void Host_TakeDamage(bool isAttack, float att)
+    public void Host_TakeDamaged(bool isAttack, float att)
     {
         if (!HasStateAuthority || Hp <= 0)
             return;
@@ -317,6 +281,7 @@ public class Player : NetworkBehaviour
 
         if (Hp <= 0)
         {
+            SoundManager.Instance.PlayLocalSound3D(Object.InputAuthority, Sound.Player_Dead, transform.position);
             flagManager.Set(PlayerFlags.Death);
             Host_TakeDamagedEvent?.Invoke(true);
             return;
@@ -327,6 +292,8 @@ public class Player : NetworkBehaviour
 
             if (isAttack)
             {
+                PlayerTakeDamagedSound();
+
                 RPC_ApplyPlayDamagedEffectAnim();
                 RPC_NotifyPlayDamagedAnim();
 
@@ -336,6 +303,13 @@ public class Player : NetworkBehaviour
                     RPC_ApplyShakeCamera(transform.right, 0.3f);
             }
         }
+    }
+
+    private void PlayerTakeDamagedSound()
+    {
+        int randomNumber = UnityEngine.Random.Range(0, 3);
+        Sound[] damageSounds = { Sound.Player_Damaged1, Sound.Player_Damaged2, Sound.Player_Damaged3 };
+        SoundManager.Instance.PlayLocalSound3D(Object.InputAuthority, damageSounds[randomNumber], transform.position);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
@@ -350,8 +324,8 @@ public class Player : NetworkBehaviour
             StopCoroutine(foodRestoreCoroutine);
 
         foodRestoreCoroutine = StartCoroutine(RestoreStatFromFoodCoroutine());
-        inventory.RPC_ClearCup();
 
+        inventory.RPC_ClearCup();
         ClearCup?.Invoke();
     }
 
@@ -449,12 +423,6 @@ public class Player : NetworkBehaviour
     }
 
     /// <summary>
-    /// 리스폰 장소 설정
-    /// </summary>
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_RequestSetRespawnPos(Vector3 respawnPos) { RespawnPos = respawnPos; }
-
-    /// <summary>
     /// 스테이터스 회복
     /// </summary>
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -487,22 +455,18 @@ public class Player : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_ApplyShakeCamera(Vector3 direction, float force) => cameraManager.ShakeCamera(direction, force);
 
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_RequestSetNearFire(float nearFire) => isNearFire += nearFire;
 
 
     // 임시 
     [HideInInspector] public ToolStateManager toolStateManager;
 
     PlayerToolManager playerToolManager;
-    public void Client_RemoveSelectedItem() => playerToolManager.Client_RemoveSelectedItem();
+    public void All_RemoveSelectedItem() => playerToolManager.All_RemoveSelectedItem();
     public void Client_ApplySelectedItem(int value) => playerToolManager.Client_ApplySelectedItem(value);
     public void Host_SetHasArrow(bool value) => playerToolManager.Host_SetHasArrow(value);
     public void Host_SetHasPebble(bool value) => playerToolManager.Host_SetHasPebble(value);
     public void RPC_RequestSetHasArrow(bool value) => playerToolManager.RPC_RequestSetHasArrow(value);
     public void RPC_RequestSetHasPebble(bool value) => playerToolManager.RPC_RequestSetHasPebble(value);
-}
-
-// 임시
-public class PlayerController
-{
-
 }

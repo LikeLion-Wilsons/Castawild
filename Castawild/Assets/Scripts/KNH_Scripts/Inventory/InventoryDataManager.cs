@@ -19,7 +19,7 @@ public class InventoryDataManager : NetworkBehaviour
 
     [Networked, Capacity(50)] public NetworkLinkedList<Item> itemList => default;
 
-    private Player player;
+    public Player player;
     public Item_Panel[] inventorySlots;
 
     public override void Spawned()
@@ -41,6 +41,7 @@ public class InventoryDataManager : NetworkBehaviour
 
         }
 
+        player = GetComponent<Player>();
         if (Object.HasInputAuthority)
         {
             // 본인의 UI만 생성
@@ -53,7 +54,6 @@ public class InventoryDataManager : NetworkBehaviour
             uiTable.BindToInventoryData(this);
 
             canvasHolder = uiCanvas.GetComponent<UI_Manager>();
-            player = GetComponent<Player>();
             canvasHolder.SetPlayer(player);
 
             #region item slot Init
@@ -99,6 +99,7 @@ public class InventoryDataManager : NetworkBehaviour
     public static InventoryDataManager Instance { get; set; }
     public static event Action<int> onItemSelected;
     public static event Action onInventoryUpdated;
+    public static event Action<float> cookStart;
 
     void ChangeSelectedSlot(int newValue)
     {
@@ -114,11 +115,11 @@ public class InventoryDataManager : NetworkBehaviour
             inventorySlots[newValue].Select();
             RPC_SetSelectedSlot(newValue);
 
-            if (inventorySlots[selectedSlot].IsEmpty())
-                player.Client_RemoveSelectedItem();
-            player.Client_ApplySelectedItem(itemList[selectedSlot].itemID);
-            Debug.Log("ChangeSelectedSlot " + selectedSlot);
-            onItemSelected?.Invoke(inventorySlots[selectedSlot].item.itemID);
+            if (inventorySlots[newValue].IsEmpty())
+                player.All_RemoveSelectedItem();
+            player.Client_ApplySelectedItem(itemList[newValue].itemID);
+            //Debug.Log("ChangeSelectedSlot " + selectedSlot);
+            onItemSelected?.Invoke(inventorySlots[newValue].item.itemID);
         }
     }
 
@@ -231,7 +232,7 @@ public class InventoryDataManager : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_SubtractDurability(float amount)
     {
-        Debug.Log("RPC_SubtractDurability" + selectedSlot);
+        //Debug.Log("RPC_SubtractDurability" + selectedSlot);
         var item = itemList.Get(selectedSlot);
         if (item.itemID == -1) return;
         //내구도 감소
@@ -266,7 +267,7 @@ public class InventoryDataManager : NetworkBehaviour
     {
         itemList.Set(index, item);
     }
-    //상자로부터 아이템 데이터 받아오기
+    //상자 -> 인벤토리
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_SetItemFromChest(ChestDataManager chestData)
     {
@@ -279,7 +280,7 @@ public class InventoryDataManager : NetworkBehaviour
         RPC_UpdateInventoryUI();
         Debug.Log("chest -> inventory");
     }
-    //인벤토리에서 상자로 데이터 보내기
+    //인벤토리 -> 상자
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestStoreToChest(ChestDataManager chestData)
     {
@@ -307,16 +308,16 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
 
-    //모닥불로부터 아이템 데이터 받아오기
+    //모닥불 -> 인벤토리
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_SetItemFromCampfire(NetworkCampFire campfire)
     {
         itemList.Set(45, campfire.cookPotItem);
-        itemList.Set(45, campfire.resultItem);
+        itemList.Set(46, campfire.resultItem);
         RPC_UpdateInventoryUI();
         Debug.Log("campfire -> inventory");
     }
-    //모닥불에서 상자로 데이터 보내기
+    //인벤토리 -> 모닥불
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestStoreToCampfire(NetworkCampFire campfire)
     {
@@ -324,6 +325,13 @@ public class InventoryDataManager : NetworkBehaviour
         campfire.RPC_SetResultItem(itemList[46]);
         Debug.Log("inventory->campfire");
         RPC_UpdateInventoryUI();
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestSetTimerText(int min, int sec)
+    {
+        canvasHolder.campfireUI.GetComponent<UICampfire>().SetTimerText(min, sec);
+        Debug.Log("클라이언트에서 요청");
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
@@ -341,7 +349,7 @@ public class InventoryDataManager : NetworkBehaviour
         item.itemID = -1;
         item.count = 0;
         if (inventorySlots[selectedSlot].IsEmpty())
-            player.Client_RemoveSelectedItem();
+            player.All_RemoveSelectedItem();
         RPC_UpdateInventoryUI();
     }
     public Item_Scriptable GetSeletedItem(bool use)
@@ -421,7 +429,6 @@ public class InventoryDataManager : NetworkBehaviour
         {
             if (itemList[i].itemID == -1)
             {
-                Debug.Log(dur);
                 Item newItem = new Item { itemID = id, count = amount, durability = dur };
                 itemList.Set(i, newItem);
 
@@ -433,8 +440,6 @@ public class InventoryDataManager : NetworkBehaviour
                 // 수정한 부분
                 if (Object.HasInputAuthority)
                 {
-                    if (inventorySlots[selectedSlot].IsEmpty())
-                        player.Client_RemoveSelectedItem();
                     player.Client_ApplySelectedItem(itemList[selectedSlot].itemID);
                     onItemSelected?.Invoke(inventorySlots[selectedSlot].item.itemID);
                 }
@@ -447,11 +452,11 @@ public class InventoryDataManager : NetworkBehaviour
 
     public void SwapItems(int indexA, int indexB)
     {
-        //indexA : 이동 전 슬롯
-        //indexB : 이동 후 슬롯
+        //indexA : 이동 후 슬롯
+        //indexB : 이동 전 슬롯
         if (indexA >= itemList.Count || indexB >= itemList.Count) return;
-
-        if (indexA > 44 && itemList[indexB].itemID != 6) return;//모닥불에는 생고기만 이동 가능 
+        //모닥불에는 생고기, 바닷물이 담긴 컵만 이동 가능 
+        if (indexA == 45 && itemList[indexB].itemID != 6) return;
         if (indexA == 46) return;//result슬롯으로는 이동 불가능
 
         //Debug.Log("Swap " + indexA + " " + indexB);
@@ -463,6 +468,7 @@ public class InventoryDataManager : NetworkBehaviour
             itemList.Add(item);
         }
 
+        if(indexA == 45) cookStart?.Invoke(10);
         //교환
         var tempA = itemList[indexA];
         var tempB = itemList[indexB];
@@ -535,6 +541,8 @@ public class InventoryDataManager : NetworkBehaviour
                     count -= item.count;
                     item.count = 0;
                     itemList.Set(i, item);
+
+                    player.All_RemoveSelectedItem();
                 }
 
             }

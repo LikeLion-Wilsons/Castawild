@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 33807232358103376}
   - component: {fileID: 23263346836148796}
   - component: {fileID: 3984881407969244168}
-  - component: {fileID: 6376777473369892278}
   - component: {fileID: -1580625264523228205}
   - component: {fileID: -4903978548492518830}
+  - component: {fileID: 3818153070578062886}
   m_Layer: 7
   m_Name: 401_WoodenClub
   m_TagString: PlayerAttack
@@ -102,24 +102,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75d608491e0b3104c8add8603597e0da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toolName: WoodenClub
   itemID: 401
+  toolName: WoodenClub
   interactAtt: 0
   durability: 0.1
---- !u!114 &6376777473369892278
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1771104533621832}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2351bf621323f142bb04057a24d1f9d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  att: 5
-  player: {fileID: 0}
 --- !u!114 &-1580625264523228205
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137,7 +123,7 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 6376777473369892278}
+  - {fileID: 3818153070578062886}
   ForceRemoteRenderTimeframe: 0
 --- !u!65 &-4903978548492518830
 BoxCollider:
@@ -160,3 +146,16 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.2, y: 0.6849667, z: 0.2}
   m_Center: {x: -0.00197348, y: 0.5229161, z: 0.0010173842}
+--- !u!114 &3818153070578062886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1771104533621832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 286e3a70ade040640bd6bc71ad3a263c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  att: 5

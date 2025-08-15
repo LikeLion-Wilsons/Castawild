@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public enum ViewType { None, FirstPerson, ThirdPerson }
 
@@ -108,8 +109,17 @@ public class PlayerCameraManager : MonoBehaviour
     {
         InitComponents();
         InitVariables();
-        SubscribeEvents();
         originfirstPersonTargetPos = firstPersonTarget.localPosition;
+    }
+
+    private void OnEnable()
+    {
+        inputManager.cursorLocked += ActivateCameraInput;
+    }
+
+    private void OnDisable()
+    {
+        inputManager.cursorLocked -= ActivateCameraInput;
     }
 
     private void Start()
@@ -128,12 +138,6 @@ public class PlayerCameraManager : MonoBehaviour
         inputAxisController = thirdPersonCam.GetComponent<CinemachineInputAxisController>();
         Camera.main.GetComponent<CinemachineBrain>().DefaultBlend = new(CinemachineBlendDefinition.Styles.Cut, 0f);
         currentFOV = 60f;
-    }
-
-    private void SubscribeEvents()
-    {
-        inputManager.cursorLocked -= ActivateCameraInput;
-        inputManager.cursorLocked += ActivateCameraInput;
     }
 
     private void InitVariables()
@@ -379,5 +383,33 @@ public class PlayerCameraManager : MonoBehaviour
         firstPersonCam.Lens.FieldOfView = value;
         thirdPersonCam.Lens.FieldOfView = value;
         currentFOV = value;
+    }
+}
+
+
+public class MyLookReader : IInputAxisReader
+{
+    public UnityEngine.InputSystem.InputAction action;
+    public float xGain = 1f, yGain = 1f;
+    public float GetValue(Object ctx, IInputAxisOwner.AxisDescriptor.Hints hint)
+    {
+        var v = action.ReadValue<Vector2>();
+        return hint == IInputAxisOwner.AxisDescriptor.Hints.X ? v.x * xGain : v.y * yGain;
+    }
+
+}
+
+public class MyInputCtrl : InputAxisControllerBase<MyLookReader>
+{
+    public InputActionReference look;
+    public float xGain = 1f, yGain = 1f;
+    void OnEnable() { look.action.Enable(); }
+    void OnDisable() { look.action.Disable(); }
+    void Update() { if (Application.isPlaying) UpdateControllers(); }
+    protected override void InitializeControllerDefaultsForAxis(
+        in IInputAxisOwner.AxisDescriptor axis, Controller c)
+    {
+        c.Enabled = true;
+        c.Input = new MyLookReader { action = look.action, xGain = xGain, yGain = yGain };
     }
 }

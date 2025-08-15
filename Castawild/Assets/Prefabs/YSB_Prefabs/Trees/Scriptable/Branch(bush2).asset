@@ -20,7 +20,7 @@ MonoBehaviour:
     m_EditorAssetChanged: 0
   maxHealth: 1
   reviveTime: 10
-  dropItemID: 0
+  dropItem: {fileID: 11400000, guid: 8a4a708c8d089da419ff325b52b9a76e, type: 2}
   dropAmount: 1
   destroySFX: 
   destroyVFX: 

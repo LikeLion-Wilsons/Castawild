@@ -30,6 +30,7 @@ public sealed class PlayerInteractManager : NetworkBehaviour
     public override void Spawned()
     {
         InitComponents();
+        optionUI.SetSessionName(Runner.SessionInfo.Name);
     }
 
     private void InitComponents()
@@ -95,6 +96,8 @@ public sealed class PlayerInteractManager : NetworkBehaviour
                     {
                         playerInteractUI.InteractUI(interactable.interactableType);
                         Client_currentInteractObject = interactable;
+                        if (Client_currentInteractObject == null)
+                            Debug.Log("currentInteractObject is null");
 
                         if (interactable.interactableType == InteractableType.Gatherable)
                         {
@@ -157,6 +160,14 @@ public sealed class PlayerInteractManager : NetworkBehaviour
         DebugDrawCircle(point2, cam.transform.forward, interactRadius, Color.green);
     }
 
+    public void Client_Gather()
+    {
+        if (Client_currentInteractObject == null)
+            Debug.Log("Gather - currentInteractObject is null");
+
+        Client_currentInteractObject?.Interact(Object.InputAuthority, 999);
+    }
+
     private void DebugDrawCircle(Vector3 center, Vector3 normal, float radius, Color color, int segments = 20)
     {
         normal.Normalize();
@@ -186,25 +197,25 @@ public sealed class PlayerInteractManager : NetworkBehaviour
     /// </summary>
     public void Client_Interact()
     {
-        if (Client_currentInteractObject == null || !HasInputAuthority)
+        if (Client_currentInteractObject == null || !HasInputAuthority
+            || Client_currentInteractObject.interactableType == InteractableType.Gatherable)
             return;
 
         int att = 0;
         if (Client_currentInteractObject.interactableType == InteractableType.Tree && Client_currentInteractObject.CanInteract())
         {
+            SoundManager.Instance.PlayGlobalSound3D(Sound.Player_Attack, transform.position);
             att = toolManager.All_GetToolAtt("Axe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
             toolStateManager.RPC_RequestDecreaseToolDuration(true);
         }
         else if (Client_currentInteractObject.interactableType == InteractableType.Stone && Client_currentInteractObject.CanInteract())
         {
+            SoundManager.Instance.PlayGlobalSound3D(Sound.Player_Attack, transform.position);
             att = toolManager.All_GetToolAtt("Pickaxe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
             toolStateManager.RPC_RequestDecreaseToolDuration(true);
         }
-
-        else if (Client_currentInteractObject.interactableType == InteractableType.Gatherable && Client_currentInteractObject.CanInteract())
-            Client_currentInteractObject?.Interact(Object.InputAuthority, att);
 
         if (att != 0)
             Hit?.Invoke(att);

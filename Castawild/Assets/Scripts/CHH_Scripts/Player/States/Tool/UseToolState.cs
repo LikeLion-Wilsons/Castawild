@@ -1,4 +1,6 @@
 
+using Unity.VisualScripting;
+
 public class UseToolState : ToolBaseState
 {
     private int comboCount = 1;
@@ -18,16 +20,17 @@ public class UseToolState : ToolBaseState
 
         toolStateManager.DecreaseToolDuration = false;
 
-        if (toolStateManager.CurrentToolType== ToolType.Fist || toolStateManager.CurrentToolType== ToolType.Throw)
-        {
+        if (toolStateManager.CurrentToolType == ToolType.Fist || toolStateManager.CurrentToolType == ToolType.Throw)
             toolStateManager.Client_ArmVisibleChanged(true);
-        }
 
-        else if (toolStateManager.CurrentToolType== ToolType.Bow)
+        else if (toolStateManager.CurrentToolType == ToolType.Bow)
         {
-            toolStateManager.toolManager.RPC_NotifySetBowPos(true);
+            if (toolStateManager.HasStateAuthority)
+            {
+                toolStateManager.toolManager.RPC_NotifySetBowPos(true);
+                toolStateManager.RPC_NotifySetArrowPull(true);
+            }
             toolStateManager.toolManager.All_SetArrowActive(true);
-            toolStateManager.RPC_NotifySetArrowPull(true);
         }
 
         elapsed = 0f;
@@ -47,7 +50,7 @@ public class UseToolState : ToolBaseState
             toolStateManager.flagManager.Clear(PlayerFlags.Aim);
             toolStateManager.RPC_ApplySetAimCameraAndUI(false);
 
-            if (toolStateManager.CurrentToolType== ToolType.Bow)
+            if (toolStateManager.CurrentToolType == ToolType.Bow)
                 toolStateManager.RPC_NotifySetArrowPull(false);
         }
 
@@ -90,13 +93,13 @@ public class UseToolState : ToolBaseState
 
         toolStateManager.DecreaseToolDuration = false;
 
-        if (toolStateManager.CurrentToolType== ToolType.Bow && toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput))
+        if (toolStateManager.CurrentToolType == ToolType.Bow && toolStateManager.input.IsUp(PlayerNetworkInputData.aimInput) && toolStateManager.HasStateAuthority)
             toolStateManager.toolManager.RPC_NotifySetBowPos(false);
 
-        if (toolStateManager.CurrentToolType== ToolType.Throw)
+        if (toolStateManager.CurrentToolType == ToolType.Throw)
             toolStateManager.toolManager.All_SetPebbleActive(true);
 
-        if (toolStateManager.CurrentToolType== ToolType.Fist)
+        if (toolStateManager.CurrentToolType == ToolType.Fist)
             toolStateManager.Client_ArmVisibleChanged(false);
 
         toolStateManager.moveManager.Host_FreezePosition(false);

@@ -26,12 +26,13 @@ public class CrouchState : MovementBaseState
         {
             if (!movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
                 movementManager.Host_ChangeState(MovementState.Idle);
-            else
+            else if (movementManager.input.IsDown(PlayerNetworkInputData.moveInput))
                 movementManager.Host_ChangeState(MovementState.Walk);
         }
     }
 
     public override void ExitState()
     {
+        base.ExitState();
     }
 }

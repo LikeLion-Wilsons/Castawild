@@ -6,7 +6,7 @@ public class Campfire : InteractableObject
 {
     [Networked] public bool CanOpen { get; set; } = true;
     public bool isFire { get; set; } = false;
-    UI_Manager canvasHolder;
+    public UI_Manager canvasHolder;
     public Player player;
     InventoryDataManager inventoryData;
     NetworkCampFire networkCampfire;
@@ -20,15 +20,11 @@ public class Campfire : InteractableObject
 
     private void Update()
     {
-        //if (networkCampfire != null)
-        //{
-        //    if (networkCampfire.isFire) fireVFX.SetActive(true);
-        //    else fireVFX.SetActive(false);
-        //}
-
-        //if (canvasHolder == null) return;
-        //bool isInventoryOpen = canvasHolder.uiParts["Inventory"].IsOpen();
-        //CanOpen = !isInventoryOpen;
+        if (player == null) return;
+        if (!Object.HasStateAuthority && player.HasInputAuthority) //클라이언트에서
+        {
+            inventoryData.RPC_SetCanOpen(this, true);
+        }
     }
 
     public override bool CanInteract() => CanOpen;
@@ -38,14 +34,17 @@ public class Campfire : InteractableObject
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
 
         player = playerObj.GetComponent<Player>();
-
-        //PlayerController playerController = playerObj.GetComponent<PlayerController>();
         inventoryData = player.GetComponent<InventoryDataManager>();
+
         networkCampfire = GetComponent<NetworkCampFire>();
+        networkCampfire.player = player;
         networkCampfire.inventoryData = inventoryData;
 
         canvasHolder = inventoryData.canvasHolder;
         canvasHolder.currentCampFire = gameObject;
+
+        //chest -> inventory
+        inventoryData.RPC_SetItemFromCampfire(networkCampfire);
 
         if (CanOpen)
         {

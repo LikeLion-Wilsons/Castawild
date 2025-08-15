@@ -5,21 +5,24 @@ using UnityEngine;
 interface IDamageable
 {
     void TakeDamage(PlayerRef player, int damage);
-
 }
-public class DummyTarget : NetworkBehaviour,IDamageable
-{
 
+public class DummyTarget : NetworkBehaviour, IDamageable
+{
     public int ID;
     [SerializeField] private float _reviveTime = 3f;
     [Networked] private TickTimer _reviveCooldown { get; set; }
 
     [SerializeField] private bool _useLagCompensation;
-    [Networked, OnChangedRender(nameof(OnchangedHealth))] private int health { get; set; } = 100;
-    public static event Action<PlayerRef,int> onDamaged;
+
+    [Networked, OnChangedRender(nameof(OnchangedHealth))]
+    private int health { get; set; } = 100;
+
+    public static event Action<PlayerRef, int> onDamaged;
     private HitboxRoot _hitboxRoot;
 
     private Collider _collider;
+
     protected void Awake()
     {
         _hitboxRoot = GetComponent<HitboxRoot>();
@@ -36,6 +39,7 @@ public class DummyTarget : NetworkBehaviour,IDamageable
     {
         return health > 0;
     }
+
     public override void FixedUpdateNetwork()
     {
         if (_useLagCompensation == true)
@@ -53,7 +57,6 @@ public class DummyTarget : NetworkBehaviour,IDamageable
             {
                 health = 100;
                 _reviveCooldown = default;
-                
             }
             else if (_reviveCooldown.IsRunning == false)
             {
@@ -62,6 +65,7 @@ public class DummyTarget : NetworkBehaviour,IDamageable
             }
         }
     }
+
     public override void Render()
     {
         transform.localScale = IsAlive() ? Vector3.one : Vector3.zero;
@@ -72,37 +76,36 @@ public class DummyTarget : NetworkBehaviour,IDamageable
         health -= damage;
         RPC_Request(player, damage);
     }
+
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     void RPC_Request(PlayerRef player, int damage)
     {
         RPC_Broadcast(player, damage);
     }
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_Broadcast(PlayerRef player, int message)
     {
-        if (Runner.LocalPlayer != player) return;
-        onDamaged?.Invoke(player, message);
-    }
-
-
-    private SoundManager soundManager = null;
-    void OnchangedHealth()
-    {
-        //Debug.Log($"[{gameObject.name}] hp:{health}");
-        if (soundManager == null)
-        {
-            soundManager = FindAnyObjectByType<SoundManager>();
-        }
-        
         //사운드 테스트.
         switch (ID)
         {
             case 0:
-                soundManager.PlayGlobalSound3D("Env_1", transform.position);
+                SoundManager.Instance.PlayGlobalSound3D(Sound.Env_NightBird, transform.position);
                 break;
             case 1:
-                soundManager.PlayLocalSound3D("Mon_1", transform.position);
+                    SoundManager.Instance.PlayLocalSound3D(player,Sound.Mon_Damaged, transform.position);
                 break;
-        } 
+        }
+        
+        
+        if (Runner.LocalPlayer != player) return;
+        onDamaged?.Invoke(player, message);
+
+    }
+
+
+    void OnchangedHealth()
+    {
+        Debug.Log($"[{gameObject.name}] hp:{health}");
     }
 }

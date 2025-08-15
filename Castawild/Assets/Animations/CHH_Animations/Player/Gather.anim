@@ -68079,8 +68079,8 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 1.3333334
-    functionName: Interact
+  - time: 1.5
+    functionName: Gather
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

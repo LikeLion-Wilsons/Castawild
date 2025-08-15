@@ -1,4 +1,7 @@
 
+
+using UnityEngine;
+
 public class WalkState : MovementBaseState
 {
     public WalkState(MovementStateManager _movementManager)
@@ -18,6 +21,9 @@ public class WalkState : MovementBaseState
 
     public override void UpdateState()
     {
+        if (movementManager.player.IsUIOpen)
+            movementManager.Host_ChangeState(MovementState.Idle);
+
         // Run
         if (movementManager.input.IsDown(PlayerNetworkInputData.sprintInput) && movementManager.All_CanRun())
             movementManager.Host_ChangeState(MovementState.Run);
@@ -40,6 +46,7 @@ public class WalkState : MovementBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
         movementManager.flagManager.Clear(PlayerFlags.Walk);
 
         if (movementManager.HasInputAuthority)
