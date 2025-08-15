@@ -196,7 +196,7 @@ public class Player : NetworkBehaviour
         if (!HasStateAuthority)
             return;
 
-        // 플레이어 공격
+        // 플레이어도구에 맞았을 때
         if (CanPVP && other.TryGetComponent<AttackObject>(out AttackObject attackObject))
         {
             if (other.GetComponent<ThrowObject>() != null)
@@ -216,7 +216,7 @@ public class Player : NetworkBehaviour
         if (!HasStateAuthority)
             return;
 
-        // 플레이어 공격
+        // 플레이어 throw에 맞았을 때
         if (CanPVP && collision.gameObject.TryGetComponent<ThrowObject>(out ThrowObject throwObject))
         {
             if (throwObject.canAttack)

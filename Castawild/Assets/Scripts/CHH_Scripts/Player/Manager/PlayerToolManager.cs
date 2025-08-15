@@ -1,4 +1,5 @@
 using Fusion;
+using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -75,6 +76,20 @@ public class PlayerToolManager : NetworkBehaviour
                 prevItemIdx = currentItemIdx;
                 Host_ChangeSelectedItem?.Invoke(currentItemIdx);
             }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!HasStateAuthority)
+            return;
+
+        // 동물 공격
+        if (other.CompareTag("Animal"))
+        {
+            SoundManager.Instance.PlayGlobalSound3D(Sound.Player_Attack, transform.position);
+            CwAnimal animal = GetComponentInParent<CwAnimal>();
+            animal.TakeDamage(All_GetToolAtt());
         }
     }
 
