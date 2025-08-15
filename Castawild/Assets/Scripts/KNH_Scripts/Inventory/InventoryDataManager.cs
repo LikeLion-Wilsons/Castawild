@@ -19,7 +19,7 @@ public class InventoryDataManager : NetworkBehaviour
 
     [Networked, Capacity(50)] public NetworkLinkedList<Item> itemList => default;
 
-    private Player player;
+    public Player player;
     public Item_Panel[] inventorySlots;
 
     public override void Spawned()

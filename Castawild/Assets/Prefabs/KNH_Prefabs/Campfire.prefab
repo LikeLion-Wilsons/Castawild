@@ -100,6 +100,7 @@ GameObject:
   - component: {fileID: 2863630399083837473}
   - component: {fileID: 2184143154126297667}
   - component: {fileID: 8440331638083178936}
+  - component: {fileID: 149325604723120236}
   m_Layer: 8
   m_Name: Campfire
   m_TagString: Interactable
@@ -162,6 +163,7 @@ MonoBehaviour:
   text: Campfire
   isPlaceable: 1
   _CanOpen: 1
+  canvasHolder: {fileID: 0}
   player: {fileID: 0}
   fireVFX: {fileID: 5839911783318004443}
 --- !u!114 &2863630399083837473
@@ -205,11 +207,12 @@ MonoBehaviour:
     itemID: 0
     count: 0
     durability: 0
-  _isFire: 0
-  _fireTime: 0
+  _canCook: 0
   fireVFX: {fileID: 5839911783318004443}
+  _fireTime: 0
+  _cookTimer: 0
+  player: {fileID: 0}
   inventoryData: {fileID: 0}
-  isCooking: 0
 --- !u!114 &8440331638083178936
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -227,6 +230,18 @@ MonoBehaviour:
   SyncParent: 0
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 0
+--- !u!114 &149325604723120236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6167062138974328233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ea2a9a3f0fe13045baf4d89fa0ca39d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2455680331382048836
 PrefabInstance:
   m_ObjectHideFlags: 0

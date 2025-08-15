@@ -2,8 +2,9 @@ using Fusion;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class UI_Manager : MonoBehaviour
+public class UI_Manager : NetworkBehaviour
 {
     public GameObject hotBarUI;
     public GameObject inventoryUI;
@@ -86,6 +87,9 @@ public class UI_Manager : MonoBehaviour
             {
                 uiParts["Inventory"].Toggle();
                 uiParts["Table"].Toggle();
+
+                var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
+                SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.Env_InvenOpen, player.transform.position);
             }
         }
     }

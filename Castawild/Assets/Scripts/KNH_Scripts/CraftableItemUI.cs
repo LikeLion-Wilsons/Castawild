@@ -1,4 +1,6 @@
+using Fusion;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class CraftableItemUI : MonoBehaviour
@@ -32,6 +34,9 @@ public class CraftableItemUI : MonoBehaviour
 
     public void SetTableUI()
     {
+        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
+        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_Scroll, canvasHolder.player.transform.position);
+
         table.selectedItem = item;
         table.SetTableUI();
     }

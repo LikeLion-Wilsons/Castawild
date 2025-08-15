@@ -2,6 +2,7 @@ using Fusion;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UICampfire : UIPart
@@ -62,6 +63,10 @@ public class UICampfire : UIPart
     }
     public void AddFuelButton()
     {
+        //사운드 재생
+        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
+        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_ButtonClick, campFire.player.transform.position);
+
         inventoryData = uiManager.player.GetComponent<InventoryDataManager>();
         int fuelCount = inventoryData.GetItemCount(fuelList[selectedFuelIndex]);//나뭇가지 개수 확인
 
@@ -81,6 +86,9 @@ public class UICampfire : UIPart
     }
     public void LeftButtonClick()
     {
+        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
+        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_ButtonClick, campFire.player.transform.position);
+
         if (selectedFuelIndex <= 0) return;
         selectedFuelIndex--;
         SetFuelIcon();
@@ -88,6 +96,8 @@ public class UICampfire : UIPart
 
     public void RightButtonClick()
     {
+        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
+        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_ButtonClick, campFire.player.transform.position);
         if (selectedFuelIndex + 1 >= fuelList.Count) return;
         selectedFuelIndex++;
         SetFuelIcon();

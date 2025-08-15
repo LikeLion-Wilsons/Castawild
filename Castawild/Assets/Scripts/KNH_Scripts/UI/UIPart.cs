@@ -1,7 +1,8 @@
+using Fusion;
 using System;
 using UnityEngine;
 
-public class UIPart : MonoBehaviour
+public class UIPart : NetworkBehaviour
 {
     public static event Action<bool> openUI;
     public bool isActive => gameObject.activeSelf;
