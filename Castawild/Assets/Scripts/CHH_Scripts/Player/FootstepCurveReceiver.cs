@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class FootstepCurveReceiver : MonoBehaviour
@@ -7,6 +8,7 @@ public class FootstepCurveReceiver : MonoBehaviour
     private AudioSource audioSource;
     [SerializeField] Transform footTransform;
 
+    private int index;
     public float step;
     float prevStep;
     float threshold = 0.5f;
@@ -20,11 +22,10 @@ public class FootstepCurveReceiver : MonoBehaviour
 
     void Update()
     {
-        int randomNumber = Random.Range(0, 7);
         Sound[] walkSounds = { Sound.Player_Walk1, Sound.Player_Walk2, Sound.Player_Walk3, Sound.Player_Walk4, Sound.Player_Walk5, Sound.Player_Walk6, Sound.Player_Walk7 };
-
         if (step >= threshold && prevStep < threshold)
-            SoundManager.Instance.PlayGlobalSound3D(walkSounds[randomNumber], transform.position);
+            SoundManager.Instance.PlayGlobalSound3D(walkSounds[index], footTransform.position);
+        index = (index + 1) % walkSounds.Length;
 
         prevStep = step;
     }
