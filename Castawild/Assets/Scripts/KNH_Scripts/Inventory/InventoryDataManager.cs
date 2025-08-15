@@ -99,6 +99,7 @@ public class InventoryDataManager : NetworkBehaviour
     public static InventoryDataManager Instance { get; set; }
     public static event Action<int> onItemSelected;
     public static event Action onInventoryUpdated;
+    public static event Action<float> cookStart;
 
     void ChangeSelectedSlot(int newValue)
     {
@@ -451,11 +452,11 @@ public class InventoryDataManager : NetworkBehaviour
 
     public void SwapItems(int indexA, int indexB)
     {
-        //indexA : 이동 전 슬롯
-        //indexB : 이동 후 슬롯
+        //indexA : 이동 후 슬롯
+        //indexB : 이동 전 슬롯
         if (indexA >= itemList.Count || indexB >= itemList.Count) return;
-
-        if (indexA > 44 && itemList[indexB].itemID != 6) return;//모닥불에는 생고기만 이동 가능 
+        //모닥불에는 생고기, 바닷물이 담긴 컵만 이동 가능 
+        if (indexA == 45 && itemList[indexB].itemID != 6) return;
         if (indexA == 46) return;//result슬롯으로는 이동 불가능
 
         //Debug.Log("Swap " + indexA + " " + indexB);
@@ -467,6 +468,7 @@ public class InventoryDataManager : NetworkBehaviour
             itemList.Add(item);
         }
 
+        if(indexA == 45) cookStart?.Invoke(10);
         //교환
         var tempA = itemList[indexA];
         var tempB = itemList[indexB];

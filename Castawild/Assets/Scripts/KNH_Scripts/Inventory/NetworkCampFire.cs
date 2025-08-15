@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,7 +20,6 @@ public class NetworkCampFire : NetworkBehaviour
     [Networked] public float cookTimer { get; set; }
     [Networked] private TickTimer fireDecreaseTimer { get; set; }
     [Networked] public TickTimer cookDecreaseTimer { get; set; }
-
 
 
     public Player player;
@@ -43,8 +43,9 @@ public class NetworkCampFire : NetworkBehaviour
             resultItem = item;
         }
         campfire = GetComponent<Campfire>();
+        InventoryDataManager.cookStart -= RPC_AddCookTime;
+        InventoryDataManager.cookStart += RPC_AddCookTime;
     }
-    private double nextFireDecreaseTime;
 
     public override void FixedUpdateNetwork()
     {
@@ -65,12 +66,11 @@ public class NetworkCampFire : NetworkBehaviour
                 RPC_SetTimerText(min, sec);// 타이머 텍스트 업데이트
                 if (cookDecreaseTimer.IsRunning)
                 {
-                    RPC_SetCookingProgressBar();//요리 진행바 업데이트
+                    RPC_SetCookingProgressBar(cookTimer);//요리 진행바 업데이트
                     cookTimer--;
                     Debug.Log("cookTime : " + cookTimer);
                 }
 
-                //Debug.Log("fireTime : " + fireTime);
                 if (fireTime <= 0)
                 {
                     RPC_SetFireVFX(false);
@@ -86,15 +86,15 @@ public class NetworkCampFire : NetworkBehaviour
         }
 
         //요리!!
-        if (inventoryData == null) return;
+
         // 아이템이 있을 때만 타이머 작동
-        if (inventoryData.itemList[45].itemID != -1 || cookPotItem.itemID != -1)
-        {
-            if (cookDecreaseTimer.ExpiredOrNotRunning(Runner))
-            {
-                cookTimer += 10;
-            }
-        }
+        //if (cookPotItem.itemID != -1)
+        //{
+        //    if (cookDecreaseTimer.ExpiredOrNotRunning(Runner))
+        //    {
+        //        RPC_AddCookTime(10);
+        //    }
+        //}
         if (cookTimer > 0 && Object.HasStateAuthority)
         {
             // 처음 시작할 때만 타이머 생성
@@ -105,11 +105,10 @@ public class NetworkCampFire : NetworkBehaviour
             // 10초가 지났으면 Cook 실행 후 다음 시간 예약
             if (cookDecreaseTimer.ExpiredOrNotRunning(Runner))
             {
-                Debug.Log("여기");
                 cookDecreaseTimer = TickTimer.CreateFromSeconds(Runner, 10f);
-                cookTimer = 10;
+                RPC_AddCookTime(10);
                 RPC_Cooking();
-                RPC_ResetCookingProgressBar();
+                RPC_SetCookingProgressBar(0);
                 Debug.Log("요리 완성!");
             }
         }
@@ -175,14 +174,11 @@ public class NetworkCampFire : NetworkBehaviour
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_SetisFire(bool tof)
+    public void RPC_AddCookTime(float time)
     {
-
-        if (!isFire && tof == true)
-        {
-            fireDecreaseTimer = TickTimer.CreateFromSeconds(Runner, 1f);
-        }
-        //isFire = tof;
+        if(cookTimer > 0)
+            return; // 이미 요리 중이면 추가하지 않음
+        cookTimer += time;
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -191,34 +187,27 @@ public class NetworkCampFire : NetworkBehaviour
         fireVFX.SetActive(tof);
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_Time(bool tof)
-    {
-        fireVFX.SetActive(tof);
-    }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_SetTimerText(int min, int sec)
     {
+        if(campfire.canvasHolder == null || campfire.canvasHolder.campfireUI == null)
+            return;
         campfire.canvasHolder.campfireUI.GetComponent<UICampfire>().SetTimerText(min, sec);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_SetCookingProgressBar()
+    public void RPC_SetCookingProgressBar(float timer)
     {
+        if (campfire.canvasHolder == null || campfire.canvasHolder.campfireUI == null)
+            return;
         campfire.canvasHolder.campfireUI.GetComponent<UICampfire>().
-            CookingProgressBar(cookTimer);
+            CookingProgressBar(timer);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_Cooking()
     {
         Cook();
-    }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_ResetCookingProgressBar()
-    {
-        campfire.canvasHolder.campfireUI.GetComponent<UICampfire>().ResetCookingProgressBar();
     }
 }

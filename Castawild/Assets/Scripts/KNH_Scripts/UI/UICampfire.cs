@@ -10,7 +10,7 @@ public class UICampfire : UIPart
     UI_Manager uiManager;
     InventoryDataManager inventoryData;
     Campfire campFire;
-    NetworkCampFire netWorkCampfire;
+    public NetworkCampFire netWorkCampfire;
     [Header("슬롯")]
     public Item_Panel cookPot;
     public Item_Panel result;
@@ -118,10 +118,5 @@ public class UICampfire : UIPart
         double elapsed = totalDuration - timeLeft;
         float progress = Mathf.Clamp01((float)(elapsed / totalDuration));
         arrowImage.fillAmount = progress;
-    }
-
-    public void ResetCookingProgressBar()
-    {
-        arrowImage.fillAmount = 0f;
     }
 }
