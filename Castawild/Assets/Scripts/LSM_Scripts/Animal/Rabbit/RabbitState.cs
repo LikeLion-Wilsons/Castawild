@@ -29,10 +29,7 @@ public class RabbitState : AnimalState
 
     public override void FixedUpdateNetwork()
     { 
-        base.FixedUpdateNetwork();
-
-        //현재 위치 디버그
-        Debug.Log($"Current Position: {rabbitObject.transform.position}");
+        base.FixedUpdateNetwork(); 
     }
 
     public override void Exit()

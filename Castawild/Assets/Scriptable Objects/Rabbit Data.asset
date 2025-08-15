@@ -17,7 +17,7 @@ MonoBehaviour:
   currentHp: 1
   armor: 1
   attack: 1
-  moveSpeed: 3
+  moveSpeed: 1
   maxDetectionRadius: 10
   minDetectionRadius: 5
   attackRange: 0

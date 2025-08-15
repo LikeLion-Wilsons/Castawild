@@ -44,7 +44,7 @@ public class  RabbitAnim : AnimalAnim
 
     protected override void Awake() 
     {
-        base.Awake();  
+        base.Awake(); 
         rabbitObject = GetComponent<CwRabbit>();
 
         // 각 상태 인스턴스 생성 (this: 플레이어 객체, stateMachine: 상태 머신, "Idle"/"Move": 상태 이름)
@@ -97,8 +97,7 @@ public class  RabbitAnim : AnimalAnim
     }
     public override void FixedUpdateNetwork()
     {
-        base.FixedUpdateNetwork();
-        Debug.Log(gameObject.transform);
+        base.FixedUpdateNetwork(); 
     }
 
     #region Host Authority Methods

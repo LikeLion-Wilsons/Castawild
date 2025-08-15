@@ -28,8 +28,12 @@ public class CwRabbit : CwAnimal
     protected override void Awake()
     {
         AddrPath = "Assets/Scriptable Objects/Rabbit Data.asset";
+    }
+
+    public override void Init()
+    {
         if (homeCenter != null)
-            homeCenter = transform.position;      
+            homeCenter = transform.position;
     }
 
     protected override async void Start()
