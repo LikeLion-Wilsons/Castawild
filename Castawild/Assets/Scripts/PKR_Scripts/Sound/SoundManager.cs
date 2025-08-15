@@ -41,6 +41,7 @@ public enum Sound
     Player_Damaged3,
     Player_Dead,
     Player_Drink,
+    Player_Eat,
     Player_HeartBeat,
     Player_Jump,
     Player_Revive,
