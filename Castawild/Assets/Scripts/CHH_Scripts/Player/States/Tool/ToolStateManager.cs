@@ -76,7 +76,6 @@ public class ToolStateManager : BaseStateManager
             player.Host_TakeDamagedEvent -= ChangeToDeathState;
             player.Host_TakeDamagedEvent += ChangeToDeathState;
 
-            player.Host_DecreaseToolDuration += SetDecreaseToolDuration;
         }
 
         toolManager.Host_ChangeSelectedItem += All_SetCurrentHoldItem;
@@ -92,7 +91,6 @@ public class ToolStateManager : BaseStateManager
     }
 
     private void ChangeToDeathState(bool isDeath) => Host_ChangeState(ToolState.Idle);
-    private void SetDecreaseToolDuration() => DecreaseToolDuration = true;
 
     private void InitComponents() => movementManager = GetComponent<MovementStateManager>();
 
@@ -226,8 +224,8 @@ public class ToolStateManager : BaseStateManager
                 throwObject = Runner.Spawn(throwableStonePrefab.gameObject, throwPos.position, cameraManager.firstPersonCam.transform.rotation);
             else
                 throwObject = Runner.Spawn(throwableStonePrefab.gameObject, throwPos.position, cameraManager.thirdPersonCam.transform.rotation);
-            throwObject?.GetComponent<ThrowObject>().AddForce(throwForce, throwUpForce, rayTargetPos);
 
+            throwObject?.GetComponent<ThrowObject>().AddForce(throwForce, throwUpForce, rayTargetPos);
             throwObject.GetComponent<ThrowObject>().thrower = player.gameObject;
 
             player.inventory.UseItem(202, 1);
@@ -269,6 +267,12 @@ public class ToolStateManager : BaseStateManager
     /// </summary>
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_ApplySetAimCameraAndUI(bool aimStart)
+    {
+        cameraManager.MoveAimCamera(aimStart);
+        interactUI.SetAimCrosshair(aimStart);
+    }
+
+    public void Client_SetAimCameraAndUI(bool aimStart)
     {
         cameraManager.MoveAimCamera(aimStart);
         interactUI.SetAimCrosshair(aimStart);

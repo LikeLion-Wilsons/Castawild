@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 33506184916469096}
   - component: {fileID: 23108569170360312}
   - component: {fileID: 6715793487409383517}
-  - component: {fileID: 8321722175507344541}
   - component: {fileID: -587096083230232040}
   - component: {fileID: 4957186378374985788}
+  - component: {fileID: 6786640618317928145}
   m_Layer: 7
   m_Name: 404_StoneSpear
   m_TagString: PlayerAttack
@@ -102,24 +102,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75d608491e0b3104c8add8603597e0da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toolName: StoneSpear
   itemID: 404
+  toolName: StoneSpear
   interactAtt: 0
   durability: 0.1
---- !u!114 &8321722175507344541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1568103841125034}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2351bf621323f142bb04057a24d1f9d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  att: 3
-  player: {fileID: 0}
 --- !u!114 &-587096083230232040
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137,7 +123,7 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 8321722175507344541}
+  - {fileID: 6786640618317928145}
   ForceRemoteRenderTimeframe: 0
 --- !u!65 &4957186378374985788
 BoxCollider:
@@ -160,3 +146,16 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.25, y: 1.0916432, z: 0.2}
   m_Center: {x: 0.00019535415, y: 0.70130783, z: -0.0012657045}
+--- !u!114 &6786640618317928145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568103841125034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 286e3a70ade040640bd6bc71ad3a263c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  att: 3
