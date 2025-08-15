@@ -39,14 +39,14 @@ public class ThrowObject : AttackObject
 
         if (collision.gameObject.CompareTag("Player") /*&& collision.gameObject.CompareTag("Animal")*/)
         {
-            NetworkObject networkObject = collision.gameObject.GetComponent<NetworkObject>();
-
             if (collision.gameObject.CompareTag("Player"))
             {
-                Player player = networkObject.GetComponent<Player>();
-                Runner.Despawn(Object);
+                Player player = collision.gameObject.GetComponent<Player>();
                 player.Host_TakeDamaged(true, Att);
+
                 thrower.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(Att);
+
+                Runner.Despawn(Object);
             }
 
             //else if (collision.gameObject.CompareTag("Animal"))

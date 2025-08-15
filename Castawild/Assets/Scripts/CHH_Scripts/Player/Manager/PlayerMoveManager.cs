@@ -236,6 +236,8 @@ public class PlayerMoveManager : NetworkBehaviour
     /// </summary>
     public void Host_SetChangePosition(Vector3 position)
     {
+        if (!HasStateAuthority)
+            return;
         IsChangePos = true;
         ChangePos = position;
     }

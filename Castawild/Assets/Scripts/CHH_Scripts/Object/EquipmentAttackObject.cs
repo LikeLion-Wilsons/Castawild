@@ -20,10 +20,15 @@ public class EquipmentAttackObject : AttackObject
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (!HasStateAuthority)
+            return;
+
+        if (other.transform.parent.CompareTag("Player"))
         {
-            other.GetComponent<ToolStateManager>().DecreaseToolDuration = true;
-            other.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(Att);
+            other.transform.parent.GetComponent<Player>().Host_TakeDamaged(true, Att);
+            other.transform.parent.GetComponent<ToolStateManager>().DecreaseToolDuration = true;
+
+            player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(Att);
         }
 
         //else if (other.CompareTag("Animal"))

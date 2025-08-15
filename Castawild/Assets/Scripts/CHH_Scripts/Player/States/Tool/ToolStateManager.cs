@@ -272,6 +272,12 @@ public class ToolStateManager : BaseStateManager
         interactUI.SetAimCrosshair(aimStart);
     }
 
+    public void Client_SetAimCameraAndUI(bool aimStart)
+    {
+        cameraManager.MoveAimCamera(aimStart);
+        interactUI.SetAimCrosshair(aimStart);
+    }
+
     /// <summary>
     /// 활 조준 설정
     /// </summary>

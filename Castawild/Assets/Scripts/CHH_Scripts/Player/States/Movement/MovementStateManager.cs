@@ -224,7 +224,11 @@ public class MovementStateManager : BaseStateManager
         return false;
     }
 
-    public void Host_Sleep(bool isSleep) => dayNightManager.Rpc_SetSleepingState(isSleep, Object.InputAuthority);
+    public void Host_Sleep(bool isSleep)
+    {
+        if (HasStateAuthority)
+            dayNightManager.Rpc_SetSleepingState(isSleep, Object.InputAuthority);
+    }
 
     /// <summary>
     /// Sleep 상태로 변경하는 RPC
