@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
  
 /// <summary>
@@ -11,6 +12,7 @@ public class RabbitDeathState : RabbitState
     public override void Enter()
     {
         rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Death, true);
+        rabbitObject.AnimalCopse.SetActive(true); // 토끼 시체 활성화  
     }
 
     public override void FixedUpdateNetwork()

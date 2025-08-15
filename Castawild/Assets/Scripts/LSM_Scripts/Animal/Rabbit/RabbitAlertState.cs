@@ -12,6 +12,9 @@ public class RabbitAlertState : RabbitState
     public override void Enter()
     { 
         rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Alert, true);
+        rabbitAnim.agent.isStopped = true;
+        rabbitAnim.agent.updatePosition = false;
+
         timer = rabbitObject.AlertTime;
     }
      
@@ -20,18 +23,17 @@ public class RabbitAlertState : RabbitState
         base.FixedUpdateNetwork();
         timer -= Time.deltaTime;
         if (rabbitObject.IsPlayerDetection() == null)
-        {
-
-            rabbitAnim.ChangeRabbitState(RabbitAnim.RabbitState.Idle);
+        { 
+            rabbitAnim.ChangeRabbitState(RabbitAnim.RabbitState.Idle);            
             return;
         }
         else if (rabbitObject.IsPlayerDetection() < rabbitObject.MinDetectionRadius)
-        {
+        { 
             rabbitAnim.ChangeRabbitState(RabbitAnim.RabbitState.Escape);
             return;
         }
         else if (timer <= 0f)
-        {
+        { 
             rabbitAnim.ChangeRabbitState(RabbitAnim.RabbitState.Escape);
             return;
         }
@@ -39,6 +41,8 @@ public class RabbitAlertState : RabbitState
 
     public override void Exit()
     {
+        rabbitAnim.agent.isStopped = false;
+        rabbitAnim.agent.updatePosition = true;
         rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Alert, false);
     } 
 }

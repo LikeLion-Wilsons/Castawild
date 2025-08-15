@@ -1,4 +1,5 @@
 using Fusion;
+using System.Collections;
 using UnityEngine; 
 /// <summary>
 /// 호스트에서 AI FSM을 관리하고,
@@ -43,7 +44,7 @@ public class  RabbitAnim : AnimalAnim
 
     protected override void Awake() 
     {
-        base.Awake();  
+        base.Awake(); 
         rabbitObject = GetComponent<CwRabbit>();
 
         // 각 상태 인스턴스 생성 (this: 플레이어 객체, stateMachine: 상태 머신, "Idle"/"Move": 상태 이름)
@@ -96,13 +97,14 @@ public class  RabbitAnim : AnimalAnim
     }
     public override void FixedUpdateNetwork()
     {
-        base.FixedUpdateNetwork();
+        base.FixedUpdateNetwork(); 
     }
 
     #region Host Authority Methods
     public void ChangeRabbitState(RabbitState newState)
     {
-        if (Object.HasStateAuthority)
+        // 호스트거나, 상태 초기화가 되었을 경우
+        if (Object.HasStateAuthority && stateMachine.currentState != null)
         {
             RPC_ChangeRabbitState(newState);
             currentState = newState;
@@ -110,15 +112,16 @@ public class  RabbitAnim : AnimalAnim
     }
 
     public void ChangeRabbitAnim(RabbitPlayAnim newAnim, bool isPlay)
-    {
+    {        
         if (Object.HasStateAuthority)
         {
-            RPC_ChangeRabbitAnim(newAnim, isPlay); 
-            currentAnim = newAnim;
-            if(newAnim == RabbitPlayAnim.IdleMove)
-            {
-                currentAnim = RabbitPlayAnim.IdleMove;
+            if (anim == null)
+            { 
+                StartCoroutine(DelayedAnimChange(newAnim, isPlay));
+                return;
             } 
+            RPC_ChangeRabbitAnim(newAnim, isPlay); 
+            currentAnim = newAnim; 
         }
     }
 
@@ -128,6 +131,10 @@ public class  RabbitAnim : AnimalAnim
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_ChangeRabbitState(RabbitState newState)
     {
+        if(stateMachine == null)
+        {         
+            return;
+        }
         switch (newState)
         {
             case RabbitState.Idle:
@@ -157,7 +164,7 @@ public class  RabbitAnim : AnimalAnim
             case RabbitPlayAnim.Idle:
                 anim.SetBool("Idle", isPlay);
                 break;
-            case RabbitPlayAnim.IdleMove:
+            case RabbitPlayAnim.IdleMove: 
                 anim.SetBool("IdleMove", isPlay);
                 break;
             case RabbitPlayAnim.Alert:
@@ -177,4 +184,18 @@ public class  RabbitAnim : AnimalAnim
         }
     }
     #endregion
+
+    public void IdleMove()
+    {
+        IdleMoveing = true;
+    }
+
+
+    private IEnumerator DelayedAnimChange(RabbitPlayAnim newAnim, bool isPlay)
+    {
+        yield return null; // 1프레임 대기
+        if (anim != null)
+            anim.SetBool("IdleMove", isPlay);
+    }
+
 }

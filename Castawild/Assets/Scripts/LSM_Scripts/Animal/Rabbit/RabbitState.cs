@@ -29,7 +29,7 @@ public class RabbitState : AnimalState
 
     public override void FixedUpdateNetwork()
     { 
-        base.FixedUpdateNetwork();
+        base.FixedUpdateNetwork(); 
     }
 
     public override void Exit()

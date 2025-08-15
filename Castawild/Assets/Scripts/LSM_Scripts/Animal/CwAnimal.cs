@@ -27,6 +27,8 @@ public class CwAnimal : CwCharacter
     [Header("Network Info")]
     [Networked][SerializeField] protected float alertTime { set; get; }
     [Networked][SerializeField] protected float attackCooldown { set; get; }
+    [Networked][SerializeField] public bool IsDead { set; get; } // 동물 사망 여부
+    public GameObject AnimalCopse; // 토끼 시체
 
     #endregion
 
@@ -131,9 +133,15 @@ public class CwAnimal : CwCharacter
         }
     }
 
+    public override void Init()
+    { 
+    }
+
     protected override void Awake()
     {
         AddrPath = "Assets/Scriptable Objects/Default Animal Data.asset";
+        if (AnimalCopse != null)
+            AnimalCopse.SetActive(false);
     }
 
     protected override async void Start()

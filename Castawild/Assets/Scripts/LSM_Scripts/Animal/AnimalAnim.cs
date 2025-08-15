@@ -1,6 +1,8 @@
 using Fusion;
+using System.Collections;
 using UnityEngine; 
 using UnityEngine.AI;
+using static RabbitAnim;
 
 /// <summary>
 /// 호스트에서 AI FSM을 관리하고,
@@ -9,8 +11,7 @@ using UnityEngine.AI;
 public class AnimalAnim : NetworkBehaviour
 {
     #region Components  
-    public Animator anim { get; private set; }
-    public Rigidbody rb { get; private set; } 
+    public Animator anim { get; private set; } 
     public NavMeshAgent agent;
     public bool IdleMoveing { set; get; } = false; // 유휴 상태 이동 여부
     #endregion 
@@ -20,16 +21,15 @@ public class AnimalAnim : NetworkBehaviour
     public CwAnimal animalObject { get; private set; } // 동물의 속성을 관리하는 객체    
     #endregion 
 
-    protected virtual void Awake() 
+    protected virtual void Awake()
     {
-        anim = GetComponent<Animator>();
-        rb = GetComponentInParent<Rigidbody>();
+        anim = GetComponent<Animator>(); 
         agent = GetComponent<NavMeshAgent>();
 
+        // 플레이어의 속성을 관리하는 객체 생성
+        animalObject = GetComponentInParent<CwAnimal>(); 
         // 상태 머신 인스턴스 생성
-        stateMachine = new AnimalStateMachine();
-        animalObject = GetComponentInParent<CwAnimal>(); // 플레이어의 속성을 관리하는 객체 생성
-        
+        stateMachine = new AnimalStateMachine(); 
     }
 
     protected virtual void Start()
@@ -39,10 +39,14 @@ public class AnimalAnim : NetworkBehaviour
     }
     public override void FixedUpdateNetwork()
     {
-        if(Object.HasStateAuthority)
+        if(Object.HasStateAuthority && stateMachine.currentState != null)
         {
             stateMachine.currentState.FixedUpdateNetwork();
-        }
-        
-    }  
+        } 
+    }
+
+    public override void Spawned()
+    {
+        base.Spawned();
+    } 
 }
