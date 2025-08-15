@@ -20,6 +20,11 @@ public class Campfire : InteractableObject
 
     private void Update()
     {
+        if (player == null) return;
+        if (!Object.HasStateAuthority && player.HasInputAuthority) //클라이언트에서
+        {
+            inventoryData.RPC_SetCanOpen(this, true);
+        }
     }
 
     public override bool CanInteract() => CanOpen;

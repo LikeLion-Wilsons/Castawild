@@ -6152,6 +6152,7 @@ MonoBehaviour:
   selectedFuelIndex: 0
   fuelList: 0000000003000000
   fuelIcon: {fileID: 3151229963410230231}
+  currentTime: 0
   timerText: {fileID: 7339295588658695096}
   arrowImage: {fileID: 5703418051615520898}
 --- !u!1 &4336805274880291625
@@ -7979,7 +7980,7 @@ MonoBehaviour:
   ingredientPanel: {fileID: 2321720959767342005, guid: 88bf39e7599b99e45b766eb671909b89, type: 3}
   itemName: {fileID: 384748910613495637}
   itemDesc: {fileID: 6731598543139169745}
-  selectedItem: {fileID: 0}
+  selectedItem: {fileID: 11400000, guid: 3316bda3e115e114db5a2827f728802e, type: 2}
   descPanel: {fileID: 3500878525303188716}
   craftButton: {fileID: 7220333180158895844}
   inventoryData: {fileID: 0}

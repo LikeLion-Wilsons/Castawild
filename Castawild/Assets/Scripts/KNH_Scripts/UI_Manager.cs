@@ -1,3 +1,4 @@
+using Fusion;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,6 +18,7 @@ public class UI_Manager : MonoBehaviour
     [Header("상호작용중인 오브젝트")]
     public ChestDataManager currentOpenedChest;
     public GameObject currentCampFire;
+    public PlayerRef playerRef;
 
     public void SetOpenedChest(ChestDataManager chest)
     {

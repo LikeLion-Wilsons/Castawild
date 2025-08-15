@@ -6,6 +6,11 @@ public class DropItem : InteractableObject
     [Networked] private bool canInteract { get; set; } = true;
     public Item item;
 
+    public override void Spawned()
+    {
+
+    }
+
     private void Awake()
     {
         interactableType = InteractableType.Item;
