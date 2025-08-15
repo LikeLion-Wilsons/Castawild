@@ -12,16 +12,16 @@ GameObject:
   - component: {fileID: 6257769848003923705}
   - component: {fileID: 424633515593134592}
   - component: {fileID: 4470281708690755191}
-  - component: {fileID: 5996870927364506238}
   - component: {fileID: 3479888908781244880}
   - component: {fileID: 8967367658928670673}
+  - component: {fileID: 5842502287153985373}
   m_Layer: 7
   m_Name: 402_Torch
   m_TagString: PlayerAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3135374206538331343
 Transform:
   m_ObjectHideFlags: 0
@@ -104,24 +104,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75d608491e0b3104c8add8603597e0da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toolName: Torch
   itemID: 402
+  toolName: Torch
   interactAtt: 0
   durability: 0.1
---- !u!114 &5996870927364506238
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2150556656117040860}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2351bf621323f142bb04057a24d1f9d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  att: 2
-  player: {fileID: 0}
 --- !u!114 &3479888908781244880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,7 +125,7 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 5996870927364506238}
+  - {fileID: 5842502287153985373}
   ForceRemoteRenderTimeframe: 0
 --- !u!65 &8967367658928670673
 BoxCollider:
@@ -162,6 +148,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.1, y: 0.26468655, z: 0.1}
   m_Center: {x: -0.008117201, y: 0.3592229, z: 0.0012901718}
+--- !u!114 &5842502287153985373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2150556656117040860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 286e3a70ade040640bd6bc71ad3a263c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  att: 2
 --- !u!1 &4314718568641290842
 GameObject:
   m_ObjectHideFlags: 0

@@ -25,8 +25,7 @@ public class SleepState : MovementBaseState
         movementManager.player.Client_TurnOffInteractiveUI();
         movementManager.player.Client_SleepDeadCameraTarget(true, true);
 
-        if (movementManager.HasStateAuthority)
-            movementManager.Host_Sleep(true);
+        movementManager.Host_Sleep(true);
 
         elapsed = 0f;
     }
@@ -51,12 +50,10 @@ public class SleepState : MovementBaseState
         movementManager.player.Client_TurnOffInteractiveUI();
         movementManager.player.Client_SleepDeadCameraTarget(false, true);
 
-        if (movementManager.HasStateAuthority)
-            movementManager.moveManager.Host_FreezePosition(false);
+        movementManager.moveManager.Host_FreezePosition(false);
 
         movementManager.player.Host_FinishSleep();
 
-        if (movementManager.HasStateAuthority)
-            movementManager.Host_Sleep(false);
+        movementManager.Host_Sleep(false);
     }
 }

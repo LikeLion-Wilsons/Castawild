@@ -82,7 +82,6 @@ public class Player : NetworkBehaviour
     [HideInInspector] public UIStats uiStats;
 
     public event Action<bool> Host_TakeDamagedEvent;
-    public event Action Host_DecreaseToolDuration;
     public event Action ClearCup;
 
     public Coroutine fallingCoroutine;
@@ -187,44 +186,6 @@ public class Player : NetworkBehaviour
         {
             if (!IsCooling && (!dayNightManager.isNightTime || (dayNightManager.isNightTime && isNearFire >= 1)))
                 Temperature += temperatureDecreaseRate * Runner.DeltaTime;
-        }
-    }
-
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!HasStateAuthority)
-            return;
-
-        // 플레이어도구에 맞았을 때
-        if (CanPVP && other.TryGetComponent<AttackObject>(out AttackObject attackObject))
-        {
-            if (other.GetComponent<ThrowObject>() != null)
-                return;
-
-            SoundManager.Instance.PlayGlobalSound3D(Sound.Player_Attack, transform.position);
-
-            Host_TakeDamaged(true, attackObject.Att);
-
-            attackObject.player.Host_DecreaseToolDuration?.Invoke();
-            attackObject.player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(attackObject.Att);
-        }
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (!HasStateAuthority)
-            return;
-
-        // 플레이어 throw에 맞았을 때
-        if (CanPVP && collision.gameObject.TryGetComponent<ThrowObject>(out ThrowObject throwObject))
-        {
-            if (throwObject.canAttack)
-            {
-                Host_TakeDamaged(true, throwObject.Att);
-                throwObject.canAttack = false;
-                throwObject.player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(throwObject.Att);
-            }
         }
     }
 

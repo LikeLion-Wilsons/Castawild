@@ -19,8 +19,6 @@ public class AimState : ToolBaseState
         if (toolStateManager.flagManager.IsRunning)
             toolStateManager.movementManager.Host_ChangeState(MovementState.Walk);
 
-        toolStateManager.RPC_ApplySetAimCameraAndUI(true);
-
         if (toolStateManager.CurrentToolType == ToolType.Bow)
         {
             toolStateManager.toolManager.RPC_NotifySetBowPos(true);
@@ -29,7 +27,10 @@ public class AimState : ToolBaseState
         }
 
         if (toolStateManager.HasInputAuthority)
+        {
             toolStateManager.interactUI.ActiveCrosshair(true);
+            toolStateManager.Client_SetAimCameraAndUI(true);
+        }
 
         toolStateManager.flagManager.Set(PlayerFlags.Aim);
     }
