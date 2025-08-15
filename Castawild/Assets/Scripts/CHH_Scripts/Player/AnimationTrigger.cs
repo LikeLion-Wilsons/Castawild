@@ -75,9 +75,19 @@ public class AnimationTrigger : MonoBehaviour
             toolStateManager.player.Host_RestoreStatFromFood();
     }
 
+    public void PlayEatSound()
+    {
+        if (toolStateManager.HasInputAuthority)
+            SoundManager.Instance.PlayLocalSound3D(toolStateManager.Object.InputAuthority, Sound.Player_Eat, transform.position);
+    }
     public void PlayDrinkSound()
     {
         if (toolStateManager.HasInputAuthority)
             SoundManager.Instance.PlayLocalSound3D(toolStateManager.Object.InputAuthority, Sound.Player_Drink, transform.position);
+    }
+
+    public void PlayWalkinSound()
+    {
+
     }
 }
