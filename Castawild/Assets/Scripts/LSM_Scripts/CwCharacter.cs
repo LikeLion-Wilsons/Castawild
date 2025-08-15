@@ -35,12 +35,7 @@ public abstract class CwCharacter : NetworkBehaviour
     protected virtual float MaxHp
     {
         get => maxHp;
-        set
-        {
-            maxHp = value;
-            if (currentHp > maxHp)
-                currentHp = value;
-        }
+        set => maxHp = value;
     }
 
     ///<summary>
@@ -79,6 +74,11 @@ public abstract class CwCharacter : NetworkBehaviour
     }
     #endregion
 
+    public virtual void Init()
+    {
+
+    } 
+
     /// <summary>    
     /// 최초 생성시 데이터 동기화 함수 
     /// </summary>   
@@ -90,11 +90,11 @@ public abstract class CwCharacter : NetworkBehaviour
         Attack = data.attack;
         MoveSpeed = data.moveSpeed;
 
-        //호스트면 현재 체력을 최대 체력으로
-        if(Object.HasStateAuthority)
+        // 호스트에서만 현재 체력을 최대 체력으로 초기화
+        /*if (Object.HasStateAuthority)
         {
             CurrentHp = MaxHp;
-        } 
+        }*/
     } 
     protected virtual void Awake()
     { 
@@ -107,7 +107,7 @@ public abstract class CwCharacter : NetworkBehaviour
         await handle.Task;
 
         if (handle.Status == AsyncOperationStatus.Succeeded)
-        {
+        { 
             Initialize(handle.Result);
 
             // 로딩 후 Addressables 해제
@@ -140,7 +140,7 @@ public abstract class CwCharacter : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     protected virtual void RPC_TakeDamage(float damage)
     {
-        TakeDamage(damage);
+        ApplyDamage(damage);
     }
 
     protected void ApplyDamage(float damage)
@@ -165,4 +165,13 @@ public abstract class CwCharacter : NetworkBehaviour
     /// 상태이상 효과 메서드
     /// </summary>
     protected abstract void StatusEffect();
+
+    public override void Spawned()
+    {
+        if (Object.HasStateAuthority)
+        {
+            CurrentHp = MaxHp;
+        }
+    }   
+
 }

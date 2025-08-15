@@ -28,7 +28,8 @@ public class CwRabbit : CwAnimal
     protected override void Awake()
     {
         AddrPath = "Assets/Scriptable Objects/Rabbit Data.asset";
-        homeCenter = transform.position; 
+        if (homeCenter != null)
+            homeCenter = transform.position;      
     }
 
     protected override async void Start()
@@ -55,7 +56,7 @@ public class CwRabbit : CwAnimal
 
     protected override void Die()
     {
-        rabbitAnim.stateMachine.ChangeState(rabbitAnim.deathState);
+        rabbitAnim.ChangeRabbitState(RabbitAnim.RabbitState.Death);
     }
 
     protected override void StatusEffect()

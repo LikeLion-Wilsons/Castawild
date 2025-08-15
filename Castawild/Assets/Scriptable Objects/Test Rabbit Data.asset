@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 16e65e7c1da5b0647b0f48df3b4c76ff, type: 3}
-  m_Name: Rabbit Data
+  m_Name: Test Rabbit Data
   m_EditorClassIdentifier: 
-  characterName: Rabbit
-  maxHp: 1
-  currentHp: 1
+  characterName: Test_Rabbit
+  maxHp: 1000
+  currentHp: 1000
   armor: 1
   attack: 1
-  moveSpeed: 3
+  moveSpeed: 1
   maxDetectionRadius: 10
   minDetectionRadius: 5
   attackRange: 0
