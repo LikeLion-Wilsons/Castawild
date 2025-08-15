@@ -2,6 +2,7 @@ using Fusion;
 using System;
 using System.Collections;
 using Test;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -96,7 +97,7 @@ public class Player : NetworkBehaviour
             return;
         // 테스트용
         if (Input.GetKeyDown(KeyCode.K))
-            Host_TakeDamage(true, 10);
+            Host_TakeDamaged(true, 10);
 
         if (Input.GetKeyDown(KeyCode.H))
         {
@@ -162,7 +163,7 @@ public class Player : NetworkBehaviour
 
         if (Hunger <= 0 || Temperature <= 0)
         {
-            Host_TakeDamage(false, hpDecreaseRate * Runner.DeltaTime);
+            Host_TakeDamaged(false, hpDecreaseRate * Runner.DeltaTime);
             Stamina -= staminaHungerDecreaseRate * Runner.DeltaTime;
         }
         else if (Hunger > 0)
@@ -195,13 +196,15 @@ public class Player : NetworkBehaviour
         if (!HasStateAuthority)
             return;
 
-        // 플레이어 공격
+        // 플레이어도구에 맞았을 때
         if (CanPVP && other.TryGetComponent<AttackObject>(out AttackObject attackObject))
         {
             if (other.GetComponent<ThrowObject>() != null)
                 return;
 
-            Host_TakeDamage(true, attackObject.Att);
+            SoundManager.Instance.PlayGlobalSound3D(Sound.Player_Attack, transform.position);
+
+            Host_TakeDamaged(true, attackObject.Att);
 
             attackObject.player.Host_DecreaseToolDuration?.Invoke();
             attackObject.player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(attackObject.Att);
@@ -213,11 +216,12 @@ public class Player : NetworkBehaviour
         if (!HasStateAuthority)
             return;
 
+        // 플레이어 throw에 맞았을 때
         if (CanPVP && collision.gameObject.TryGetComponent<ThrowObject>(out ThrowObject throwObject))
         {
             if (throwObject.canAttack)
             {
-                Host_TakeDamage(true, throwObject.Att);
+                Host_TakeDamaged(true, throwObject.Att);
                 throwObject.canAttack = false;
                 throwObject.player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(throwObject.Att);
             }
@@ -308,7 +312,7 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// 플레이어 공격을 받았을 때 호출
     /// </summary>
-    public void Host_TakeDamage(bool isAttack, float att)
+    public void Host_TakeDamaged(bool isAttack, float att)
     {
         if (!HasStateAuthority || Hp <= 0)
             return;
@@ -316,6 +320,7 @@ public class Player : NetworkBehaviour
 
         if (Hp <= 0)
         {
+            SoundManager.Instance.PlayLocalSound3D(Object.InputAuthority, Sound.Player_Dead, transform.position);
             flagManager.Set(PlayerFlags.Death);
             Host_TakeDamagedEvent?.Invoke(true);
             return;
@@ -326,6 +331,8 @@ public class Player : NetworkBehaviour
 
             if (isAttack)
             {
+                PlayerTakeDamagedSound();
+
                 RPC_ApplyPlayDamagedEffectAnim();
                 RPC_NotifyPlayDamagedAnim();
 
@@ -335,6 +342,13 @@ public class Player : NetworkBehaviour
                     RPC_ApplyShakeCamera(transform.right, 0.3f);
             }
         }
+    }
+
+    private void PlayerTakeDamagedSound()
+    {
+        int randomNumber = UnityEngine.Random.Range(0, 3);
+        Sound[] damageSounds = { Sound.Player_Damaged1, Sound.Player_Damaged2, Sound.Player_Damaged3 };
+        SoundManager.Instance.PlayLocalSound3D(Object.InputAuthority, damageSounds[randomNumber], transform.position);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]

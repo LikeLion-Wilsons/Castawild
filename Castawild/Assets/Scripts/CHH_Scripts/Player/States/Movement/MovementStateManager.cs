@@ -201,15 +201,13 @@ public class MovementStateManager : BaseStateManager
                 break;
         }
 
-        if (moveManager.All_CanMoving())
+        if (!moveManager.Grounded_Physics)
         {
-            // 이 부분 없으면 착지할 때 애니메이션 전환 이상함
-            if (input.moveValue != Vector2.zero)
+            if (input.IsDown(PlayerNetworkInputData.moveInput) && All_CanRun())
             {
+                anim.SetBool("Walking", true);
                 if (input.IsDown(PlayerNetworkInputData.sprintInput) && All_CanRun())
                     anim.SetBool("Running", true);
-                else
-                    anim.SetBool("Walking", true);
             }
         }
         anim.SetBool("Falling", !moveManager.Grounded);
@@ -243,7 +241,8 @@ public class MovementStateManager : BaseStateManager
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestChangeGatherState(PlayerRef playerRef)
     {
-        Host_ChangeState(MovementState.Gather);
+        if (currentState != gatherState)
+            Host_ChangeState(MovementState.Gather);
     }
 
     /// <summary>
@@ -254,6 +253,8 @@ public class MovementStateManager : BaseStateManager
     {
         Host_ChangeState(MovementState.Idle);
         player.Host_RevivedStatus();
+
+        SoundManager.Instance.PlayLocalSound3D(Object.InputAuthority, Sound.Player_Revive, transform.position);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
