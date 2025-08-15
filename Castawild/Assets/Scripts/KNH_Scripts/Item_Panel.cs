@@ -1,13 +1,15 @@
+using Fusion;
 using System;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Item_Panel :
-    MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
+    NetworkBehaviour, IPointerEnterHandler, IPointerExitHandler,
     IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
     public Item item;
@@ -157,6 +159,9 @@ public class Item_Panel :
         originalParent = transform.parent;
         if (item.itemID == -1) return;
 
+        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
+        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_Scroll, inventoryData.player.transform.position);
+
         inventoryData.canvasHolder.isDragging = true;
         //우클릭 여부 저장
         isRightMouseDrag = Input.GetMouseButton(1);
@@ -216,6 +221,9 @@ public class Item_Panel :
     {
         if (!isInveontoryOpen) return;
         inventoryData.canvasHolder.isDragging = false;
+
+        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
+        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_ItemDrop, inventoryData.player.transform.position);
 
         // 드래그 종료 위치 기준으로 레이캐스트
         List<RaycastResult> results = new List<RaycastResult>();
@@ -344,7 +352,6 @@ public class Item_Panel :
                     uiInventory.SetItemList();
                     return;
                 }
-
             }
             //위치 교환
             inventoryData.RPC_SwapItems(indexA, indexB);

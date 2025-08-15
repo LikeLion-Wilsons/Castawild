@@ -2,6 +2,7 @@ using Fusion;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UITable : UIPart
@@ -51,6 +52,9 @@ public class UITable : UIPart
 
         if (canCreate)
         {
+            var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
+            SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_ButtonClick, inventoryData.player.transform.position);
+
             inventoryData.RPC_GetItem(selectedItem.itemID, 1);
             for(int i=0;i< selectedItem.ingredient.Count; i++)
             {

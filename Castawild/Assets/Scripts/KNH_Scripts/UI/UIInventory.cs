@@ -57,38 +57,6 @@ public class UIInventory : UIPart
         }
     }
 
-    public void SwapItems(int indexA, int indexB)
-    {
-        var items = inventoryData.itemList;
-
-        if (indexA >= items.Count && indexB >= items.Count) return;
-
-        // 슬롯 수 부족할 경우 확장
-        while (items.Count <= Mathf.Max(indexA, indexB))
-        {
-            var item = new Item { itemID = -1, count = 0, durability = 1 };
-            items.Add(item);
-
-            inventoryData.RPC_SetItem(indexB, item);
-            //items.Add(null);
-        }
-
-        var temp = items[indexA];
-        items[indexA] = items[indexB];
-        items[indexB] = temp;
-
-        var tempA = items[indexA];
-        var tempB = items[indexB];
-
-        // 교환 후 Set 호출로 Fusion에 알려줌
-        inventoryData.RPC_SetItem(indexA, tempA);
-        inventoryData.RPC_SetItem(indexB, tempB);
-        //items.Set(indexA, tempA);
-        //items.Set(indexB, tempB);
-
-        SetItemList();
-    }
-
     public void SetItemClickAnimation(Item_Panel panel)
     {
         if (!inventoryData.canvasHolder.IsInventoryOpen()) return;

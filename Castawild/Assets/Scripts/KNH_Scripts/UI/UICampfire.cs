@@ -2,6 +2,7 @@ using Fusion;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UICampfire : UIPart
@@ -15,7 +16,7 @@ public class UICampfire : UIPart
     public Item_Panel cookPot;
     public Item_Panel result;
 
-    [SerializeField] GameObject fireImage;
+    public GameObject fireImage;
     [Header("연료")]
     [SerializeField] int selectedFuelIndex = 0;//선택된 연료
     [SerializeField] List<int> fuelList = new List<int>();//연료로 사용 가능한 아이템 ID 리스트
@@ -55,21 +56,17 @@ public class UICampfire : UIPart
             arrowImage.fillAmount = 0f;
         }
         //현재 연료 남은 시간
-
-        if (netWorkCampfire.isFire)
+        if(netWorkCampfire.fireTime < 0)
         {
-            if (currentTime > 0)
-            {
-            }
-            else
-            {
-                campFire.SetFireActive(false);
-                fireImage.SetActive(false);
-            }
+            fireImage.SetActive(false);
         }
     }
     public void AddFuelButton()
     {
+        //사운드 재생
+        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
+        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_ButtonClick, campFire.player.transform.position);
+
         inventoryData = uiManager.player.GetComponent<InventoryDataManager>();
         int fuelCount = inventoryData.GetItemCount(fuelList[selectedFuelIndex]);//나뭇가지 개수 확인
 
@@ -89,6 +86,9 @@ public class UICampfire : UIPart
     }
     public void LeftButtonClick()
     {
+        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
+        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_ButtonClick, campFire.player.transform.position);
+
         if (selectedFuelIndex <= 0) return;
         selectedFuelIndex--;
         SetFuelIcon();
@@ -96,6 +96,8 @@ public class UICampfire : UIPart
 
     public void RightButtonClick()
     {
+        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
+        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_ButtonClick, campFire.player.transform.position);
         if (selectedFuelIndex + 1 >= fuelList.Count) return;
         selectedFuelIndex++;
         SetFuelIcon();
@@ -118,5 +120,10 @@ public class UICampfire : UIPart
         double elapsed = totalDuration - timeLeft;
         float progress = Mathf.Clamp01((float)(elapsed / totalDuration));
         arrowImage.fillAmount = progress;
+    }
+
+    public void SetFireIcon(bool tof)
+    {
+        fireImage.SetActive(tof);
     }
 }
