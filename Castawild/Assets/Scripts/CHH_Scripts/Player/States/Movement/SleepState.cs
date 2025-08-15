@@ -45,6 +45,7 @@ public class SleepState : MovementBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
         movementManager.anim.SetTrigger("WakeUp");
         elapsed = 0f;
         movementManager.player.Client_TurnOffInteractiveUI();

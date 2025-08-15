@@ -54,6 +54,7 @@ public class RunState : MovementBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
         movementManager.flagManager.Clear(PlayerFlags.Run);
 
         if (movementManager.HasInputAuthority)

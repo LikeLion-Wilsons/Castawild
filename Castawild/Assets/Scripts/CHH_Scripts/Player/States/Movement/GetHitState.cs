@@ -22,7 +22,7 @@ public class GetHitState : MovementBaseState
 
     public override void ExitState()
     {
-        movementManager.IsAnimationFinished = false;
+        base.ExitState();
         movementManager.moveManager.Host_FreezePosition(false);
     }
 }

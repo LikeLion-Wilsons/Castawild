@@ -85,12 +85,12 @@ public class PlayerToolManager : NetworkBehaviour
             return;
 
         // 동물 공격
-        if (other.CompareTag("Animal"))
-        {
-            SoundManager.Instance.PlayGlobalSound3D(Sound.Player_Attack, transform.position);
-            CwAnimal animal = GetComponentInParent<CwAnimal>();
-            animal.TakeDamage(All_GetToolAtt());
-        }
+        //if (other.CompareTag("Animal"))
+        //{
+        //    SoundManager.Instance.PlayGlobalSound3D(Sound.Player_Attack, transform.position);
+        //    CwAnimal animal = GetComponentInParent<CwAnimal>();
+        //    animal.TakeDamage(All_GetToolAtt());
+        //}
     }
 
     private void InitTools()

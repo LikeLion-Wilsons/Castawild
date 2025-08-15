@@ -243,7 +243,8 @@ public class MovementStateManager : BaseStateManager
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestChangeGatherState(PlayerRef playerRef)
     {
-        Host_ChangeState(MovementState.Gather);
+        if (currentState != gatherState)
+            Host_ChangeState(MovementState.Gather);
     }
 
     /// <summary>

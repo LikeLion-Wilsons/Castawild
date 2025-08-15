@@ -29,6 +29,7 @@ public class DeathState : MovementBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
         movementManager.flagManager.Clear(PlayerFlags.Death);
         if (movementManager.HasInputAuthority)
             movementManager.player.Client_SleepDeadCameraTarget(false, false);

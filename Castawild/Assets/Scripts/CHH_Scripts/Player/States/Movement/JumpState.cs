@@ -40,6 +40,7 @@ public class JumpState : MovementBaseState
 
     public override void ExitState()
     {
+        base.ExitState();
         movementManager.flagManager.Clear(PlayerFlags.Jump);
         movementManager.CanLanding = false;
     }

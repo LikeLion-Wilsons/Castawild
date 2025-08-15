@@ -6,4 +6,8 @@ public abstract class MovementBaseState : BaseState
     {
         movementManager = _movementManager;
     }
+    public override void ExitState()
+    {
+        movementManager.IsAnimationFinished = false;
+    }
 }
