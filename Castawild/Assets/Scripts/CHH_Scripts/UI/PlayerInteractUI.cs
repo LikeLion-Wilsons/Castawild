@@ -53,18 +53,17 @@ public class PlayerInteractUI : MonoBehaviour
         originalText = interactableText.text;
     }
 
-    void Start()
+    private void OnEnable()
     {
-        interactManager.Hit += OnTargetDamaged;
         UIPart.openUI += Client_TurnOffInteractiveUI;
+        interactManager.Hit += OnTargetDamaged;
     }
 
-    void OnDestroy()
+    private void OnDisable()
     {
-        interactManager.Hit -= OnTargetDamaged;
         UIPart.openUI -= Client_TurnOffInteractiveUI;
+        interactManager.Hit -= OnTargetDamaged;
     }
-
     private void OnTargetDamaged(int damage) => _hitNumber.OnHit(damage);
 
     private void Update()

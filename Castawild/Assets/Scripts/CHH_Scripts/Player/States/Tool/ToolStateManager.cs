@@ -1,6 +1,7 @@
 using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 
 
@@ -75,16 +76,19 @@ public class ToolStateManager : BaseStateManager
             player.Host_TakeDamagedEvent -= ChangeToDeathState;
             player.Host_TakeDamagedEvent += ChangeToDeathState;
 
-            player.Host_DecreaseToolDuration -= SetDecreaseToolDuration;
             player.Host_DecreaseToolDuration += SetDecreaseToolDuration;
         }
 
-        toolManager.Host_ChangeSelectedItem -= All_SetCurrentHoldItem;
         toolManager.Host_ChangeSelectedItem += All_SetCurrentHoldItem;
 
         CurrentToolType = ToolType.Fist;
         Host_ChangeState(ToolState.Idle);
         OnCurrentToolStateChanged();
+    }
+
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        toolManager.Host_ChangeSelectedItem -= All_SetCurrentHoldItem;
     }
 
     private void ChangeToDeathState(bool isDeath) => Host_ChangeState(ToolState.Idle);
