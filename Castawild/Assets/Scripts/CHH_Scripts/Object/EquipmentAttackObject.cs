@@ -23,7 +23,8 @@ public class EquipmentAttackObject : AttackObject
         if (!HasStateAuthority)
             return;
 
-        if (other.transform.parent.CompareTag("Player"))
+        Player player = other.GetComponentInParent<Player>();
+        if (player != null)
         {
             other.transform.parent.GetComponent<Player>().Host_TakeDamaged(true, Att);
             other.transform.parent.GetComponent<ToolStateManager>().DecreaseToolDuration = true;
