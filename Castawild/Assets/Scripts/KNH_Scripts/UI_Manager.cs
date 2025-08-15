@@ -64,7 +64,6 @@ public class UI_Manager : MonoBehaviour
         {
             uiParts.Add(part.name, part);
         }
-
         // 수정한 부분
         CloseAllUI();
     }

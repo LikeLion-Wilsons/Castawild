@@ -15,7 +15,7 @@ public class UICampfire : UIPart
     public Item_Panel cookPot;
     public Item_Panel result;
 
-    [SerializeField] GameObject fireImage;
+    public GameObject fireImage;
     [Header("연료")]
     [SerializeField] int selectedFuelIndex = 0;//선택된 연료
     [SerializeField] List<int> fuelList = new List<int>();//연료로 사용 가능한 아이템 ID 리스트
@@ -55,17 +55,9 @@ public class UICampfire : UIPart
             arrowImage.fillAmount = 0f;
         }
         //현재 연료 남은 시간
-
-        if (netWorkCampfire.isFire)
+        if(netWorkCampfire.fireTime < 0)
         {
-            if (currentTime > 0)
-            {
-            }
-            else
-            {
-                campFire.SetFireActive(false);
-                fireImage.SetActive(false);
-            }
+            fireImage.SetActive(false);
         }
     }
     public void AddFuelButton()
@@ -118,5 +110,10 @@ public class UICampfire : UIPart
         double elapsed = totalDuration - timeLeft;
         float progress = Mathf.Clamp01((float)(elapsed / totalDuration));
         arrowImage.fillAmount = progress;
+    }
+
+    public void SetFireIcon(bool tof)
+    {
+        fireImage.SetActive(tof);
     }
 }
