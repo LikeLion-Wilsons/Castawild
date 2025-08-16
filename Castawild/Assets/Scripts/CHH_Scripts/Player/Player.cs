@@ -466,7 +466,6 @@ public class Player : NetworkBehaviour
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_RequestSetNearFire(float nearFire) => isNearFire += nearFire;
 
-
     // 임시 
     [HideInInspector] public ToolStateManager toolStateManager;
 
