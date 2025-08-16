@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8660601662393322691}
   - component: {fileID: 2933638908653464460}
   - component: {fileID: 2619672031418387209}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RABBIT_Corpse
   m_TagString: Untagged
   m_Icon: {fileID: 0}
