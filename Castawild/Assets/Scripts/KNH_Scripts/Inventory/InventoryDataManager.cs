@@ -471,8 +471,9 @@ public class InventoryDataManager : NetworkBehaviour
         //indexB : 이동 전 슬롯
         if (indexA >= itemList.Count || indexB >= itemList.Count) return;
         //모닥불에는 생고기, 바닷물이 담긴 컵만 이동 가능 
-        if (indexA == 45 && itemList[indexB].itemID != 6) return;
-        if (indexB == 45 && itemList[indexA].itemID != 6) return;
+        if (indexA == 45 && itemList[indexB].itemID != 6 && itemList[indexB].itemID != 203) return;
+        if (indexB == 45 && itemList[indexA].itemID != 6 && itemList[indexB].itemID != 203) return;
+
         if (indexA == 46) return;//result슬롯으로는 이동 불가능
         if (indexA > 46 && itemList[indexB].GetData().type != Item_Type.Equipment) return; // 장비 슬롯으로는 이동 불가능
         if(indexA == 47 && itemList[indexB].GetData().equip_type != Equipment_Type.Helmet) return; 
@@ -492,7 +493,9 @@ public class InventoryDataManager : NetworkBehaviour
             itemList.Add(item);
         }
 
+        //요리 시간 추가
         if (indexA == 45) cookStart?.Invoke(10);
+
         //교환
         var tempA = itemList[indexA];
         var tempB = itemList[indexB];

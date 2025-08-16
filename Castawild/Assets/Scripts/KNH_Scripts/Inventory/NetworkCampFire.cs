@@ -82,7 +82,6 @@ public class NetworkCampFire : NetworkBehaviour
                     cookTimer = -1;
                     RPC_SetCookingProgressBar(0);
                     RPC_Cooking();
-                    Debug.Log("요리 완료!");
                 }
                 else if (!canCook) { RPC_SetCookingProgressBar(0); }
             }
@@ -97,35 +96,19 @@ public class NetworkCampFire : NetworkBehaviour
 
     private void Cook()
     {
-        if (!campfire.CanOpen)
+        Debug.Log("요리 완성!");
+
+        int GetCookedID(int rawID)
         {
-            if (inventoryData == null) return;
-            Item item = new Item
+            return rawID switch
             {
-                itemID = inventoryData.itemList[45].itemID,
-                count = inventoryData.itemList[45].count - 1
+                6 => 7,      // 생고기 → 구운 고기
+                203 => 204,  // 203 → 204
+                _ => rawID   // 그 외는 그대로
             };
-            cookPotItem = item;
-            inventoryData.RPC_SetItem(45, item); // 요리 재료 감소
-
-            Item result = new Item
-            {
-                itemID = 7,//구운 고기
-                count = inventoryData.itemList[46].count + 1
-            };
-            resultItem = result;
-            inventoryData.RPC_SetItem(46, result); // 요리 재료 감소
-            Debug.Log("요리 완료! " + inventoryData.itemList[45].count + "개 남음");
-
-            //인벤토리 -> 모닥불
-            //inventoryData.RPC_SetItemFromCampfire(this);
-            inventoryData.RPC_UpdateInventoryUI();
-            //재료가 남아 있으면
-            if (inventoryData.itemList[45].count > 0)
-                RPC_AddCookTime(10); // 요리 시간 추가
-            else canCook = false;
         }
-        else
+
+        if (campfire.CanOpen)//닫혀있을 때
         {
             Item item = new Item
             {
@@ -136,17 +119,32 @@ public class NetworkCampFire : NetworkBehaviour
 
             Item result = new Item
             {
-                itemID = 7,//구운 고기
+                itemID = GetCookedID(cookPotItem.itemID),
                 count = resultItem.count + 1
             };
             resultItem = result;
-            Debug.Log("요리 완료! " + cookPotItem.count + "개 남음");
-            if (cookPotItem.count > 0)
-                RPC_AddCookTime(10); // 요리 시간 추가
+            if (cookPotItem.count > 0) RPC_AddCookTime(10);
             else canCook = false;
         }
+        else//열려있을 때
+        {
+            Item item = new Item
+            {
+                itemID = inventoryData.itemList[45].itemID,
+                count = inventoryData.itemList[45].count - 1
+            };
+            inventoryData.RPC_SetItem(45, item);
 
-
+            Item result = new Item
+            {
+                itemID = GetCookedID(inventoryData.itemList[45].itemID),
+                count = inventoryData.itemList[46].count + 1
+            };
+            inventoryData.RPC_SetItem(46, result);
+            inventoryData.RPC_UpdateInventoryUI();
+            if (inventoryData.itemList[45].count > 0) RPC_AddCookTime(10);
+            else canCook = false;
+        }
     }
 
 
@@ -173,10 +171,11 @@ public class NetworkCampFire : NetworkBehaviour
     {
         if (cookTimer > 0)
             return; // 이미 요리 중이면 추가하지 않음
+        Debug.Log("AddCookTime: " + time);  
         cookTimer += time;
         canCook = true;
         //인벤토리 -> 모닥불
-        inventoryData.RPC_RequestStoreToCampfire(this);
+        //inventoryData.RPC_RequestStoreToCampfire(this);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
