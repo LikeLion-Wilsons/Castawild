@@ -21,7 +21,7 @@ public class JumpState : MovementBaseState
 
         movementManager.flagManager.Set(PlayerFlags.Jump);
 
-        SoundManager.Instance.PlayLocalSound3D(movementManager.Object.InputAuthority, Sound.Player_Jump, movementManager.transform.position);
+        movementManager.player.RPC_ApplyPlayLocalSound(Sound.Player_Jump);
     }
 
     public override void UpdateState()

@@ -41,12 +41,20 @@ public class AnimationTrigger : MonoBehaviour
         toolStateManager.CanReceiveInput = false;
     }
 
-    public void Interact() => playercontroller.Client_Interact();
+    public void Interact()
+    {
+        if (player.HasStateAuthority)
+            player.Stamina -= player.staminaUseToolDecrease;
+        playercontroller.Client_Interact();
+    }
 
     public void Gather() => playercontroller.Client_Gather();
 
     public void Throw(int isArrow)
     {
+        if (player.HasStateAuthority)
+            player.Stamina -= player.staminaUseToolDecrease;
+
         toolStateManager.Client_Throw(isArrow);
 
         if (isArrow == 1)

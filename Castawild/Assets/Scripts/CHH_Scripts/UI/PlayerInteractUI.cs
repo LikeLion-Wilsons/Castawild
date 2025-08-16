@@ -1,4 +1,3 @@
-using Fusion;
 using System.Collections;
 using Test.Shoot;
 using TMPro;

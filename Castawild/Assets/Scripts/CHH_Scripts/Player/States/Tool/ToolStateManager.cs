@@ -250,7 +250,8 @@ public class ToolStateManager : BaseStateManager
         if (!HasInputAuthority)
             return;
 
-        SoundManager.Instance.PlayLocalSound3D(Object.InputAuthority, Sound.Player_Shoot, transform.position);
+        player.RPC_ApplyPlayLocalSound(Sound.Player_Revive);
+        player.Client_PlayLocalSound(Sound.Player_Shoot);
 
         if (cameraManager.currentView == ViewType.FirstPerson && toolManager.HasArrow)
             cameraManager.ShakeCamera(transform.right, 0.1f);

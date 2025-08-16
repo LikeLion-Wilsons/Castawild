@@ -1119,6 +1119,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4805541945307918767}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2138306408445769558
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1935791806365269709}
+  m_Layer: 6
+  m_Name: SoundPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 6519382022992737161, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1935791806365269709
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2138306408445769558}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 5.72218}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3917596887802110183}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2344188678965562170
 GameObject:
   m_ObjectHideFlags: 0
@@ -1136,7 +1167,7 @@ GameObject:
   m_Layer: 0
   m_Name: ThirdPersonCam
   m_TagString: Untagged
-  m_Icon: {fileID: 6519382022992737161, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -1148,11 +1179,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2344188678965562170}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.043081306, y: 0.86598206, z: 0.075763606, w: -0.4924216}
-  m_LocalPosition: {x: 8.463285, y: 1.7635182, z: 5.035618}
+  m_LocalRotation: {x: 0.099319726, y: 0.0000000043826143, z: -0.0000000014103804, w: 0.9950556}
+  m_LocalPosition: {x: 0, y: 5.4765735, z: -9.8027115}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1935791806365269709}
   m_Father: {fileID: 1537898097600247738}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1706552347776469061
@@ -1232,7 +1264,7 @@ MonoBehaviour:
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
-    Value: -120.75246
+    Value: 0
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -1242,7 +1274,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: -10
+    Value: 11.4
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
@@ -3417,6 +3449,7 @@ MonoBehaviour:
   - {fileID: -2412737605465488693}
   - {fileID: 5172254778838205249}
   - {fileID: 956674001251302880}
+  - {fileID: 9031955928824126459}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &5000463041039569134
 MonoBehaviour:
@@ -3490,14 +3523,15 @@ MonoBehaviour:
   foodRestoreTime: 5
   currentItemType: 0
   staminaRecoveryRate: 2
-  temperatureReceoveryRate: 1
+  temperatureReceoveryRate: 8
   hpDecreaseRate: 0.5
   staminaHungerDecreaseRate: 3
-  staminaRunDecreaseRate: 1
+  staminaRunDecreaseRate: 10
+  staminaUseToolDecrease: 10
   hungerDecreaseRate: 1
-  thirstDecreaseRate: 1
-  temperatureDecreaseRate: 1
-  thirstSleepDecrease: 10
+  thirstDecreaseRate: 1.5
+  temperatureDecreaseRate: 2.5
+  thirstSleepDecrease: 15
   hungerSleepDecrease: 10
   Host_currentBed: {fileID: 0}
   screenEffect: {fileID: 478434462551621132}
@@ -3510,6 +3544,7 @@ MonoBehaviour:
   isSpawned: 0
   isNearFire: 0
   uiStats: {fileID: 0}
+  soundPosition: {fileID: 1935791806365269709}
   toolStateManager: {fileID: 0}
 --- !u!114 &5489833291580611953
 MonoBehaviour:
@@ -3775,6 +3810,7 @@ MonoBehaviour:
   scrollCooldown: 0.1
   playerUIPrefab: {fileID: 2839189812646824299, guid: e749cc6fe2a853349bb3f6bb330140f7, type: 3}
   UICanvas: {fileID: 0}
+  player: {fileID: 0}
   inventorySlots:
   - {fileID: 0}
   - {fileID: 0}
