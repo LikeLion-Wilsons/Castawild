@@ -17,7 +17,7 @@ public class SleepState : MovementBaseState
         {
             int randomNumber = UnityEngine.Random.Range(0, 1);
             Sound[] SleepSounds = { Sound.Player_Sleep3, Sound.Player_Sleep3 };
-            movementManager.player.RPC_ApplyPlayLocalSound(SleepSounds[randomNumber]);
+            movementManager.player.Client_PlayLocalSound(SleepSounds[randomNumber]);
         }
 
         movementManager.moveManager.Host_FreezePosition(true);
