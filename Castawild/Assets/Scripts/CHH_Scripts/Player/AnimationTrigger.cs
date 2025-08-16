@@ -89,12 +89,12 @@ public class AnimationTrigger : MonoBehaviour
     public void PlayEatSound()
     {
         if (toolStateManager.HasInputAuthority)
-            SoundManager.Instance.PlayLocalSound3D(toolStateManager.Object.InputAuthority, Sound.Player_Eat, transform.position);
+            SoundManager.Instance.PlayLocal2D(Sound.Player_Eat);
     }
     public void PlayDrinkSound()
     {
         if (toolStateManager.HasInputAuthority)
-            SoundManager.Instance.PlayLocalSound3D(toolStateManager.Object.InputAuthority, Sound.Player_Drink, transform.position);
+            SoundManager.Instance.PlayLocal2D(Sound.Player_Drink);
     }
 
     public void PlayWalkinSound()

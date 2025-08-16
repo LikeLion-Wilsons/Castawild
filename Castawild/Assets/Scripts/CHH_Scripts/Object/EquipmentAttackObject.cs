@@ -50,10 +50,10 @@ public class EquipmentAttackObject : AttackObject
         if (att == 0f)
         {
             Sound[] punchSound = { Sound.Player_Punch1, Sound.Player_Punch2 };
-            SoundManager.Instance.PlayGlobalSound3D(punchSound[punchSoundIndex], player.soundPosition.position);
+            SoundManager.Instance.PlayGlobal3D(punchSound[punchSoundIndex], player.soundPosition.position);
             punchSoundIndex = (punchSoundIndex + 1) % 2;
         }
         else
-            SoundManager.Instance.PlayGlobalSound3D(Sound.Player_Attack, player.soundPosition.position);
+            SoundManager.Instance.PlayGlobal3D(Sound.Player_Attack, player.soundPosition.position);
     }
 }
