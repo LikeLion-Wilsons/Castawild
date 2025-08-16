@@ -129,12 +129,15 @@ public sealed class PlayerInteractManager : NetworkBehaviour
                     // 설치가능한 오브젝트
                     if (interactableObject.isPlaceable)
                     {
-                        if (interactableObject.CanInteract()
-                            && input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
+                        if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
                         {
-                            player.inventory.RPC_GetItem(interactableObject.itemIndex, 1);
-                            RPC_DespawnObject(interactableObject.GetComponent<NetworkObject>());
-                            return;
+                            if (interactableObject.CanInteract())
+                            {
+                                player.inventory.RPC_GetItem(interactableObject.itemIndex, 1);
+                                interactableObject.GetComponent<Collider>().enabled = false;
+                                RPC_DespawnObject(interactableObject.GetComponent<NetworkObject>());
+                                return;
+                            }
                         }
                     }
 
