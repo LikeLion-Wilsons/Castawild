@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8660601662393322691}
   - component: {fileID: 2933638908653464460}
   - component: {fileID: 2619672031418387209}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RABBIT_Corpse
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50,12 +50,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0.5, z: 0}
+  m_Size: {x: 0.4, y: 0.4, z: 0.4}
+  m_Center: {x: 0, y: 0.2, z: 0}
 --- !u!114 &8660601662393322691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -602,6 +602,7 @@ MonoBehaviour:
   _alertTime: 0
   _attackCooldown: 0
   _IsDead: 0
+  AnimalBody: {fileID: 3901364191115706283}
   AnimalCopse: {fileID: 2486409676374766199}
 --- !u!136 &3901364191115706283
 CapsuleCollider:

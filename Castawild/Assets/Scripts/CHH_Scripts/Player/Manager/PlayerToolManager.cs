@@ -74,9 +74,15 @@ public class PlayerToolManager : NetworkBehaviour
             if (currentItemIdx != prevItemIdx)
             {
                 if (prevItemIdx == 402 && currentItemIdx != 402)
+                {
+                    Debug.Log("NearFire 감소");
                     player.isNearFire--;
+                }
                 else if (prevItemIdx != 402 && currentItemIdx == 402)
+                {
+                    Debug.Log("NearFire 증가");
                     player.isNearFire++;
+                }
 
                 prevItemIdx = currentItemIdx;
                 Host_ChangeSelectedItem?.Invoke(currentItemIdx);
@@ -284,11 +290,6 @@ public class PlayerToolManager : NetworkBehaviour
             player.currentItemType = ItemType.Tool;
         else
             player.currentItemType = ItemType.Default;
-
-        if (_currentItemIdx == 402)
-            player.isNearFire++;
-        else
-            player.isNearFire--;
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
@@ -311,12 +312,7 @@ public class PlayerToolManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    private void RPC_RequestChangeItemIdx(int idx)
-    {
-        currentItemIdx = idx;
-        Debug.Log("currentItemIdx : " + currentItemIdx);
-        Debug.Log("prevItemIdx : " + prevItemIdx);
-    }
+    private void RPC_RequestChangeItemIdx(int idx) => currentItemIdx = idx;
 
     private void All_AllToolInActive()
     {

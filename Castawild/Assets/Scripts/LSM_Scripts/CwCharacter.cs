@@ -18,8 +18,7 @@ public abstract class CwCharacter : NetworkBehaviour
     [SerializeField] protected string AddrPath;
 
     [Header("Network Info")]
-    [Networked][SerializeField]
-    protected float currentHp { get; set; } //현재 체력
+    [Networked][SerializeField] protected float currentHp { get; set; } //현재 체력
     #endregion
 
     #region Setters and Getters
@@ -76,8 +75,7 @@ public abstract class CwCharacter : NetworkBehaviour
 
     public virtual void Init()
     {
-
-    } 
+    }   
 
     /// <summary>    
     /// 최초 생성시 데이터 동기화 함수 
@@ -89,12 +87,12 @@ public abstract class CwCharacter : NetworkBehaviour
         Armor = data.armor;
         Attack = data.attack;
         MoveSpeed = data.moveSpeed;
-
-        // 호스트에서만 현재 체력을 최대 체력으로 초기화
-        /*if (Object.HasStateAuthority)
+        if (Object.HasStateAuthority)
         {
             CurrentHp = MaxHp;
-        }*/
+            Debug.Log(CurrentHp);
+        }
+
     } 
     protected virtual void Awake()
     { 
@@ -166,12 +164,5 @@ public abstract class CwCharacter : NetworkBehaviour
     /// </summary>
     protected abstract void StatusEffect();
 
-    public override void Spawned()
-    {
-        if (Object.HasStateAuthority)
-        {
-            CurrentHp = MaxHp;
-        }
-    }   
 
 }

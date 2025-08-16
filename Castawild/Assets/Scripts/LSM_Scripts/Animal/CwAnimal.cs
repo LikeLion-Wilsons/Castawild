@@ -28,7 +28,9 @@ public class CwAnimal : CwCharacter
     [Networked][SerializeField] protected float alertTime { set; get; }
     [Networked][SerializeField] protected float attackCooldown { set; get; }
     [Networked][SerializeField] public bool IsDead { set; get; } // 동물 사망 여부
-    public GameObject AnimalCopse; // 토끼 시체
+
+    public Collider AnimalBody; // 동물 몸
+    public GameObject AnimalCopse; // 동물 시체 
 
     #endregion
 
@@ -134,7 +136,8 @@ public class CwAnimal : CwCharacter
     }
 
     public override void Init()
-    { 
+    {
+        base.Init();
     }
 
     protected override void Awake()
@@ -229,7 +232,7 @@ public class CwAnimal : CwCharacter
 
         // [최소 이동 범위] Gizmos
         Gizmos.color = Color.gray;
-        Gizmos.DrawSphere(transform.position, minDetectionRadius);
+        Gizmos.DrawWireSphere(transform.position, minDetectionRadius);
 
         // [최대 이동 범위] Gizmos
         Gizmos.color = Color.white;

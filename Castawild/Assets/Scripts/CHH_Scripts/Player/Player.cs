@@ -76,7 +76,7 @@ public class Player : NetworkBehaviour
     [HideInInspector] public InventoryDataManager inventory;
     [HideInInspector] public bool isSpawned;
 
-    [HideInInspector] public float isNearFire = 0f;
+    public float isNearFire = 0f;
     [HideInInspector] public UIStats uiStats;
 
     public event Action<bool> Host_TakeDamagedEvent;
@@ -179,7 +179,7 @@ public class Player : NetworkBehaviour
         if (dayNightManager == null)
             return;
 
-        if ((IsCooling || dayNightManager.isNightTime && (isNearFire < 2f)) && Temperature > 0f)
+        if ((IsCooling || dayNightManager.isNightTime && (isNearFire < 1f)) && Temperature > 0f)
             Temperature -= temperatureDecreaseRate * Runner.DeltaTime;
 
         else if (Temperature < playerData.maxTemperature)
