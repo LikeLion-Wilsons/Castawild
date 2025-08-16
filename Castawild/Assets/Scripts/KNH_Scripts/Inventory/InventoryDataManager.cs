@@ -614,4 +614,16 @@ public class InventoryDataManager : NetworkBehaviour
     {
         return canvasHolder.EquipmentUI.GetComponent<UIEquipment>().totalDefense;
     }
+
+    public bool IsInventoryFull()
+    {
+        for (int i = 0; i < 29; i++)
+        {
+            if (itemList[i].itemID == -1)
+            {
+                return false; // 빈 슬롯이 있으면 인벤토리가 가득 차지 않음
+            }
+        }
+        return true; // 모든 슬롯이 채워져 있으면 인벤토리가 가득 참
+    }
 }

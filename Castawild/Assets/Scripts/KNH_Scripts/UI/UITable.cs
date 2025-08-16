@@ -29,7 +29,7 @@ public class UITable : UIPart
     {
         List<Item_Scriptable> itemDataList = ItemDataBase.Instance.items;
         //제작 아이템 목록
-        for (int i = 0; i<itemDataList.Count; i++)
+        for (int i = 0; i < itemDataList.Count; i++)
         {
             if (itemDataList[i].itemID >= 200)
             {
@@ -42,7 +42,9 @@ public class UITable : UIPart
 
     private void Update()
     {
-        if(canCreate) craftButton.GetComponent<Image>().color = Color.green;
+        if(inventoryData != null && inventoryData.IsInventoryFull()) canCreate = false; //인벤토리가 가득 차면 제작 불가
+        else canCreate = true; //인벤토리가 비어있으면 제작 가능
+        if (canCreate) craftButton.GetComponent<Image>().color = Color.green;
         else craftButton.GetComponent<Image>().color = Color.red;
     }
 
@@ -56,7 +58,8 @@ public class UITable : UIPart
             SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_ButtonClick, inventoryData.player.transform.position);
 
             inventoryData.RPC_GetItem(selectedItem.itemID, 1);
-            for(int i=0;i< selectedItem.ingredient.Count; i++)
+
+            for (int i = 0; i < selectedItem.ingredient.Count; i++)
             {
                 inventoryData.RPC_UseItem(selectedItem.ingredient[i].itemID, selectedItem.ingredientCount[i]);
             }
