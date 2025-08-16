@@ -20,7 +20,7 @@ public class FootstepCurveReceiver : MonoBehaviour
     {
         Sound[] walkSounds = { Sound.Player_Walk1, Sound.Player_Walk2, Sound.Player_Walk3, Sound.Player_Walk4, Sound.Player_Walk5, Sound.Player_Walk6, Sound.Player_Walk7 };
         if (step >= threshold && prevStep < threshold)
-            SoundManager.Instance.PlayGlobalSound3D(walkSounds[index], player.soundPosition.position);
+            SoundManager.Instance.PlayGlobal3D(walkSounds[index], player.soundPosition.position);
         index = (index + 1) % walkSounds.Length;
 
         prevStep = step;

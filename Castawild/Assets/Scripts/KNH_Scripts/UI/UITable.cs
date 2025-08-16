@@ -52,8 +52,7 @@ public class UITable : UIPart
 
         if (canCreate)
         {
-            var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
-            SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_ButtonClick, inventoryData.player.transform.position);
+            SoundManager.Instance.PlayLocal2D(Sound.UI_ButtonClick);
 
             inventoryData.RPC_GetItem(selectedItem.itemID, 1);
             for(int i=0;i< selectedItem.ingredient.Count; i++)
