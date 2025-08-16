@@ -26,6 +26,13 @@ public class BuildingManager : NetworkBehaviour
     private void OnItemSelected(int itemID)
     {
         if (HasInputAuthority == false) return;
+
+        if (itemID == -1)
+        {
+            PreviewStop();
+            return;
+        }
+
         CurrentItemId = itemID;
 
         if (isPreviewing) PreviewStop();
