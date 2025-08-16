@@ -24,7 +24,7 @@ public enum Sound
     Env_Thunder,
     Env_Title,
     Env_WaterFall,
-    
+
     Mon_Start = 200,
     Mon_Bear_Cry1,
     Mon_Bear_Cry2,
@@ -33,7 +33,7 @@ public enum Sound
     Mon_Rabbit_Damaged,
     Mon_Rabbit_Dead,
     Mon_Rabbit_Run,
-    
+
     Player_Start = 300,
     Player_Attack,
     Player_Damaged1,
@@ -56,12 +56,12 @@ public enum Sound
     Player_Walk5,
     Player_Walk6,
     Player_Walk7,
-    
+
     UI_Start = 400,
     UI_ButtonClick,
     UI_ItemDrop,
     UI_Scroll,
-    
+
     Weapon_Start = 500,
     Weapon_Arrow1,
     Weapon_Arrow2,
@@ -77,17 +77,24 @@ public class SoundManager : NetworkBehaviour
     private Dictionary<Sound, AudioClip> _audioClips = new Dictionary<Sound, AudioClip>();
 
 
-    public override void Spawned()
+    void Awake()
     {
         if (Instance != null)
         {
-            Runner.Despawn(Object);
+            Destroy(gameObject);
             return;
         }
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
         Init();
+    }
+    public override void Spawned()
+    {
+        if (Instance != this)
+        {
+            Runner.Despawn(Object);
+        }
     }
 
     public override void Despawned(NetworkRunner runner, bool hasState)
@@ -187,22 +194,51 @@ public class SoundManager : NetworkBehaviour
 
     public void PlayLocalSound2D(PlayerRef target, Sound sfx, float volume = 1f)
     {
-        RPC_RequestPlaySound(target,sfx, Vector3.zero, false, volume);
+        // Runner가 실행 중(네트워크 연결 상태)일 때만 RPC를 호출
+        if (Runner != null && Runner.IsRunning)
+        {
+            RPC_RequestPlaySound(PlayerRef.None, sfx, Vector3.zero, false, volume);
+        }
+        else // 아니라면 (ex. 타이틀 씬) 그냥 로컬에서 재생
+        {
+            PlaySoundInternal(sfx, Vector3.zero, false, volume);
+        }
     }
-
     public void PlayLocalSound3D(PlayerRef target, Sound sfx, Vector3 position, float volume = 1f)
     {
-        RPC_RequestPlaySound(target, sfx, position, true, volume);
+        if (Runner != null && Runner.IsRunning)
+        {
+            RPC_RequestPlaySound(target, sfx, position, true, volume);
+        }
+        else
+        {
+            PlaySoundInternal(sfx, Vector3.zero, false, volume);
+        }
     }
 
-    public void PlayGlobalSound2D( Sound sfx, float volume = 1f)
+    public void PlayGlobalSound2D(Sound sfx, float volume = 1f)
     {
-        RPC_RequestPlaySound(PlayerRef.None, sfx, Vector3.zero, false, volume);
+        if (Runner != null && Runner.IsRunning)
+        {
+            RPC_RequestPlaySound(PlayerRef.None, sfx, Vector3.zero, false, volume);
+        }
+        else
+        {
+            PlaySoundInternal(sfx, Vector3.zero, false, volume);
+        }
+
     }
 
-    public void PlayGlobalSound3D( Sound sfx, Vector3 position, float volume = 1f)
+    public void PlayGlobalSound3D(Sound sfx, Vector3 position, float volume = 1f)
     {
-        RPC_RequestPlaySound(PlayerRef.None, sfx, position, true, volume);
+        if (Runner != null && Runner.IsRunning)
+        {
+            RPC_RequestPlaySound(PlayerRef.None, sfx, position, true, volume);
+        }
+        else
+        {
+            PlaySoundInternal(sfx, Vector3.zero, false, volume);
+        }
     }
 
     #endregion
@@ -210,15 +246,15 @@ public class SoundManager : NetworkBehaviour
     #region RPC Methods
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    private void RPC_RequestPlaySound(PlayerRef target,Sound sfx, Vector3 position, bool is3D, float volume)
+    private void RPC_RequestPlaySound(PlayerRef target, Sound sfx, Vector3 position, bool is3D, float volume)
     {
-        RPC_BroadcastPlaySound(target,sfx, position, is3D, volume);
+        RPC_BroadcastPlaySound(target, sfx, position, is3D, volume);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_BroadcastPlaySound(PlayerRef target,Sound sfx, Vector3 position, bool is3D, float volume)
+    private void RPC_BroadcastPlaySound(PlayerRef target, Sound sfx, Vector3 position, bool is3D, float volume)
     {
-        if(target == PlayerRef.None || target == Runner.LocalPlayer)
+        if (target == PlayerRef.None || target == Runner.LocalPlayer)
         {
             PlaySoundInternal(sfx, position, is3D, volume);
         }

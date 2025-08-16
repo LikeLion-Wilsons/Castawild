@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fusion;
 using TMPro;
@@ -54,13 +54,22 @@ namespace Test
             SetPage(0);
             btnStart.onClick.AddListener(() => SetPage(1));
             btnExit.onClick.AddListener(OnClickExit);
-            
+            singleToggle.onValueChanged.AddListener(_ => OnClickSound());
+
             //page1.
             btnBack.onClick.AddListener(() => SetPage(0));
             btnOK.onClick.AddListener(StartGame);
         }
+        private void Start()
+        {
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlayBGM(Sound.Env_Title);
+            }
+        }
         public async void StartGame()
         {
+            OnClickSound();
             btnBack.interactable = false;
             btnOK.interactable = false;
             singleToggle.interactable = false;
@@ -68,7 +77,7 @@ namespace Test
             nicknameInput.interactable = false;
             sessionNameInput.interactable = false;
             PlayerTempData.nickname = nicknameInput.text;
-            
+
             _runner = GameObject.Instantiate(RunnerPrefab);
             var events = _runner.GetComponent<NetworkEvents>();
             events.OnShutdown.AddListener(OnShutdown);
@@ -94,6 +103,7 @@ namespace Test
             {
                 StatusText.text = "";
                 rootUI.SetActive(false);
+                SoundManager.Instance.PlayBGM(Sound.Env_Day);
             }
             else
             {
@@ -113,10 +123,11 @@ namespace Test
             // Reset of scene network objects is needed, reload the whole scene
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
-        
-        
+
+
         private void OnClickExit()
         {
+            OnClickSound();
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else
@@ -126,8 +137,17 @@ namespace Test
 
         private void SetPage(int page)
         {
+            OnClickSound();
             rootPage0.SetActive(page == 0);
             rootPage1.SetActive(page == 1);
+        }
+
+        void OnClickSound()
+        {
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlayLocalSound2D(PlayerRef.None, Sound.UI_ButtonClick);
+            }
         }
     }
 }
