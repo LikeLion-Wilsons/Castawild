@@ -73,6 +73,11 @@ public class PlayerToolManager : NetworkBehaviour
         {
             if (currentItemIdx != prevItemIdx)
             {
+                if (prevItemIdx == 402 && currentItemIdx != 402)
+                    player.isNearFire--;
+                else if (prevItemIdx != 402 && currentItemIdx == 402)
+                    player.isNearFire++;
+
                 prevItemIdx = currentItemIdx;
                 Host_ChangeSelectedItem?.Invoke(currentItemIdx);
             }

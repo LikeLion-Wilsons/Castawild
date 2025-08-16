@@ -39,6 +39,9 @@ public class EquipmentAttackObject : AttackObject
         else if (other.TryGetComponent<CwAnimal>(out CwAnimal animal))
         {
             animal.TakeDamage(Att);
+
+            player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(Att);
+
             PlayAttackSound(player);
         }
     }
