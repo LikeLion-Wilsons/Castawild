@@ -22,7 +22,7 @@ public class NetworkAnimalCorpse : EnvironmentObject
     {
         // rabbitCopse가 비활성화 상태면 리턴
         if (!animalObject.IsDead) return;        
-
+        Debug.Log($"Interact with {animalObject.name} by {player.PlayerId}");
         RPC_RequestLoot(player);
     }
 
@@ -45,12 +45,14 @@ public class NetworkAnimalCorpse : EnvironmentObject
             {
                 inventoryData.AddItem(loot.itemId, loot.amount);
             } 
+
+            Debug.Log($"Looted {lootResults.Count} items from {animalObject.name} by {player.PlayerId}");
         }
     } 
     protected void Looted()
     { 
         animalObject.IsDead = false; // 시체 상태로 변경   
-        animalObject.AnimalCopse.SetActive(false); // 시체 비활성화
+        animalObject.AnimalCopse.SetActive(false); // 시체 비활성화       
     }
 
     public override void Revive()

@@ -11,8 +11,12 @@ public class RabbitDeathState : RabbitState
     }  
     public override void Enter()
     {
+        rabbitAnim.agent.isStopped = true;
+        rabbitAnim.agent.updatePosition = false;
         rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Death, true);
         rabbitObject.AnimalCopse.SetActive(true); // 토끼 시체 활성화  
+        rabbitObject.AnimalBody.enabled = false;
+        rabbitObject.IsDead = false; // 시체 상태로 변경  
     }
 
     public override void FixedUpdateNetwork()
@@ -22,6 +26,9 @@ public class RabbitDeathState : RabbitState
 
     public override void Exit()
     {
+        rabbitAnim.agent.isStopped = false;
+        rabbitAnim.agent.updatePosition = true;
         rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Death, false);
+        rabbitObject.AnimalCopse.SetActive(false); 
     } 
 }
