@@ -9,10 +9,12 @@ public class Item_Scriptable : ScriptableObject
     public string itemName;
     public string description;
     public Item_Type type;
+    public Equipment_Type equip_type;
     public Vector2Int range = new Vector2Int(5, 4);
     public bool stackable = true;
     public List<Item_Scriptable> ingredient;//재료 아이템 
     public List<int> ingredientCount;//재료 아이템 수량
+    public int defense;//방어력
     public GameObject buildPreviewPrefab;
     public GameObject buildPrefab;
 }

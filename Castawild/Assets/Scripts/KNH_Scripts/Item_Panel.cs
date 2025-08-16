@@ -115,6 +115,11 @@ public class Item_Panel :
                 itemCountText.gameObject.SetActive(false);//아이템 개수 표시 X
                 durabilityBar.fillAmount = item.durability;//내구도 설정
             }
+            else if (item.GetData().stackable == false)
+            {
+                itemCountText.gameObject.SetActive(false);//아이템 개수 표시 X
+                durabilityBar.gameObject.SetActive(false);//내구도 UI X
+            }
             else
             {
                 itemCountText.text = item.count.ToString();
@@ -337,7 +342,7 @@ public class Item_Panel :
             if (toItem.itemID != -1)//이동하려는 슬롯이 null이 아닌 경우
             {
                 if (toItem.GetData().itemID == fromItem.GetData().itemID && toItem.count + fromItem.count <= 20
-                    && fromItem.GetData().type != Item_Type.Equipment)
+                    && fromItem.GetData().stackable == true)
                 {
                     // 같은 아이템이면 합치기
                     toItem.count += fromItem.count;
