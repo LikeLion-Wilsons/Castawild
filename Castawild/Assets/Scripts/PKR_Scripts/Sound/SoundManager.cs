@@ -76,8 +76,11 @@ public class SoundManager : NetworkBehaviour
     public static SoundManager Instance { get; private set; }
     [SerializeField] private AudioSource bgmSource;
     [SerializeField] private List<AudioSource> sfxSources;
+    
     private Dictionary<Sound, AudioClip> _audioClips = new Dictionary<Sound, AudioClip>();
-
+    private Coroutine _bgmCo = null;
+    private float _bgmFadeSpeed = 1f;
+    private float _bgmVolume = 0.2f;
 
     void Awake()
     {
@@ -88,23 +91,7 @@ public class SoundManager : NetworkBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
         Init();
-    }
-    public override void Spawned()
-    {
-        if (Instance != this)
-        {
-            Runner.Despawn(Object);
-        }
-    }
-
-    public override void Despawned(NetworkRunner runner, bool hasState)
-    {
-        if (Instance == this)
-        {
-            Instance = null;
-        }
     }
 
     void Init()
@@ -127,120 +114,97 @@ public class SoundManager : NetworkBehaviour
 
     #region BGM
 
-    public void PlayBGM(Sound sfx, float volume = 0.2f)
+    public void PlayBGM(Sound sfx)
     {
-        if (_bgmCo != null)
-        {
-            StopCoroutine(_bgmCo);
-        }
-
-        _bgmCo = StartCoroutine(BgmFadeInOut(sfx, volume));
+        if (_bgmCo != null) StopCoroutine(_bgmCo);
+        _bgmCo = StartCoroutine(BgmFadeInOut(sfx, _bgmVolume));
     }
 
     public void StopBGM()
     {
-        if (_bgmCo != null)
-        {
-            StopCoroutine(_bgmCo);
-        }
-        _bgmCo = StartCoroutine(BgmFadeOut());
+        if (_bgmCo != null) StopCoroutine(_bgmCo);
+        _bgmCo = StartCoroutine(BgmFadeOut(_bgmFadeSpeed));
     }
-
-
-    private IEnumerator BgmFadeOut()
-    {
-        //볼륨을 서서히 줄이기.
-        float _fadeSpeed = 1f;
-        while (bgmSource.volume > 0)
-        {
-            bgmSource.volume -= Time.deltaTime * _fadeSpeed;
-            yield return null;
-        }
-
-        bgmSource.Stop();
-    }
-    private Coroutine _bgmCo = null;
 
     private IEnumerator BgmFadeInOut(Sound sfx, float volume)
     {
-        //볼륨을 서서히 줄이기.
-        float _fadeSpeed = 0.5f;
+        yield return BgmFadeOut(_bgmFadeSpeed);
+        yield return BgmFadeIn(sfx, _bgmFadeSpeed, volume);
+    }
+
+    //볼륨 낮추기.
+    private IEnumerator BgmFadeOut(float speed)
+    {
         while (bgmSource.volume > 0)
         {
-            bgmSource.volume -= Time.deltaTime * _fadeSpeed;
+            bgmSource.volume -= Time.deltaTime * speed;
             yield return null;
         }
 
         bgmSource.Stop();
-        if (_audioClips.ContainsKey(sfx) == false)
-        {
-            yield break;
-        }
+    }
 
+    //볼륨 높이기.
+    private IEnumerator BgmFadeIn(Sound sfx, float fadeSpeed, float volume)
+    {
         bgmSource.clip = _audioClips[sfx];
         bgmSource.Play();
 
-        //볼륨 서서히 높이기.
         while (bgmSource.volume < volume)
         {
-            bgmSource.volume += Time.deltaTime * _fadeSpeed;
+            bgmSource.volume += Time.deltaTime * fadeSpeed;
             yield return null;
         }
 
         bgmSource.volume = volume;
+
+        bgmSource.Stop();
     }
 
     #endregion
 
     #region Effect
 
-    public void PlayLocalSound2D(PlayerRef target, Sound sfx, float volume = 1f)
+    public void PlayLocal2D(Sound sfx, float volume = 1f)
     {
-        // Runner가 실행 중(네트워크 연결 상태)일 때만 RPC를 호출
-        if (Runner != null && Runner.IsRunning)
-        {
-            RPC_RequestPlaySound(PlayerRef.None, sfx, Vector3.zero, false, volume);
-        }
-        else // 아니라면 (ex. 타이틀 씬) 그냥 로컬에서 재생
-        {
-            PlaySoundInternal(sfx, Vector3.zero, false, volume);
-        }
-    }
-    public void PlayLocalSound3D(PlayerRef target, Sound sfx, Vector3 position, float volume = 1f)
-    {
-        if (Runner != null && Runner.IsRunning)
-        {
-            RPC_RequestPlaySound(target, sfx, position, true, volume);
-        }
-        else
-        {
-            PlaySoundInternal(sfx, Vector3.zero, false, volume);
-        }
+        PlaySoundInternal(sfx, Vector3.zero, false, volume);
     }
 
-    public void PlayGlobalSound2D(Sound sfx, float volume = 1f)
+    public void PlayLocal3D(Sound sfx, Vector3 position, float volume = 1f)
     {
-        if (Runner != null && Runner.IsRunning)
-        {
-            RPC_RequestPlaySound(PlayerRef.None, sfx, Vector3.zero, false, volume);
-        }
-        else
-        {
-            PlaySoundInternal(sfx, Vector3.zero, false, volume);
-        }
-
+        PlaySoundInternal(sfx, position, false, volume);
     }
 
-    public void PlayGlobalSound3D(Sound sfx, Vector3 position, float volume = 1f)
+    public void PlayGlobal2D(Sound sfx, float volume = 1f)
     {
         if (Runner != null && Runner.IsRunning)
-        {
-            RPC_RequestPlaySound(PlayerRef.None, sfx, position, true, volume);
-        }
+            RPC_Request(PlayerRef.None, sfx, Vector3.zero, true, volume);
         else
-        {
-            PlaySoundInternal(sfx, Vector3.zero, false, volume);
-        }
+            PlayLocal2D(sfx, volume);
+    }
+
+    public void PlayGlobal3D(Sound sfx, Vector3 position, float volume = 1f)
+    {
+        if (Runner != null && Runner.IsRunning)
+            RPC_Request(PlayerRef.None, sfx, position, true, volume);
+        else
+            PlayLocal3D(sfx, position, volume);
+    }
+
+    public void PlayTarget2D(PlayerRef target, Sound sfx, float volume = 1f)
+    {
+        if (Runner != null && Runner.IsRunning)
+            RPC_Request(target, sfx, Vector3.zero, false, volume);
+        else
+            PlayLocal2D(sfx, volume);
+    }
+
+    public void PlayTarget3D(PlayerRef target, Sound sfx, Vector3 position, float volume = 1f)
+    {
+        if (Runner != null && Runner.IsRunning)
+            RPC_Request(target, sfx, position, true, volume);
+        else
+            PlayLocal3D(sfx, position, volume);
     }
 
     #endregion
@@ -248,13 +212,13 @@ public class SoundManager : NetworkBehaviour
     #region RPC Methods
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    private void RPC_RequestPlaySound(PlayerRef target, Sound sfx, Vector3 position, bool is3D, float volume)
+    private void RPC_Request(PlayerRef target, Sound sfx, Vector3 position, bool is3D, float volume)
     {
-        RPC_BroadcastPlaySound(target, sfx, position, is3D, volume);
+        RPC_Broadcast(target, sfx, position, is3D, volume);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_BroadcastPlaySound(PlayerRef target, Sound sfx, Vector3 position, bool is3D, float volume)
+    private void RPC_Broadcast(PlayerRef target, Sound sfx, Vector3 position, bool is3D, float volume)
     {
         if (target == PlayerRef.None || target == Runner.LocalPlayer)
         {
