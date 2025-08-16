@@ -3926,6 +3926,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buildingPreview: {fileID: -7957345436698639499}
+  campFireCol: {fileID: -608144346808076558, guid: 0fb14a3152bae204f825360bd7a74a57, type: 3}
 --- !u!114 &-7957345436698639499
 MonoBehaviour:
   m_ObjectHideFlags: 0
