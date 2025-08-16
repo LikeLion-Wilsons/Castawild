@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Rabbit Data
   m_EditorClassIdentifier: 
   characterName: Rabbit
-  maxHp: 1
-  currentHp: 1
+  maxHp: 100
+  currentHp: 100
   armor: 1
   attack: 1
-  moveSpeed: 1
+  moveSpeed: 0
   maxDetectionRadius: 10
   minDetectionRadius: 5
   attackRange: 0

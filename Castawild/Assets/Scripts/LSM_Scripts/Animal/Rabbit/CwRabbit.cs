@@ -56,6 +56,7 @@ public class CwRabbit : CwAnimal
     public override void TakeDamage(float _damage)
     {
         base.TakeDamage(_damage);
+        Debug.Log($"토끼가 {_damage}의 피해를 받았습니다. 현재 체력: {CurrentHp}");         
     }
 
     protected override void Die()
