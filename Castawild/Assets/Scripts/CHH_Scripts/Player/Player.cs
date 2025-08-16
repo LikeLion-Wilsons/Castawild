@@ -412,7 +412,8 @@ public class Player : NetworkBehaviour
     /// <summary>
     /// UI끄기
     /// </summary>
-    public void Client_TurnOffInteractiveUI()
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplyTurnOffInteractiveUI()
     {
         if (HasInputAuthority)
             playerInteractUI.Client_TurnOffInteractiveUI();

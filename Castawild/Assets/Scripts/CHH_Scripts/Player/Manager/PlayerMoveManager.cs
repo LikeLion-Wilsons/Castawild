@@ -180,11 +180,11 @@ public class PlayerMoveManager : NetworkBehaviour
 
     private void All_HandleMovement(PlayerNetworkInputData input)
     {
-        Host_Move(input.moveDir);
+        All_Move(input.moveDir);
         All_Rotate(input);
     }
 
-    private void Host_Move(Vector3 direction)
+    private void All_Move(Vector3 direction)
     {
         direction = direction.normalized;
 
