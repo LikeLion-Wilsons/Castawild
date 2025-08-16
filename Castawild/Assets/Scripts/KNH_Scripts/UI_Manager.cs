@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UI_Manager : NetworkBehaviour
 {
@@ -11,6 +12,7 @@ public class UI_Manager : NetworkBehaviour
     public GameObject tableUI;
     public GameObject chestUI;
     public GameObject campfireUI;
+    public GameObject EquipmentUI;
 
     public bool isDragging = false;
     // 수정한 부분
@@ -20,6 +22,9 @@ public class UI_Manager : NetworkBehaviour
     public ChestDataManager currentOpenedChest;
     public GameObject currentCampFire;
     public PlayerRef playerRef;
+
+    [SerializeField] Image craftTab;
+    [SerializeField] Image equipmentTab;
 
     public void SetOpenedChest(ChestDataManager chest)
     {
@@ -87,6 +92,7 @@ public class UI_Manager : NetworkBehaviour
             {
                 uiParts["Inventory"].Toggle();
                 uiParts["Table"].Toggle();
+                uiParts["Tabs"].Toggle();
 
                 var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
                 SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.Env_InvenOpen, player.transform.position);
@@ -116,5 +122,35 @@ public class UI_Manager : NetworkBehaviour
         player = _player;
         uiStats.player = player;
         player.uiStats = uiStats;
+    }
+
+    public void CraftTab()
+    {
+        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
+        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_ButtonClick, player.transform.position);
+
+        Color c1 = craftTab.color;
+        c1.a = 1f;
+
+        Color c2 = equipmentTab.color;
+        c2.a = 0.5f;
+
+        uiParts["Table"].Open();
+        uiParts["Equipment"].Close();
+    }
+
+    public void EquipmentTab()
+    {
+        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
+        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_ButtonClick, player.transform.position);
+
+        Color c1 = craftTab.color;
+        c1.a = 0.5f;
+
+        Color c2 = equipmentTab.color;
+        c2.a = 1f;
+
+        uiParts["Table"].Close();
+        uiParts["Equipment"].Open();
     }
 }

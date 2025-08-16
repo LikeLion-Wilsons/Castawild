@@ -18,7 +18,10 @@ MonoBehaviour:
   description: "\uD654\uC0B4\uC744 \uC81C\uC791\uD560 \uC218 \uC788\uB2E4."
   type: 1
   range: {x: 5, y: 4}
-  stackable: 0
+  stackable: 1
   ingredient:
   - {fileID: 11400000, guid: afcb80db2862c0648ba144279369d5c1, type: 2}
   ingredientCount: 01000000
+  defense: 0
+  buildPreviewPrefab: {fileID: 0}
+  buildPrefab: {fileID: 0}

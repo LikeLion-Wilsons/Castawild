@@ -10,16 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b7b30c7c93af76c46acd2b93a24d37fb, type: 3}
-  m_Name: 204_CupOfPurifiedWater
+  m_Name: 501_LeatherHelmet
   m_EditorClassIdentifier: 
-  itemID: 204
-  image: {fileID: 21300000, guid: b7f77607c82ea4142a2070c0e37e1756, type: 3}
-  itemName: "\uC815\uC218\uAC00 \uB2F4\uAE34 \uCEF5"
-  description: "\uAE68\uB057\uD55C \uC815\uC218\uAC00 \uB2F4\uAE34 \uCEF5\uC774\uB2E4."
-  type: 1
+  itemID: 501
+  image: {fileID: 21300000, guid: 5ff9b869a12e70b4db7a137f84ed920b, type: 3}
+  itemName: "\uAC00\uC8FD \uD5EC\uBA67"
+  description: "\uAC00\uC8FD\uC73C\uB85C \uB9CC\uB4E0 \uD5EC\uBA67\uC774\uB2E4.(\uBC29\uC5B4\uB825
+    +2)"
+  type: 4
   range: {x: 5, y: 4}
   stackable: 0
-  ingredient: []
-  ingredientCount: 
+  ingredient:
+  - {fileID: 11400000, guid: c92df31e4f40ae04c90a45e7a7c8b77e, type: 2}
+  ingredientCount: 02000000
+  defense: 2
   buildPreviewPrefab: {fileID: 0}
   buildPrefab: {fileID: 0}

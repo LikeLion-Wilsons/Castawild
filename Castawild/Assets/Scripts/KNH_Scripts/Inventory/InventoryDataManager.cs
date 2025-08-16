@@ -24,12 +24,12 @@ public class InventoryDataManager : NetworkBehaviour
 
     public override void Spawned()
     {
-        inventorySlots = new Item_Panel[47];
+        inventorySlots = new Item_Panel[50];
         ChangeSelectedSlot(0);
 
         if (Object.HasStateAuthority)
         {
-            while (itemList.Count < 47)
+            while (itemList.Count < 50)
             {
                 itemList.Add(new Item
                 {
@@ -82,6 +82,14 @@ public class InventoryDataManager : NetworkBehaviour
             inventorySlots[45] = canvasHolder.campfireUI.GetComponent<UICampfire>().cookPot;
             inventorySlots[46] = canvasHolder.campfireUI.GetComponent<UICampfire>().result;
 
+            i = 47;
+            index = 0;
+            while(i < 50)
+            {
+                inventorySlots[i] = canvasHolder.EquipmentUI.transform.GetChild(4).GetChild(index).GetComponent<Item_Panel>();
+                i++;
+                index++;
+            }
 
             for (int k = 0; k < inventorySlots.Length; k++)
             {
@@ -183,6 +191,8 @@ public class InventoryDataManager : NetworkBehaviour
             AddItem(5, 5);
         if (Input.GetKeyDown(KeyCode.Alpha7))
             AddItem(6, 5);
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+            AddItem(8, 5);
         #endregion
     }
 
@@ -405,7 +415,7 @@ public class InventoryDataManager : NetworkBehaviour
         {
             if (itemList[i].itemID != -1)
             {
-                if (itemList[i].GetData().type == Item_Type.Equipment) maxStackCount = 1;
+                if (itemList[i].GetData().stackable == false) maxStackCount = 1;
                 else maxStackCount = 20;
 
                 if (itemList[i].itemID == id && itemList[i].count < maxStackCount)
@@ -458,6 +468,7 @@ public class InventoryDataManager : NetworkBehaviour
         //모닥불에는 생고기, 바닷물이 담긴 컵만 이동 가능 
         if (indexA == 45 && itemList[indexB].itemID != 6) return;
         if (indexA == 46) return;//result슬롯으로는 이동 불가능
+        if(indexA > 46 && itemList[indexB].GetData().type != Item_Type.Equipment) return; // 장비 슬롯으로는 이동 불가능
 
         //Debug.Log("Swap " + indexA + " " + indexB);
 
