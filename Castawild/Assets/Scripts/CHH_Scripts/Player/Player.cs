@@ -326,15 +326,20 @@ public class Player : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_NotifyPlayDamagedAnim() => anim.SetTrigger("GetHit");
 
-    public void Host_RestoreStatFromFood()
+    public void Host_RestoreStatFromDrink()
+    {
+        Host_RestoreStartFromFood();
+
+        inventory.RPC_ClearCup();
+        ClearCup?.Invoke();
+    }
+
+    public void Host_RestoreStartFromFood()
     {
         if (foodRestoreCoroutine != null)
             StopCoroutine(foodRestoreCoroutine);
 
         foodRestoreCoroutine = StartCoroutine(RestoreStatFromFoodCoroutine());
-
-        inventory.RPC_ClearCup();
-        ClearCup?.Invoke();
     }
 
     private IEnumerator RestoreStatFromFoodCoroutine()

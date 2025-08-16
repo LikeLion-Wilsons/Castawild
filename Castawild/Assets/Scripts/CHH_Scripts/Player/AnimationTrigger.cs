@@ -77,7 +77,13 @@ public class AnimationTrigger : MonoBehaviour
     public void Eat()
     {
         if (toolStateManager.HasStateAuthority)
-            toolStateManager.player.Host_RestoreStatFromFood();
+            toolStateManager.player.Host_RestoreStartFromFood();
+    }
+
+    public void Drink()
+    {
+        if (toolStateManager.HasStateAuthority)
+            toolStateManager.player.Host_RestoreStatFromDrink();
     }
 
     public void PlayEatSound()
