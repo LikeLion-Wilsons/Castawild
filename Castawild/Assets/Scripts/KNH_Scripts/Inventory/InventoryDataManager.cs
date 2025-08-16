@@ -136,37 +136,40 @@ public class InventoryDataManager : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (Input.inputString != null)
+        if (HasInputAuthority)
         {
-            bool isNumber = int.TryParse(Input.inputString, out int number);
-            if (isNumber && number > 0 && number < 10)
+            if (Input.inputString != null)
             {
-                ChangeSelectedSlot(number - 1);
-            }
-        }
-
-        // 마우스 휠 입력
-        float scroll = Input.GetAxisRaw("Mouse ScrollWheel");
-        if (Time.time >= nextScrollTime)
-        {
-            if (scroll > 0f)
-            {
-                //if (player != null && player.toolStateManager.CurrentToolState == ToolState.Idle) ;
-                if (!player.flagManager.IsUsingTool)
+                bool isNumber = int.TryParse(Input.inputString, out int number);
+                if (isNumber && number > 0 && number < 10)
                 {
-                    int next = (selectedSlot - 1 + maxSlotCount) % maxSlotCount;
-                    ChangeSelectedSlot(next);
-                    nextScrollTime = Time.time + scrollCooldown;
+                    ChangeSelectedSlot(number - 1);
                 }
             }
-            else if (scroll < 0f)
+
+            // 마우스 휠 입력
+            float scroll = Input.GetAxisRaw("Mouse ScrollWheel");
+            if (Time.time >= nextScrollTime)
             {
-                //if (player != null && player.toolStateManager.CurrentToolState == ToolState.Idle) ;
-                if (!player.flagManager.IsUsingTool)
+                if (scroll > 0f)
                 {
-                    int next = (selectedSlot + 1) % maxSlotCount;
-                    ChangeSelectedSlot(next);
-                    nextScrollTime = Time.time + scrollCooldown;
+                    //if (player != null && player.toolStateManager.CurrentToolState == ToolState.Idle) ;
+                    if (!player.flagManager.IsUsingTool)
+                    {
+                        int next = (selectedSlot - 1 + maxSlotCount) % maxSlotCount;
+                        ChangeSelectedSlot(next);
+                        nextScrollTime = Time.time + scrollCooldown;
+                    }
+                }
+                else if (scroll < 0f)
+                {
+                    //if (player != null && player.toolStateManager.CurrentToolState == ToolState.Idle) ;
+                    if (!player.flagManager.IsUsingTool)
+                    {
+                        int next = (selectedSlot + 1) % maxSlotCount;
+                        ChangeSelectedSlot(next);
+                        nextScrollTime = Time.time + scrollCooldown;
+                    }
                 }
             }
         }
