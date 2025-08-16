@@ -264,7 +264,7 @@ public class SoundManager : NetworkBehaviour
 
     #region Internal Logic
 
-    private void PlaySoundInternal(Sound sfx, Vector3 position, bool is3D, float volume)
+    public void PlaySoundInternal(Sound sfx, Vector3 position, bool is3D, float volume)
     {
         var clip = _audioClips[sfx];
         AudioSource source = GetAvailableSfxSource();
