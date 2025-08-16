@@ -6,3 +6,10 @@ public enum Item_Type
     Buildable,//설치형 아이템
     Equipment//장비 아이템
 }
+
+public enum Equipment_Type
+{
+    Helmet,//헬멧
+    Armor,//갑옷
+    Shoes//신발
+}

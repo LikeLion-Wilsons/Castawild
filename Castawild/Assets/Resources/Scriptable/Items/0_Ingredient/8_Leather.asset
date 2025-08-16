@@ -18,7 +18,7 @@ MonoBehaviour:
   description: "\uAC00\uC8FD"
   type: 2
   range: {x: 5, y: 4}
-  stackable: 0
+  stackable: 1
   ingredient: []
   ingredientCount: 
   defense: 0

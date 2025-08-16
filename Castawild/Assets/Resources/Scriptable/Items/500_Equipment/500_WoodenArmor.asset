@@ -18,6 +18,7 @@ MonoBehaviour:
   description: "\uB098\uBB34\uB85C \uB9CC\uB4E0 \uAC11\uC637\uC774\uB2E4.(\uBC29\uC5B4\uB825
     +2)"
   type: 4
+  equip_type: 1
   range: {x: 5, y: 4}
   stackable: 0
   ingredient:

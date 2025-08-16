@@ -84,7 +84,7 @@ public class InventoryDataManager : NetworkBehaviour
 
             i = 47;
             index = 0;
-            while(i < 50)
+            while (i < 50)
             {
                 inventorySlots[i] = canvasHolder.EquipmentUI.transform.GetChild(4).GetChild(index).GetComponent<Item_Panel>();
                 i++;
@@ -468,7 +468,10 @@ public class InventoryDataManager : NetworkBehaviour
         //모닥불에는 생고기, 바닷물이 담긴 컵만 이동 가능 
         if (indexA == 45 && itemList[indexB].itemID != 6) return;
         if (indexA == 46) return;//result슬롯으로는 이동 불가능
-        if(indexA > 46 && itemList[indexB].GetData().type != Item_Type.Equipment) return; // 장비 슬롯으로는 이동 불가능
+        if (indexA > 46 && itemList[indexB].GetData().type != Item_Type.Equipment) return; // 장비 슬롯으로는 이동 불가능
+        if(indexA == 47 && itemList[indexB].GetData().equip_type != Equipment_Type.Helmet) return; 
+        if(indexA == 48 && itemList[indexB].GetData().equip_type != Equipment_Type.Armor) return; 
+        if(indexA == 49 && itemList[indexB].GetData().equip_type != Equipment_Type.Shoes) return; 
 
         //Debug.Log("Swap " + indexA + " " + indexB);
 
@@ -479,7 +482,7 @@ public class InventoryDataManager : NetworkBehaviour
             itemList.Add(item);
         }
 
-        if(indexA == 45) cookStart?.Invoke(10);
+        if (indexA == 45) cookStart?.Invoke(10);
         //교환
         var tempA = itemList[indexA];
         var tempB = itemList[indexB];
@@ -488,6 +491,7 @@ public class InventoryDataManager : NetworkBehaviour
         itemList.Set(indexA, tempB);
         itemList.Set(indexB, tempA);
 
+        onInventoryUpdated?.Invoke();
         if (Object.HasStateAuthority)
         {
             RPC_UpdateInventoryUI();
@@ -591,5 +595,10 @@ public class InventoryDataManager : NetworkBehaviour
     public int GetSelectedItemID()
     {
         return itemList[selectedSlot].itemID;
+    }
+
+    public int GetTotalDefense()
+    {
+        return canvasHolder.EquipmentUI.GetComponent<UIEquipment>().totalDefense;
     }
 }

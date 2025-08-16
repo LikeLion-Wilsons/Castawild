@@ -5102,7 +5102,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1514235105144904388}
   m_HandleRect: {fileID: 6886025332259635258}
   m_Direction: 2
-  m_Value: -0.000009765625
+  m_Value: -0.0000048828124
   m_Size: 0.8333333
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -5441,7 +5441,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3159328620247402810}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
   m_Name: 
@@ -8198,7 +8198,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 50.000504}
+  m_AnchoredPosition: {x: 0, y: 50.000217}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1531450813167747468
@@ -14024,6 +14024,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11929363a4c8f964f8aa959c26ca8fcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  helmetSlot: {fileID: 3779872078589891972}
+  armorSlot: {fileID: 2336272790827591219}
+  shoesSlot: {fileID: 3975136364701495623}
+  helmetDefense: {fileID: 919557496313120074}
+  armorDefense: {fileID: 3645062418163260810}
+  shoesDefense: {fileID: 7335175632141847374}
+  totlDefense: {fileID: 4531399914434608974}
+  totalDefense: 0
 --- !u!1 &8935829626713502191
 GameObject:
   m_ObjectHideFlags: 0
@@ -16098,7 +16106,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
-      objectReference: {fileID: 5980619922629422042}
+      objectReference: {fileID: 4701553488535009263}
     - target: {fileID: 4728860504807727729, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -17335,7 +17343,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
-      objectReference: {fileID: 5980619922629422042}
+      objectReference: {fileID: 4701553488535009263}
     - target: {fileID: 4728860504807727729, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -17476,7 +17484,7 @@ PrefabInstance:
     - target: {fileID: 627504942565824720, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: originalParent
       value: 
-      objectReference: {fileID: 5980619922629422042}
+      objectReference: {fileID: 4701553488535009263}
     - target: {fileID: 4728860504807727729, guid: 65014d26db987b54491fb5ca64c2c6d8, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0

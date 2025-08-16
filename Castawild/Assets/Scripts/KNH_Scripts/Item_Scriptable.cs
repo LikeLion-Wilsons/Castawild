@@ -9,6 +9,7 @@ public class Item_Scriptable : ScriptableObject
     public string itemName;
     public string description;
     public Item_Type type;
+    public Equipment_Type equip_type;
     public Vector2Int range = new Vector2Int(5, 4);
     public bool stackable = true;
     public List<Item_Scriptable> ingredient;//재료 아이템 
