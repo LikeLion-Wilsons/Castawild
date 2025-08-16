@@ -10,16 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b7b30c7c93af76c46acd2b93a24d37fb, type: 3}
-  m_Name: 201_WoodenArrow
+  m_Name: 204_CupOfPurifiedWater
   m_EditorClassIdentifier: 
-  itemID: 201
-  image: {fileID: 21300000, guid: 59c8cd2a91ad7f846b9efd79b945c356, type: 3}
-  itemName: "\uD654\uC0B4"
-  description: "\uD654\uC0B4"
+  itemID: 204
+  image: {fileID: 21300000, guid: b7f77607c82ea4142a2070c0e37e1756, type: 3}
+  itemName: "\uC815\uC218\uAC00 \uB2F4\uAE34 \uCEF5"
+  description: "\uAE68\uB057\uD55C \uC815\uC218\uAC00 \uB2F4\uAE34 \uCEF5\uC774\uB2E4."
   type: 1
   range: {x: 5, y: 4}
-  stackable: 0
-  ingredient:
-  - {fileID: 11400000, guid: 8a4a708c8d089da419ff325b52b9a76e, type: 2}
-  - {fileID: 11400000, guid: 8ccfabe31517e0d47933bfacd2423433, type: 2}
-  ingredientCount: 0100000001000000
+  stackable: 1
+  ingredient: []
+  ingredientCount: 
+  defense: 0
+  buildPreviewPrefab: {fileID: 0}
+  buildPrefab: {fileID: 0}

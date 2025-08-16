@@ -10,16 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b7b30c7c93af76c46acd2b93a24d37fb, type: 3}
-  m_Name: 203_CupOfSeaWater
+  m_Name: 502_LeatherArmor
   m_EditorClassIdentifier: 
-  itemID: 203
-  image: {fileID: 21300000, guid: 805736230f06ac449a72b0ecb951e522, type: 3}
-  itemName: "\uBC14\uB2F7\uBB3C\uC774 \uB2F4\uAE34 \uCEF5"
-  description: "\uBC14\uB2F7\uBB3C\uC774 \uB2F4\uACA8\uC788\uB2E4."
-  type: 1
+  itemID: 502
+  image: {fileID: 21300000, guid: e37ee0b1cbe20c5458102626b95a6b7c, type: 3}
+  itemName: "\uAC00\uC8FD \uAC11\uC637"
+  description: "\uAC00\uC8FD\uC73C\uB85C \uB9CC\uB4E0 \uAC11\uC637\uC774\uB2E4.(\uBC29\uC5B4\uB825
+    +3)"
+  type: 4
+  equip_type: 1
   range: {x: 5, y: 4}
   stackable: 0
-  ingredient: []
-  ingredientCount: 
+  ingredient:
+  - {fileID: 11400000, guid: c92df31e4f40ae04c90a45e7a7c8b77e, type: 2}
+  ingredientCount: 03000000
+  defense: 3
   buildPreviewPrefab: {fileID: 0}
   buildPrefab: {fileID: 0}
