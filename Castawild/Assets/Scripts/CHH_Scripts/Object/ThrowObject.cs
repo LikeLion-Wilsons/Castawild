@@ -1,4 +1,3 @@
-using Fusion;
 using UnityEngine;
 
 public enum ThrowType { stone, arrow }
@@ -7,6 +6,7 @@ public class ThrowObject : AttackObject
     public GameObject thrower;
     public ThrowType throwType;
     private Rigidbody rigid;
+    private bool canAttack = true;
 
     public int Att => att;
 
@@ -27,35 +27,40 @@ public class ThrowObject : AttackObject
 
     private void OnCollisionEnter(Collision collision)
     {
-        rigid.isKinematic = true;
-        GetComponent<Collider>().enabled = false;
+        if (!canAttack)
+            return;
+
         GetComponentInChildren<TrailRenderer>().enabled = false;
 
         if (throwType == ThrowType.arrow)
         {
+            rigid.isKinematic = true;
             rigid.linearVelocity = Vector3.zero;
             rigid.angularVelocity = Vector3.zero;
+            GetComponent<Collider>().enabled = false;
         }
 
-        if (collision.gameObject.CompareTag("Player") /*&& collision.gameObject.CompareTag("Animal")*/)
+        if (collision.gameObject.CompareTag("Player"))
         {
-            if (collision.gameObject.CompareTag("Player"))
-            {
-                Player player = collision.gameObject.GetComponent<Player>();
-                player.Host_TakeDamaged(true, Att);
+            Player player = collision.gameObject.GetComponent<Player>();
+            player.Host_TakeDamaged(true, Att);
 
-                thrower.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(Att);
-
+            if (throwType == ThrowType.arrow)
                 Runner.Despawn(Object);
-            }
 
-            //else if (collision.gameObject.CompareTag("Animal"))
-            //{
-            //    collision.gameObject.GetComponent<CwAnimal>().TakeDamage(Att);
-
-            //    if (throwType == ThrowType.arrow)
-            //        transform.SetParent(networkObject.transform);
-            //}
+            thrower.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(Att);
         }
+
+        else if (collision.gameObject.TryGetComponent<CwAnimal>(out CwAnimal animal))
+        {
+            animal.TakeDamage(Att);
+
+            if (throwType == ThrowType.arrow)
+                transform.SetParent(animal.transform);
+
+            thrower.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(Att);
+        }
+
+        canAttack = false;
     }
 }

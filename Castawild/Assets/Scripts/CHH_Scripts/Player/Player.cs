@@ -2,11 +2,8 @@ using Fusion;
 using System;
 using System.Collections;
 using Test;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Rendering;
 
-// 테스트용
 public enum MoveType { Idle, Walk, Run, Crouch, Jump }
 public enum AttackType { None, Aim, Attack }
 public enum ItemType { None, Default, Tool, Food, Drink, Placeable }
@@ -52,6 +49,7 @@ public class Player : NetworkBehaviour
     public float hpDecreaseRate = 0.5f;
     public float staminaHungerDecreaseRate = 3f;
     public float staminaRunDecreaseRate = 1f;
+    public float staminaUseToolDecrease = 10f;
     public float hungerDecreaseRate = 1f;
     public float thirstDecreaseRate = 1f;
     public float temperatureDecreaseRate = 1f;
@@ -86,6 +84,8 @@ public class Player : NetworkBehaviour
 
     public Coroutine fallingCoroutine;
     private Coroutine foodRestoreCoroutine;
+
+    public Transform soundPosition;
 
     // Test
     [Networked] private bool IsCooling { get; set; } = false;
@@ -281,7 +281,8 @@ public class Player : NetworkBehaviour
 
         if (Hp <= 0)
         {
-            SoundManager.Instance.PlayLocalSound3D(Object.InputAuthority, Sound.Player_Dead, transform.position);
+            RPC_ApplyPlayLocalSound(Sound.Player_Dead);
+
             flagManager.Set(PlayerFlags.Death);
             Host_TakeDamagedEvent?.Invoke(true);
             return;
@@ -292,7 +293,7 @@ public class Player : NetworkBehaviour
 
             if (isAttack)
             {
-                PlayerTakeDamagedSound();
+                Host_PlayerTakeDamagedSound();
 
                 RPC_ApplyPlayDamagedEffectAnim();
                 RPC_NotifyPlayDamagedAnim();
@@ -305,11 +306,18 @@ public class Player : NetworkBehaviour
         }
     }
 
-    private void PlayerTakeDamagedSound()
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplyPlayLocalSound(Sound soundType) =>
+        SoundManager.Instance.PlaySoundInternal(soundType, soundPosition.position, true, 1f);
+
+    public void Client_PlayLocalSound(Sound soundType) =>
+        SoundManager.Instance.PlaySoundInternal(soundType, soundPosition.position, true, 1f);
+
+    private void Host_PlayerTakeDamagedSound()
     {
         int randomNumber = UnityEngine.Random.Range(0, 3);
         Sound[] damageSounds = { Sound.Player_Damaged1, Sound.Player_Damaged2, Sound.Player_Damaged3 };
-        SoundManager.Instance.PlayLocalSound3D(Object.InputAuthority, damageSounds[randomNumber], transform.position);
+        RPC_ApplyPlayLocalSound(damageSounds[randomNumber]);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]

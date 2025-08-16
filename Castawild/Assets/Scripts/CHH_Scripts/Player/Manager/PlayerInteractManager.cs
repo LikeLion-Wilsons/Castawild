@@ -96,8 +96,6 @@ public sealed class PlayerInteractManager : NetworkBehaviour
                     {
                         playerInteractUI.InteractUI(interactable.interactableType);
                         Client_currentInteractObject = interactable;
-                        if (Client_currentInteractObject == null)
-                            Debug.Log("currentInteractObject is null");
 
                         if (interactable.interactableType == InteractableType.Gatherable)
                         {
@@ -192,6 +190,7 @@ public sealed class PlayerInteractManager : NetworkBehaviour
         }
     }
 
+    int punchSoundIndex = 0;
     /// <summary>
     /// 돌/나무 등 Interact UI가 바뀔 때 애니메이션 재생되면 호출되는 함수
     /// </summary>
@@ -204,14 +203,30 @@ public sealed class PlayerInteractManager : NetworkBehaviour
         int att = 0;
         if (Client_currentInteractObject.interactableType == InteractableType.Tree && Client_currentInteractObject.CanInteract())
         {
-            SoundManager.Instance.PlayGlobalSound3D(Sound.Player_Attack, transform.position);
+            if (toolManager.CurrentToolType == ToolType.Fist)
+            {
+                Sound[] punchSound = { Sound.Player_Punch1, Sound.Player_Punch2 };
+                SoundManager.Instance.PlayGlobalSound3D(punchSound[punchSoundIndex], player.soundPosition.position);
+                punchSoundIndex = (punchSoundIndex + 1) % 2;
+            }
+            else
+                SoundManager.Instance.PlayGlobalSound3D(Sound.Player_Attack, player.soundPosition.position);
+
             att = toolManager.All_GetToolAtt("Axe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
             toolStateManager.RPC_RequestDecreaseToolDuration(true);
         }
         else if (Client_currentInteractObject.interactableType == InteractableType.Stone && Client_currentInteractObject.CanInteract())
         {
-            SoundManager.Instance.PlayGlobalSound3D(Sound.Player_Attack, transform.position);
+            if (toolManager.CurrentToolType == ToolType.Fist)
+            {
+                Sound[] punchSound = { Sound.Player_Punch1, Sound.Player_Punch2 };
+                SoundManager.Instance.PlayGlobalSound3D(punchSound[punchSoundIndex], player.soundPosition.position);
+                punchSoundIndex = (punchSoundIndex + 1) % 2;
+            }
+            else
+                SoundManager.Instance.PlayGlobalSound3D(Sound.Player_Attack, player.soundPosition.position);
+
             att = toolManager.All_GetToolAtt("Pickaxe");
             Client_currentInteractObject?.Interact(Object.InputAuthority, att);
             toolStateManager.RPC_RequestDecreaseToolDuration(true);

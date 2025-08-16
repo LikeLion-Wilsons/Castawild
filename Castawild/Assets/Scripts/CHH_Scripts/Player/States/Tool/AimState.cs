@@ -45,7 +45,7 @@ public class AimState : ToolBaseState
         else
             toolStateManager.CurrentToolAnimationState = ToolAnimationState.Aim;
 
-        if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput))
+        if (toolStateManager.input.WasPressed(toolStateManager.prevInputButtons, PlayerNetworkInputData.toolUseInput) && toolStateManager.player.Stamina >= 10f)
         {
             if (toolStateManager.CurrentToolType == ToolType.Bow)
                 toolStateManager.RPC_NotifyBowShootAnimation();

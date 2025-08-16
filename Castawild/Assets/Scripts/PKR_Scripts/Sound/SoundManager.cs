@@ -44,6 +44,8 @@ public enum Sound
     Player_Eat,
     Player_HeartBeat,
     Player_Jump,
+    Player_Punch1,
+    Player_Punch2,
     Player_Revive,
     Player_Run,
     Player_Shoot,
@@ -264,7 +266,7 @@ public class SoundManager : NetworkBehaviour
 
     #region Internal Logic
 
-    private void PlaySoundInternal(Sound sfx, Vector3 position, bool is3D, float volume)
+    public void PlaySoundInternal(Sound sfx, Vector3 position, bool is3D, float volume)
     {
         var clip = _audioClips[sfx];
         AudioSource source = GetAvailableSfxSource();

@@ -218,7 +218,7 @@ public class MovementStateManager : BaseStateManager
     /// </summary>
     public bool All_CanRun()
     {
-        if (flagManager.CanRun_Tool && Stamina > player.playerData.maxStamina * 0.3f)
+        if (flagManager.CanRun_Tool && Stamina > player.playerData.maxStamina * 0.2f)
             return true;
 
         return false;
@@ -255,10 +255,13 @@ public class MovementStateManager : BaseStateManager
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestRevived()
     {
-        Host_ChangeState(MovementState.Idle);
-        player.Host_RevivedStatus();
+        player.RPC_ApplyPlayLocalSound(Sound.Player_Revive);
 
-        SoundManager.Instance.PlayLocalSound3D(Object.InputAuthority, Sound.Player_Revive, transform.position);
+        if (HasStateAuthority)
+        {
+            Host_ChangeState(MovementState.Idle);
+            player.Host_RevivedStatus();
+        }
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]

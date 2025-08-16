@@ -30,7 +30,8 @@ public class ToolIdleState : ToolBaseState
             }
 
             toolStateManager.movementManager.Host_ChangeState(MovementState.Idle);
-            toolStateManager.Host_ChangeState(ToolState.UseTool);
+            if (toolStateManager.player.Stamina >= 10f)
+                toolStateManager.Host_ChangeState(ToolState.UseTool);
         }
     }
 
