@@ -50,7 +50,7 @@ public class NetworkAnimalCorpse : EnvironmentObject
     protected void Looted()
     { 
         animalObject.IsDead = false; // 시체 상태로 변경   
-        animalObject.AnimalCopse.SetActive(false); // 시체 비활성화
+        animalObject.AnimalCopse.SetActive(false); // 시체 비활성화       
     }
 
     public override void Revive()

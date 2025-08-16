@@ -33,6 +33,7 @@ public class CwRabbit : CwAnimal
 
     public override void Init()
     {
+        base.Init();
         if (homeCenter != null)
             homeCenter = transform.position;
     }

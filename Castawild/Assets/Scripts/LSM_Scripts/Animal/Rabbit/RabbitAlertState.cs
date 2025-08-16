@@ -10,7 +10,10 @@ public class RabbitAlertState : RabbitState
     } 
     private float timer;
     public override void Enter()
-    { 
+    {
+        rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Idle, false);
+        rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.IdleMove, false);
+        rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Return, false);
         rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Alert, true);
         rabbitAnim.agent.isStopped = true;
         rabbitAnim.agent.updatePosition = false;
