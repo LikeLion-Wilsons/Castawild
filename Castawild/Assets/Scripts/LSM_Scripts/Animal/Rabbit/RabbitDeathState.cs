@@ -15,7 +15,8 @@ public class RabbitDeathState : RabbitState
         rabbitAnim.agent.updatePosition = false;
         rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Death, true);
         rabbitObject.AnimalCopse.SetActive(true); // 토끼 시체 활성화  
-        animalObject.AnimalBody.enabled = false;
+        rabbitObject.AnimalBody.enabled = false;
+        rabbitObject.IsDead = false; // 시체 상태로 변경  
     }
 
     public override void FixedUpdateNetwork()
