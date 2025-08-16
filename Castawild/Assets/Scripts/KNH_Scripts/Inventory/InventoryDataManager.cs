@@ -102,7 +102,7 @@ public class InventoryDataManager : NetworkBehaviour
 
 
     public GameObject inventoryItemPrefab;
-    [Networked] public int selectedSlot { get; set; } = 0;
+    public int selectedSlot { get; set; } = 0;
     int maxSlotCount = 9; // 총 슬롯 수
     public static InventoryDataManager Instance { get; set; }
     public static event Action<int> onItemSelected;
@@ -120,8 +120,9 @@ public class InventoryDataManager : NetworkBehaviour
             {
                 inventorySlots[selectedSlot].Deselect();
             }
+            selectedSlot = newValue;
             inventorySlots[newValue].Select();
-            RPC_SetSelectedSlot(newValue);
+            //RPC_SetSelectedSlot(newValue);
 
             if (inventorySlots[newValue].IsEmpty())
                 player.All_RemoveSelectedItem();
@@ -245,7 +246,8 @@ public class InventoryDataManager : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_SubtractDurability(float amount)
     {
-        //Debug.Log("RPC_SubtractDurability" + selectedSlot);
+        Debug.Log("RPC_SubtractDurability" + selectedSlot);
+        
         var item = itemList.Get(selectedSlot);
         if (item.itemID == -1) return;
         //내구도 감소
@@ -470,11 +472,16 @@ public class InventoryDataManager : NetworkBehaviour
         if (indexA >= itemList.Count || indexB >= itemList.Count) return;
         //모닥불에는 생고기, 바닷물이 담긴 컵만 이동 가능 
         if (indexA == 45 && itemList[indexB].itemID != 6) return;
+        if (indexB == 45 && itemList[indexA].itemID != 6) return;
         if (indexA == 46) return;//result슬롯으로는 이동 불가능
         if (indexA > 46 && itemList[indexB].GetData().type != Item_Type.Equipment) return; // 장비 슬롯으로는 이동 불가능
         if(indexA == 47 && itemList[indexB].GetData().equip_type != Equipment_Type.Helmet) return; 
         if(indexA == 48 && itemList[indexB].GetData().equip_type != Equipment_Type.Armor) return; 
         if(indexA == 49 && itemList[indexB].GetData().equip_type != Equipment_Type.Shoes) return; 
+
+        if(indexB == 47 && itemList[indexA].GetData().equip_type != Equipment_Type.Helmet) return;
+        if(indexB == 47 && itemList[indexA].GetData().equip_type != Equipment_Type.Armor) return;
+        if(indexB == 47 && itemList[indexA].GetData().equip_type != Equipment_Type.Shoes) return;
 
         //Debug.Log("Swap " + indexA + " " + indexB);
 

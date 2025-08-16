@@ -114,6 +114,7 @@ public class Item_Panel :
             {
                 itemCountText.gameObject.SetActive(false);//아이템 개수 표시 X
                 durabilityBar.fillAmount = item.durability;//내구도 설정
+                durabilityBar.gameObject.SetActive(false);//내구도 UI X
             }
             else if (item.GetData().stackable == false)
             {
