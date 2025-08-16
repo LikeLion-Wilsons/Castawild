@@ -135,8 +135,10 @@ public class UI_Manager : NetworkBehaviour
         Color c2 = equipmentTab.color;
         c2.a = 0.5f;
 
+        CloseAllUI();
         uiParts["Table"].Open();
-        uiParts["Equipment"].Close();
+        uiParts["Inventory"].Open();
+        uiParts["Tabs"].Open();
     }
 
     public void EquipmentTab()
@@ -150,7 +152,10 @@ public class UI_Manager : NetworkBehaviour
         Color c2 = equipmentTab.color;
         c2.a = 1f;
 
-        uiParts["Table"].Close();
+
+        CloseAllUI();
         uiParts["Equipment"].Open();
+        uiParts["Inventory"].Open();
+        uiParts["Tabs"].Open();
     }
 }
