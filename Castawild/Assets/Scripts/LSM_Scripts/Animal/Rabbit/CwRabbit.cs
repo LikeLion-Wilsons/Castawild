@@ -28,6 +28,7 @@ public class CwRabbit : CwAnimal
     protected override void Awake()
     {
         AddrPath = "Assets/Scriptable Objects/Rabbit Data.asset";
+        rabbitAnim = GetComponent<RabbitAnim>();
     }
 
     public override void Init()
