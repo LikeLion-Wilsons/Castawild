@@ -52,6 +52,7 @@ public class Player : NetworkBehaviour
     public float hpDecreaseRate = 0.5f;
     public float staminaHungerDecreaseRate = 3f;
     public float staminaRunDecreaseRate = 1f;
+    public float staminaUseToolDecrease = 10f;
     public float hungerDecreaseRate = 1f;
     public float thirstDecreaseRate = 1f;
     public float temperatureDecreaseRate = 1f;

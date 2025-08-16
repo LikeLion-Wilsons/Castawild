@@ -32,9 +32,9 @@ public class EquipmentAttackObject : AttackObject
             player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(Att);
         }
 
-        //else if (other.CompareTag("Animal"))
-        //{
-        //    other.GetComponent<CwAnimal>().TakeDamage(Att);
-        //}
+        else if (other.TryGetComponent<CwAnimal>(out CwAnimal animal))
+        {
+            animal.TakeDamage(Att);
+        }
     }
 }

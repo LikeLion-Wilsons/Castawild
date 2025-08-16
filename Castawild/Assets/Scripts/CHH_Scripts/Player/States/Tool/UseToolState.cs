@@ -1,5 +1,6 @@
 
 using Unity.VisualScripting;
+using UnityEngine.ProBuilder.MeshOperations;
 
 public class UseToolState : ToolBaseState
 {
@@ -17,6 +18,8 @@ public class UseToolState : ToolBaseState
         toolStateManager.CurrentToolAnimationState = ToolAnimationState.UseTool;
         toolStateManager.movementManager.Host_ChangeState(MovementState.Idle);
         toolStateManager.moveManager.Host_FreezePosition(true);
+
+        toolStateManager.flagManager.Set(PlayerFlags.UseTool);
 
         toolStateManager.DecreaseToolDuration = false;
 
@@ -86,6 +89,7 @@ public class UseToolState : ToolBaseState
     public override void ExitState()
     {
         base.ExitState();
+        toolStateManager.flagManager.Clear(PlayerFlags.UseTool);
 
         if (toolStateManager.HasStateAuthority && toolStateManager.DecreaseToolDuration
             && toolStateManager.toolManager.All_IsDecreaseDurationTool())

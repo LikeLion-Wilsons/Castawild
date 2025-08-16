@@ -46,5 +46,6 @@ public sealed class PlayerFlagManager : NetworkBehaviour
     public bool IsMoveIdle => (Flags & PlayerFlags.MoveIdle) != 0;
     public bool IsRunning => (Flags & PlayerFlags.Run) != 0;
     public bool IsDead => (Flags & PlayerFlags.Death) != 0;
-    public bool CanRecoverStamina => (Flags & (PlayerFlags.UseTool | PlayerFlags.Run | PlayerFlags.Jump | PlayerFlags.Eat)) != 0;
+    public bool CanRecoverStamina => (Flags & (PlayerFlags.UseTool | PlayerFlags.Run | PlayerFlags.Jump | PlayerFlags.Eat)) == 0;
+
 }

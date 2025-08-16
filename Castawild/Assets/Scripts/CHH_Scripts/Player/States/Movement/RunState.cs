@@ -1,5 +1,4 @@
 using UnityEngine;
-using static Unity.Collections.Unicode;
 
 public class RunState : MovementBaseState
 {
@@ -29,7 +28,7 @@ public class RunState : MovementBaseState
             movementManager.Host_ChangeState(MovementState.Walk);
             return;
         }
-        else
+        else if (movementManager.Stamina > 0 && !movementManager.flagManager.IsUsingTool)
             movementManager.Stamina -= movementManager.player.staminaRunDecreaseRate * movementManager.Runner.DeltaTime;
 
         // Walk
