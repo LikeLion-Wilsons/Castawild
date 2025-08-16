@@ -31,7 +31,7 @@ public class EquipmentAttackObject : AttackObject
             other.transform.parent.GetComponent<Player>().Host_TakeDamaged(true, Att);
             other.transform.parent.GetComponent<ToolStateManager>().DecreaseToolDuration = true;
 
-            otherPlayer.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(Att);
+            player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(Att);
 
             PlayAttackSound(player);
         }

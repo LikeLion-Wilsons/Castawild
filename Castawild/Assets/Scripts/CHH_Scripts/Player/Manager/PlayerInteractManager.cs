@@ -144,6 +144,28 @@ public sealed class PlayerInteractManager : NetworkBehaviour
                         interactableObject.Interact(Object.InputAuthority);
                     }
                 }
+
+                // 동물
+                else if (_interactResult[i].GetComponentInChildren<NetworkAnimalCorpse>())
+                {
+                    NetworkAnimalCorpse animalCorpse = _interactResult[i].GetComponentInChildren<NetworkAnimalCorpse>();
+
+                    playerInteractUI.InteractUI(animalCorpse.interactableType);
+                    playerInteractUI.SetInteractText("도축");
+
+                    if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
+                    {
+                        movementManager.RPC_RequestChangeGatherState(Object.InputAuthority);
+
+                        Client_currentInteractObject = animalCorpse;
+
+                        float targetTopY = interact.bounds.max.y;
+                        if (targetTopY - transform.position.y <= kneelY)
+                            movementManager.RPC_RequestSetKneel(false);
+                        else
+                            movementManager.RPC_RequestSetKneel(true);
+                    }
+                }
             }
         }
         else
