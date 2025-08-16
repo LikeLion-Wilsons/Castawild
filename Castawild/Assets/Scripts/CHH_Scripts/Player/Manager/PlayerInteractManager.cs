@@ -92,7 +92,29 @@ public sealed class PlayerInteractManager : NetworkBehaviour
                 // 돌 / 나무
                 if (_interactResult[i].TryGetComponent<EnvironmentObject>(out var interactable))
                 {
-                    if (interactable.CanInteract())
+                    // 동물
+                    if (_interactResult[i].GetComponentInChildren<NetworkAnimalCorpse>())
+                    {
+                        NetworkAnimalCorpse animalCorpse = _interactResult[i].GetComponentInChildren<NetworkAnimalCorpse>();
+
+                        playerInteractUI.InteractUI(animalCorpse.interactableType);
+                        playerInteractUI.SetInteractText("도축");
+
+                        if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
+                        {
+                            movementManager.RPC_RequestChangeGatherState(Object.InputAuthority);
+
+                            Client_currentInteractObject = animalCorpse;
+
+                            float targetTopY = interact.bounds.max.y;
+                            if (targetTopY - transform.position.y <= kneelY)
+                                movementManager.RPC_RequestSetKneel(false);
+                            else
+                                movementManager.RPC_RequestSetKneel(true);
+                        }
+                    }
+
+                    else if (interactable.CanInteract())
                     {
                         playerInteractUI.InteractUI(interactable.interactableType);
                         Client_currentInteractObject = interactable;
@@ -145,28 +167,6 @@ public sealed class PlayerInteractManager : NetworkBehaviour
                         && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
                     {
                         interactableObject.Interact(Object.InputAuthority);
-                    }
-                }
-
-                // 동물
-                else if (_interactResult[i].GetComponentInChildren<NetworkAnimalCorpse>())
-                {
-                    NetworkAnimalCorpse animalCorpse = _interactResult[i].GetComponentInChildren<NetworkAnimalCorpse>();
-
-                    playerInteractUI.InteractUI(animalCorpse.interactableType);
-                    playerInteractUI.SetInteractText("도축");
-
-                    if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
-                    {
-                        movementManager.RPC_RequestChangeGatherState(Object.InputAuthority);
-
-                        Client_currentInteractObject = animalCorpse;
-
-                        float targetTopY = interact.bounds.max.y;
-                        if (targetTopY - transform.position.y <= kneelY)
-                            movementManager.RPC_RequestSetKneel(false);
-                        else
-                            movementManager.RPC_RequestSetKneel(true);
                     }
                 }
             }
