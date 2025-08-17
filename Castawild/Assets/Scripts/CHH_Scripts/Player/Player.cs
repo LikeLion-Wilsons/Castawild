@@ -87,9 +87,6 @@ public class Player : NetworkBehaviour
 
     public Transform soundPosition;
 
-    // Test
-    [Networked] private bool IsCooling { get; set; } = false;
-
     private void Update()
     {
         if (!HasInputAuthority)
@@ -105,14 +102,13 @@ public class Player : NetworkBehaviour
         }
 
         if (Input.GetKeyDown(KeyCode.O))
-            RPC_RequestCool();
+            RPC_RequestDecreaseTemperature();
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_RequestCool()
+    private void RPC_RequestDecreaseTemperature()
     {
-        IsCooling = !IsCooling;
-        Debug.Log("IsCooling : " + IsCooling);
+        Temperature -= 10f;
     }
 
     override public void Spawned()
@@ -179,12 +175,12 @@ public class Player : NetworkBehaviour
         if (dayNightManager == null)
             return;
 
-        if ((IsCooling || dayNightManager.isNightTime && (isNearFire < 1f)) && Temperature > 0f)
+        if (dayNightManager.isNightTime && (isNearFire < 1f) && Temperature > 0f)
             Temperature -= temperatureDecreaseRate * Runner.DeltaTime;
 
         else if (Temperature < playerData.maxTemperature)
         {
-            if (!IsCooling && (!dayNightManager.isNightTime || (dayNightManager.isNightTime && isNearFire >= 1)))
+            if (!dayNightManager.isNightTime || (dayNightManager.isNightTime && isNearFire >= 1))
                 Temperature += temperatureDecreaseRate * Runner.DeltaTime;
         }
     }
@@ -277,6 +273,9 @@ public class Player : NetworkBehaviour
     {
         if (!HasStateAuthority || Hp <= 0)
             return;
+
+        if (att <= 0)
+            att = 1;
         Hp -= att;
 
         if (Hp <= 0)

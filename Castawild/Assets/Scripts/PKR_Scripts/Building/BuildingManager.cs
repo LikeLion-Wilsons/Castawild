@@ -7,7 +7,6 @@ public class BuildingManager : NetworkBehaviour
 {
     private InventoryDataManager inventory;
     [SerializeField] private BuildingPreview buildingPreview;
-    [SerializeField] private NetworkObject campFireCol;
     private NetworkObject networkPrefab;
     private bool isPreviewing = false;
     [Networked] private int CurrentItemId { get; set; } = -1;
@@ -106,9 +105,6 @@ public class BuildingManager : NetworkBehaviour
         Debug.Log($" pos:{pos},retryPos:{retryPos}, rot:{rot},retryRot:{retryRot}");
 
         Runner.Spawn(networkPrefab, pos, rot);
-        if (CurrentItemId == 301)
-            Runner.Spawn(campFireCol, pos, rot);
-
         inventory.UseItem(CurrentItemId, 1);
     }
 }
