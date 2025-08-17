@@ -152,7 +152,6 @@ GameObject:
   - component: {fileID: 3709894866284901987}
   - component: {fileID: 2992856231806570906}
   - component: {fileID: 145808224446888451}
-  - component: {fileID: 5768232461085246086}
   m_Layer: 8
   m_Name: BerryBush
   m_TagString: Untagged
@@ -186,8 +185,8 @@ LODGroup:
   serializedVersion: 2
   m_LocalReferencePoint: {x: -0.028630614, y: 0.6597538, z: 0.020400465}
   m_Size: 2.4545064
-  m_FadeMode: 1
-  m_AnimateCrossFading: 0
+  m_FadeMode: 2
+  m_AnimateCrossFading: 1
   m_LastLODIsBillboard: 0
   m_LODs:
   - screenRelativeHeight: 0.9
@@ -198,11 +197,11 @@ LODGroup:
     fadeTransitionWidth: 0.5
     renderers:
     - renderer: {fileID: 6725326212587248483}
-  - screenRelativeHeight: 0.01
+  - screenRelativeHeight: 0.05
     fadeTransitionWidth: 0.5
     renderers:
     - renderer: {fileID: 3447070241537837570}
-  - screenRelativeHeight: 0.01
+  - screenRelativeHeight: 0.05
     fadeTransitionWidth: 0.5
     renderers:
     - renderer: {fileID: 5188014594094833449}
@@ -281,20 +280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactableType: 8
   visualRoot: {fileID: 1907129445177717199}
---- !u!114 &5768232461085246086
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5174660890894826830}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1541381998, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Guid:
-    RawGuidValue: 6064bc7ce72a4b44aae75f5fcf0c9fc4
+  cullDistance: 500
 --- !u!1 &5844984565052202350
 GameObject:
   m_ObjectHideFlags: 0

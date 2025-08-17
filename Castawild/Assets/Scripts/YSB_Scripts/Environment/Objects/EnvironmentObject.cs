@@ -17,7 +17,8 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, YSB_Scri
     [Networked] protected int MaxHP { get; set; }
     [Networked] protected TickTimer ReviveTimer { get; set; }
     private float reviveTime;
-
+    [SerializeField] private float cullDistance = 500f;
+    private Transform playerCamera;
     public override void Spawned()
     {
         base.Spawned();
@@ -26,6 +27,15 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, YSB_Scri
             visualRootController = visualRoot.GetComponent<VisualRootController>();
 
         col = GetComponent<Collider>();
+        playerCamera = Camera.main.transform;
+        UpdateCulling();
+    }
+
+    private void Update()
+    {
+        if (!IsAlive()) return;
+
+        UpdateCulling();
     }
 
     public override void FixedUpdateNetwork()
@@ -34,6 +44,15 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, YSB_Scri
         {
             Revive();
         }
+    }
+
+    private void UpdateCulling()
+    {
+        if (playerCamera == null || visualRootController == null) return;
+
+        float distance = Vector3.Distance(transform.position, playerCamera.position);
+
+        visualRootController.SetVisible(distance <= cullDistance);
     }
 
     public virtual void Init(SpawnableDefinition def, int instanceId)

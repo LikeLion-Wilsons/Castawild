@@ -192,7 +192,7 @@ LODGroup:
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 2725993294423016206}
-  - screenRelativeHeight: 0.01
+  - screenRelativeHeight: 0.05
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 2550630193253972126}
@@ -271,6 +271,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactableType: 8
   visualRoot: {fileID: 4319720475901076231}
+  cullDistance: 500
 --- !u!1 &7193105232540308735
 GameObject:
   m_ObjectHideFlags: 0
