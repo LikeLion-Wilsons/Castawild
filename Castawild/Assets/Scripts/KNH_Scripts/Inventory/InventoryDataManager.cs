@@ -52,7 +52,8 @@ public class InventoryDataManager : NetworkBehaviour
             uiTable = uiCanvas.GetComponentInChildren<UITable>();
             uiTable.BindToInventoryData(this);
 
-            canvasHolder = uiCanvas.GetComponent<UI_Manager>();
+            RPC_SetUIManager(uiCanvas.GetComponent<UI_Manager>());
+            //canvasHolder = uiCanvas.GetComponent<UI_Manager>();
             canvasHolder.SetPlayer(player);
 
             #region item slot Init
@@ -213,6 +214,12 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
     //아이템 위치 교환
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_SetUIManager(UI_Manager manager)
+    {
+        canvasHolder = manager;
+    }
+
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_SwapItems(int indexA, int indexB)
     {

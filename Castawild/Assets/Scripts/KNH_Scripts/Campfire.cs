@@ -165,12 +165,6 @@ public class Campfire : InteractableObject
 
         RPC_Interact(playerRef);
 
-        inventoryData = player.GetComponent<InventoryDataManager>();
-        inventoryData.RPC_SetItemFromCampfire(this);
-
-        canvasHolder = inventoryData.canvasHolder;
-        canvasHolder.currentCampFire = gameObject;
-
         if (CanOpen)
         {
             canvasHolder.uiParts["Inventory"].Open();
@@ -180,6 +174,7 @@ public class Campfire : InteractableObject
             else if (player.HasInputAuthority)
                 inventoryData.RPC_SetCanOpen(this, false);
         }
+
     }
 
     // 클라 -> 서버
@@ -188,9 +183,13 @@ public class Campfire : InteractableObject
     {
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
         player = playerObj.GetComponent<Player>();
+        inventoryData = player.GetComponent<InventoryDataManager>();
+        inventoryData.RPC_SetItemFromCampfire(this);
+        canvasHolder = inventoryData.canvasHolder;
+        canvasHolder.currentCampFire = gameObject;
 
-        
     }
+
     public void FinishInteract()
     {
         int index = 29;
@@ -227,7 +226,7 @@ public class Campfire : InteractableObject
         }
     }
 
-    
+
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_SetCookPotItem(Item item)
