@@ -2,7 +2,6 @@ using Fusion;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UITable : UIPart
@@ -43,7 +42,6 @@ public class UITable : UIPart
     private void Update()
     {
         if(inventoryData != null && inventoryData.IsInventoryFull()) canCreate = false; //인벤토리가 가득 차면 제작 불가
-        else canCreate = true; //인벤토리가 비어있으면 제작 가능
         if (canCreate) craftButton.GetComponent<Image>().color = Color.green;
         else craftButton.GetComponent<Image>().color = Color.red;
     }

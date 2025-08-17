@@ -1,5 +1,4 @@
 using Fusion;
-using NUnit.Framework.Interfaces;
 using UnityEngine;
 
 public class Campfire : InteractableObject
@@ -21,7 +20,6 @@ public class Campfire : InteractableObject
     [Networked] public TickTimer cookDecreaseTimer { get; set; }
 
     [Networked] public bool CanOpen { get; set; } = true;
-    //public bool isFire { get; set; } = false;
     public UI_Manager canvasHolder;
     public Player player;
     public InventoryDataManager inventoryData;
@@ -84,7 +82,6 @@ public class Campfire : InteractableObject
                 {
                     // 요리 완료
                     cookTimer = -1;
-                    //RPC_SetCookingProgressBar(0);
                     RPC_Cooking();
                 }
                 else if (!canCook) { RPC_SetCookingProgressBar(0); }
@@ -128,7 +125,6 @@ public class Campfire : InteractableObject
                 count = resultItem.count + 1
             };
             resultItem = result;
-            //inventoryData.RPC_SetItemFromCampfire(this);
             if (cookPotItem.count > 0) RPC_AddCookTime(10);
             else canCook = false;
         }
@@ -145,27 +141,16 @@ public class Campfire : InteractableObject
                 itemID = cookPotItem.itemID,
                 count = cookPotItem.count - 1
             };
-            cookPotItem = item;
+            RPC_SetCookPotItem(item);
 
             Item result = new Item
             {
                 itemID = GetCookedID(cookPotItem.itemID),
                 count = resultItem.count + 1
             };
-            resultItem = result;
+            RPC_SetResultItem(result);
 
-            //if (player.HasStateAuthority)
-            //{
-            //    RPC_SetCookPotItem(item);
-            //    RPC_SetResultItem(result);
-            //}
-            
-            if (player.HasInputAuthority)
-            {
-                if (inventoryData == null)
-                    inventoryData = player.GetComponent<InventoryDataManager>();
-                inventoryData.RPC_SetItemFromCampfire(this);
-            }
+            inventoryData.RPC_SetItemFromCampfire(this);
 
             if (cookPotItem.count > 0) RPC_AddCookTime(10);
             else canCook = false;
@@ -181,15 +166,13 @@ public class Campfire : InteractableObject
         player = playerObj.GetComponent<Player>();
         inventoryData = player.GetComponent<InventoryDataManager>();
 
-        //networkCampfire = GetComponent<NetworkCampFire>();
-        //networkCampfire.player = player;
-        //networkCampfire.inventoryData = inventoryData;
-
         canvasHolder = inventoryData.canvasHolder;
         canvasHolder.currentCampFire = gameObject;
 
         //chest -> inventory
         inventoryData.RPC_SetItemFromCampfire(this);
+
+        //RPC_Interact();
 
         if (CanOpen)
         {
@@ -235,6 +218,28 @@ public class Campfire : InteractableObject
             player.GetComponent<InventoryDataManager>().RPC_SetItem(i, item);
             index++;
         }
+    }
+
+    // 클라 -> 서버
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_Interact(RpcInfo info = default)
+    {
+        PlayerRef caller = info.Source;
+        if (caller == PlayerRef.None) return;
+
+        // PlayerRef -> Player의 NetworkObject 얻기
+        if (!Runner.TryGetPlayerObject(caller, out NetworkObject playerObj))
+            return;
+
+        var p = playerObj.GetComponent<Player>();
+        if (p == null)
+        {
+            p = playerObj.GetComponentInChildren<Player>();
+        }
+        if (p == null) return;
+
+        player = p;
+        inventoryData = p.GetComponent<InventoryDataManager>();
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -309,9 +314,4 @@ public class Campfire : InteractableObject
         if (!Object.HasStateAuthority) return; // 클라는 실행하지 않음
         Cook();
     }
-
-    //public void SetFireActive(bool tof)
-    //{
-    //    isFire = tof;
-    //}
 }

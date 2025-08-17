@@ -118,11 +118,13 @@ public class Item_Panel :
             }
             else if (item.GetData().stackable == false)
             {
+                itemCountText.gameObject.SetActive(true);
                 itemCountText.gameObject.SetActive(false);//아이템 개수 표시 X
                 durabilityBar.gameObject.SetActive(false);//내구도 UI X
             }
             else
             {
+                itemCountText.gameObject.SetActive(true);
                 itemCountText.text = item.count.ToString();
                 durabilityBar.gameObject.SetActive(false);//내구도 UI X
             }
