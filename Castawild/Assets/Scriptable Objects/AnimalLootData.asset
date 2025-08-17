@@ -17,7 +17,7 @@ MonoBehaviour:
     minAmount: 1
     maxAmount: 3
     dropChance: 1
-  - itemId: 33
+  - itemId: 8
     minAmount: 1
     maxAmount: 3
     dropChance: 1

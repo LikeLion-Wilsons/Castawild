@@ -13,7 +13,7 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, YSB_Scri
     [SerializeField] private GameObject visualRoot;
     private VisualRootController visualRootController;
 
-    [Networked, /*OnChangedRender(nameof(OnChangedHealth))*/] protected int Health { get; set; }
+    [Networked, OnChangedRender(nameof(OnChangedHealth))] protected int Health { get; set; }
     [Networked] protected int MaxHP { get; set; }
     [Networked] protected TickTimer ReviveTimer { get; set; }
     private float reviveTime;
@@ -61,10 +61,20 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, YSB_Scri
         RPC_UpdateVisualState(true);
     }
 
-    // void OnChangedHealth()
-    // {
-    //     Debug.Log($"{Object.name}[{InstanceId}] Health changed: {Health}/{MaxHP}");
-    // }
+    void OnChangedHealth()//후입자 sync
+    {
+        SyncVisualState();
+    }
+
+    private void SyncVisualState()
+    {
+        bool alive = IsAlive();
+        if (col != null)
+            col.enabled = alive;
+
+        if (visualRootController != null)
+            visualRootController.SetVisible(alive);
+    }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_UpdateVisualState(bool isAlive)

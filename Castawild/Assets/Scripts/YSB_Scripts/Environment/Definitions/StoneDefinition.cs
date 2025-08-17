@@ -9,7 +9,7 @@ public class StoneDefinition : SpawnableDefinition
     // public int maxHealth = 100;
 
     // [Header("Drop")]
-    // public int dropItemID;      // 드랍할 아이템 ID
+    // public Item_Scriptable dropItem;      // 드랍할 아이템 ID
     // public int dropAmount = 1;     // 드랍 개수
 
     // [Header("Effect & Sound")]

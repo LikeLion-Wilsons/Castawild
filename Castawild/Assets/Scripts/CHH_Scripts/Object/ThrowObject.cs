@@ -42,13 +42,14 @@ public class ThrowObject : AttackObject
 
         if (collision.gameObject.CompareTag("Player"))
         {
-            Player player = collision.gameObject.GetComponent<Player>();
-            player.Host_TakeDamaged(true, Att);
+            Player otherPlayer = collision.gameObject.GetComponent<Player>();
+            int attack = Att - otherPlayer.Defense;
+
+            otherPlayer.Host_TakeDamaged(true, attack);
+            thrower.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(attack);
 
             if (throwType == ThrowType.arrow)
                 Runner.Despawn(Object);
-
-            thrower.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(Att);
         }
 
         else if (collision.gameObject.TryGetComponent<CwAnimal>(out CwAnimal animal))

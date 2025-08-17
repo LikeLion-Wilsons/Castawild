@@ -53,12 +53,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: d61a0365e4834167b2256a6081c36adb, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: f018e24ae8d34c67ab978e24cfcd3355, type: 2}
     - target: {fileID: 919132149155446097, guid: d61a0365e4834167b2256a6081c36adb, type: 3}
       propertyPath: m_Name
       value: Flagilis3
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d61a0365e4834167b2256a6081c36adb, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

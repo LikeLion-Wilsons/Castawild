@@ -14,10 +14,14 @@ public class UIEquipment : UIPart
 
     public int totalDefense = 0;
 
+    UI_Manager uiManager;
+
     void Start()
     {
         InventoryDataManager.onInventoryUpdated -= SetStatUI;
         InventoryDataManager.onInventoryUpdated += SetStatUI;
+
+        uiManager = GetComponentInParent<UI_Manager>();
     }
 
     void Update()
@@ -39,5 +43,7 @@ public class UIEquipment : UIPart
         armorDefense.text = armorStat.ToString();
         shoesDefense.text = shoesStat.ToString();
         totlDefense.text = totalDefense.ToString();
+
+        uiManager.player.playerData.defense = totalDefense;
     }
 }

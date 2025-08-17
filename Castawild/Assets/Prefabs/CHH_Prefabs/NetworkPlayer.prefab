@@ -3512,10 +3512,12 @@ MonoBehaviour:
     maxStamina: 100
     armor: 10
     attack: 10
+    defense: 0
     maxHunger: 100
     maxThirst: 100
     maxTemperature: 100
   _Hp: 0
+  _Defense: 0
   _Stamina: 0
   _Hunger: 0
   _Thirst: 0
@@ -3584,9 +3586,9 @@ MonoBehaviour:
   rotationSpeed: 15
   maxGroundAngle: 45
   gravity: -9.81
-  fallThreshold: 8
+  fallThreshold: 10
   fallDamagePerMeter: 10
-  fallingDeadTime: 5
+  fallingDeadTime: 10
   _Grounded_Physics: 0
   groundStartPoint: {fileID: 7339163387627562639}
   groundDistance: 1
@@ -3859,7 +3861,6 @@ MonoBehaviour:
   - {fileID: 0}
   inventoryItemPrefab: {fileID: 0}
   _itemList: []
-  _selectedSlot: 0
 --- !u!114 &1517099654388170568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3926,7 +3927,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buildingPreview: {fileID: -7957345436698639499}
-  campFireCol: {fileID: -608144346808076558, guid: 0fb14a3152bae204f825360bd7a74a57, type: 3}
 --- !u!114 &-7957345436698639499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3962,9 +3962,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coldEffect: {fileID: 2100000, guid: c4e19d2e0a1690c4ba24063ced04e385, type: 2}
-  coldEffectThreshold: 0.2
+  coldEffectThreshold: 0.3
   maxColdEffectIntensity: 4
-  bloodEffectThreshold: 0.2
+  bloodEffectThreshold: 0.3
   takeDamageEffect: {fileID: 5564867861575558819}
   takeDamageEffectAnim: {fileID: 3590413421425672894}
 --- !u!114 &5172254778838205249

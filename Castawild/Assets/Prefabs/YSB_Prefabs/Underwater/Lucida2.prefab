@@ -53,12 +53,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: 5f7a65ed56fb491f8d3dddda8f87cccc, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 00ce2043807f4a69a54fadf4035156d1, type: 2}
     - target: {fileID: 919132149155446097, guid: 5f7a65ed56fb491f8d3dddda8f87cccc, type: 3}
       propertyPath: m_Name
       value: Lucida2
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5f7a65ed56fb491f8d3dddda8f87cccc, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

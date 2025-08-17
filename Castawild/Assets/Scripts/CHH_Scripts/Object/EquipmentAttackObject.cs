@@ -1,4 +1,3 @@
-using UnityEditor.EditorTools;
 using UnityEngine;
 
 public class EquipmentAttackObject : AttackObject
@@ -28,10 +27,11 @@ public class EquipmentAttackObject : AttackObject
         Player otherPlayer = other.GetComponentInParent<Player>();
         if (otherPlayer != null)
         {
-            other.transform.parent.GetComponent<Player>().Host_TakeDamaged(true, Att);
-            other.transform.parent.GetComponent<ToolStateManager>().DecreaseToolDuration = true;
+            otherPlayer.GetComponent<ToolStateManager>().DecreaseToolDuration = true;
 
-            player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(Att);
+            int attack = Att - otherPlayer.Defense;
+            otherPlayer.Host_TakeDamaged(true, attack);
+            player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(attack);
 
             PlayAttackSound(player);
         }

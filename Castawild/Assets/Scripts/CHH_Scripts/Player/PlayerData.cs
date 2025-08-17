@@ -7,6 +7,7 @@ public class PlayerData
     public float maxStamina;
     public int armor;
     public int attack;
+    public int defense;
 
     public float maxHunger;
     public float maxThirst;
