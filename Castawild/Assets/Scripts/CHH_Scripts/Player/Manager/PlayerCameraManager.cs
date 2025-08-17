@@ -289,20 +289,15 @@ public class PlayerCameraManager : MonoBehaviour
 
             if (currentView == ViewType.FirstPerson)
             {
-                Debug.Log("CurrentFOV : " + firstPersonCam.Lens.FieldOfView);
-                Debug.Log("TargetFOV : " + (currentFOV - firstPerson_AimFovDelta));
                 moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV - firstPerson_AimFovDelta));
             }
             else
             {
-                Debug.Log("CurrentFOV : " + thirdPersonCam.Lens.FieldOfView);
-                Debug.Log("TargetFOV : " + (currentFOV - thirdPerson_AimFovDelta));
                 moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV - thirdPerson_AimFovDelta, thirdPerson_AimTargetPos.localPosition));
             }
         }
         else
         {
-            Debug.Log("CurrentFOV : " + currentFOV);
             if (currentView == ViewType.FirstPerson)
                 moveCameraCoroutine = StartCoroutine(MoveCameraCoroutine(currentFOV));
             else

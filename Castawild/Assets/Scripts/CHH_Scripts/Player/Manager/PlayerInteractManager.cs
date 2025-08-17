@@ -185,6 +185,8 @@ public sealed class PlayerInteractManager : NetworkBehaviour
 
     public void Client_Gather()
     {
+        if (!HasInputAuthority)
+            return;
         if (Client_currentInteractObject == null)
             Debug.Log("Gather - currentInteractObject is null");
 

@@ -281,10 +281,7 @@ public class Player : NetworkBehaviour
 
         if (Hp <= 0)
         {
-            RPC_ApplyPlayLocalSound(Sound.Player_Dead);
-
-            flagManager.Set(PlayerFlags.Death);
-            Host_TakeDamagedEvent?.Invoke(true);
+            Host_Die();
             return;
         }
         else if (Hp > 0 && isAttack)
@@ -304,6 +301,14 @@ public class Player : NetworkBehaviour
                     RPC_ApplyShakeCamera(transform.right, 0.3f);
             }
         }
+    }
+
+    private void Host_Die()
+    {
+        RPC_ApplyPlayLocalSound(Sound.Player_Dead);
+
+        flagManager.Set(PlayerFlags.Death);
+        Host_TakeDamagedEvent?.Invoke(true);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
@@ -364,9 +369,12 @@ public class Player : NetworkBehaviour
 
             if (restoreHPPerSecond != 0)
             {
-                Host_TakeDamaged(false, RestoreValue(restoreHPPerSecond, Hp, playerData.maxHp));
+                Hp = RestoreValue(restoreHPPerSecond, Hp, playerData.maxHp);
                 if (Hp <= 0)
+                {
+                    Host_Die();
                     break;
+                }
             }
             if (restoreStaminaPerSecond != 0)
                 Stamina = RestoreValue(restoreStaminaPerSecond, Stamina, playerData.maxStamina);
