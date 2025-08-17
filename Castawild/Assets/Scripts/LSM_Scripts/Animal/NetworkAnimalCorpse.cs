@@ -52,8 +52,8 @@ public class NetworkAnimalCorpse : EnvironmentObject
         }
     } 
     protected void Looted()
-    {  
-        
+    {
+         animalObject.IsDead = false; 
     }
 
     public override void Revive()
