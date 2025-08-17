@@ -14,13 +14,11 @@ public class PlayerRainController : MonoBehaviour
 
     private void OnEnable()
     {
-        // 이벤트 구독
         WeatherEvents.OnRainStateChanged += HandleRainStateChange;
     }
 
     private void OnDisable()
     {
-        // 이벤트 구독 해제 (메모리 누수 방지)
         WeatherEvents.OnRainStateChanged -= HandleRainStateChange;
     }
 
@@ -33,6 +31,7 @@ public class PlayerRainController : MonoBehaviour
             if (!_rainParticles.isPlaying)
             {
                 _rainParticles.Play();
+                SoundManager.Instance.PlayBGM(Sound.Env_Rain);
             }
         }
         else
@@ -40,6 +39,8 @@ public class PlayerRainController : MonoBehaviour
             if (_rainParticles.isPlaying)
             {
                 _rainParticles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                SoundManager.Instance.StopBGM();
+                SoundManager.Instance.PlayBGM(Sound.Env_Title);
             }
         }
     }
