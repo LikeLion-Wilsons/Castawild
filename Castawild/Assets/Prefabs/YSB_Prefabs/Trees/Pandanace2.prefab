@@ -442,8 +442,8 @@ LODGroup:
   serializedVersion: 2
   m_LocalReferencePoint: {x: -0.19068432, y: 4.6671996, z: 0.3420763}
   m_Size: 11.509741
-  m_FadeMode: 0
-  m_AnimateCrossFading: 0
+  m_FadeMode: 2
+  m_AnimateCrossFading: 1
   m_LastLODIsBillboard: 0
   m_LODs:
   - screenRelativeHeight: 0.9
@@ -454,11 +454,11 @@ LODGroup:
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 1037902314481581695}
-  - screenRelativeHeight: 0.01
+  - screenRelativeHeight: 0.05
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 4245993215538253168}
-  - screenRelativeHeight: 0.01
+  - screenRelativeHeight: 0.05
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 6494105180613908467}
@@ -537,3 +537,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactableType: 1
   visualRoot: {fileID: 1155283940809983396}
+  cullDistance: 500
