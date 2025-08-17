@@ -25,6 +25,7 @@ public class Campfire : InteractableObject
     public UI_Manager canvasHolder;
     public Player player;
     public InventoryDataManager inventoryData;
+    [SerializeField] CampFireObject campFireObject;
 
     public override void Spawned()
     {
@@ -68,6 +69,7 @@ public class Campfire : InteractableObject
                 if (fireTime <= 0)
                 {
                     RPC_SetFireVFX(false);
+                    campFireObject.FinishFire();
                     return;
                 }
 
@@ -251,6 +253,7 @@ public class Campfire : InteractableObject
     public void RPC_AddFireTime(float time)
     {
         fireTime += time;
+        campFireObject.gameObject.SetActive(true);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]

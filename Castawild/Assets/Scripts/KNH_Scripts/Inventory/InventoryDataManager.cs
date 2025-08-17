@@ -177,7 +177,10 @@ public class InventoryDataManager : NetworkBehaviour
 
         //선택된 아이템 버리기
         if (Input.GetKeyDown(KeyCode.Q) && HasInputAuthority)
+        {
             RPC_ThrowItem(GetSelectedIndex());
+            RPC_SetHoldTool();
+        }
 
         #region cheat
         //아이템 획득 치트
@@ -355,6 +358,13 @@ public class InventoryDataManager : NetworkBehaviour
         if (itemList[selectedSlot].itemID != 204) return;
         UseItem(itemList[selectedSlot].itemID, 1);
         AddItem(407, 1);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetHoldTool()
+    {
+        player.All_RemoveSelectedItem();
+        onItemSelected?.Invoke(-1);
     }
 
     #endregion
@@ -548,6 +558,7 @@ public class InventoryDataManager : NetworkBehaviour
                 RPC_ThrowItem(i);
             }
         }
+        RPC_SetHoldTool();
     }
 
     public void UseItem(int id, int count)
