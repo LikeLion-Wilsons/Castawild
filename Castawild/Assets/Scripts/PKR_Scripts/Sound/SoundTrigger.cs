@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class SoundTrigger : MonoBehaviour
 {
+    public Sound sfx;
     private int triggerCount = 0;
-
     bool IsLocalPlayer(Collider other)
     {
         if (other.gameObject.layer != LayerMask.NameToLayer("Player")) return false;
@@ -19,11 +19,12 @@ public class SoundTrigger : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (IsLocalPlayer(other) == false) return;
-        if (triggerCount <1)
+        if (triggerCount < 1)
         {
             Debug.Log($"Sound Trigger Enter");
-            SoundManager.Instance.PlayBGM(Sound.Env_Coast);
+            SoundManager.Instance.PlaySubBGM(sfx);
         }
+
         triggerCount++;
     }
 
@@ -34,7 +35,7 @@ public class SoundTrigger : MonoBehaviour
         if (triggerCount <= 0)
         {
             Debug.Log($"Sound Trigger Exit");
-            SoundManager.Instance.StopBGM();
+            SoundManager.Instance.StopSubBGM();
             triggerCount = 0;
         }
     }
