@@ -5,12 +5,14 @@ using UnityEngine;
 public class NetworkAnimalCorpse : EnvironmentObject
 {
     [SerializeField] private AnimalItem lootTable; // 동물 아이템 드랍 테이블  
-    private CwAnimal animalObject; 
+    private CwAnimal animalObject;
+    private AnimalAnim animalAnim;
 
     public override void Spawned()
     {
         base.Spawned();
         animalObject = GetComponentInParent<CwAnimal>();
+        animalAnim = GetComponentInParent<AnimalAnim>();
     }
 
     public override void Init(SpawnableDefinition def, int instanceId)
@@ -50,9 +52,8 @@ public class NetworkAnimalCorpse : EnvironmentObject
         }
     } 
     protected void Looted()
-    { 
-        animalObject.IsDead = false; // 시체 상태로 변경   
-        animalObject.AnimalCopse.SetActive(false); // 시체 비활성화       
+    {
+         animalObject.IsDead = false; 
     }
 
     public override void Revive()
