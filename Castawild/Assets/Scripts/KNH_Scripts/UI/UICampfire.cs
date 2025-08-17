@@ -112,6 +112,7 @@ public class UICampfire : UIPart
 
     public void CookingProgressBar(float timeLeft)
     {
+        if(timeLeft ==10) arrowImage.fillAmount = 0;
         double totalDuration = 10.0;
         double elapsed = totalDuration - timeLeft;
         float progress = Mathf.Clamp01((float)(elapsed / totalDuration));
