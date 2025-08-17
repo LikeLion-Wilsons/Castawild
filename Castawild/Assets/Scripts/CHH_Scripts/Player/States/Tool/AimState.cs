@@ -22,10 +22,12 @@ public class AimState : ToolBaseState
 
         if (toolStateManager.CurrentToolType == ToolType.Bow)
         {
-            toolStateManager.toolManager.RPC_NotifySetBowPos(true);
             toolStateManager.toolManager.All_SetArrowActive(true);
             if (toolStateManager.HasStateAuthority)
+            {
+                toolStateManager.toolManager.RPC_NotifySetBowPos(true);
                 toolStateManager.RPC_NotifySetArrowPull(true);
+            }
         }
 
         if (toolStateManager.HasInputAuthority)
@@ -61,9 +63,11 @@ public class AimState : ToolBaseState
 
             if (toolStateManager.CurrentToolType == ToolType.Bow)
             {
-                toolStateManager.toolManager.RPC_NotifySetBowPos(false);
                 if (toolStateManager.HasStateAuthority)
+                {
+                    toolStateManager.toolManager.RPC_NotifySetBowPos(false);
                     toolStateManager.RPC_NotifySetArrowPull(false);
+                }
             }
             toolStateManager.RPC_ApplySetAimCameraAndUI(false);
             toolStateManager.Host_ChangeState(ToolState.Idle);
@@ -76,9 +80,6 @@ public class AimState : ToolBaseState
 
         if (toolStateManager.input.currentView == ViewType.ThirdPerson)
             toolStateManager.Host_RotatePlayer(false);
-
-        if (toolStateManager.HasInputAuthority && !toolStateManager.player.playerInteractUI.showCrosshair)
-            toolStateManager.interactUI.ActiveCrosshair(false);
     }
 
     private void LookForward()

@@ -201,17 +201,15 @@ public class ToolStateManager : BaseStateManager
         if (isArrow && toolManager.HasArrow)
         {
             if (input.currentView == ViewType.FirstPerson)
-            {
                 throwObject = Runner.Spawn(arrowPrefab.gameObject, firstPersonArrowPos.position, cameraManager.firstPersonCam.transform.rotation);
-                throwObject?.GetComponent<ThrowObject>().AddForce(arrowForce, arrowUpForce, rayTargetPos);
-            }
             else
-            {
                 throwObject = Runner.Spawn(arrowPrefab.gameObject, thirdPersonArrowPos.position, cameraManager.thirdPersonCam.transform.rotation);
-                throwObject?.GetComponent<ThrowObject>().AddForce(arrowForce, arrowUpForce, rayTargetPos);
-            }
+
+            throwObject.GetComponent<ThrowObject>().thrower = player.gameObject;
+            throwObject?.GetComponent<ThrowObject>().AddForce(arrowForce, arrowUpForce, rayTargetPos);
 
             player.inventory.UseItem(201, 1);
+
             if (player.inventory.GetItemCount(201) <= 0)
             {
                 toolManager.HasArrow = false;
@@ -250,7 +248,6 @@ public class ToolStateManager : BaseStateManager
         if (!HasInputAuthority)
             return;
 
-        player.RPC_ApplyPlayLocalSound(Sound.Player_Revive);
         player.Client_PlayLocalSound(Sound.Player_Shoot);
 
         if (cameraManager.currentView == ViewType.FirstPerson && toolManager.HasArrow)
@@ -316,6 +313,8 @@ public class ToolStateManager : BaseStateManager
     public void RPC_RequestDecreaseToolDuration(bool isDecreased)
        => DecreaseToolDuration = isDecreased;
 
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_ApplyActiveCrosshair(bool active) => interactUI.ActiveCrosshair(active);
 
     /// <summary>
     /// 현재 아이템 변경 
