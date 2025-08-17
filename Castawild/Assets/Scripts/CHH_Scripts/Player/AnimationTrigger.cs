@@ -78,6 +78,8 @@ public class AnimationTrigger : MonoBehaviour
     {
         if (toolStateManager.HasStateAuthority)
             toolStateManager.player.Host_RestoreStartFromFood();
+        if (toolStateManager.HasInputAuthority)
+            player.inventory.RPC_UseSelectedItem(1);
     }
 
     public void Drink()
