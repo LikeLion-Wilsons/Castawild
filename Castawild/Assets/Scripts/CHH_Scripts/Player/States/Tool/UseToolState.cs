@@ -53,7 +53,7 @@ public class UseToolState : ToolBaseState
             toolStateManager.flagManager.Clear(PlayerFlags.Aim);
             toolStateManager.RPC_ApplySetAimCameraAndUI(false);
 
-            if (toolStateManager.CurrentToolType == ToolType.Bow)
+            if (toolStateManager.CurrentToolType == ToolType.Bow && toolStateManager.HasStateAuthority)
                 toolStateManager.RPC_NotifySetArrowPull(false);
         }
 

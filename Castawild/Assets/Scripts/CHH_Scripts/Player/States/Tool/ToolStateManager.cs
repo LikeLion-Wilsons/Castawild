@@ -242,9 +242,9 @@ public class ToolStateManager : BaseStateManager
     /// <summary>
     /// Ray로 조준 위치 설정
     /// </summary>
-    public void Client_Throw(int isArrow)
+    public void All_Throw(int isArrow)
     {
-        if (isArrow == 1)
+        if (isArrow == 1 && HasStateAuthority)
             RPC_NotifySetArrowPull(false);
 
         if (!HasInputAuthority)

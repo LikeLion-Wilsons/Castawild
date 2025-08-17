@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AimState : ToolBaseState
@@ -23,7 +24,8 @@ public class AimState : ToolBaseState
         {
             toolStateManager.toolManager.RPC_NotifySetBowPos(true);
             toolStateManager.toolManager.All_SetArrowActive(true);
-            toolStateManager.RPC_NotifySetArrowPull(true);
+            if (toolStateManager.HasStateAuthority)
+                toolStateManager.RPC_NotifySetArrowPull(true);
         }
 
         if (toolStateManager.HasInputAuthority)
@@ -60,7 +62,8 @@ public class AimState : ToolBaseState
             if (toolStateManager.CurrentToolType == ToolType.Bow)
             {
                 toolStateManager.toolManager.RPC_NotifySetBowPos(false);
-                toolStateManager.RPC_NotifySetArrowPull(false);
+                if (toolStateManager.HasStateAuthority)
+                    toolStateManager.RPC_NotifySetArrowPull(false);
             }
             toolStateManager.RPC_ApplySetAimCameraAndUI(false);
             toolStateManager.Host_ChangeState(ToolState.Idle);
