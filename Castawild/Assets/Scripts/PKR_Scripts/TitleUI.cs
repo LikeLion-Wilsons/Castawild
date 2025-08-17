@@ -146,7 +146,7 @@ namespace Test
         {
             if (SoundManager.Instance != null)
             {
-                SoundManager.Instance.PlayLocalSound2D(PlayerRef.None, Sound.UI_ButtonClick);
+                SoundManager.Instance.PlayLocal2D(Sound.UI_ButtonClick);
             }
         }
     }

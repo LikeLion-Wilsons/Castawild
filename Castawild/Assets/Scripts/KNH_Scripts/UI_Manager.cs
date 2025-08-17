@@ -94,8 +94,7 @@ public class UI_Manager : NetworkBehaviour
                 uiParts["Table"].Toggle();
                 uiParts["Tabs"].Toggle();
 
-                var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
-                SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.Env_InvenOpen, player.transform.position);
+                SoundManager.Instance.PlayLocal2D(Sound.Env_InvenOpen);
             }
         }
     }
@@ -126,8 +125,7 @@ public class UI_Manager : NetworkBehaviour
 
     public void CraftTab()
     {
-        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
-        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_ButtonClick, player.transform.position);
+        SoundManager.Instance.PlayLocal2D(Sound.UI_ButtonClick);
 
         Color c1 = craftTab.color;
         c1.a = 1f;
@@ -143,8 +141,7 @@ public class UI_Manager : NetworkBehaviour
 
     public void EquipmentTab()
     {
-        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
-        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_ButtonClick, player.transform.position);
+        SoundManager.Instance.PlayLocal2D(Sound.UI_ButtonClick);
 
         Color c1 = craftTab.color;
         c1.a = 0.5f;
