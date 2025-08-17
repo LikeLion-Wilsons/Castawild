@@ -201,12 +201,14 @@ public class PlayerMoveManager : NetworkBehaviour
 
         // 점프
         float jump = 0f;
-        if (JumpTriggered)
+        if (HasStateAuthority)
         {
-            JumpTriggered = false;
-            jump = jumpImpulse;
+            if (JumpTriggered)
+            {
+                JumpTriggered = false;
+                jump = jumpImpulse;
+            }
         }
-
         kcc.Move(velocity, jump);
     }
 
