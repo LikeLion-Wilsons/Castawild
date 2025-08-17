@@ -1,6 +1,5 @@
 using Fusion;
 using System;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 public delegate void OnItemGet();
@@ -102,7 +101,7 @@ public class InventoryDataManager : NetworkBehaviour
 
 
     public GameObject inventoryItemPrefab;
-    [Networked] public int selectedSlot { get; set; } = 0;
+    public int selectedSlot { get; set; } = 0;
     int maxSlotCount = 9; // 총 슬롯 수
     public static InventoryDataManager Instance { get; set; }
     public static event Action<int> onItemSelected;
@@ -120,8 +119,9 @@ public class InventoryDataManager : NetworkBehaviour
             {
                 inventorySlots[selectedSlot].Deselect();
             }
+            selectedSlot = newValue;
             inventorySlots[newValue].Select();
-            RPC_SetSelectedSlot(newValue);
+            //RPC_SetSelectedSlot(newValue);
 
             if (inventorySlots[newValue].IsEmpty())
                 player.All_RemoveSelectedItem();
@@ -176,7 +176,10 @@ public class InventoryDataManager : NetworkBehaviour
 
         //선택된 아이템 버리기
         if (Input.GetKeyDown(KeyCode.Q) && HasInputAuthority)
+        {
             RPC_ThrowItem(GetSelectedIndex());
+            RPC_SetHoldTool();
+        }
 
         #region cheat
         //아이템 획득 치트
@@ -245,7 +248,8 @@ public class InventoryDataManager : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_SubtractDurability(float amount)
     {
-        //Debug.Log("RPC_SubtractDurability" + selectedSlot);
+        Debug.Log("RPC_SubtractDurability" + selectedSlot);
+        
         var item = itemList.Get(selectedSlot);
         if (item.itemID == -1) return;
         //내구도 감소
@@ -314,7 +318,7 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
     //모닥불이 열 수 있는 상태인지 설정
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_SetCanOpen(Campfire campfire, bool tof)
     {
         campfire.CanOpen = tof;
@@ -323,7 +327,7 @@ public class InventoryDataManager : NetworkBehaviour
 
     //모닥불 -> 인벤토리
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_SetItemFromCampfire(NetworkCampFire campfire)
+    public void RPC_SetItemFromCampfire(Campfire campfire)
     {
         itemList.Set(45, campfire.cookPotItem);
         itemList.Set(46, campfire.resultItem);
@@ -332,7 +336,7 @@ public class InventoryDataManager : NetworkBehaviour
     }
     //인벤토리 -> 모닥불
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_RequestStoreToCampfire(NetworkCampFire campfire)
+    public void RPC_RequestStoreToCampfire(Campfire campfire)
     {
         campfire.RPC_SetCookPotItem(itemList[45]);
         campfire.RPC_SetResultItem(itemList[46]);
@@ -353,6 +357,13 @@ public class InventoryDataManager : NetworkBehaviour
         if (itemList[selectedSlot].itemID != 204) return;
         UseItem(itemList[selectedSlot].itemID, 1);
         AddItem(407, 1);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetHoldTool()
+    {
+        player.All_RemoveSelectedItem();
+        onItemSelected?.Invoke(-1);
     }
 
     #endregion
@@ -469,12 +480,18 @@ public class InventoryDataManager : NetworkBehaviour
         //indexB : 이동 전 슬롯
         if (indexA >= itemList.Count || indexB >= itemList.Count) return;
         //모닥불에는 생고기, 바닷물이 담긴 컵만 이동 가능 
-        if (indexA == 45 && itemList[indexB].itemID != 6) return;
+        if (indexA == 45 && itemList[indexB].itemID != 6 && itemList[indexB].itemID != 203) return;
+        if (indexB == 45 && itemList[indexA].itemID != 6 && itemList[indexB].itemID != 203) return;
+
         if (indexA == 46) return;//result슬롯으로는 이동 불가능
         if (indexA > 46 && itemList[indexB].GetData().type != Item_Type.Equipment) return; // 장비 슬롯으로는 이동 불가능
         if(indexA == 47 && itemList[indexB].GetData().equip_type != Equipment_Type.Helmet) return; 
         if(indexA == 48 && itemList[indexB].GetData().equip_type != Equipment_Type.Armor) return; 
         if(indexA == 49 && itemList[indexB].GetData().equip_type != Equipment_Type.Shoes) return; 
+
+        if(indexB == 47 && itemList[indexA].GetData().equip_type != Equipment_Type.Helmet) return;
+        if(indexB == 47 && itemList[indexA].GetData().equip_type != Equipment_Type.Armor) return;
+        if(indexB == 47 && itemList[indexA].GetData().equip_type != Equipment_Type.Shoes) return;
 
         //Debug.Log("Swap " + indexA + " " + indexB);
 
@@ -485,7 +502,9 @@ public class InventoryDataManager : NetworkBehaviour
             itemList.Add(item);
         }
 
+        //요리 시간 추가
         if (indexA == 45) cookStart?.Invoke(10);
+
         //교환
         var tempA = itemList[indexA];
         var tempB = itemList[indexB];
@@ -538,6 +557,7 @@ public class InventoryDataManager : NetworkBehaviour
                 RPC_ThrowItem(i);
             }
         }
+        RPC_SetHoldTool();
     }
 
     public void UseItem(int id, int count)
@@ -603,5 +623,17 @@ public class InventoryDataManager : NetworkBehaviour
     public int GetTotalDefense()
     {
         return canvasHolder.EquipmentUI.GetComponent<UIEquipment>().totalDefense;
+    }
+
+    public bool IsInventoryFull()
+    {
+        for (int i = 0; i < 29; i++)
+        {
+            if (itemList[i].itemID == -1)
+            {
+                return false; // 빈 슬롯이 있으면 인벤토리가 가득 차지 않음
+            }
+        }
+        return true; // 모든 슬롯이 채워져 있으면 인벤토리가 가득 참
     }
 }

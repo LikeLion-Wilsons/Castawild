@@ -43,7 +43,7 @@ public class ThrowObject : AttackObject
         if (collision.gameObject.CompareTag("Player"))
         {
             Player otherPlayer = collision.gameObject.GetComponent<Player>();
-            otherPlayer.Host_TakeDamaged(true, Att - otherPlayer.inventory.GetTotalDefense());
+            otherPlayer.Host_TakeDamaged(true, Att - otherPlayer.playerData.defense);
 
             if (throwType == ThrowType.arrow)
                 Runner.Despawn(Object);
