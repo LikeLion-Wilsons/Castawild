@@ -1,6 +1,5 @@
 using Fusion;
 using System;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 public delegate void OnItemGet();
