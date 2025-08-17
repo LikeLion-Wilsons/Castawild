@@ -116,7 +116,7 @@ public class  RabbitAnim : AnimalAnim
         if (Object.HasStateAuthority)
         {
             if (anim == null)
-            { 
+            {
                 StartCoroutine(DelayedAnimChange(newAnim, isPlay));
                 return;
             } 

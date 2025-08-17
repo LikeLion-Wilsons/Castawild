@@ -37,7 +37,6 @@ public class RabbitDeathState : RabbitState
         rabbitObject.AnimalCopse.SetActive(false);
         rabbitAnim.ChangeRabbitAnim(RabbitAnim.RabbitPlayAnim.Death, false);
         rabbitObject.AnimalCopse.SetActive(false); 
-        rabbitObject.AnimalBody.enabled = true; 
-
+        rabbitObject.AnimalBody.enabled = true;
     } 
 }
