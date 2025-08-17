@@ -1,9 +1,5 @@
 using Fusion;
-using System;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class NetworkCampFire : NetworkBehaviour
 {
@@ -27,9 +23,6 @@ public class NetworkCampFire : NetworkBehaviour
     public Player player;
     Campfire campfire;
     public InventoryDataManager inventoryData;
-
-
-
 
     public override void Spawned()
     {
@@ -80,7 +73,7 @@ public class NetworkCampFire : NetworkBehaviour
                 {
                     // 요리 완료
                     cookTimer = -1;
-                    RPC_SetCookingProgressBar(0);
+                    //RPC_SetCookingProgressBar(0);
                     RPC_Cooking();
                 }
                 else if (!canCook) { RPC_SetCookingProgressBar(0); }
@@ -97,6 +90,7 @@ public class NetworkCampFire : NetworkBehaviour
     private void Cook()
     {
         Debug.Log("요리 완성!");
+        Debug.Log(campfire.CanOpen);
 
         int GetCookedID(int rawID)
         {
@@ -123,6 +117,7 @@ public class NetworkCampFire : NetworkBehaviour
                 count = resultItem.count + 1
             };
             resultItem = result;
+            //inventoryData.RPC_SetItemFromCampfire(this);
             if (cookPotItem.count > 0) RPC_AddCookTime(10);
             else canCook = false;
         }

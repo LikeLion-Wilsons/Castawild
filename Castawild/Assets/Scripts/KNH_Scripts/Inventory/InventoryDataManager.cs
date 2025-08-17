@@ -316,7 +316,7 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
     //모닥불이 열 수 있는 상태인지 설정
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_SetCanOpen(Campfire campfire, bool tof)
     {
         campfire.CanOpen = tof;
@@ -325,7 +325,7 @@ public class InventoryDataManager : NetworkBehaviour
 
     //모닥불 -> 인벤토리
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_SetItemFromCampfire(NetworkCampFire campfire)
+    public void RPC_SetItemFromCampfire(Campfire campfire)
     {
         itemList.Set(45, campfire.cookPotItem);
         itemList.Set(46, campfire.resultItem);
@@ -334,7 +334,7 @@ public class InventoryDataManager : NetworkBehaviour
     }
     //인벤토리 -> 모닥불
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_RequestStoreToCampfire(NetworkCampFire campfire)
+    public void RPC_RequestStoreToCampfire(Campfire campfire)
     {
         campfire.RPC_SetCookPotItem(itemList[45]);
         campfire.RPC_SetResultItem(itemList[46]);

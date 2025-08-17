@@ -2,7 +2,6 @@ using Fusion;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UICampfire : UIPart
@@ -11,7 +10,7 @@ public class UICampfire : UIPart
     UI_Manager uiManager;
     InventoryDataManager inventoryData;
     Campfire campFire;
-    public NetworkCampFire netWorkCampfire;
+    //public NetworkCampFire netWorkCampfire;
     [Header("슬롯")]
     public Item_Panel cookPot;
     public Item_Panel result;
@@ -45,18 +44,18 @@ public class UICampfire : UIPart
         if (uiManager.currentCampFire != null)
             campFire = uiManager.currentCampFire.GetComponent<Campfire>();
         if (campFire == null) return;
-        netWorkCampfire = campFire.GetComponent<NetworkCampFire>();
+        //netWorkCampfire = campFire.GetComponent<NetworkCampFire>();
 
-        if (!netWorkCampfire.isFire)//불이 꺼져 있을 때
+        if (!campFire.isFire)//불이 꺼져 있을 때
         {
             arrowImage.fillAmount = 0f;
         }
-        else if (!netWorkCampfire.isCooking)//요리중이 아닐 때
+        else if (!campFire.isCooking)//요리중이 아닐 때
         {
             arrowImage.fillAmount = 0f;
         }
         //현재 연료 남은 시간
-        if(netWorkCampfire.fireTime < 0)
+        if (campFire.fireTime < 0)
         {
             fireImage.SetActive(false);
         }
@@ -77,11 +76,11 @@ public class UICampfire : UIPart
         if (fuelList[selectedFuelIndex] == 0) addTime = 20;
         else if (fuelList[selectedFuelIndex] == 3) addTime = 40;
 
-        netWorkCampfire.RPC_AddFireTime(addTime);
+        campFire.RPC_AddFireTime(addTime);
 
         //불 켜기
         fireImage.SetActive(true);
-        campFire.SetFireActive(true);
+        //campFire.SetFireActive(true);
     }
     public void LeftButtonClick()
     {
