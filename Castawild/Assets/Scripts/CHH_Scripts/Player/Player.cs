@@ -30,6 +30,7 @@ public class Player : NetworkBehaviour
 
     [Header("Current Status")]
     [Networked] public float Hp { get; set; }
+    [Networked] public int Defense { get; set; }
     [Networked] public float Stamina { get; set; }
     [Networked] public float Hunger { get; set; }
     [Networked] public float Thirst { get; set; }
@@ -362,7 +363,11 @@ public class Player : NetworkBehaviour
             elapsed += Runner.DeltaTime;
 
             if (restoreHPPerSecond != 0)
-                Hp = RestoreValue(restoreHPPerSecond, Hp, playerData.maxHp);
+            {
+                Host_TakeDamaged(false, RestoreValue(restoreHPPerSecond, Hp, playerData.maxHp));
+                if (Hp <= 0)
+                    break;
+            }
             if (restoreStaminaPerSecond != 0)
                 Stamina = RestoreValue(restoreStaminaPerSecond, Stamina, playerData.maxStamina);
             if (restoreHungerPerSecond != 0)
@@ -470,6 +475,13 @@ public class Player : NetworkBehaviour
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_RequestSetNearFire(float nearFire) => isNearFire += nearFire;
+
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_RequestSetDefense(int defense) => Defense = defense;
+
+
+
 
     // 임시 
     [HideInInspector] public ToolStateManager toolStateManager;

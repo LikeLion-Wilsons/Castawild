@@ -53,12 +53,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: fe5f77efe1194d3d922d05eecc13b442, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 9c8633f932244cf39cfd08d1aad0f9df, type: 2}
     - target: {fileID: 919132149155446097, guid: fe5f77efe1194d3d922d05eecc13b442, type: 3}
       propertyPath: m_Name
       value: Verdivalis2
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: fe5f77efe1194d3d922d05eecc13b442, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

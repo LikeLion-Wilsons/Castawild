@@ -27,10 +27,11 @@ public class EquipmentAttackObject : AttackObject
         Player otherPlayer = other.GetComponentInParent<Player>();
         if (otherPlayer != null)
         {
-            otherPlayer.Host_TakeDamaged(true, Att - otherPlayer.playerData.defense);
             otherPlayer.GetComponent<ToolStateManager>().DecreaseToolDuration = true;
 
-            player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(Att);
+            int attack = Att - otherPlayer.Defense;
+            otherPlayer.Host_TakeDamaged(true, attack);
+            player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(attack);
 
             PlayAttackSound(player);
         }
