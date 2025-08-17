@@ -64,6 +64,7 @@ public class CwRabbit : CwAnimal
     protected override void Die()
     {
         rabbitAnim.ChangeRabbitState(RabbitAnim.RabbitState.Death);
+        IsDead = true; // 죽은 상태로 변경
     }
 
     protected override void StatusEffect()
