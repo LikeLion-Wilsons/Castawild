@@ -172,7 +172,7 @@ public class Campfire : InteractableObject
         //chest -> inventory
         inventoryData.RPC_SetItemFromCampfire(this);
 
-        RPC_Interact();
+        //RPC_Interact();
 
         if (CanOpen)
         {
