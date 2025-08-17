@@ -30,12 +30,6 @@ public class AimState : ToolBaseState
             }
         }
 
-        if (toolStateManager.HasInputAuthority)
-        {
-            toolStateManager.interactUI.ActiveCrosshair(true);
-            toolStateManager.Client_SetAimCameraAndUI(true);
-        }
-
         toolStateManager.flagManager.Set(PlayerFlags.Aim);
     }
 

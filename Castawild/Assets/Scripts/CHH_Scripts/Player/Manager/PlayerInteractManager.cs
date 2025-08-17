@@ -88,14 +88,19 @@ public sealed class PlayerInteractManager : NetworkBehaviour
             for (int i = 0; i < hitCount; i++)
             {
                 var interact = _interactResult[i];
+                if (interact.TryGetComponent<NetworkObject>(out var networkObject))
+                {
+                    if (networkObject == null || !networkObject.IsValid)
+                        continue;
+                }
 
-                // 돌 / 나무
-                if (_interactResult[i].TryGetComponent<EnvironmentObject>(out var interactable))
+                // 환경
+                if (interact.TryGetComponent<EnvironmentObject>(out var interactable))
                 {
                     // 동물
-                    if (_interactResult[i].GetComponentInChildren<NetworkAnimalCorpse>())
+                    if (interact.GetComponentInChildren<NetworkAnimalCorpse>())
                     {
-                        NetworkAnimalCorpse animalCorpse = _interactResult[i].GetComponentInChildren<NetworkAnimalCorpse>();
+                        NetworkAnimalCorpse animalCorpse = interact.GetComponentInChildren<NetworkAnimalCorpse>();
 
                         playerInteractUI.InteractUI(animalCorpse.interactableType);
                         playerInteractUI.SetInteractText("도축");
@@ -118,6 +123,7 @@ public sealed class PlayerInteractManager : NetworkBehaviour
                     {
                         playerInteractUI.InteractUI(interactable.interactableType);
                         Client_currentInteractObject = interactable;
+                        Debug.Log(Client_currentInteractObject);
 
                         if (interactable.interactableType == InteractableType.Gatherable)
                         {
@@ -143,7 +149,7 @@ public sealed class PlayerInteractManager : NetworkBehaviour
                 }
 
                 // 다른 오브젝트 
-                else if (_interactResult[i].TryGetComponent<InteractableObject>(out var interactableObject))
+                else if (interact.TryGetComponent<InteractableObject>(out var interactableObject))
                 {
                     playerInteractUI.InteractUI(interactableObject.interactableType);
                     playerInteractUI.SetInteractText(interactableObject.text);
