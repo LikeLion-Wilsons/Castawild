@@ -967,6 +967,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerPrefab: {fileID: 7933685528624486573, guid: 6676e41751c98ef43a59f38c9f8528b4, type: 3}
+  spawnPosition: {fileID: 813675494}
 --- !u!114 &1199121091
 MonoBehaviour:
   m_ObjectHideFlags: 0
