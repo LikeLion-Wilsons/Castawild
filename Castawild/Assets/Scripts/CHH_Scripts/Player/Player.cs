@@ -165,7 +165,7 @@ public class Player : NetworkBehaviour
         else if (Hunger > 0)
             Hunger -= hungerDecreaseRate * Runner.DeltaTime;
 
-        if (flagManager.CanRecoverStamina)
+        if (flagManager.CanRecoverStamina && Thirst > 0 && Hunger > 0)
         {
             if (Stamina < playerData.maxStamina)
                 Stamina += staminaRecoveryRate * Runner.DeltaTime;

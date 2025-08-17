@@ -3525,7 +3525,7 @@ MonoBehaviour:
   foodRestoreTime: 5
   currentItemType: 0
   staminaRecoveryRate: 2
-  temperatureReceoveryRate: 8
+  temperatureReceoveryRate: 10
   hpDecreaseRate: 0.5
   staminaHungerDecreaseRate: 3
   staminaRunDecreaseRate: 10
@@ -5532,6 +5532,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7844614530758869572}
     m_Modifications:
+    - target: {fileID: -4903978548492518830, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
+      propertyPath: m_Size.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -4903978548492518830, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
+      propertyPath: m_Size.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -4903978548492518830, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
+      propertyPath: m_Size.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -4903978548492518830, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
+      propertyPath: m_Center.y
+      value: 0.61
+      objectReference: {fileID: 0}
     - target: {fileID: -1580625264523228205, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
       propertyPath: SortKey
       value: 1696242542
@@ -5543,6 +5559,10 @@ PrefabInstance:
     - target: {fileID: 1771104533621832, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
       propertyPath: m_Name
       value: 401_WoodenClub
+      objectReference: {fileID: 0}
+    - target: {fileID: 1771104533621832, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4047547711319264, guid: 9b10aebfd72056e44b2fff39008dd83c, type: 3}
       propertyPath: m_LocalPosition.x
