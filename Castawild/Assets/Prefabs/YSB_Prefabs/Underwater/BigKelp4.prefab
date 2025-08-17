@@ -49,12 +49,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: 00965a052ab047fcbb7ef215617128b3, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 715091c04a724f7db54db04fe8355245, type: 2}
     - target: {fileID: 919132149155446097, guid: 00965a052ab047fcbb7ef215617128b3, type: 3}
       propertyPath: m_Name
       value: BigKelp4
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 00965a052ab047fcbb7ef215617128b3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

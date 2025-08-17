@@ -53,12 +53,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: 892aeab4c5ef4867ac98ce264db6166e, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: a1b4862cf2ce4eceb7e29a5c16841bbf, type: 2}
     - target: {fileID: 919132149155446097, guid: 892aeab4c5ef4867ac98ce264db6166e, type: 3}
       propertyPath: m_Name
       value: Cordyline1
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 892aeab4c5ef4867ac98ce264db6166e, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

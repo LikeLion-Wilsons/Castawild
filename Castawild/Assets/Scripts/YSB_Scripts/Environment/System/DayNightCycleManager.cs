@@ -104,18 +104,18 @@ public class DayNightCycleManager : NetworkBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(toggleDeveloperModeKey))
+        if (Input.GetKeyDown(toggleDeveloperModeKey) && HasStateAuthority)
         {
             developerMode = !developerMode;
         }
 
-        if (Input.GetKeyDown(togglePauseKey))
+        if (Input.GetKeyDown(togglePauseKey) && HasStateAuthority)
         {
             Rpc_ToggleTimePause();
         }
     }
 
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.StateAuthority, RpcTargets.StateAuthority)]
     private void Rpc_ToggleTimePause()
     {
         IsTimePaused = !IsTimePaused;
