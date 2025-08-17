@@ -1,4 +1,5 @@
 using Unity.VisualScripting;
+using UnityEditor.Purchasing;
 using UnityEngine;
 
 public class AimState : ToolBaseState
@@ -31,6 +32,8 @@ public class AimState : ToolBaseState
         }
 
         toolStateManager.flagManager.Set(PlayerFlags.Aim);
+        if (toolStateManager.HasInputAuthority)
+            toolStateManager.Client_SetAimCameraAndUI(true);
     }
 
     public override void UpdateState()

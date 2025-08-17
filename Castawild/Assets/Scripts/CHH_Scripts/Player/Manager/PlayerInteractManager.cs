@@ -123,7 +123,6 @@ public sealed class PlayerInteractManager : NetworkBehaviour
                     {
                         playerInteractUI.InteractUI(interactable.interactableType);
                         Client_currentInteractObject = interactable;
-                        Debug.Log(Client_currentInteractObject);
 
                         if (interactable.interactableType == InteractableType.Gatherable)
                         {

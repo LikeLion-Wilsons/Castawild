@@ -83,8 +83,6 @@ public class UseToolState : ToolBaseState
             else
             {
                 toolStateManager.Host_ChangeState(ToolState.Idle);
-                if (toolStateManager.HasInputAuthority)
-                    toolStateManager.RPC_ApplySetAimCameraAndUI(false);
             }
         }
     }
