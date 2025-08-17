@@ -92,7 +92,29 @@ public sealed class PlayerInteractManager : NetworkBehaviour
                 // 돌 / 나무
                 if (_interactResult[i].TryGetComponent<EnvironmentObject>(out var interactable))
                 {
-                    if (interactable.CanInteract())
+                    // 동물
+                    if (_interactResult[i].GetComponentInChildren<NetworkAnimalCorpse>())
+                    {
+                        NetworkAnimalCorpse animalCorpse = _interactResult[i].GetComponentInChildren<NetworkAnimalCorpse>();
+
+                        playerInteractUI.InteractUI(animalCorpse.interactableType);
+                        playerInteractUI.SetInteractText("도축");
+
+                        if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
+                        {
+                            movementManager.RPC_RequestChangeGatherState(Object.InputAuthority);
+
+                            Client_currentInteractObject = animalCorpse;
+
+                            float targetTopY = interact.bounds.max.y;
+                            if (targetTopY - transform.position.y <= kneelY)
+                                movementManager.RPC_RequestSetKneel(false);
+                            else
+                                movementManager.RPC_RequestSetKneel(true);
+                        }
+                    }
+
+                    else if (interactable.CanInteract())
                     {
                         playerInteractUI.InteractUI(interactable.interactableType);
                         Client_currentInteractObject = interactable;
@@ -129,12 +151,15 @@ public sealed class PlayerInteractManager : NetworkBehaviour
                     // 설치가능한 오브젝트
                     if (interactableObject.isPlaceable)
                     {
-                        if (interactableObject.CanInteract()
-                            && input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
+                        if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.removeInput))
                         {
-                            player.inventory.RPC_GetItem(interactableObject.itemIndex, 1);
-                            RPC_DespawnObject(interactableObject.GetComponent<NetworkObject>());
-                            return;
+                            if (interactableObject.CanInteract())
+                            {
+                                player.inventory.RPC_GetItem(interactableObject.itemIndex, 1);
+                                interactableObject.GetComponent<Collider>().enabled = false;
+                                RPC_DespawnObject(interactableObject.GetComponent<NetworkObject>());
+                                return;
+                            }
                         }
                     }
 
@@ -142,28 +167,6 @@ public sealed class PlayerInteractManager : NetworkBehaviour
                         && input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
                     {
                         interactableObject.Interact(Object.InputAuthority);
-                    }
-                }
-
-                // 동물
-                else if (_interactResult[i].GetComponentInChildren<NetworkAnimalCorpse>())
-                {
-                    NetworkAnimalCorpse animalCorpse = _interactResult[i].GetComponentInChildren<NetworkAnimalCorpse>();
-
-                    playerInteractUI.InteractUI(animalCorpse.interactableType);
-                    playerInteractUI.SetInteractText("도축");
-
-                    if (input.WasPressed(prevInputButtons, PlayerNetworkInputData.interactInput))
-                    {
-                        movementManager.RPC_RequestChangeGatherState(Object.InputAuthority);
-
-                        Client_currentInteractObject = animalCorpse;
-
-                        float targetTopY = interact.bounds.max.y;
-                        if (targetTopY - transform.position.y <= kneelY)
-                            movementManager.RPC_RequestSetKneel(false);
-                        else
-                            movementManager.RPC_RequestSetKneel(true);
                     }
                 }
             }
