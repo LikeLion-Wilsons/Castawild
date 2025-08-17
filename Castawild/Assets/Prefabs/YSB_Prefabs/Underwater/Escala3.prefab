@@ -53,12 +53,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: cdfc2c09695347bca9ddf310db47c688, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: a6ccb15322b34346bf53793160dc72a4, type: 2}
     - target: {fileID: 919132149155446097, guid: cdfc2c09695347bca9ddf310db47c688, type: 3}
       propertyPath: m_Name
       value: Escala3
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: cdfc2c09695347bca9ddf310db47c688, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
