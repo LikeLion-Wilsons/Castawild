@@ -157,8 +157,6 @@ public class SoundManager : NetworkBehaviour
         }
 
         bgmSource.volume = volume;
-
-        bgmSource.Stop();
     }
 
     #endregion
