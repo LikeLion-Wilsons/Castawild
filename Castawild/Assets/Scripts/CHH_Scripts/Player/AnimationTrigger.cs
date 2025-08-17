@@ -1,7 +1,4 @@
-using Unity.VisualScripting;
-using UnityEditor.Purchasing;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public class AnimationTrigger : MonoBehaviour
 {
@@ -80,18 +77,24 @@ public class AnimationTrigger : MonoBehaviour
     public void Eat()
     {
         if (toolStateManager.HasStateAuthority)
-            toolStateManager.player.Host_RestoreStatFromFood();
+            toolStateManager.player.Host_RestoreStartFromFood();
+    }
+
+    public void Drink()
+    {
+        if (toolStateManager.HasStateAuthority)
+            toolStateManager.player.Host_RestoreStatFromDrink();
     }
 
     public void PlayEatSound()
     {
         if (toolStateManager.HasInputAuthority)
-            SoundManager.Instance.PlayLocalSound3D(toolStateManager.Object.InputAuthority, Sound.Player_Eat, transform.position);
+            SoundManager.Instance.PlayLocal2D(Sound.Player_Eat);
     }
     public void PlayDrinkSound()
     {
         if (toolStateManager.HasInputAuthority)
-            SoundManager.Instance.PlayLocalSound3D(toolStateManager.Object.InputAuthority, Sound.Player_Drink, transform.position);
+            SoundManager.Instance.PlayLocal2D(Sound.Player_Drink);
     }
 
     public void PlayWalkinSound()

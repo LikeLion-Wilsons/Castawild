@@ -1,20 +1,36 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CampFireObject : MonoBehaviour
 {
+    List<Player> warmPlayer = new List<Player>();
+
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Player"))
+        Player player = other.GetComponentInParent<Player>();
+        if (player == null)
             return;
 
-        other.GetComponent<Player>().RPC_RequestSetNearFire(1f);
+        warmPlayer.Add(player);
+        player.RPC_RequestSetNearFire(1f);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!other.CompareTag("Player"))
+        Player player = other.GetComponentInParent<Player>();
+        if (player == null)
             return;
 
-        other.GetComponent<Player>().RPC_RequestSetNearFire(-1f);
+        warmPlayer.Remove(player);
+        player.RPC_RequestSetNearFire(-1f);
+    }
+
+    public void FinishFire()
+    {
+        foreach (Player player in warmPlayer)
+            player.RPC_RequestSetNearFire(-1f);
+
+        warmPlayer.Clear();
+        gameObject.SetActive(false);
     }
 }

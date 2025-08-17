@@ -25,9 +25,15 @@ public class BuildingManager : NetworkBehaviour
     private void OnItemSelected(int itemID)
     {
         if (HasInputAuthority == false) return;
+
+        if (itemID == -1)
+        {
+            PreviewStop();
+            return;
+        }
+
         CurrentItemId = itemID;
 
-        Debug.Log("Selected item ID: " + itemID);
         if (isPreviewing) PreviewStop();
 
         if (itemID < 300 || itemID >= 400)
@@ -97,6 +103,7 @@ public class BuildingManager : NetworkBehaviour
         var retryPos = buildingPreview.GetPreviewPosition();
         var retryRot = buildingPreview.GetPreviewRotation();
         Debug.Log($" pos:{pos},retryPos:{retryPos}, rot:{rot},retryRot:{retryRot}");
+
         Runner.Spawn(networkPrefab, pos, rot);
         inventory.UseItem(CurrentItemId, 1);
     }

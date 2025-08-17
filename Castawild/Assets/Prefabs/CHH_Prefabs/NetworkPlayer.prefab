@@ -3926,6 +3926,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buildingPreview: {fileID: -7957345436698639499}
+  campFireCol: {fileID: -608144346808076558, guid: 0fb14a3152bae204f825360bd7a74a57, type: 3}
 --- !u!114 &-7957345436698639499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3961,9 +3962,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coldEffect: {fileID: 2100000, guid: c4e19d2e0a1690c4ba24063ced04e385, type: 2}
-  coldEffectThreshold: 0.2
+  coldEffectThreshold: 0.3
   maxColdEffectIntensity: 4
-  bloodEffectThreshold: 0.2
+  bloodEffectThreshold: 0.3
   takeDamageEffect: {fileID: 5564867861575558819}
   takeDamageEffectAnim: {fileID: 3590413421425672894}
 --- !u!114 &5172254778838205249

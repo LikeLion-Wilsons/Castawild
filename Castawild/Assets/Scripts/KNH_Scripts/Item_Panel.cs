@@ -114,6 +114,7 @@ public class Item_Panel :
             {
                 itemCountText.gameObject.SetActive(false);//아이템 개수 표시 X
                 durabilityBar.fillAmount = item.durability;//내구도 설정
+                durabilityBar.gameObject.SetActive(false);//내구도 UI X
             }
             else if (item.GetData().stackable == false)
             {
@@ -164,8 +165,7 @@ public class Item_Panel :
         originalParent = transform.parent;
         if (item.itemID == -1) return;
 
-        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
-        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_Scroll, inventoryData.player.transform.position);
+        SoundManager.Instance.PlayLocal2D(Sound.UI_Scroll);
 
         inventoryData.canvasHolder.isDragging = true;
         //우클릭 여부 저장
@@ -227,8 +227,7 @@ public class Item_Panel :
         if (!isInveontoryOpen) return;
         inventoryData.canvasHolder.isDragging = false;
 
-        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
-        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_ItemDrop, inventoryData.player.transform.position);
+        SoundManager.Instance.PlayLocal2D(Sound.UI_ItemDrop);
 
         // 드래그 종료 위치 기준으로 레이캐스트
         List<RaycastResult> results = new List<RaycastResult>();

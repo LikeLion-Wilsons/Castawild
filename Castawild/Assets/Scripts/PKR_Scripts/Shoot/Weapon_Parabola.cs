@@ -10,7 +10,6 @@ namespace Test.Shoot
 		[SerializeField] private float _speed = 50f;
         [SerializeField] private float _gravityScale = 1f; // 중력 계수
 		[SerializeField] private LayerMask _hitMask;
-		[SerializeField] private float _hitImpulse = 50f;
 		[SerializeField] private float _lifeTime = 4f;
 		[SerializeField] private float _lifeTimeAfterHit = 2f;
 		[SerializeField] private DummyProjectile _dummyProjectilePrefab;

@@ -172,7 +172,19 @@ public class PlayerMoveManager : NetworkBehaviour
             kcc.Move(velocity);
     }
 
-    private void Host_Move(Vector3 direction)
+    public void All_RotateForward(PlayerNetworkInputData input)
+    {
+        Quaternion target = Quaternion.LookRotation(input.camForward);
+        kcc.SetLookRotation(Quaternion.Slerp(kcc.Transform.rotation, target, rotationSpeed * Runner.DeltaTime));
+    }
+
+    private void All_HandleMovement(PlayerNetworkInputData input)
+    {
+        All_Move(input.moveDir);
+        All_Rotate(input);
+    }
+
+    private void All_Move(Vector3 direction)
     {
         direction = direction.normalized;
 
@@ -195,11 +207,6 @@ public class PlayerMoveManager : NetworkBehaviour
             jump = jumpImpulse;
         }
 
-        // SimpleKCC.Move
-        // 첫 번재 인자 : 이동 벡터(속도) -> moveDir * speed, 중력 포함해서 넣기
-        // 두 번째 인자 : y축 점프 힘 -> 점프 눌렀을 때만 값넣기, 아니면 0
-        // Move 함수의 ManualFixedUpdate 내부에서 DeltaTime 곱하기 때문에 여기서는 곱하지 말기
-
         kcc.Move(velocity, jump);
     }
 
@@ -216,19 +223,6 @@ public class PlayerMoveManager : NetworkBehaviour
                 return;
             All_RotateForward(input);
         }
-    }
-
-    public void All_RotateForward(PlayerNetworkInputData input)
-    {
-        Quaternion target = Quaternion.LookRotation(input.camForward);
-        kcc.SetLookRotation(Quaternion.Slerp(kcc.Transform.rotation, target, rotationSpeed * Runner.DeltaTime));
-    }
-
-    private void All_HandleMovement(PlayerNetworkInputData input)
-    {
-        if (HasStateAuthority)
-            Host_Move(input.moveDir);
-        All_Rotate(input);
     }
 
     /// <summary>

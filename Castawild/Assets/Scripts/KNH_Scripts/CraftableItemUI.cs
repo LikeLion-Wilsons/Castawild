@@ -34,8 +34,7 @@ public class CraftableItemUI : MonoBehaviour
 
     public void SetTableUI()
     {
-        var runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
-        SoundManager.Instance.PlayLocalSound3D(runner.LocalPlayer, Sound.UI_Scroll, canvasHolder.player.transform.position);
+        SoundManager.Instance.PlayLocal2D(Sound.UI_Scroll);
 
         table.selectedItem = item;
         table.SetTableUI();

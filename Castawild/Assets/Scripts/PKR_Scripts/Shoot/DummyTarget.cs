@@ -90,10 +90,10 @@ public class DummyTarget : NetworkBehaviour, IDamageable
         switch (ID)
         {
             case 0:
-                SoundManager.Instance.PlayGlobalSound3D(Sound.Env_NightBird, transform.position);
+                SoundManager.Instance.PlayGlobal3D(Sound.Env_NightBird, transform.position);
                 break;
             case 1:
-                    SoundManager.Instance.PlayLocalSound3D(player,Sound.Mon_Damaged, transform.position);
+                    SoundManager.Instance.PlayTarget3D(player,Sound.Mon_Damaged, transform.position);
                 break;
         }
         

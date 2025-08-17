@@ -30,6 +30,7 @@ public class TrashArea : MonoBehaviour, IDropHandler
         else
         {
             inventory.inventoryData.RPC_ThrowItem(index);          // 아이템 제거
+            inventory.inventoryData.RPC_SetHoldTool();
 
             var item = itemPanel.item;
             item.itemID = -1;

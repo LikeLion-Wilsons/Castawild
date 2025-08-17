@@ -12,10 +12,10 @@ public class DeathState : MovementBaseState
         movementManager.CurrentMoveAnimation = MoveAnimatoinState.Death;
 
         if (movementManager.HasInputAuthority)
+        {
             movementManager.player.inventory.ThrowAllItem();
-
-        if (movementManager.HasInputAuthority)
             movementManager.player.Client_SleepDeadCameraTarget(true, false);
+        }
 
         movementManager.Revived = false;
         movementManager.moveManager.Host_FreezePosition(true);
