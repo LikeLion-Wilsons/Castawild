@@ -52,7 +52,7 @@ public class AnimationTrigger : MonoBehaviour
         if (player.HasStateAuthority)
             player.Stamina -= player.staminaUseToolDecrease;
 
-        toolStateManager.Client_Throw(isArrow);
+        toolStateManager.All_Throw(isArrow);
 
         if (isArrow == 1)
             toolStateManager.DecreaseToolDuration = true;

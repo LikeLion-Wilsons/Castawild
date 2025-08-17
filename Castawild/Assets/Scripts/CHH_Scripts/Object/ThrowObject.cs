@@ -46,7 +46,10 @@ public class ThrowObject : AttackObject
             int attack = Att - otherPlayer.Defense;
 
             otherPlayer.Host_TakeDamaged(true, attack);
-            thrower.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(attack);
+            if (thrower == null)
+                Debug.Log("Thrower is Null");
+            else
+                thrower.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(attack);
 
             if (throwType == ThrowType.arrow)
                 Runner.Despawn(Object);
