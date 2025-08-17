@@ -184,10 +184,13 @@ public class Campfire : InteractableObject
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
         player = playerObj.GetComponent<Player>();
         inventoryData = player.GetComponent<InventoryDataManager>();
-        inventoryData.RPC_SetItemFromCampfire(this);
         canvasHolder = inventoryData.canvasHolder;
-        canvasHolder.currentCampFire = gameObject;
-
+        if (player.HasInputAuthority)
+        {
+            inventoryData.RPC_SetItemFromCampfire(this);
+            inventoryData.RPC_CurrentCampFire(this);
+            //canvasHolder.currentCampFire = gameObject;
+        }
     }
 
     public void FinishInteract()
