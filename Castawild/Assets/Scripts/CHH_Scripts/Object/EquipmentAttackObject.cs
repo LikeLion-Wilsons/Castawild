@@ -27,8 +27,8 @@ public class EquipmentAttackObject : AttackObject
         Player otherPlayer = other.GetComponentInParent<Player>();
         if (otherPlayer != null)
         {
-            other.transform.parent.GetComponent<Player>().Host_TakeDamaged(true, Att);
-            other.transform.parent.GetComponent<ToolStateManager>().DecreaseToolDuration = true;
+            otherPlayer.Host_TakeDamaged(true, Att - otherPlayer.inventory.GetTotalDefense());
+            otherPlayer.GetComponent<ToolStateManager>().DecreaseToolDuration = true;
 
             player.GetComponent<PlayerInteractManager>().RPC_ApplyHitInvoke(Att);
 

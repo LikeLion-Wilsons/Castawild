@@ -277,6 +277,9 @@ public class Player : NetworkBehaviour
     {
         if (!HasStateAuthority || Hp <= 0)
             return;
+
+        if (att <= 0)
+            att = 1;
         Hp -= att;
 
         if (Hp <= 0)
