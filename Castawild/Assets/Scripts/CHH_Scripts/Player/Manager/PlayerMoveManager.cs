@@ -180,7 +180,8 @@ public class PlayerMoveManager : NetworkBehaviour
 
     private void All_HandleMovement(PlayerNetworkInputData input)
     {
-        All_Move(input.moveDir);
+        if (HasStateAuthority)
+            All_Move(input.moveDir);
         All_Rotate(input);
     }
 
@@ -201,13 +202,10 @@ public class PlayerMoveManager : NetworkBehaviour
 
         // 점프
         float jump = 0f;
-        if (HasStateAuthority)
+        if (JumpTriggered)
         {
-            if (JumpTriggered)
-            {
-                JumpTriggered = false;
-                jump = jumpImpulse;
-            }
+            JumpTriggered = false;
+            jump = jumpImpulse;
         }
         kcc.Move(velocity, jump);
     }
