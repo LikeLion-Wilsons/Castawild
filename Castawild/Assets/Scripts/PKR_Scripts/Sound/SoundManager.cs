@@ -75,10 +75,12 @@ public class SoundManager : NetworkBehaviour
 {
     public static SoundManager Instance { get; private set; }
     [SerializeField] private AudioSource bgmSource;
+    [SerializeField] private AudioSource subBgmSource;
     [SerializeField] private List<AudioSource> sfxSources;
-    
+
     private Dictionary<Sound, AudioClip> _audioClips = new Dictionary<Sound, AudioClip>();
     private Coroutine _bgmCo = null;
+    private Coroutine _subBgmCo = null;
     private float _bgmFadeSpeed = 1f;
     private float _bgmVolume = 0.2f;
 
@@ -106,8 +108,14 @@ public class SoundManager : NetworkBehaviour
         }
 
         bgmSource.loop = true;
-        sfxSources.ForEach(x => x.loop = false);
         bgmSource.playOnAwake = false;
+        bgmSource.volume = 0;
+
+        subBgmSource.loop = true;
+        subBgmSource.playOnAwake = false;
+        subBgmSource.volume = 0;
+
+        sfxSources.ForEach(x => x.loop = false);
         sfxSources.ForEach(x => x.playOnAwake = false);
     }
 
@@ -117,46 +125,58 @@ public class SoundManager : NetworkBehaviour
     public void PlayBGM(Sound sfx)
     {
         if (_bgmCo != null) StopCoroutine(_bgmCo);
-        _bgmCo = StartCoroutine(BgmFadeInOut(sfx, _bgmVolume));
+        _bgmCo = StartCoroutine(BgmFadeInOut(bgmSource, sfx, _bgmVolume));
     }
 
     public void StopBGM()
     {
-        if (_bgmCo != null) StopCoroutine(_bgmCo);
-        _bgmCo = StartCoroutine(BgmFadeOut(_bgmFadeSpeed));
+        if (_subBgmCo != null) StopCoroutine(_subBgmCo);
+        _subBgmCo = StartCoroutine(BgmFadeOut(bgmSource, _bgmFadeSpeed));
     }
 
-    private IEnumerator BgmFadeInOut(Sound sfx, float volume)
+    public void PlaySubBGM(Sound sfx)
     {
-        yield return BgmFadeOut(_bgmFadeSpeed);
-        yield return BgmFadeIn(sfx, _bgmFadeSpeed, volume);
+        if (_subBgmCo != null) StopCoroutine(_subBgmCo);
+        _subBgmCo = StartCoroutine(BgmFadeInOut(subBgmSource, sfx, _bgmVolume));
+    }
+
+    public void StopSubBGM()
+    {
+        if (_bgmCo != null) StopCoroutine(_bgmCo);
+        _bgmCo = StartCoroutine(BgmFadeOut(subBgmSource, _bgmFadeSpeed));
+    }
+
+    private IEnumerator BgmFadeInOut(AudioSource source, Sound sfx, float volume)
+    {
+        yield return BgmFadeOut(source, _bgmFadeSpeed);
+        yield return BgmFadeIn(source, sfx, _bgmFadeSpeed, volume);
     }
 
     //볼륨 낮추기.
-    private IEnumerator BgmFadeOut(float speed)
+    private IEnumerator BgmFadeOut(AudioSource source, float speed)
     {
-        while (bgmSource.volume > 0)
+        while (source.volume > 0)
         {
-            bgmSource.volume -= Time.deltaTime * speed;
+            source.volume -= Time.deltaTime * speed;
             yield return null;
         }
 
-        bgmSource.Stop();
+        source.Stop();
     }
 
     //볼륨 높이기.
-    private IEnumerator BgmFadeIn(Sound sfx, float fadeSpeed, float volume)
+    private IEnumerator BgmFadeIn(AudioSource source, Sound sfx, float fadeSpeed, float volume)
     {
-        bgmSource.clip = _audioClips[sfx];
-        bgmSource.Play();
+        source.clip = _audioClips[sfx];
+        source.Play();
 
-        while (bgmSource.volume < volume)
+        while (source.volume < volume)
         {
-            bgmSource.volume += Time.deltaTime * fadeSpeed;
+            source.volume += Time.deltaTime * fadeSpeed;
             yield return null;
         }
 
-        bgmSource.volume = volume;
+        source.volume = volume;
     }
 
     #endregion
