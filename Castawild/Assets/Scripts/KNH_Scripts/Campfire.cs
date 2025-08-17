@@ -23,7 +23,7 @@ public class Campfire : InteractableObject
     public UI_Manager canvasHolder;
     public Player player;
     public InventoryDataManager inventoryData;
-    [SerializeField] CampFireObject campFireObject;
+    [SerializeField] CampFireObject warmObject;
 
     public override void Spawned()
     {
@@ -67,7 +67,7 @@ public class Campfire : InteractableObject
                 if (fireTime <= 0)
                 {
                     RPC_SetFireVFX(false);
-                    campFireObject.FinishFire();
+                    warmObject.FinishFire();
                     return;
                 }
 
@@ -163,16 +163,7 @@ public class Campfire : InteractableObject
     {
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
 
-        player = playerObj.GetComponent<Player>();
-        inventoryData = player.GetComponent<InventoryDataManager>();
-
-        canvasHolder = inventoryData.canvasHolder;
-        canvasHolder.currentCampFire = gameObject;
-
-        //chest -> inventory
-        inventoryData.RPC_SetItemFromCampfire(this);
-
-        //RPC_Interact();
+        RPC_Interact(playerRef);
 
         if (CanOpen)
         {
@@ -183,7 +174,22 @@ public class Campfire : InteractableObject
             else if (player.HasInputAuthority)
                 inventoryData.RPC_SetCanOpen(this, false);
         }
+
     }
+
+    // 클라 -> 서버
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_Interact(PlayerRef playerRef)
+    {
+        NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
+        player = playerObj.GetComponent<Player>();
+        inventoryData = player.GetComponent<InventoryDataManager>();
+        inventoryData.RPC_SetItemFromCampfire(this);
+        canvasHolder = inventoryData.canvasHolder;
+        canvasHolder.currentCampFire = gameObject;
+
+    }
+
     public void FinishInteract()
     {
         int index = 29;
@@ -220,27 +226,7 @@ public class Campfire : InteractableObject
         }
     }
 
-    // 클라 -> 서버
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    private void RPC_Interact(RpcInfo info = default)
-    {
-        PlayerRef caller = info.Source;
-        if (caller == PlayerRef.None) return;
 
-        // PlayerRef -> Player의 NetworkObject 얻기
-        if (!Runner.TryGetPlayerObject(caller, out NetworkObject playerObj))
-            return;
-
-        var p = playerObj.GetComponent<Player>();
-        if (p == null)
-        {
-            p = playerObj.GetComponentInChildren<Player>();
-        }
-        if (p == null) return;
-
-        player = p;
-        inventoryData = p.GetComponent<InventoryDataManager>();
-    }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_SetCookPotItem(Item item)
@@ -258,7 +244,7 @@ public class Campfire : InteractableObject
     public void RPC_AddFireTime(float time)
     {
         fireTime += time;
-        campFireObject.gameObject.SetActive(true);
+        warmObject.gameObject.SetActive(true);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]

@@ -32,6 +32,12 @@ namespace YSB_Scripts
 
             Debug.Log("Gatherable Object Interacted");
             Health = 0;
+            RPC_DropItem(player);
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_DropItem(PlayerRef player)
+        {
             DropItem(player, definition);
             Die();
         }
