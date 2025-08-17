@@ -213,7 +213,7 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
     //아이템 위치 교환
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_SwapItems(int indexA, int indexB)
     {
         SwapItems(indexA, indexB);
