@@ -3524,8 +3524,8 @@ MonoBehaviour:
   _Temperature: 0
   foodRestoreTime: 5
   currentItemType: 0
-  staminaRecoveryRate: 2
-  temperatureReceoveryRate: 10
+  staminaRecoveryRate: 10
+  temperatureReceoveryRate: 3
   hpDecreaseRate: 0.5
   staminaHungerDecreaseRate: 3
   staminaRunDecreaseRate: 10
