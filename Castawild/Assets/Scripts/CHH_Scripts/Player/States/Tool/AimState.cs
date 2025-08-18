@@ -1,5 +1,3 @@
-using Unity.VisualScripting;
-using UnityEditor.Purchasing;
 using UnityEngine;
 
 public class AimState : ToolBaseState
