@@ -116,6 +116,7 @@ public class UICampfire : UIPart
         double totalDuration = 10.0;
         double elapsed = totalDuration - timeLeft;
         float progress = Mathf.Clamp01((float)(elapsed / totalDuration));
+        if(progress > 0.8f) progress = 1f;
         arrowImage.fillAmount = progress;
     }
 
