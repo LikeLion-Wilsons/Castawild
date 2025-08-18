@@ -71,14 +71,14 @@ public class Campfire : InteractableObject
                     return;
                 }
 
-                if (cookTimer > 0 && canCook)
+                if (cookTimer > 1 && canCook)
                 { // 1초마다 cookTimer 감소
                     cookTimer--;
                     // 진행 바 업데이트
                     RPC_SetCookingProgressBar(cookTimer);
                     Debug.Log("cookTime : " + cookTimer);
                 }
-                else if (cookTimer == 0 && canCook)
+                else if (cookTimer == 1 && canCook)
                 {
                     // 요리 완료
                     cookTimer = -1;
@@ -184,10 +184,13 @@ public class Campfire : InteractableObject
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
         player = playerObj.GetComponent<Player>();
         inventoryData = player.GetComponent<InventoryDataManager>();
-        inventoryData.RPC_SetItemFromCampfire(this);
         canvasHolder = inventoryData.canvasHolder;
-        canvasHolder.currentCampFire = gameObject;
-
+        if (player.HasInputAuthority)
+        {
+            inventoryData.RPC_SetItemFromCampfire(this);
+            inventoryData.RPC_CurrentCampFire(this);
+            //canvasHolder.currentCampFire = gameObject;
+        }
     }
 
     public void FinishInteract()

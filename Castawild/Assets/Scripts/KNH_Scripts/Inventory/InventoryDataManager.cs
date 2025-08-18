@@ -213,11 +213,16 @@ public class InventoryDataManager : NetworkBehaviour
         uiTable.GetComponent<UITable>().SetTableUI();
     }
 
-    //아이템 위치 교환
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_SetUIManager(UI_Manager manager)
     {
         canvasHolder = manager;
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_CurrentCampFire(Campfire campfire)
+    {
+        canvasHolder.currentCampFire = campfire.gameObject;
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
