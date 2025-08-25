@@ -2,13 +2,12 @@ using UnityEngine;
 
 public class UIChest : UIPart
 {
-    void Start()
+    [SerializeField]
+    private UIInventory inventoryUI;
+    InventoryDataManager inventoryData;
+    public void ChestSortButton()
     {
-        
-    }
-
-    void Update()
-    {
-        
+        inventoryData = inventoryUI.inventoryData;
+        inventoryData.RPC_RequestChestSort();
     }
 }

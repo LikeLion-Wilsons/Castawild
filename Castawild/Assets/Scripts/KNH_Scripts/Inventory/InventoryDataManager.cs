@@ -380,18 +380,24 @@ public class InventoryDataManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_RequestSort()
+    public void RPC_RequestInventorySort()
     {
-        SortItemList(itemList);
+        SortItemList(itemList,9,28);
+        RPC_UpdateInventoryUI();
+    }
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestChestSort()
+    {
+        SortItemList(itemList, 29, 44);
         RPC_UpdateInventoryUI();
     }
     #endregion
 
-    private void SortItemList(NetworkLinkedList<Item> itemList)
+    private void SortItemList(NetworkLinkedList<Item> itemList,int startIndex, int endIndex)
     {
         //부분 구간 추출
         List<Item> subList = new List<Item>();
-        for (int i = 9; i < 29; i++)
+        for (int i = startIndex; i <= endIndex; i++)
         {
             subList.Add(itemList[i]);
         }
@@ -408,7 +414,7 @@ public class InventoryDataManager : NetworkBehaviour
         //다시 같은 위치에 덮어쓰기
         for (int i = 0; i < subList.Count; i++)
         {
-            itemList[9 + i] = subList[i];
+            itemList[startIndex + i] = subList[i];
         }
     }
 
