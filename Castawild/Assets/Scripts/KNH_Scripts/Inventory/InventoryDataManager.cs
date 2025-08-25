@@ -1,5 +1,6 @@
 using Fusion;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public delegate void OnItemGet();
@@ -378,7 +379,39 @@ public class InventoryDataManager : NetworkBehaviour
         onItemSelected?.Invoke(-1);
     }
 
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestSort()
+    {
+        SortItemList(itemList);
+        RPC_UpdateInventoryUI();
+    }
     #endregion
+
+    private void SortItemList(NetworkLinkedList<Item> itemList)
+    {
+        //부분 구간 추출
+        List<Item> subList = new List<Item>();
+        for (int i = 9; i < 29; i++)
+        {
+            subList.Add(itemList[i]);
+        }
+
+        // 정렬 (itemID -1은 항상 뒤로)
+        subList.Sort((a, b) =>
+        {
+            if (a.itemID == -1 && b.itemID == -1) return 0;
+            if (a.itemID == -1) return 1;
+            if (b.itemID == -1) return -1;
+            return a.itemID.CompareTo(b.itemID);
+        });
+
+        //다시 같은 위치에 덮어쓰기
+        for (int i = 0; i < subList.Count; i++)
+        {
+            itemList[9 + i] = subList[i];
+        }
+    }
+
     //아이템 비우기
     public void ClearItem(Item item)
     {
