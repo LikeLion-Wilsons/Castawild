@@ -19,7 +19,7 @@ public class UI_Manager : NetworkBehaviour
     public UIStats uiStats;
     [Header("상호작용중인 오브젝트")]
     public ChestDataManager currentOpenedChest;
-    public GameObject currentCampFire;
+    public Campfire currentCampFire;
     public PlayerRef playerRef;
 
     [SerializeField] Image craftTab;
@@ -30,6 +30,10 @@ public class UI_Manager : NetworkBehaviour
         currentOpenedChest = chest;
     }
 
+    public void SetOpenCampfire(Campfire campfire)
+    {
+        currentCampFire = campfire;
+    }
     [SerializeField] UIPart[] parts;
     public Dictionary<string, UIPart> uiParts = new Dictionary<string, UIPart>();
     public void OpenUI(string uiName)

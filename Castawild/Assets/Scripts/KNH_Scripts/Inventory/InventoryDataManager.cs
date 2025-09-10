@@ -223,7 +223,7 @@ public class InventoryDataManager : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_CurrentCampFire(Campfire campfire)
     {
-        canvasHolder.currentCampFire = campfire.gameObject;
+        canvasHolder.currentCampFire = campfire;
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
