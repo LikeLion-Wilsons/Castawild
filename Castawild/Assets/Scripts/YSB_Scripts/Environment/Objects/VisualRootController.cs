@@ -3,8 +3,14 @@ using UnityEngine;
 public class VisualRootController : MonoBehaviour
 {
     private Renderer[] _renderers;
+    private bool _isVisible = true; // 현재 상태 캐싱
 
     private void Awake()
+    {
+        CacheRenderers();
+    }
+
+    private void CacheRenderers()
     {
         _renderers = GetComponentsInChildren<Renderer>(true);
     }
@@ -12,11 +18,17 @@ public class VisualRootController : MonoBehaviour
     public void SetVisible(bool visible)
     {
         if (_renderers == null || _renderers.Length == 0)
-            _renderers = GetComponentsInChildren<Renderer>(true); // 아직 초기화 안 된 경우 다시 가져오기
+            CacheRenderers();
+
+        if (_isVisible == visible) return; 
+        _isVisible = visible;
 
         for (int i = 0; i < _renderers.Length; i++)
         {
-            _renderers[i].enabled = visible;
+            if (_renderers[i] != null)
+                _renderers[i].enabled = visible;
         }
     }
+
+    public bool IsVisible => _isVisible;
 }

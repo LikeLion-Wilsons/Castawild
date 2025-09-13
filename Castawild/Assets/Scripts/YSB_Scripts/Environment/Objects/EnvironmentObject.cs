@@ -1,14 +1,13 @@
 using Fusion;
 using UnityEngine;
 using System;
-using UnityEditor;
 
 [RequireComponent(typeof(NetworkObject), typeof(NetworkTransform))]
 public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, YSB_Scripts.IInteractable, IRevivable
 {
-    //public event Action<INetworkVisibilityObject> OnDestroyed;
     public InteractableType interactableType;
     public int InstanceId { get; set; }
+
     private Collider col;
     [SerializeField] private GameObject visualRoot;
     private VisualRootController visualRootController;
@@ -16,62 +15,71 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, YSB_Scri
     [Networked, OnChangedRender(nameof(OnChangedHealth))] protected int Health { get; set; }
     [Networked] protected int MaxHP { get; set; }
     [Networked] protected TickTimer ReviveTimer { get; set; }
+
     private float reviveTime;
+
     [SerializeField] private float cullDistance = 500f;
     private Transform playerCamera;
+
+    private float cullCheckInterval = 0.3f;
+    private float lastCullCheck;
+
     public override void Spawned()
     {
         base.Spawned();
 
-        if (visualRootController == null && visualRoot != null)
+        if (visualRoot != null)
             visualRootController = visualRoot.GetComponent<VisualRootController>();
 
         col = GetComponent<Collider>();
-        playerCamera = Camera.main.transform;
-        UpdateCulling();
+
+        // 멀티플레이 고려 → 로컬 플레이어 카메라 할당
+        if (Object.HasInputAuthority)
+            playerCamera = Camera.main?.transform;
+
+        UpdateCulling(true);
     }
 
     private void Update()
     {
-        if (!IsAlive()) return;
+        if (!IsAlive() || playerCamera == null) return;
 
-        UpdateCulling();
+        if (Time.time - lastCullCheck >= cullCheckInterval)
+        {
+            UpdateCulling();
+            lastCullCheck = Time.time;
+        }
     }
 
     public override void FixedUpdateNetwork()
     {
         if (HasStateAuthority && CanRevive())
-        {
             Revive();
-        }
     }
 
-    private void UpdateCulling()
+    private void UpdateCulling(bool force = false)
     {
         if (playerCamera == null || visualRootController == null) return;
 
-        float distance = Vector3.Distance(transform.position, playerCamera.position);
+        float distance = Vector3.SqrMagnitude(transform.position - playerCamera.position);
+        bool shouldBeVisible = distance <= cullDistance * cullDistance;
 
-        visualRootController.SetVisible(distance <= cullDistance);
+        if (force || visualRootController.IsVisible != shouldBeVisible)
+            visualRootController.SetVisible(shouldBeVisible);
     }
 
     public virtual void Init(SpawnableDefinition def, int instanceId)
     {
         reviveTime = def.reviveTime;
         InstanceId = instanceId;
+        MaxHP = def.maxHealth;
+        Health = MaxHP;
     }
 
     public virtual bool IsAlive() => Health > 0;
-
-    // INetworkVisibilityObject
     public virtual bool CanBeVisible() => IsAlive();
-
-    // IInteractable
     public virtual bool CanInteract() => IsAlive();
-
     public virtual void Interact(PlayerRef playerRef, int att) { }
-
-    // IRevivable
     public virtual bool CanRevive() => !IsAlive() && ReviveTimer.ExpiredOrNotRunning(Runner);
 
     public virtual void Revive()
@@ -80,10 +88,7 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, YSB_Scri
         RPC_UpdateVisualState(true);
     }
 
-    void OnChangedHealth()//후입자 sync
-    {
-        SyncVisualState();
-    }
+    void OnChangedHealth() => SyncVisualState();
 
     private void SyncVisualState()
     {
@@ -104,14 +109,14 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, YSB_Scri
         if (visualRootController != null)
         {
             visualRootController.SetVisible(isAlive);
-            col.enabled = isAlive;
+            if (col != null)
+                col.enabled = isAlive;
         }
     }
 
     protected void Die()
     {
         Debug.Log($"{Object.name}[{InstanceId}] Destroyed");
-        //OnDestroyed?.Invoke(this);
         ReviveTimer = TickTimer.CreateFromSeconds(Runner, reviveTime);
         RPC_UpdateVisualState(false);
     }
@@ -125,3 +130,4 @@ public abstract class EnvironmentObject : NetworkBehaviour, ISpawnable, YSB_Scri
         inventoryData.AddItem(definition.dropItem.itemID, definition.dropAmount);
     }
 }
+
