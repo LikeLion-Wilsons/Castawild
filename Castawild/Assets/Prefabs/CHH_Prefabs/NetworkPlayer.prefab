@@ -3678,8 +3678,8 @@ MonoBehaviour:
   armature: {fileID: 7813269517312369915}
   Client_armMesh: {fileID: 3201401248480740544}
   bowAnim: {fileID: 1436198795544721307}
-  throwUpForce: 0.3
-  arrowUpForce: 0.2
+  throwUpForce: 0.2
+  arrowUpForce: 0.1
   throwForce: 20
   arrowForce: 40
   throwableStonePrefab: {fileID: 3276171059478812674, guid: 13ec340cd21e8b941800f61a46abf836, type: 3}

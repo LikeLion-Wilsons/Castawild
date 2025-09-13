@@ -13,7 +13,7 @@ public struct PlayerNetworkInputData : INetworkInput
     public const int removeInput = 8;
 
     public Vector3 lookValue;
-    public Vector2 moveValue;
+    public Vector2 moveValue; // 애니메이션, 입력 들어왔는지 판가름용
     public Vector3 moveDir; // 캐릭터 움직이는 방향
     public Vector3 camForward;
     public ViewType currentView;
