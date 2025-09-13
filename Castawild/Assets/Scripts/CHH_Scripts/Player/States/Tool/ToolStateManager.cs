@@ -248,7 +248,8 @@ public class ToolStateManager : BaseStateManager
         if (!HasInputAuthority)
             return;
 
-        player.Client_PlayLocalSound(Sound.Player_Shoot);
+        if ((CurrentToolType == ToolType.Bow && toolManager.HasArrow) || CurrentToolType == ToolType.Throw && toolManager.HasPebble)
+            player.Client_PlayLocalSound(Sound.Player_Shoot);
 
         if (cameraManager.currentView == ViewType.FirstPerson && toolManager.HasArrow)
             cameraManager.ShakeCamera(transform.right, 0.1f);

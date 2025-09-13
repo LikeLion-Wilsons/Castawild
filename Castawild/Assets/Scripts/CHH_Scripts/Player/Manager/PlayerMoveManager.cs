@@ -207,8 +207,49 @@ public class PlayerMoveManager : NetworkBehaviour
             JumpTriggered = false;
             jump = jumpImpulse;
         }
+
         kcc.Move(velocity, jump);
     }
+
+    private void HandleMove(ref PlayerNetworkInputData input)
+    {
+        // 1) 이동 방향 (카메라 기준으로 하고 싶으면 yaw만 적용)
+        //Vector3 wish = new Vector3(input.moveDir.x, 0f, input.moveDir.y);
+        //if (wish.sqrMagnitude > 1f) wish.Normalize();
+
+        //// 3인칭 조준/이동 바라보기는 회전 함수에서 처리하고,
+        //// 이동은 월드 기준으로 변환(카메라 yaw만 적용)하고 싶다면:
+        //// yaw만 적용한 회전행렬
+        //Quaternion yawRot = Quaternion.Euler(0f, _yaw, 0f);
+        //Vector3 worldDir = yawRot * wish;
+
+        //// 2) 수평 속도 계산
+        //Vector3 vel = kcc.RealVelocity;
+        //if (kcc.IsGrounded && vel.y < 0f)
+        //    vel.y = 0f;
+
+        //Vector3 horiz = worldDir * moveSpeed;
+        //vel.x = horiz.x;
+        //vel.z = horiz.z;
+
+        //// 3) 점프 (그 틱에만 true가 되도록 OnInput에서 Edge로 넣는 걸 권장)
+        //float jump = 0f;
+        //if (input.Jump && kcc.IsGrounded)
+        //    jump = jumpImpulse;
+
+        //// 4) 이동 적용 (SimpleKCC 표준 패턴)
+        //kcc.Move(vel, jump);
+    }
+
+
+
+
+
+
+
+
+
+
 
     private void All_Rotate(PlayerNetworkInputData input)
     {
