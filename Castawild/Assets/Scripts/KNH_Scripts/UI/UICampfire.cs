@@ -42,7 +42,7 @@ public class UICampfire : UIPart
         //나중에 수정
         if (uiManager == null) return;
         if (uiManager.currentCampFire != null)
-            campFire = uiManager.currentCampFire.GetComponent<Campfire>();
+            campFire = uiManager.currentCampFire;
         if (campFire == null) return;
         //netWorkCampfire = campFire.GetComponent<NetworkCampFire>();
 

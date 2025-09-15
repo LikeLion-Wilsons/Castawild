@@ -79,4 +79,12 @@ public class UIInventory : UIPart
     {
         return itemPanels[index];
     }
+
+
+    //버튼에서 호출하는 메서드
+    public void SortButton()
+    {
+        inventoryData.RPC_RequestInventorySort();
+    }
+
 }

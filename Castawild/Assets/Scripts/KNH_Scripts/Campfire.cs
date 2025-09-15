@@ -162,7 +162,10 @@ public class Campfire : InteractableObject
     public override void Interact(PlayerRef playerRef)
     {
         NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
-
+        canvasHolder = playerObj.GetComponent<InventoryDataManager>().canvasHolder;
+        player = playerObj.GetComponent<Player>();
+        inventoryData = player.GetComponent<InventoryDataManager>();
+        canvasHolder.SetOpenCampfire(this);
         RPC_Interact(playerRef);
 
         if (CanOpen)
