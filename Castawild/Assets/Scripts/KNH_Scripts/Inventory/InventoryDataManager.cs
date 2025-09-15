@@ -630,8 +630,8 @@ public class InventoryDataManager : NetworkBehaviour
                     count -= item.count;
                     item.count = 0;
                     itemList.Set(i, item);
-
-                    player.All_RemoveSelectedItem();
+                    if (inventorySlots[selectedSlot].IsEmpty())
+                        player.All_RemoveSelectedItem();
                 }
 
             }
