@@ -83,20 +83,6 @@ public class PlayerInputManager : MonoBehaviour
         if (!player.isSpawned || !player.HasInputAuthority)
             return;
 
-        //// 게임 포커스가 사라지면 커서 해제
-        //if (!Application.isFocused && player.IsCursorLocked)
-        //    UnlockCursor();
-
-        //// Game 창이 포커스된 상태에서 클릭 시 커서 잠금
-        //if (!player.IsCursorLocked && Application.isFocused && Mouse.current.leftButton.wasPressedThisFrame && !player.IsUIOpen)
-        //    LockCursor();
-
-        //// ESC 눌렀을 때 해제
-        //if (player.IsCursorLocked && Keyboard.current.escapeKey.wasPressedThisFrame && !player.IsUIOpen)
-        //    UnlockCursor();
-
-        //if (optionUI.gameObject.activeSelf)
-
         HandleCameraInput();
     }
 
@@ -152,24 +138,14 @@ public class PlayerInputManager : MonoBehaviour
         Vector3 forward = Vector3.zero;
         Vector3 right = Vector3.zero;
 
-        if (cameraManager.currentView == ViewType.ThirdPerson)
-        {
-            forward = cameraManager.CurrenCam.transform.forward;
-            right = cameraManager.CurrenCam.transform.right;
-
-            Vector3 camForward = cameraManager.CurrenCam.transform.forward;
-            inputData.camForward = new Vector3(camForward.x, 0f, camForward.z);
-        }
+        inputData = SetCamForwardDirection(inputData, out forward, out right);
 
         if (moveManager.All_CanMoving())
         {
-            if (cameraManager.currentView == ViewType.FirstPerson)
-            {
-                forward = transform.forward;
-                right = transform.right;
+            forward = transform.forward;
+            right = transform.right;
 
-                inputData.lookValue = lookAction.ReadValue<Vector2>();
-            }
+            inputData.lookValue = lookAction.ReadValue<Vector2>();
 
             forward.y = 0f;
             right.y = 0f;
@@ -181,6 +157,16 @@ public class PlayerInputManager : MonoBehaviour
         else
             inputData.moveDir = Vector3.zero;
 
+        return inputData;
+    }
+
+    private PlayerNetworkInputData SetCamForwardDirection(PlayerNetworkInputData inputData, out Vector3 forward, out Vector3 right)
+    {
+        forward = cameraManager.CurrenCam.transform.forward;
+        right = cameraManager.CurrenCam.transform.right;
+
+        Vector3 camForward = cameraManager.CurrenCam.transform.forward;
+        inputData.camForward = new Vector3(camForward.x, 0f, camForward.z);
         return inputData;
     }
 
