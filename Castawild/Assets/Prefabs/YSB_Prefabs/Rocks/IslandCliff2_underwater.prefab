@@ -9,12 +9,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 101020466367135284, guid: 5ba2f4314eef48eb8b35f0fe12b899c9, type: 3}
+      propertyPath: m_FadeMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 101020466367135284, guid: 5ba2f4314eef48eb8b35f0fe12b899c9, type: 3}
+      propertyPath: m_AnimateCrossFading
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 101020466367135284, guid: 5ba2f4314eef48eb8b35f0fe12b899c9, type: 3}
       propertyPath: m_LODs.Array.data[0].screenRelativeHeight
-      value: 0.9
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 101020466367135284, guid: 5ba2f4314eef48eb8b35f0fe12b899c9, type: 3}
       propertyPath: m_LODs.Array.data[1].screenRelativeHeight
-      value: 0.75
+      value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 101020466367135284, guid: 5ba2f4314eef48eb8b35f0fe12b899c9, type: 3}
       propertyPath: m_LODs.Array.data[2].screenRelativeHeight

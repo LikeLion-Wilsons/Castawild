@@ -57,6 +57,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 1770a598aa984f2d9e9ad025340308ac, type: 2}
     - target: {fileID: -2552005849323567337, guid: ce7bb17300ac47aa9e1d3b3fcca5d27e, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -2552005849323567337, guid: ce7bb17300ac47aa9e1d3b3fcca5d27e, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 1770a598aa984f2d9e9ad025340308ac, type: 2}
@@ -69,9 +73,17 @@ PrefabInstance:
       value: Pandanace3
       objectReference: {fileID: 0}
     - target: {fileID: 1163363115608059012, guid: ce7bb17300ac47aa9e1d3b3fcca5d27e, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1163363115608059012, guid: ce7bb17300ac47aa9e1d3b3fcca5d27e, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: e79720a7632d42ee9e5dfa44cd923a46, type: 2}
+    - target: {fileID: 9015577784398991799, guid: ce7bb17300ac47aa9e1d3b3fcca5d27e, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9015577784398991799, guid: ce7bb17300ac47aa9e1d3b3fcca5d27e, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -154,7 +166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactableType: 0
   visualRoot: {fileID: 0}
-  reviveTime: 10
+  cullDistance: 500
 --- !u!114 &-6603796231830360073
 MonoBehaviour:
   m_ObjectHideFlags: 0

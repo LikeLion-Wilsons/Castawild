@@ -53,6 +53,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8111944491785825216, guid: 18adfde208f84a0c9fa653f7dffa3402, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8111944491785825216, guid: 18adfde208f84a0c9fa653f7dffa3402, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 7c9368944de24c0cbe67914a00f1a4e9, type: 2}
@@ -68,6 +72,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: 7c9368944de24c0cbe67914a00f1a4e9, type: 2}
+    - target: {fileID: -3727556751685275971, guid: 18adfde208f84a0c9fa653f7dffa3402, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -3727556751685275971, guid: 18adfde208f84a0c9fa653f7dffa3402, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -178,7 +186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactableType: 0
   visualRoot: {fileID: 0}
-  reviveTime: 10
+  cullDistance: 500
 --- !u!114 &-8813203085677873286
 MonoBehaviour:
   m_ObjectHideFlags: 0

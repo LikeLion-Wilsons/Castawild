@@ -57,6 +57,10 @@ PrefabInstance:
       value: Coconut3
       objectReference: {fileID: 0}
     - target: {fileID: 1540480185082638322, guid: db538b0b71674e9aaa553b9ce5cf7c2d, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1540480185082638322, guid: db538b0b71674e9aaa553b9ce5cf7c2d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 7c9368944de24c0cbe67914a00f1a4e9, type: 2}
@@ -64,6 +68,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: a6cc06aab65945acb2cb5c979e084935, type: 2}
+    - target: {fileID: 1733510255284649178, guid: db538b0b71674e9aaa553b9ce5cf7c2d, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1733510255284649178, guid: db538b0b71674e9aaa553b9ce5cf7c2d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -178,7 +186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactableType: 0
   visualRoot: {fileID: 0}
-  reviveTime: 10
+  cullDistance: 500
 --- !u!114 &8806077276131108233
 MonoBehaviour:
   m_ObjectHideFlags: 0

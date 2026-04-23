@@ -49,6 +49,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 830336799308417490, guid: 633c81b74bdc4f39ac6906d8b21e832d, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 830336799308417490, guid: 633c81b74bdc4f39ac6906d8b21e832d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 1770a598aa984f2d9e9ad025340308ac, type: 2}
@@ -59,6 +63,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 633c81b74bdc4f39ac6906d8b21e832d, type: 3}
       propertyPath: m_Name
       value: Pandanace1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1666481409278742151, guid: 633c81b74bdc4f39ac6906d8b21e832d, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1666481409278742151, guid: 633c81b74bdc4f39ac6906d8b21e832d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -72,6 +80,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: 1770a598aa984f2d9e9ad025340308ac, type: 2}
+    - target: {fileID: 6749847524910240645, guid: 633c81b74bdc4f39ac6906d8b21e832d, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6749847524910240645, guid: 633c81b74bdc4f39ac6906d8b21e832d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -154,7 +166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactableType: 0
   visualRoot: {fileID: 0}
-  reviveTime: 10
+  cullDistance: 500
 --- !u!114 &3552786515555148604
 MonoBehaviour:
   m_ObjectHideFlags: 0

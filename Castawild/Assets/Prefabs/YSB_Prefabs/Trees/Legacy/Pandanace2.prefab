@@ -49,6 +49,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7541567459278077864, guid: ca1e211d7ab44f998ace7bd316c9b672, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7541567459278077864, guid: ca1e211d7ab44f998ace7bd316c9b672, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 1770a598aa984f2d9e9ad025340308ac, type: 2}
@@ -57,6 +61,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: b8df9d4d34414e68acce9932a2607840, type: 2}
     - target: {fileID: -4480666681319665234, guid: ca1e211d7ab44f998ace7bd316c9b672, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4480666681319665234, guid: ca1e211d7ab44f998ace7bd316c9b672, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 1770a598aa984f2d9e9ad025340308ac, type: 2}
@@ -64,6 +72,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: b8df9d4d34414e68acce9932a2607840, type: 2}
+    - target: {fileID: -4162619996785979566, guid: ca1e211d7ab44f998ace7bd316c9b672, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -4162619996785979566, guid: ca1e211d7ab44f998ace7bd316c9b672, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -154,7 +166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactableType: 0
   visualRoot: {fileID: 0}
-  reviveTime: 10
+  cullDistance: 500
 --- !u!114 &6380174689497812082
 MonoBehaviour:
   m_ObjectHideFlags: 0

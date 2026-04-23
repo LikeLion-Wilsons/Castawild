@@ -61,11 +61,19 @@ PrefabInstance:
       value: Shell1_Down
       objectReference: {fileID: 0}
     - target: {fileID: 4519150277056058573, guid: 2d3173faa41b4443ac8a54dfe5973448, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4519150277056058573, guid: 2d3173faa41b4443ac8a54dfe5973448, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: d0849c83501d4273b2fb3ecb74beaa05, type: 2}
     - target: {fileID: 7191323256937386270, guid: 2d3173faa41b4443ac8a54dfe5973448, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7191323256937386270, guid: 2d3173faa41b4443ac8a54dfe5973448, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: d0849c83501d4273b2fb3ecb74beaa05, type: 2}
     m_RemovedComponents: []
