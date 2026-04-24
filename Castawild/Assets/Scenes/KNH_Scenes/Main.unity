@@ -19118,7 +19118,7 @@ MonoBehaviour:
     m_JitterScale: 1
     m_MipBias: 0
     m_VarianceClampScale: 0.9
-    m_ContrastAdaptiveSharpening: 0
+    m_ContrastAdaptiveSharpening: 0.8
 --- !u!81 &1632396638
 AudioListener:
   m_ObjectHideFlags: 0
